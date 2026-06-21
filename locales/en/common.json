@@ -1,0 +1,74 @@
+{
+  "site": {
+    "name": "ToolBoxy",
+    "tagline": "Free Online Tools for Everyone",
+    "description": "100+ free online tools for PDF, image, video, text, and developer tasks. No installation required."
+  },
+  "nav": {
+    "tools": "Tools",
+    "pricing": "Pricing",
+    "blog": "Blog",
+    "login": "Log In",
+    "signup": "Sign Up",
+    "dashboard": "Dashboard",
+    "logout": "Log Out"
+  },
+  "categories": {
+    "pdf": "PDF",
+    "image": "Image",
+    "video": "Video",
+    "audio": "Audio",
+    "text": "Text",
+    "developer": "Developer",
+    "file": "File",
+    "utility": "Utility"
+  },
+  "home": {
+    "hero_title": "Free Online Tools",
+    "hero_subtitle": "for Everyone",
+    "hero_description": "100+ free utilities for PDF, image, video, text and more. No sign-up required. Works in your browser.",
+    "search_placeholder": "Search tools...",
+    "popular_tools": "Popular Tools",
+    "all_tools": "All Tools",
+    "view_all": "View All"
+  },
+  "tool": {
+    "free_badge": "Free",
+    "pro_badge": "Pro",
+    "new_badge": "New",
+    "try_it": "Try It",
+    "related_tools": "Related Tools",
+    "how_to_use": "How to Use",
+    "step": "Step"
+  },
+  "upload": {
+    "drop_here": "Drop files here or click to upload",
+    "or_click": "or click to browse",
+    "max_size": "Max file size: {size}MB",
+    "supported": "Supported formats: {formats}",
+    "uploading": "Uploading...",
+    "processing": "Processing...",
+    "done": "Done!"
+  },
+  "limits": {
+    "free_limit": "Free users: {limit} operations/day",
+    "upgrade_prompt": "Upgrade to Pro for unlimited access",
+    "daily_limit_reached": "Daily limit reached. Upgrade to Pro or try again tomorrow."
+  },
+  "footer": {
+    "tagline": "Free online tools for everyone.",
+    "tools": "Tools",
+    "company": "Company",
+    "about": "About",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact",
+    "rights": "All rights reserved."
+  },
+  "errors": {
+    "file_too_large": "File is too large. Max size is {size}MB.",
+    "unsupported_format": "Unsupported file format.",
+    "processing_failed": "Processing failed. Please try again.",
+    "generic": "Something went wrong. Please try again."
+  }
+}
