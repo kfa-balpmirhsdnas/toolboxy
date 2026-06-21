@@ -1,0 +1,74 @@
+{
+  "site": {
+    "name": "ToolBoxy",
+    "tagline": "誰でも使える無料オンラインツール",
+    "description": "PDF・画像・動画・テキスト・開発者向けツールなど100以上の無料ツール。インストール不要。"
+  },
+  "nav": {
+    "tools": "ツール",
+    "pricing": "料金",
+    "blog": "ブログ",
+    "login": "ログイン",
+    "signup": "新規登録",
+    "dashboard": "ダッシュボード",
+    "logout": "ログアウト"
+  },
+  "categories": {
+    "pdf": "PDF",
+    "image": "画像",
+    "video": "動画",
+    "audio": "音声",
+    "text": "テキスト",
+    "developer": "開発者",
+    "file": "ファイル",
+    "utility": "ユーティリティ"
+  },
+  "home": {
+    "hero_title": "無料オンラインツール",
+    "hero_subtitle": "誰でも、どこでも",
+    "hero_description": "PDF・画像・動画・テキストなど100以上の無料ツール。登録不要。ブラウザですぐ使える。",
+    "search_placeholder": "ツールを検索...",
+    "popular_tools": "人気ツール",
+    "all_tools": "すべてのツール",
+    "view_all": "すべて見る"
+  },
+  "tool": {
+    "free_badge": "無料",
+    "pro_badge": "Pro",
+    "new_badge": "新着",
+    "try_it": "使ってみる",
+    "related_tools": "関連ツール",
+    "how_to_use": "使い方",
+    "step": "ステップ"
+  },
+  "upload": {
+    "drop_here": "ここにファイルをドロップするかクリック",
+    "or_click": "またはクリックしてファイルを選択",
+    "max_size": "最大ファイルサイズ: {size}MB",
+    "supported": "対応形式: {formats}",
+    "uploading": "アップロード中...",
+    "processing": "処理中...",
+    "done": "完了!"
+  },
+  "limits": {
+    "free_limit": "無料ユーザー: 1日{limit}回まで",
+    "upgrade_prompt": "Proにアップグレードして無制限に使う",
+    "daily_limit_reached": "1日の上限に達しました。Proにアップグレードするか、明日また試してください。"
+  },
+  "footer": {
+    "tagline": "誰でも使える無料オンラインツール。",
+    "tools": "ツール",
+    "company": "会社",
+    "about": "について",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "contact": "お問い合わせ",
+    "rights": "All rights reserved."
+  },
+  "errors": {
+    "file_too_large": "ファイルが大きすぎます。最大{size}MBまでです。",
+    "unsupported_format": "対応していないファイル形式です。",
+    "processing_failed": "処理に失敗しました。もう一度お試しください。",
+    "generic": "エラーが発生しました。もう一度お試しください。"
+  }
+}
