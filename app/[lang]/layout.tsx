@@ -7,6 +7,8 @@ import '../globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
+export const dynamic = 'force-dynamic'
+
 const inter = Inter({ subsets: ['latin'] })
 
 const SUPPORTED_LOCALES = ['en', 'ja', 'ko']
