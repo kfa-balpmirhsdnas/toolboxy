@@ -1,0 +1,74 @@
+{
+  "site": {
+    "name": "ToolBoxy",
+    "tagline": "누구나 쓰는 무료 온라인 도구",
+    "description": "PDF, 이미지, 영상, 텍스트, 개발자 도구까지. 100개 이상의 무료 온라인 도구. 설치 불필요."
+  },
+  "nav": {
+    "tools": "도구",
+    "pricing": "요금제",
+    "blog": "블로그",
+    "login": "로그인",
+    "signup": "회원가입",
+    "dashboard": "대시보드",
+    "logout": "로그아웃"
+  },
+  "categories": {
+    "pdf": "PDF",
+    "image": "이미지",
+    "video": "비디오",
+    "audio": "오디오",
+    "text": "텍스트",
+    "developer": "개발자",
+    "file": "파일",
+    "utility": "유틸리티"
+  },
+  "home": {
+    "hero_title": "무료 온라인 도구",
+    "hero_subtitle": "누구나, 어디서나",
+    "hero_description": "PDF, 이미지, 영상, 텍스트 등 100개 이상의 무료 도구. 회원가입 불필요. 브라우저에서 바로 사용.",
+    "search_placeholder": "도구 검색...",
+    "popular_tools": "인기 도구",
+    "all_tools": "모든 도구",
+    "view_all": "전체 보기"
+  },
+  "tool": {
+    "free_badge": "무료",
+    "pro_badge": "Pro",
+    "new_badge": "새로운",
+    "try_it": "사용하기",
+    "related_tools": "관련 도구",
+    "how_to_use": "사용 방법",
+    "step": "단계"
+  },
+  "upload": {
+    "drop_here": "파일을 여기에 드래그하거나 클릭하세요",
+    "or_click": "또는 클릭하여 파일 선택",
+    "max_size": "최대 파일 크기: {size}MB",
+    "supported": "지원 형식: {formats}",
+    "uploading": "업로드 중...",
+    "processing": "처리 중...",
+    "done": "완료!"
+  },
+  "limits": {
+    "free_limit": "무료 사용자: 하루 {limit}회",
+    "upgrade_prompt": "Pro로 업그레이드하면 무제한 사용 가능",
+    "daily_limit_reached": "일일 한도 도달. Pro로 업그레이드하거나 내일 다시 시도하세요."
+  },
+  "footer": {
+    "tagline": "누구나 쓰는 무료 온라인 도구.",
+    "tools": "도구",
+    "company": "회사",
+    "about": "소개",
+    "privacy": "개인정보처리방침",
+    "terms": "이용약관",
+    "contact": "문의",
+    "rights": "All rights reserved."
+  },
+  "errors": {
+    "file_too_large": "파일이 너무 큽니다. 최대 {size}MB까지 가능합니다.",
+    "unsupported_format": "지원하지 않는 파일 형식입니다.",
+    "processing_failed": "처리에 실패했습니다. 다시 시도해 주세요.",
+    "generic": "오류가 발생했습니다. 다시 시도해 주세요."
+  }
+}
