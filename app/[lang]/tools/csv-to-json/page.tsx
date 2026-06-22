@@ -1,122 +1,91 @@
 'use client'
+import { useState } from 'react'
 
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
-import { useUsageLimit } from '@/lib/hooks/useUsageLimit'
-
-const tool = getToolBySlug('csv-to-json')!
-
-function csvParse(text: string): object[] | string {
-  const lines = text.trim().split(/\r?\n/)
-  if (lines.length < 2) return '⚠ CSV must have a header row and at least one data row'
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''))
-  return lines.slice(1).map(line => {
-    const vals = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''))
-    return Object.fromEntries(headers.map((h, i) => [h, vals[i] ?? '']))
-  })
+function csvToJson(csv:string,delimiter:string):{json:string;error:string;rows:number}{
+  try{
+    const lines=csv.trim().split('\n').filter(l=>l.trim())
+    if(lines.length<2) return{json:'',error:'Need at least a header row and one data row',rows:0}
+    const headers=lines[0].split(delimiter).map(h=>h.trim().replace(/^"|"$/g,''))
+    const rows=lines.slice(1).map(line=>{
+      const values:string[]=[]
+      let cur='',inQuote=false
+      for(const ch of line){
+        if(ch==='"') inQuote=!inQuote
+        else if(ch===delimiter&&!inQuote){values.push(cur.trim());cur=''}
+        else cur+=ch
+      }
+      values.push(cur.trim())
+      const obj:Record<string,string|number>={}
+      headers.forEach((h,i)=>{
+        const v=(values[i]||'').replace(/^"|"$/g,'')
+        obj[h]=isNaN(Number(v))||v===''?v:Number(v)
+      })
+      return obj
+    })
+    return{json:JSON.stringify(rows,null,2),error:'',rows:rows.length}
+  }catch(e){return{json:'',error:String(e),rows:0}}
 }
 
-export default function CsvToJsonPage({ params }: { params: { lang: string } }) {
-  const [csv, setCsv] = useState('')
-  const [copied, setCopied] = useState(false)
-  const [limitMsg, setLimitMsg] = useState('')
-  const fileRef = useRef<HTMLInputElement>(null)
-  const trackedRef = useRef(false)
-  const { increment } = useUsageLimit('csv-to-json')
+const SAMPLE=`name,age,city,score
+Alice,30,New York,95.5
+Bob,25,London,87
+Charlie,35,Tokyo,92.3`
 
-  const result = csv.trim() ? csvParse(csv) : null
-  const output = result ? (typeof result === 'string' ? result : JSON.stringify(result, null, 2)) : ''
+export default function CsvToJsonPage() {
+  const [input,setInput]=useState(SAMPLE)
+  const [delimiter,setDelimiter]=useState(',')
+  const [copied,setCopied]=useState(false)
 
-  if (output && !output.startsWith('⚠') && !trackedRef.current) {
-    trackedRef.current = true
-    trackToolUsed('csv-to-json', 'convert')
-  }
+  const {json,error,rows}=csvToJson(input,delimiter)
 
-  async function copy() {
-    const allowed = await increment()
-    if (!allowed) {
-      setLimitMsg('Daily limit reached. Upgrade to Pro for unlimited access.')
-      return
-    }
-    await navigator.clipboard.writeText(output)
-    setCopied(true)
-    trackToolCopy('csv-to-json')
-    setTimeout(() => setCopied(false), 1500)
-  }
-
-  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0]
-    if (!f) return
-    const reader = new FileReader()
-    reader.onload = ev => { setCsv(ev.target?.result as string); trackedRef.current = false }
-    reader.readAsText(f)
-  }
-
-  async function downloadJson() {
-    const allowed = await increment()
-    if (!allowed) {
-      setLimitMsg('Daily limit reached. Upgrade to Pro for unlimited access.')
-      return
-    }
-    const blob = new Blob([output], { type: 'application/json' })
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = 'output.json'
-    a.click()
-    trackToolDownload('csv-to-json', 'json')
+  function copy(){navigator.clipboard.writeText(json);setCopied(true);setTimeout(()=>setCopied(false),2000)}
+  function download(){
+    const blob=new Blob([json],{type:'application/json'})
+    const url=URL.createObjectURL(blob)
+    const a=document.createElement('a');a.href=url;a.download='data.json';a.click()
+    URL.revokeObjectURL(url)
   }
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="flex gap-2">
-          <button onClick={() => fileRef.current?.click()} className="px-4 py-2 rounded-xl text-sm font-semibold border border-gray-200 text-gray-600 hover:border-brand-400 transition-colors">
-            📂 Upload CSV
-          </button>
-          <input ref={fileRef} type="file" accept=".csv" onChange={onFile} className="hidden" />
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-4xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">CSV to JSON Converter</h1>
+        <p className="text-gray-500 mb-6">Convert CSV data to JSON format with automatic type detection</p>
+        <div className="flex items-center gap-4 mb-4">
+          <span className="text-sm font-medium text-gray-700">Delimiter:</span>
+          {[',','\t',';','|'].map(d=>(
+            <button key={d} onClick={()=>setDelimiter(d)} className={'px-3 py-1.5 rounded-lg text-sm font-mono font-medium transition-colors '+(delimiter===d?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>
+              {d==='\t'?'Tab':d}
+            </button>
+          ))}
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">CSV Input</label>
-          <textarea
-            value={csv}
-            onChange={(e) => { setCsv(e.target.value); trackedRef.current = false; setLimitMsg('') }}
-            placeholder={"name,age,city\nAlice,30,Seoul\nBob,25,Tokyo"}
-            className="w-full h-36 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
-          />
-        </div>
-        {limitMsg && (
-          <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">{limitMsg}</p>
-        )}
-        {output && (
-          <>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400 font-medium px-2">JSON OUTPUT</span>
-              <div className="flex-1 h-px bg-gray-200" />
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="px-4 py-2 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">CSV Input</span>
+              <button onClick={()=>setInput(SAMPLE)} className="text-xs text-brand-600 hover:underline">Example</button>
             </div>
-            <div className="relative">
-              <textarea
-                value={output}
-                readOnly
-                className={`w-full h-48 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono bg-gray-50 focus:outline-none ${output.startsWith('⚠') ? 'text-red-500' : 'text-gray-600'}`}
-              />
-              {!output.startsWith('⚠') && (
-                <div className="absolute top-2 right-2 flex gap-1">
-                  <button onClick={copy} className="text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">
-                    {copied ? '✓ Copied' : 'Copy'}
-                  </button>
-                  <button onClick={downloadJson} className="text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">
-                    ↓ JSON
-                  </button>
+            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={16}
+              className="w-full p-4 font-mono text-sm focus:outline-none resize-none" />
+          </div>
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="px-4 py-2 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">JSON Output {rows>0&&`(${rows} rows)`}</span>
+              {json&&(
+                <div className="flex gap-2">
+                  <button onClick={copy} className="text-xs px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded">{copied?'\u2713':'Copy'}</button>
+                  <button onClick={download} className="text-xs px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded">Download</button>
                 </div>
               )}
             </div>
-          </>
-        )}
-        <p className="text-xs text-gray-400">Paste CSV or upload a .csv file · First row is treated as headers</p>
+            {error?(
+              <div className="p-4 text-red-500 text-sm">{error}</div>
+            ):(
+              <pre className="p-4 font-mono text-xs text-gray-700 overflow-auto h-[400px] whitespace-pre">{json||'Output appears here...'}</pre>
+            )}
+          </div>
+        </div>
       </div>
-    </ToolLayout>
+    </main>
   )
 }
