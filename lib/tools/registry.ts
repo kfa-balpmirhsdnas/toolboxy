@@ -312,6 +312,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'pixel-to-rem-converter',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
   {slug:'case-converter',category:'text',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
   {slug:'nato-alphabet',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'word-counter',category:'text',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'lorem-ipsum-generator',category:'text',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'opacity-calculator',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'palindrome-checker',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'markdown-to-html',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
 ]
 
 export function getToolBySlug(slug: string): ToolMeta | undefined {
