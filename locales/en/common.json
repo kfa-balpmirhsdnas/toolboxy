@@ -136,7 +136,7 @@
     },
     "percentage-calculator": {
       "title": "Percentage Calculator",
-      "description": "Calculate percentages: X% of Y, what percent is X of Y, percentage change, increase and decrease"
+      "description": "Four modes: X% of Y, X is what % of Y, percentage change between two values, and discount/markup calculator"
     },
     "json-minifier": "Minify JSON by removing whitespace and formatting. Shows byte savings and allows download.",
     "text-reverser": "Reverse text by characters, words, or lines. Simple and fast text manipulation tool.",
@@ -185,7 +185,10 @@
     "sql-formatter": "Format and pretty-print SQL queries with keyword highlighting and configurable indentation.",
     "image-base64-converter": "Convert images to Base64 strings and decode Base64 back to viewable images.",
     "markdown-preview": "Live side-by-side Markdown editor with rendered preview. Supports headings, links, code blocks.",
-    "yaml-validator": "Validate YAML syntax and display a JSON representation of top-level keys.",
+    "yaml-validator": {
+      "title": "YAML Validator",
+      "description": "Validate YAML syntax in real time — detects tab indentation errors, unclosed quotes, and reports key count"
+    },
     "line-sort": "Sort, deduplicate, reverse, or shuffle lines of text. Supports case-insensitive and trim options.",
     "number-sequence-generator": "Generate number sequences with custom start, end, step, separator, prefix, and suffix.",
     "word-wrap": "Wrap long text at a specified column width using word, character, or break mode.",
@@ -202,7 +205,7 @@
     "epoch-converter": "Convert Unix epoch timestamps to readable dates and vice versa. Supports seconds, milliseconds, and multiple timezones.",
     "text-repeater": {
       "title": "Text Repeater",
-      "description": "Repeat any text multiple times with customizable separators like newline, comma, tab or pipe"
+      "description": "Repeat any text a specified number of times with custom separators, prefix, suffix, and optional line numbering"
     },
     "column-extractor": "Extract specific columns from CSV or delimited text. Click columns to toggle selection, choose custom separators.",
     "bracket-matcher": "Validate bracket matching in code. Highlights matched pairs by depth and pinpoints mismatched or unclosed brackets.",
@@ -214,7 +217,7 @@
     "slug-to-title": "Convert URL slugs or kebab-case text into Title Case, Sentence case, camelCase, and more.",
     "number-to-words": {
       "title": "Number to Words",
-      "description": "Convert numbers into English words — supports integers, decimals and numbers up to trillions"
+      "description": "Convert numbers to English words — including ordinals, Roman numerals, and scientific notation up to trillions"
     },
     "camel-case-converter": "Convert between all common naming conventions: camelCase, snake_case, PascalCase, kebab-case, and more.",
     "html-entity-converter": "Encode or decode HTML entities. Supports named entities, numeric, full non-ASCII encoding, and decoding.",
@@ -492,6 +495,10 @@
     "time-zone-converter": {
       "title": "Time Zone Converter",
       "description": "Convert a date and time across 17 global time zones simultaneously — select which zones to display"
+    },
+    "character-frequency": {
+      "title": "Character Frequency",
+      "description": "Analyze character, word, or n-gram frequency in any text with visual bar chart and percentage breakdown"
     }
   }
 }
