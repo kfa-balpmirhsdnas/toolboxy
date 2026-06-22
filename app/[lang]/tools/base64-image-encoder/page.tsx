@@ -41,7 +41,7 @@ export default function Base64ImageEncoderPage() {
           onClick={()=>fileRef.current?.click()}
           onDragOver={e=>{e.preventDefault()}}
           onDrop={e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))handleFile(f)}}>
-          <div className="text-4xl mb-3">\u{1F5BC}\uFE0F</div>
+          <div className="text-4xl mb-3">🖼️</div>
           {dataUrl?(
             <div>
               <img src={dataUrl} alt={fileName} className="max-h-40 mx-auto rounded-lg mb-2 object-contain" />
