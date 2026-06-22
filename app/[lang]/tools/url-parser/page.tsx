@@ -1,105 +1,59 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
-
 const tool = getToolBySlug('url-parser')!
-
-interface Parsed {
-  protocol: string; host: string; hostname: string; port: string
-  pathname: string; search: string; hash: string
-  params: [string, string][]
-  origin: string
-}
-
-function parseUrl(raw: string): Parsed | null {
+export default function UrlParserPage() {
+  const [url,setUrl]=useState('https://example.com:8080/path/page?foo=bar&baz=qux#section')
+  const [copied,setCopied]=useState('')
+  let parsed:{[k:string]:string}={}
+  let params:{[k:string]:string}={}
+  let parseErr=false
   try {
-    const u = new URL(raw.trim().startsWith('http') ? raw.trim() : 'https://' + raw.trim())
-    const params: [string, string][] = []
-    u.searchParams.forEach((v, k) => params.push([k, v]))
-    return {
-      protocol: u.protocol.replace(':', ''),
-      host: u.host,
-      hostname: u.hostname,
-      port: u.port || (u.protocol === 'https:' ? '443' : '80') + ' (default)',
-      pathname: u.pathname,
-      search: u.search,
-      hash: u.hash,
-      params,
-      origin: u.origin,
+    const u=new URL(url)
+    parsed={
+      'Protocol':u.protocol,
+      'Hostname':u.hostname,
+      'Port':u.port||'(default)',
+      'Pathname':u.pathname,
+      'Search':u.search||'(none)',
+      'Hash':u.hash||'(none)',
+      'Origin':u.origin,
+      'Host':u.host,
     }
-  } catch { return null }
-}
-
-export default function UrlParserPage({ params }: { params: { lang: string } }) {
-  const [input, setInput] = useState('')
-  const [copied, setCopied] = useState<string | null>(null)
-  const tracked = useRef(false)
-
-  function track() {
-    if (!tracked.current) { trackToolUsed('url-parser'); tracked.current = true }
-  }
-
-  const parsed = input.trim() ? parseUrl(input) : null
-
-  async function copy(val: string, id: string) {
-    await navigator.clipboard.writeText(val)
-    trackToolCopy('url-parser')
-    setCopied(id)
-    setTimeout(() => setCopied(null), 1500)
-  }
-
-  const fields: [string, string][] = parsed ? [
-    ['Protocol', parsed.protocol],
-    ['Origin', parsed.origin],
-    ['Hostname', parsed.hostname],
-    ['Port', parsed.port],
-    ['Path', parsed.pathname],
-    ['Query String', parsed.search || '(none)'],
-    ['Hash / Fragment', parsed.hash || '(none)'],
-  ] : []
-
+    u.searchParams.forEach((v,k)=>{params[k]=v})
+  } catch {parseErr=true}
+  const copy=(val:string,k:string)=>{navigator.clipboard.writeText(val);setCopied(k);setTimeout(()=>setCopied(''),1500)}
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-5">
+    <ToolLayout tool={tool}>
+      <div className="max-w-xl mx-auto px-4 space-y-5">
         <div>
-          <input
-            value={input}
-            onChange={e => { setInput(e.target.value); track() }}
-            placeholder="https://example.com/path?key=value&foo=bar#section"
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400"
-          />
-          {input.trim() && !parsed && (
-            <p className="mt-1 text-xs text-red-600">Invalid URL — try adding https://</p>
-          )}
+          <label className="block text-sm font-medium text-gray-700 mb-1">URL to parse</label>
+          <input value={url} onChange={e=>setUrl(e.target.value)}
+            className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-sm" placeholder="https://..."/>
         </div>
-        {parsed && (
+        {parseErr&&url&&<p className="text-red-500 text-sm">Invalid URL — include http:// or https://</p>}
+        {!parseErr&&url&&(
           <>
-            <div className="divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden">
-              {fields.map(([label, val]) => (
-                <div key={label} className="flex items-center px-4 py-2.5 gap-3 hover:bg-gray-50">
-                  <span className="text-xs font-semibold text-gray-500 w-36 shrink-0">{label}</span>
-                  <span className="text-sm font-mono text-gray-800 flex-1 break-all">{val}</span>
-                  {val !== '(none)' && (
-                    <button onClick={() => copy(val, label)} className="text-xs text-brand-600 hover:underline shrink-0">
-                      {copied === label ? '\u2713' : 'Copy'}
-                    </button>
-                  )}
+            <div className="divide-y divide-gray-100 rounded-xl border border-gray-200 overflow-hidden">
+              {Object.entries(parsed).map(([k,v])=>(
+                <div key={k} className="flex items-center justify-between px-4 py-2.5">
+                  <span className="text-xs font-medium text-gray-500 w-24 flex-shrink-0">{k}</span>
+                  <span className="font-mono text-sm text-gray-800 flex-1 truncate mx-2">{v}</span>
+                  <button onClick={()=>copy(v,k)} className="text-xs text-blue-500 hover:underline flex-shrink-0">
+                    {copied===k?'✓':'Copy'}
+                  </button>
                 </div>
               ))}
             </div>
-            {parsed.params.length > 0 && (
+            {Object.keys(params).length>0&&(
               <div>
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">Query Parameters ({parsed.params.length})</h3>
-                <div className="divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden">
-                  {parsed.params.map(([k, v]) => (
+                <p className="text-sm font-medium text-gray-700 mb-2">Query Parameters</p>
+                <div className="divide-y divide-gray-100 rounded-xl border border-gray-200 overflow-hidden">
+                  {Object.entries(params).map(([k,v])=>(
                     <div key={k} className="flex items-center px-4 py-2.5 gap-3">
-                      <span className="text-xs font-semibold text-brand-600 w-36 shrink-0 truncate">{k}</span>
-                      <span className="text-sm font-mono text-gray-800 flex-1 break-all">{decodeURIComponent(v)}</span>
-                      <button onClick={() => copy(v, 'param-' + k)} className="text-xs text-brand-600 hover:underline shrink-0">
-                        {copied === 'param-' + k ? '\u2713' : 'Copy'}
-                      </button>
+                      <span className="font-mono text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">{k}</span>
+                      <span className="font-mono text-sm text-gray-700">{v}</span>
                     </div>
                   ))}
                 </div>

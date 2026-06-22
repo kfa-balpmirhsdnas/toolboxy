@@ -412,6 +412,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'timezone-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['timezone','time','convert','world'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'color-mixer',category:'developer',phase:1,isPro:false,isNew:true,tags:['color','mix','blend','hex','rgb'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'bmi-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['bmi','body','mass','health','calculator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'ip-address-lookup',category:'developer',phase:1,isPro:false,isNew:true,tags:['ip','address','lookup','network'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'url-parser',category:'developer',phase:1,isPro:false,isNew:true,tags:['url','parse','query','string','analyze'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'json-to-csv',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','csv','convert','data'],maxFileSizeMB:{free:1,pro:10} },
+  {slug:'css-box-shadow-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','box','shadow','generator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'html-minifier',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','minify','compress','optimize'],maxFileSizeMB:{free:1,pro:10} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
