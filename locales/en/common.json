@@ -204,6 +204,11 @@
     "markdown-to-html": "Convert Markdown to clean, semantic HTML with live preview.",
     "json-to-xml": "Convert JSON data to well-formed XML with customizable root element.",
     "text-to-binary": "Convert text to Binary, Hexadecimal, Octal, or Decimal — and back.",
-    "prime-number-checker": "Check if a number is prime, find the Nth prime, or list primes in a range."
+    "prime-number-checker": "Check if a number is prime, find the Nth prime, or list primes in a range.",
+    "caesar-cipher": "Encrypt or decrypt text using the classic Caesar cipher. Supports brute-force decryption.",
+    "html-tag-stripper": "Remove all HTML tags and extract clean plain text from HTML code.",
+    "number-palindrome": "Check if a number is a palindrome, find palindromes in a range, and explore reverse-addition.",
+    "image-color-picker": "Upload an image and click to pick colors. Get HEX, RGB, and HSL values instantly.",
+    "word-cloud-generator": "Generate a word cloud from any text. Visualize word frequency with automatic stop-word filtering."
   }
 }
