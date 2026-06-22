@@ -1,92 +1,100 @@
 'use client'
 import { useState } from 'react'
 
-function hexToHsl(hex: string): [number,number,number] {
-  const r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255
-  const max=Math.max(r,g,b),min=Math.min(r,g,b);let h=0,s=0;const l=(max+min)/2
-  if(max!==min){const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);if(max===r)h=((g-b)/d+(g<b?6:0))/6;else if(max===g)h=((b-r)/d+2)/6;else h=((r-g)/d+4)/6}
+function hexToHsl(hex:string):[number,number,number]{
+  const r=parseInt(hex.slice(1,3),16)/255
+  const g=parseInt(hex.slice(3,5),16)/255
+  const b=parseInt(hex.slice(5,7),16)/255
+  const max=Math.max(r,g,b),min=Math.min(r,g,b)
+  let h=0,s=0,l=(max+min)/2
+  if(max!==min){
+    const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min)
+    switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break}
+  }
   return[Math.round(h*360),Math.round(s*100),Math.round(l*100)]
 }
 
-function hslToHex(h: number,s: number,l: number): string {
-  const hn=h/360,sn=s/100,ln=l/100
-  const hue2rgb=(p:number,q:number,t:number)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p}
-  let r,g,b
-  if(sn===0){r=g=b=ln}else{const q=ln<0.5?ln*(1+sn):ln+sn-ln*sn,p=2*ln-q;r=hue2rgb(p,q,hn+1/3);g=hue2rgb(p,q,hn);b=hue2rgb(p,q,hn-1/3)}
-  return '#'+[r,g,b].map(x=>Math.round(x*255).toString(16).padStart(2,'0')).join('').toUpperCase()
+function hslToHex(h:number,s:number,l:number):string{
+  s/=100;l/=100
+  const k=(n:number)=>(n+h/30)%12
+  const a=s*Math.min(l,1-l)
+  const f=(n:number)=>Math.round(255*(l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)))))
+  return '#'+[f(0),f(8),f(4)].map(x=>x.toString(16).padStart(2,'0')).join('')
 }
 
-function generatePalette(base: string, type: string): Array<{hex:string,name:string}> {
-  const [h,s,l]=hexToHsl(base)
-  if(type==='monochromatic') {
-    return [10,25,40,l,70,80,90].map((lt,i)=>({hex:hslToHex(h,s,lt),name:'Shade '+(i+1)}))
+type SchemeType='analogous'|'complementary'|'triadic'|'tetradic'|'monochromatic'|'split'
+
+function generatePalette(hex:string,scheme:SchemeType):string[]{
+  const [h,s,l]=hexToHsl(hex)
+  switch(scheme){
+    case 'analogous': return[hslToHex((h-30+360)%360,s,l),hex,hslToHex((h+30)%360,s,l),hslToHex((h+60)%360,s,l)]
+    case 'complementary': return[hex,hslToHex((h+180)%360,s,l)]
+    case 'triadic': return[hex,hslToHex((h+120)%360,s,l),hslToHex((h+240)%360,s,l)]
+    case 'tetradic': return[hex,hslToHex((h+90)%360,s,l),hslToHex((h+180)%360,s,l),hslToHex((h+270)%360,s,l)]
+    case 'monochromatic': return[hslToHex(h,s,Math.max(15,l-30)),hslToHex(h,s,Math.max(15,l-15)),hex,hslToHex(h,s,Math.min(85,l+15)),hslToHex(h,s,Math.min(85,l+30))]
+    case 'split': return[hex,hslToHex((h+150)%360,s,l),hslToHex((h+210)%360,s,l)]
+    default: return[hex]
   }
-  if(type==='complementary') {
-    const comp=(h+180)%360
-    return [hslToHex(h,s,l),hslToHex(h,s,Math.max(l-20,10)),hslToHex(comp,s,l),hslToHex(comp,s,Math.min(l+20,90)),hslToHex(h,s,90)].map((hex,i)=>({hex,name:['Base','Darker','Complement','Comp Light','Light'][i]}))
-  }
-  if(type==='triadic') {
-    return [0,120,240].flatMap(offset=>{const nh=(h+offset)%360;return[{hex:hslToHex(nh,s,l),name:'Triad '+(offset/120+1)},{hex:hslToHex(nh,s,Math.min(l+20,90)),name:'Triad '+(offset/120+1)+' Light'}]})
-  }
-  if(type==='analogous') {
-    return [-40,-20,0,20,40].map(offset=>({hex:hslToHex((h+offset+360)%360,s,l),name:offset===0?'Base':(offset>0?'+':'')+offset+'deg'}))
-  }
-  return [10,20,30,40,50,60,70,80,90].map((lt,i)=>({hex:hslToHex(h,s,lt),name:String((i+1)*100)}))
 }
 
-const TYPES=['monochromatic','complementary','triadic','analogous','shades'] as const
+const SCHEMES:SchemeType[]=['monochromatic','analogous','complementary','triadic','tetradic','split']
 
-export default function ColorPaletteGenerator() {
-  const [base,setBase]=useState('#3b82f6')
-  const [type,setType]=useState<typeof TYPES[number]>('monochromatic')
-  const [copied,setCopied]=useState('')
+export default function ColorPaletteGeneratorPage() {
+  const [baseColor,setBaseColor]=useState('#3B82F6')
+  const [scheme,setScheme]=useState<SchemeType>('analogous')
+  const [copied,setCopied]=useState<string|null>(null)
 
-  const palette=generatePalette(base,type)
-  const copy=async(hex:string)=>{await navigator.clipboard.writeText(hex);setCopied(hex);setTimeout(()=>setCopied(''),2000)}
+  const palette=generatePalette(baseColor,scheme)
+
+  function copy(hex:string){navigator.clipboard.writeText(hex);setCopied(hex);setTimeout(()=>setCopied(null),1500)}
+  function copyAll(){navigator.clipboard.writeText(palette.join(', '));setCopied('all');setTimeout(()=>setCopied(null),1500)}
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Color Palette Generator</h1>
-        <p className="text-gray-500 mb-8">Generate beautiful color palettes from any base color — monochromatic, complementary, triadic, and more.</p>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 mb-6">
-          <div className="flex gap-6 items-center flex-wrap mb-5">
+        <p className="text-gray-500 mb-8">Generate harmonious color palettes from any base color</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <div className="flex gap-4 items-center">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Base Color</label>
-              <div className="flex gap-3 items-center">
-                <input type="color" value={base} onChange={e=>setBase(e.target.value)} className="w-14 h-10 rounded-lg cursor-pointer border border-gray-300"/>
-                <input type="text" value={base} onChange={e=>{if(/^#[0-9a-fA-F]{0,6}$/.test(e.target.value))setBase(e.target.value)}} className="w-28 border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm uppercase focus:outline-none"/>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Base Color</label>
+              <div className="flex gap-2">
+                <input type="color" value={baseColor} onChange={e=>setBaseColor(e.target.value)}
+                  className="w-14 h-10 rounded-lg border border-gray-300 cursor-pointer" />
+                <input type="text" value={baseColor} onChange={e=>/^#[0-9A-Fa-f]{0,6}$/.test(e.target.value)&&setBaseColor(e.target.value)}
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {TYPES.map(t=>(
-              <button key={t} onClick={()=>setType(t)} className={'px-3 py-1.5 rounded-xl text-xs font-medium transition-colors capitalize '+(type===t?'bg-blue-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                {t}
-              </button>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Color Scheme</label>
+            <div className="flex flex-wrap gap-2">
+              {SCHEMES.map(s=>(
+                <button key={s} onClick={()=>setScheme(s)} className={'px-3 py-1.5 rounded-lg capitalize text-sm font-medium transition-colors '+(scheme===s?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>{s}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 bg-white rounded-2xl border border-gray-200 overflow-hidden">
+          <div className="flex" style={{height:120}}>
+            {palette.map(c=>(
+              <div key={c} style={{background:c,flex:1}} />
             ))}
           </div>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-6">
-          {palette.map((c,i)=>(
-            <button key={i} onClick={()=>copy(c.hex)} className="group rounded-2xl overflow-hidden shadow-sm border border-gray-200 hover:scale-105 transition-transform">
-              <div className="h-24" style={{backgroundColor:c.hex}}/>
-              <div className="bg-white p-2.5">
-                <p className="text-xs font-bold text-gray-700">{c.name}</p>
-                <p className="font-mono text-xs text-gray-500">{c.hex}</p>
-                <p className="text-xs text-blue-500 mt-0.5 opacity-0 group-hover:opacity-100">{copied===c.hex?'Copied!':'Click to copy'}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-gray-700">CSS Variables</span>
-            <button onClick={()=>copy(palette.map((c,i)=>'  --color-'+(i+1)+': '+c.hex+';').join('\n'))} className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded-lg font-medium">Copy CSS</button>
+          <div className="p-4">
+            <div className="flex flex-wrap gap-3">
+              {palette.map(c=>(
+                <button key={c} onClick={()=>copy(c)} className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 rounded-xl px-3 py-2 transition-colors">
+                  <span style={{background:c}} className="w-6 h-6 rounded-md border border-gray-200 block flex-shrink-0" />
+                  <span className="font-mono text-sm text-gray-700">{c.toUpperCase()}</span>
+                  {copied===c&&<span className="text-xs text-green-500">\u2713</span>}
+                </button>
+              ))}
+            </div>
+            <button onClick={copyAll} className="mt-3 w-full py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg">{copied==='all'?'\u2713 Copied!':'Copy All Hex Codes'}</button>
           </div>
-          <pre className="text-xs font-mono text-gray-600 bg-gray-50 rounded-xl p-3">{':root {\n'+palette.map((c,i)=>'  --color-'+(i+1)+': '+c.hex+';').join('\n')+'\n}'}</pre>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
