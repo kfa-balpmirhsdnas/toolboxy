@@ -120,6 +120,10 @@
     "diff-checker": "Compare two texts side by side and highlight line-by-line differences. Shows added and removed lines.",
     "number-formatter": "Format numbers as currency, percent, scientific notation, or compact form across 7 locales.",
     "json-diff": "Deep-compare two JSON objects and list every added, removed, or changed field by path.",
-    "html-formatter": "Format and pretty-print HTML with configurable indentation. Download or copy the result."
+    "html-formatter": "Format and pretty-print HTML with configurable indentation. Download or copy the result.",
+    "stopwatch": "Precise stopwatch with lap tracking. Supports hundreds of laps with split and total times.",
+    "sql-formatter": "Format and pretty-print SQL queries with keyword highlighting and configurable indentation.",
+    "image-base64-converter": "Convert images to Base64 strings and decode Base64 back to viewable images.",
+    "markdown-preview": "Live side-by-side Markdown editor with rendered preview. Supports headings, links, code blocks."
   }
 }
