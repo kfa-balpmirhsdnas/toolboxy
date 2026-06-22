@@ -572,6 +572,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'svg-viewer',category:'developer',phase:1,isPro:false,isNew:true,tags:['svg','viewer','preview','code','render'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'css-minifier',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','minify','compress','optimize','clean'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'meta-tag-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['meta','tag','seo','og','html'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'morse-code-converter',category:'text',phase:1,isPro:false,isNew:true,tags:['morse','code','convert','decode','encode'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'character-map',category:'text',phase:1,isPro:false,isNew:true,tags:['character','unicode','symbol','map','special'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'loan-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['loan','mortgage','payment','interest','amortization'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-box-shadow-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','box-shadow','shadow','generator','design'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'random-palette-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['color','palette','random','generate','design'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }

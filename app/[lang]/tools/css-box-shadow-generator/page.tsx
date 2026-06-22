@@ -3,79 +3,62 @@ import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('css-box-shadow-generator')!
-const PRESETS=[
-  {name:'None',shadows:[{x:0,y:0,blur:0,spread:0,color:'#000000',alpha:0,inset:false}]},
-  {name:'Soft',shadows:[{x:0,y:4,blur:6,spread:-1,color:'#000000',alpha:10,inset:false},{x:0,y:2,blur:4,spread:-2,color:'#000000',alpha:6,inset:false}]},
-  {name:'Medium',shadows:[{x:0,y:10,blur:15,spread:-3,color:'#000000',alpha:10,inset:false},{x:0,y:4,blur:6,spread:-4,color:'#000000',alpha:5,inset:false}]},
-  {name:'Strong',shadows:[{x:0,y:25,blur:50,spread:-12,color:'#000000',alpha:25,inset:false}]},
-  {name:'Inner',shadows:[{x:0,y:2,blur:4,spread:0,color:'#000000',alpha:10,inset:true}]},
-  {name:'Colored',shadows:[{x:0,y:10,blur:30,spread:-5,color:'#6366f1',alpha:50,inset:false}]},
-]
-type Shadow={x:number;y:number;blur:number;spread:number;color:string;alpha:number;inset:boolean}
-function shadowCss(s:Shadow):string{
-  const hex=s.color.replace('#','')
-  const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16)
-  const rgba='rgba('+r+','+g+','+b+','+parseFloat((s.alpha/100).toFixed(2))+')'
-  return (s.inset?'inset ':'')+s.x+'px '+s.y+'px '+s.blur+'px '+s.spread+'px '+rgba
-}
+const PRESETS=[{label:'Soft',x:0,y:4,blur:6,spread:-1,color:'rgba(0,0,0,0.1)',inset:false},{label:'Hard',x:4,y:4,blur:0,spread:0,color:'rgba(0,0,0,0.25)',inset:false},{label:'Large',x:0,y:20,blur:25,spread:-5,color:'rgba(0,0,0,0.1)',inset:false},{label:'Glow',x:0,y:0,blur:15,spread:0,color:'rgba(59,130,246,0.5)',inset:false},{label:'Inner',x:0,y:2,blur:4,spread:0,color:'rgba(0,0,0,0.2)',inset:true},{label:'None',x:0,y:0,blur:0,spread:0,color:'rgba(0,0,0,0)',inset:false}]
 export default function CssBoxShadowGeneratorPage() {
-  const [shadows,setShadows]=useState<Shadow[]>([{x:0,y:4,blur:6,spread:-1,color:'#000000',alpha:10,inset:false}])
+  const [x,setX]=useState(0)
+  const [y,setY]=useState(4)
+  const [blur,setBlur]=useState(6)
+  const [spread,setSpread]=useState(-1)
+  const [color,setColor]=useState('#00000019')
+  const [inset,setInset]=useState(false)
   const [bg,setBg]=useState('#ffffff')
   const [copied,setCopied]=useState(false)
-  const css='box-shadow: '+shadows.map(shadowCss).join(',
-             ')+';'
-  const copy=()=>{navigator.clipboard.writeText(css);setCopied(true);setTimeout(()=>setCopied(false),1500)}
-  const upd=(i:number,k:keyof Shadow,v:Shadow[keyof Shadow])=>setShadows(s=>{const n=[...s];(n[i] as Record<string,unknown>)[k]=v;return n})
-  const Slider=({label,val,min,max,onChange}:{label:string;val:number;min:number;max:number;onChange:(v:number)=>void})=>(
-    <div>
-      <div className="flex justify-between text-xs mb-0.5"><span className="text-gray-500">{label}</span><span className="font-mono text-blue-600">{val}px</span></div>
-      <input type="range" min={min} max={max} value={val} onChange={e=>onChange(Number(e.target.value))} className="w-full"/>
+  const shadow=(inset?'inset ':'')+x+'px '+y+'px '+blur+'px '+spread+'px '+color
+  const css='box-shadow: '+shadow+';'
+  const copy=()=>{navigator.clipboard.writeText(css);setCopied(true);setTimeout(()=>setCopied(false),1200)}
+  const Slider=({label,value,onChange,min,max}:{label:string;value:number;onChange:(n:number)=>void;min:number;max:number})=>(
+    <div className="flex items-center gap-3">
+      <label className="text-xs font-medium text-gray-600 w-16">{label}</label>
+      <input type="range" min={min} max={max} value={value} onChange={e=>onChange(Number(e.target.value))} className="flex-1"/>
+      <span className="text-xs font-mono text-gray-800 w-10 text-right">{value}px</span>
     </div>
   )
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-xl mx-auto px-4 space-y-4">
-        <div className="flex flex-wrap gap-2">
+      <div className="max-w-md mx-auto px-4 space-y-4">
+        <div className="flex flex-wrap gap-1.5">
           {PRESETS.map(p=>(
-            <button key={p.name} onClick={()=>setShadows(p.shadows.map(s=>({...s})))}
-              className="px-3 py-1.5 rounded-full border border-gray-200 text-xs hover:bg-gray-50">{p.name}</button>
+            <button key={p.label} onClick={()=>{setX(p.x);setY(p.y);setBlur(p.blur);setSpread(p.spread);setColor(p.color);setInset(p.inset)}}
+              className="text-xs px-2.5 py-1 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600">{p.label}</button>
           ))}
         </div>
-        <div className="flex justify-center py-6" style={{background:bg==='#ffffff'?'#f3f4f6':bg}}>
-          <div className="w-32 h-20 bg-white rounded-xl" style={{boxShadow:shadows.map(shadowCss).join(',')}}/>
+        <div className="space-y-3">
+          <Slider label="Offset X" value={x} onChange={setX} min={-50} max={50}/>
+          <Slider label="Offset Y" value={y} onChange={setY} min={-50} max={50}/>
+          <Slider label="Blur" value={blur} onChange={setBlur} min={0} max={100}/>
+          <Slider label="Spread" value={spread} onChange={setSpread} min={-50} max={50}/>
+          <div className="flex items-center gap-3">
+            <label className="text-xs font-medium text-gray-600 w-16">Color</label>
+            <input type="color" value={color.length===9?color.slice(0,7):color} onChange={e=>setColor(e.target.value)} className="w-10 h-8 rounded border border-gray-200 cursor-pointer p-0.5"/>
+            <input value={color} onChange={e=>setColor(e.target.value)} className="flex-1 rounded-lg border border-gray-200 px-2 py-1 font-mono text-xs focus:outline-none"/>
+          </div>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked={inset} onChange={e=>setInset(e.target.checked)} className="rounded"/>
+            <span className="text-xs font-medium text-gray-600">Inset shadow</span>
+          </label>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-600">Card bg:</span>
-          <input type="color" value={bg} onChange={e=>setBg(e.target.value)} className="w-10 h-8 rounded border border-gray-300 cursor-pointer p-0.5"/>
-          <button onClick={()=>setShadows(s=>[...s,{x:0,y:4,blur:6,spread:0,color:'#000000',alpha:10,inset:false}])} className="ml-auto text-xs text-blue-600 border border-blue-200 px-2 py-1 rounded hover:bg-blue-50">+ Add layer</button>
+          <label className="text-xs font-medium text-gray-600">Card bg:</label>
+          <input type="color" value={bg} onChange={e=>setBg(e.target.value)} className="w-8 h-8 rounded border border-gray-200 cursor-pointer p-0.5"/>
         </div>
-        {shadows.map((s,i)=>(
-          <div key={i} className="border border-gray-200 rounded-xl p-3 space-y-2">
-            <div className="flex justify-between">
-              <span className="text-xs font-medium text-gray-700">Shadow {i+1}</span>
-              <div className="flex gap-2">
-                <label className="flex items-center gap-1 text-xs cursor-pointer"><input type="checkbox" checked={s.inset} onChange={e=>upd(i,'inset',e.target.checked)} className="rounded"/>Inset</label>
-                {shadows.length>1&&<button onClick={()=>setShadows(sArr=>sArr.filter((_,j)=>j!==i))} className="text-xs text-red-400 hover:text-red-600">Remove</button>}
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-              <Slider label="X offset" val={s.x} min={-50} max={50} onChange={v=>upd(i,'x',v)}/>
-              <Slider label="Y offset" val={s.y} min={-50} max={50} onChange={v=>upd(i,'y',v)}/>
-              <Slider label="Blur" val={s.blur} min={0} max={100} onChange={v=>upd(i,'blur',v)}/>
-              <Slider label="Spread" val={s.spread} min={-50} max={50} onChange={v=>upd(i,'spread',v)}/>
-            </div>
-            <div className="flex gap-3 items-center">
-              <input type="color" value={s.color} onChange={e=>upd(i,'color',e.target.value)} className="w-10 h-8 rounded border border-gray-300 cursor-pointer p-0.5"/>
-              <div className="flex-1">
-                <div className="flex justify-between text-xs mb-0.5"><span className="text-gray-500">Opacity</span><span className="font-mono text-blue-600">{s.alpha}%</span></div>
-                <input type="range" min="0" max="100" value={s.alpha} onChange={e=>upd(i,'alpha',Number(e.target.value))} className="w-full"/>
-              </div>
-            </div>
+        <div className="flex items-center justify-center py-12 bg-gray-100 rounded-2xl">
+          <div className="w-40 h-24 rounded-2xl transition-all duration-200" style={{backgroundColor:bg,boxShadow:shadow}}/>
+        </div>
+        <div className="bg-gray-900 rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
+            <code className="text-green-400 text-xs">{css}</code>
+            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'✓':'Copy'}</button>
           </div>
-        ))}
-        <div className="bg-gray-900 rounded-xl p-4 flex items-start justify-between gap-3">
-          <code className="text-green-400 font-mono text-xs whitespace-pre-wrap">{css}</code>
-          <button onClick={copy} className="flex-shrink-0 bg-blue-600 text-white px-3 py-1.5 rounded text-xs hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
         </div>
       </div>
     </ToolLayout>
