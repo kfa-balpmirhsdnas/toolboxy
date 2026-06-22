@@ -83,12 +83,12 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'diff-checker', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['diff','check','compare','text'], maxFileSizeMB: { free: 1, pro: 10 } },
   { slug: 'roman-numeral-converter', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['roman','numeral','convert'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'markdown-preview', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['markdown','preview','render'], maxFileSizeMB: { free: 1, pro: 10 } },
-  { slug: 'markdown-to-html', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['markdown','html','convert','render'], maxFileSizeMB: { free: 1, pro: 10 }
-  { slug: 'word-cloud-generator', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['word','cloud','frequency','visualize'], maxFileSizeMB: { free: 0, pro: 0 }
+  { slug: 'markdown-to-html', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['markdown','html','convert','render'], maxFileSizeMB: { free: 1, pro: 10 } },
+  { slug: 'word-cloud-generator', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['word','cloud','frequency','visualize'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'lorem-ipsum-generator', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['lorem','ipsum','placeholder','text'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'color-palette-generator', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['color','palette','generate','css'], maxFileSizeMB: { free: 0, pro: 0 } },
-  { slug: 'morse-code-translator', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['morse','code','translate','audio'], maxFileSizeMB: { free: 0, pro: 0 } }, },
-  { slug: 'html-tag-stripper', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['html','strip','text','extract'], maxFileSizeMB: { free: 1, pro: 10 } }, },
+  { slug: 'morse-code-translator', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['morse','code','translate','audio'], maxFileSizeMB: { free: 0, pro: 0 } },
+  { slug: 'html-tag-stripper', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['html','strip','text','extract'], maxFileSizeMB: { free: 1, pro: 10 } },
   { slug: 'markdown-editor', category: 'text', isPro: false, isNew: false, phase: 2, tags: ['markdown','editor','preview'], maxFileSizeMB: { free: 1, pro: 10 } },
   { slug: 'regex-tester', category: 'text', isPro: false, isNew: false, phase: 1, tags: ['regex','regexp','test'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'ai-text-summarizer', category: 'text', isPro: true, isNew: false, phase: 3, tags: ['ai','summarize','text'], maxFileSizeMB: { free: 0, pro: 10 } },
