@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { CATEGORY_META, type ToolMeta } from '@/lib/tools/registry'
+import ToolTracker from '@/components/tools/ToolTracker'
 
 function slugToName(slug: string): string {
   return slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
@@ -17,6 +18,9 @@ export default function ToolLayout({ tool, lang, children }: ToolLayoutProps) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
+      <ToolTracker slug={tool.slug} />
+
+      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         <Link href={`/${lang}/tools`} className="hover:text-brand-600 transition-colors">Tools</Link>
         <span>/</span>
@@ -28,6 +32,7 @@ export default function ToolLayout({ tool, lang, children }: ToolLayoutProps) {
         <span className="text-gray-900 font-medium">{name}</span>
       </nav>
 
+      {/* Title */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <span className="text-3xl">{catMeta.icon}</span>
@@ -44,6 +49,7 @@ export default function ToolLayout({ tool, lang, children }: ToolLayoutProps) {
         </p>
       </div>
 
+      {/* Tool Content */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         {children}
       </div>
