@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   try {
     switch (event.type) {
       case 'checkout.session.completed': {
-        const session = event.data.object as Stripe.CheckoutSession
+        const session = event.data.object as Stripe.Checkout.Session
         await handleCheckoutCompleted(session)
         break
       }
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ received: true })
 }
 
-async function handleCheckoutCompleted(session: Stripe.CheckoutSession) {
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const uid = session.metadata?.firebaseUid
   const planId = session.metadata?.planId
   if (!uid || !planId) return
