@@ -487,6 +487,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'speed-distance-time-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['speed','distance','time','velocity','calculate'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'json-minifier',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','minify','compress','format','pretty'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'html-to-markdown',category:'text',phase:1,isPro:false,isNew:true,tags:['html','markdown','convert','transform','text'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'unit-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['unit','convert','measurement','metric','imperial'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-to-handwriting',category:'text',phase:1,isPro:false,isNew:true,tags:['handwriting','text','canvas','font','style'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'svg-path-visualizer',category:'developer',phase:1,isPro:false,isNew:true,tags:['svg','path','visualize','d','commands'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'ip-address-lookup',category:'developer',phase:1,isPro:false,isNew:true,tags:['ip','address','geolocation','whois','lookup'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-gradient-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','gradient','linear','radial','color'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
