@@ -1,117 +1,86 @@
 'use client'
-import { useState, useRef, useCallback } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed } from '@/lib/gtag'
-
 const tool = getToolBySlug('csv-viewer')!
-
-function parseCsv(text: string): string[][] {
-  const rows: string[][] = []
-  const lines = text.split('\n')
-  for (const line of lines) {
-    if (!line.trim()) continue
-    const row: string[] = []
-    let inQuote = false, cell = ''
-    for (let i = 0; i < line.length; i++) {
-      const c = line[i]
-      if (c === '"' && !inQuote) { inQuote = true }
-      else if (c === '"' && inQuote && line[i+1] === '"') { cell += '"'; i++ }
-      else if (c === '"' && inQuote) { inQuote = false }
-      else if (c === ',' && !inQuote) { row.push(cell); cell = '' }
-      else { cell += c }
-    }
-    row.push(cell)
-    rows.push(row)
+function parseCsv(text:string,sep:string):{headers:string[];rows:string[][]}{
+  const lines=text.trim().split('
+').filter(l=>l.trim())
+  if(lines.length===0)return{headers:[],rows:[]}
+  const splitLine=(l:string)=>{
+    const result:string[]=[],re=new RegExp('(?:^|'+sep+')(?:"([^"]*(?:""[^"]*)*)"|([^"'+sep+']*))', 'g')
+    let m;while((m=re.exec(l))!==null)result.push((m[1]||m[2]||'').replace(/""/g,'"'))
+    return result
   }
-  return rows
+  const headers=splitLine(lines[0])
+  const rows=lines.slice(1).map(splitLine)
+  return{headers,rows}
 }
-
-export default function CsvViewerPage({ params }: { params: { lang: string } }) {
-  const [text, setText] = useState('')
-  const [rows, setRows] = useState<string[][]>([])
-  const [search, setSearch] = useState('')
-  const [dragging, setDragging] = useState(false)
-  const tracked = useRef(false)
-
-  function process(csv: string) {
-    setText(csv)
-    if (!tracked.current) { trackToolUsed('csv-viewer'); tracked.current = true }
-    setRows(parseCsv(csv))
-  }
-
-  const onDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault(); setDragging(false)
-    const file = e.dataTransfer.files[0]
-    if (file) { const reader = new FileReader(); reader.onload = ev => process(ev.target?.result as string); reader.readAsText(file) }
-  }, [])
-
-  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) { const reader = new FileReader(); reader.onload = ev => process(ev.target?.result as string); reader.readAsText(file) }
-  }
-
-  const headers = rows[0] || []
-  const dataRows = rows.slice(1)
-  const filtered = search
-    ? dataRows.filter(row => row.some(cell => cell.toLowerCase().includes(search.toLowerCase())))
-    : dataRows
-
+const SAMPLE='Name,Age,City,Score
+Alice,30,New York,95
+Bob,25,London,87
+Carol,35,Tokyo,92
+Dave,28,Paris,78
+Eve,32,Sydney,89'
+export default function CsvViewerPage() {
+  const [csv,setCsv]=useState(SAMPLE)
+  const [sep,setSep]=useState(',')
+  const [sortCol,setSortCol]=useState(-1)
+  const [sortDir,setSortDir]=useState<1|-1>(1)
+  const [filter,setFilter]=useState('')
+  const [copied,setCopied]=useState(false)
+  const fileRef=useRef<HTMLInputElement>(null)
+  const {headers,rows}=useMemo(()=>parseCsv(csv,sep),[csv,sep])
+  const filtered=useMemo(()=>filter?rows.filter(r=>r.some(c=>c.toLowerCase().includes(filter.toLowerCase()))):rows,[rows,filter])
+  const sorted=useMemo(()=>{if(sortCol<0)return filtered;return [...filtered].sort((a,b)=>{const va=a[sortCol]||'',vb=b[sortCol]||'';const na=parseFloat(va),nb=parseFloat(vb);if(!isNaN(na)&&!isNaN(nb))return(na-nb)*sortDir;return va.localeCompare(vb)*sortDir})},[filtered,sortCol,sortDir])
+  const toggleSort=(i:number)=>{if(sortCol===i)setSortDir(d=>d===-1?1:-1);else{setSortCol(i);setSortDir(1)}}
+  const onFile=(e:React.ChangeEvent<HTMLInputElement>)=>{const f=e.target.files?.[0];if(!f)return;const r=new FileReader();r.onload=ev=>setCsv(ev.target?.result as string);r.readAsText(f)}
+  const copy=()=>{navigator.clipboard.writeText(csv);setCopied(true);setTimeout(()=>setCopied(false),1200)}
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        {!text && (
-          <div onDragOver={e=>{e.preventDefault();setDragging(true)}} onDragLeave={()=>setDragging(false)} onDrop={onDrop}
-            className={'border-2 border-dashed rounded-2xl p-10 text-center transition-colors ' + (dragging ? 'border-brand-400 bg-brand-50' : 'border-gray-300 bg-gray-50')}>
-            <p className="text-gray-500 mb-3">Drag & drop a CSV file or paste below</p>
-            <label className="px-4 py-2 bg-brand-600 text-white text-sm rounded-lg cursor-pointer hover:bg-brand-700 transition-colors">
-              Browse File <input type="file" accept=".csv,text/csv" onChange={onFile} className="hidden" />
-            </label>
+    <ToolLayout tool={tool}>
+      <div className="max-w-2xl mx-auto px-4 space-y-3">
+        <div className="flex gap-2 flex-wrap items-center">
+          <input ref={fileRef} type="file" accept=".csv,.tsv,.txt" className="hidden" onChange={onFile}/>
+          <button onClick={()=>fileRef.current?.click()} className="text-sm px-3 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700">Upload CSV</button>
+          <div className="flex items-center gap-1.5">
+            <label className="text-xs text-gray-600">Separator:</label>
+            <select value={sep} onChange={e=>setSep(e.target.value)} className="rounded-lg border border-gray-300 px-2 py-1.5 text-xs">
+              <option value=",">Comma (,)</option><option value=";">Semicolon (;)</option><option value="	">Tab</option><option value="|">Pipe (|)</option>
+            </select>
           </div>
-        )}
-        <textarea
-          value={text}
-          onChange={e => process(e.target.value)}
-          placeholder="Or paste CSV text here..."
-          rows={text ? 3 : 4}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
-        />
-        {rows.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search rows..."
-                className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-              <span className="text-xs text-gray-500">{filtered.length} / {dataRows.length} rows</span>
-            </div>
-            <div className="overflow-x-auto rounded-xl border border-gray-200">
-              <table className="w-full text-xs">
-                <thead className="bg-gray-100 sticky top-0">
-                  <tr>
-                    <th className="px-3 py-2 text-left font-semibold text-gray-500 w-8">#</th>
-                    {headers.map((h,i) => (
-                      <th key={i} className="px-3 py-2 text-left font-semibold text-gray-700 whitespace-nowrap">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.slice(0,200).map((row, ri) => (
-                    <tr key={ri} className={ri%2===0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-3 py-1.5 text-gray-400">{ri+1}</td>
-                      {headers.map((_,ci) => (
-                        <td key={ci} className="px-3 py-1.5 text-gray-700 whitespace-nowrap max-w-xs truncate">{row[ci]||''}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {filtered.length > 200 && (
-                <p className="p-3 text-center text-xs text-gray-400">Showing first 200 rows of {filtered.length}</p>
-              )}
-            </div>
-            <button onClick={() => { setText(''); setRows([]); setSearch('') }}
-              className="text-xs text-red-500 hover:underline">Clear</button>
+          <input value={filter} onChange={e=>setFilter(e.target.value)} placeholder="Filter rows..." className="flex-1 rounded-xl border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:border-blue-400 min-w-24"/>
+          <span className="text-xs text-gray-500">{sorted.length}/{rows.length} rows · {headers.length} cols</span>
+        </div>
+        <div className="overflow-auto max-h-72 rounded-xl border border-gray-200">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-50 sticky top-0">
+                <th className="px-2 py-2 text-center text-xs text-gray-400 w-10">#</th>
+                {headers.map((h,i)=>(
+                  <th key={i} className="px-3 py-2 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none border-b border-gray-200"
+                    onClick={()=>toggleSort(i)}>
+                    {h} {sortCol===i?(sortDir===1?'▲':'▼'):''}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((row,ri)=>(
+                <tr key={ri} className={ri%2===0?'bg-white':'bg-gray-50/50 hover:bg-blue-50/30 transition'}>
+                  <td className="px-2 py-1.5 text-xs text-gray-400 text-center">{ri+1}</td>
+                  {headers.map((_,ci)=><td key={ci} className="px-3 py-1.5 text-xs text-gray-800 border-b border-gray-100 max-w-32 truncate">{row[ci]||''}</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div><label className="block text-xs font-medium text-gray-600 mb-1">Raw CSV</label>
+          <div className="flex gap-2">
+            <textarea value={csv} onChange={e=>setCsv(e.target.value)} rows={3}
+              className="flex-1 rounded-xl border border-gray-300 px-3 py-2 font-mono text-xs resize-none focus:outline-none focus:border-blue-400"/>
+            <button onClick={copy} className="px-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-sm">{copied?'✓':'Copy'}</button>
           </div>
-        )}
+        </div>
       </div>
     </ToolLayout>
   )

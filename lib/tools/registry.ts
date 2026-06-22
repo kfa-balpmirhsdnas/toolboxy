@@ -577,6 +577,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'loan-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['loan','mortgage','payment','interest','amortization'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'css-box-shadow-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','box-shadow','shadow','generator','design'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'random-palette-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['color','palette','random','generate','design'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'date-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['date','calculator','difference','days','duration'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'html-to-markdown',category:'text',phase:1,isPro:false,isNew:true,tags:['html','markdown','convert','md','text'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'csv-viewer',category:'developer',phase:1,isPro:false,isNew:true,tags:['csv','table','view','spreadsheet','data'],maxFileSizeMB:{free:1,pro:5} },
+  {slug:'number-formatter',category:'utility',phase:1,isPro:false,isNew:true,tags:['number','format','thousand','locale','separator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'nato-alphabet',category:'text',phase:1,isPro:false,isNew:true,tags:['nato','alphabet','phonetic','spelling','military'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
