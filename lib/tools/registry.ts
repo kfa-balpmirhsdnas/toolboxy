@@ -457,6 +457,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'json-to-typescript',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','typescript','interface','type','generate'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'gradient-text-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['gradient','text','css','color','generator'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'uuid-bulk-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['uuid','bulk','generate','v4','random'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-to-slug',category:'text',phase:1,isPro:false,isNew:true,tags:['slug','url','text','convert','seo'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'lorem-ipsum-generator',category:'text',phase:1,isPro:false,isNew:true,tags:['lorem','ipsum','placeholder','text','generate'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'number-formatter',category:'utility',phase:1,isPro:false,isNew:true,tags:['number','format','thousand','decimal','currency'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'typing-speed-test',category:'utility',phase:1,isPro:false,isNew:true,tags:['typing','speed','wpm','test','keyboard'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'json-diff-checker',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','diff','compare','checker'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
