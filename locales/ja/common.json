@@ -262,7 +262,10 @@
     },
     "stopwatch-timer": "ラップ記録付きの精密ストップウォッチとカウントダウンタイマー。",
     "typing-speed-test": "WPMと正確率でタイピング速度を測定。5つのサンプルテキストから選択し、正誤文字をリアルタイムでハイライト。",
-    "random-quote-generator": "やる気・知恵・人生など20以上の厳選名言を閲覧。お気に入り保存・コピー・カテゴリフィルター対応。",
+    "random-quote-generator": {
+      "title": "名言ジェネレーター",
+      "description": "偉人たちの心に響く名言をカテゴリ別に探索し、お気に入りを保存できます"
+    },
     "habit-tracker": "7日グリッドで毎日の習慣を追跡。絵文字付きカスタム習慣を追加してチェックし、連続達成日数を確認。",
     "bmi-calculator": {
       "title": "BMI計算ツール",
@@ -422,6 +425,22 @@
     "water-intake-calculator": {
       "title": "1日の水分摂取量計算ツール",
       "description": "体重・活動量・気候から1日に推奨される水分摂取量を計算します"
+    },
+    "sleep-calculator": {
+      "title": "睡眠計算ツール",
+      "description": "90分の睡眠サイクルに基づいて最適な就寝・起床時間を計算し、スッキリ目覚められます"
+    },
+    "pace-calculator": {
+      "title": "ランニングペース計算ツール",
+      "description": "ペース・タイム・距離を計算し、5K・10K・ハーフ・フルマラソンのタイムを自動予測します"
+    },
+    "circle-calculator": {
+      "title": "円の計算ツール",
+      "description": "半径・直径・円周・面積のどれか1つから円のすべての寸法を計算します"
+    },
+    "tax-bracket-calculator": {
+      "title": "税率区分計算ツール",
+      "description": "2024年米国連邦所得税の区分ごとの内訳を計算し、実効税率・限界税率を確認します"
     }
   }
 }
