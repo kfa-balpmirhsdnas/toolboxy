@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
+import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
 
 const tool = getToolBySlug('csv-to-json')!
 
@@ -20,13 +21,20 @@ export default function CsvToJsonPage({ params }: { params: { lang: string } }) 
   const [csv, setCsv] = useState('')
   const [copied, setCopied] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+  const trackedRef = useRef(false)
 
   const result = csv.trim() ? csvParse(csv) : null
   const output = result ? (typeof result === 'string' ? result : JSON.stringify(result, null, 2)) : ''
 
+  if (output && !output.startsWith('⚠') && !trackedRef.current) {
+    trackedRef.current = true
+    trackToolUsed('csv-to-json', 'convert')
+  }
+
   async function copy() {
     await navigator.clipboard.writeText(output)
     setCopied(true)
+    trackToolCopy('csv-to-json')
     setTimeout(() => setCopied(false), 1500)
   }
 
@@ -34,7 +42,7 @@ export default function CsvToJsonPage({ params }: { params: { lang: string } }) 
     const f = e.target.files?.[0]
     if (!f) return
     const reader = new FileReader()
-    reader.onload = ev => setCsv(ev.target?.result as string)
+    reader.onload = ev => { setCsv(ev.target?.result as string); trackedRef.current = false }
     reader.readAsText(f)
   }
 
@@ -44,16 +52,14 @@ export default function CsvToJsonPage({ params }: { params: { lang: string } }) 
     a.href = URL.createObjectURL(blob)
     a.download = 'output.json'
     a.click()
+    trackToolDownload('csv-to-json', 'json')
   }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div className="flex gap-2">
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="px-4 py-2 rounded-xl text-sm font-semibold border border-gray-200 text-gray-600 hover:border-brand-400 transition-colors"
-          >
+          <button onClick={() => fileRef.current?.click()} className="px-4 py-2 rounded-xl text-sm font-semibold border border-gray-200 text-gray-600 hover:border-brand-400 transition-colors">
             📂 Upload CSV
           </button>
           <input ref={fileRef} type="file" accept=".csv" onChange={onFile} className="hidden" />
@@ -62,7 +68,7 @@ export default function CsvToJsonPage({ params }: { params: { lang: string } }) 
           <label className="block text-sm font-medium text-gray-700 mb-2">CSV Input</label>
           <textarea
             value={csv}
-            onChange={(e) => setCsv(e.target.value)}
+            onChange={(e) => { setCsv(e.target.value); trackedRef.current = false }}
             placeholder={"name,age,city\nAlice,30,Seoul\nBob,25,Tokyo"}
             className="w-full h-36 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
