@@ -75,7 +75,10 @@
     "pdf-to-text": "Extract plain text from PDF files instantly in your browser. No upload to server needed.",
     "base64-decoder": "Decode Base64 encoded strings back to plain text. Supports Unicode / UTF-8.",
     "url-decoder": "Decode percent-encoded URLs back to human-readable text. Fast and private.",
-    "csv-to-json": "Convert CSV data to JSON format. Paste CSV or upload a file ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ first row is treated as headers.",
+    "csv-to-json": {
+      "title": "CSV to JSON",
+      "description": "Convert CSV data to JSON format with automatic number detection — supports comma, tab, semicolon, and pipe delimiters"
+    },
     "jwt-decoder": "Decode and inspect JWT tokens client-side. See header, payload, and expiry ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ token never leaves your browser.",
     "json-validator": "Validate JSON syntax instantly. Paste your JSON and get clear error messages with line numbers.",
     "json-to-csv": {
@@ -98,7 +101,10 @@
       "title": "Time Zone Converter",
       "description": "Convert times between time zones and see the current time in every major city around the world"
     },
-    "color-palette-generator": "Generate beautiful color palettes from any base color: monochromatic, complementary, triadic, and more.",
+    "color-palette-generator": {
+      "title": "Color Palette Generator",
+      "description": "Generate harmonious color palettes — analogous, complementary, triadic, tetradic, monochromatic, and split-complementary schemes"
+    },
     "image-compress": "Compress and resize images in your browser to reduce file size without losing quality.",
     "jpg-to-png": "Convert JPG and JPEG images to lossless PNG format directly in your browser.",
     "png-to-jpg": "Convert PNG images to JPG with adjustable quality. Transparent areas filled white.",
@@ -200,7 +206,10 @@
     },
     "column-extractor": "Extract specific columns from CSV or delimited text. Click columns to toggle selection, choose custom separators.",
     "bracket-matcher": "Validate bracket matching in code. Highlights matched pairs by depth and pinpoints mismatched or unclosed brackets.",
-    "reading-level-analyzer": "Analyze text readability using the Flesch Reading Ease and Flesch-Kincaid Grade Level formulas.",
+    "reading-level-analyzer": {
+      "title": "Reading Level Analyzer",
+      "description": "Analyze text readability with Flesch-Kincaid grade level, reading ease score, and Coleman-Liau index"
+    },
     "ini-parser": "Parse INI configuration files into structured tables or JSON. Handles sections, keys, and comments.",
     "slug-to-title": "Convert URL slugs or kebab-case text into Title Case, Sentence case, camelCase, and more.",
     "number-to-words": {
@@ -304,7 +313,10 @@
     "image-color-picker": "Upload an image and click to pick colors. Get HEX, RGB, and HSL values instantly.",
     "word-cloud-generator": "Generate a word cloud from any text. Visualize word frequency with automatic stop-word filtering.",
     "url-analyzer": "Analyze URL structure and detect suspicious patterns before you visit a link.",
-    "text-diff": "Compare two texts side by side and highlight line-by-line differences.",
+    "text-diff": {
+      "title": "Text Diff",
+      "description": "Compare two texts and see additions, deletions, and unchanged lines highlighted in a unified diff view"
+    },
     "flip-a-coin": {
       "title": "Flip a Coin",
       "description": "Flip a virtual coin and get heads or tails — tracks your flip history and statistics"
@@ -319,7 +331,7 @@
     },
     "hash-generator": {
       "title": "Hash Generator",
-      "description": "Generate SHA-1, SHA-256, SHA-384 and SHA-512 cryptographic hashes from any text in your browser"
+      "description": "Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes instantly — computed locally in your browser using the Web Crypto API"
     },
     "json-formatter": {
       "title": "JSON Formatter",
