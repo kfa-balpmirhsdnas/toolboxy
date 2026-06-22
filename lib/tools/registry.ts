@@ -542,6 +542,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'number-sorter',category:'utility',phase:1,isPro:false,isNew:true,tags:['number','sort','order','list','rank'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'css-animation-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','animation','keyframe','transition','effect'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'color-mixer',category:'developer',phase:1,isPro:false,isNew:true,tags:['color','mix','blend','combine','palette'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'list-randomizer',category:'utility',phase:1,isPro:false,isNew:true,tags:['list','random','shuffle','order','pick'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-line-sorter',category:'text',phase:1,isPro:false,isNew:true,tags:['text','line','sort','alphabetical','order'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'interest-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['interest','compound','simple','loan','finance'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'currency-formatter',category:'utility',phase:1,isPro:false,isNew:true,tags:['currency','format','money','locale','number'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'json-tree-viewer',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','tree','viewer','parse','explore'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
