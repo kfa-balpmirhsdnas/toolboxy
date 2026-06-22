@@ -204,6 +204,11 @@
     "markdown-to-html": "MarkdownをきれいなHTMLに変換。リアルタイムプレビュー付き。",
     "json-to-xml": "JSONデータを整形されたXMLに即座に変換します。",
     "text-to-binary": "テキストを2進数・16進数・8進数・10進数に変換（逆変換も可）。",
-    "prime-number-checker": "素数チェック、N番目の素数検索、範囲内の素数一覧生成。"
+    "prime-number-checker": "素数チェック、N番目の素数検索、範囲内の素数一覧生成。",
+    "caesar-cipher": "カエサル暗号でテキストを暗号化・復号化。総当たり解読もサポート。",
+    "html-tag-stripper": "HTMLコードからすべてのタグを除去してプレーンテキストを抽出します。",
+    "number-palindrome": "数字が回文かどうか確認、範囲内の回文探索、逆順加算の過程を探索。",
+    "image-color-picker": "画像をアップロードしてクリックで色を抽出。HEX・RGB・HSL値を即座に確認。",
+    "word-cloud-generator": "テキストからワードクラウドを生成。ストップワード自動除去で単語頻度を可視化。"
   }
 }
