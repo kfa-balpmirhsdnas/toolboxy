@@ -2,87 +2,65 @@
 import { useState } from 'react'
 
 export default function TextRepeaterPage() {
-  const [text,setText]=useState('Hello')
-  const [count,setCount]=useState(5)
-  const [separator,setSeparator]=useState('\n')
-  const [customSep,setCustomSep]=useState('')
-  const [prefix,setPrefix]=useState('')
-  const [suffix,setSuffix]=useState('')
-  const [numbered,setNumbered]=useState(false)
-  const [copied,setCopied]=useState(false)
+  const [text, setText] = useState('')
+  const [count, setCount] = useState(3)
+  const [separator, setSeparator] = useState('\n')
+  const [sepLabel, setSepLabel] = useState('newline')
 
-  const sep=separator==='custom'?customSep:separator==='\n'?'\n':separator==='\n\n'?'\n\n':separator
-  const items=Array.from({length:Math.min(count,1000)},(_,i)=>`${prefix}${numbered?`${i+1}. `:''}${text}${suffix}`)
-  const output=items.join(sep)
+  const SEP_OPTIONS = [
+    { label: 'Newline', value: '\n' },
+    { label: 'Space', value: ' ' },
+    { label: 'Comma', value: ', ' },
+    { label: 'None', value: '' },
+  ]
 
-  function copy(){navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
-  function download(){
-    const blob=new Blob([output],{type:'text/plain'})
-    const url=URL.createObjectURL(blob)
-    const a=document.createElement('a');a.href=url;a.download='repeated-text.txt';a.click()
-    URL.revokeObjectURL(url)
-  }
-
-  const SEPS=[['New line','\n'],['Double line','\n\n'],['Comma',', '],[' Space',' '],['Pipe',' | '],['Custom','custom']]
+  const result = text ? Array(Math.min(count, 500)).fill(text).join(separator) : ''
+  const copy = () => navigator.clipboard.writeText(result)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
-      <div className="max-w-2xl mx-auto px-4">
+    <main className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Text Repeater</h1>
-        <p className="text-gray-500 mb-8">Repeat any text a specified number of times with custom separators and formatting</p>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+        <p className="text-gray-500 mb-8">Repeat any text a specified number of times with a custom separator.</p>
+        <div className="bg-white rounded-xl shadow p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Text to repeat</label>
-            <textarea value={text} onChange={e=>setText(e.target.value)} rows={3}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
+            <label className="block text-sm font-medium text-gray-700 mb-1">Text to Repeat</label>
+            <textarea
+              className="w-full border border-gray-300 rounded-lg p-3 text-sm h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter text to repeat..."
+              value={text}
+              onChange={e => setText(e.target.value)}
+            />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Repeat count (max 1000)</label>
-              <input type="number" value={count} min={1} max={1000} onChange={e=>setCount(Math.min(1000,Math.max(1,parseInt(e.target.value)||1)))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <div className="flex gap-4 items-end">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Repeat Count</label>
+              <input type="number" min="1" max="500"
+                className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={count} onChange={e => setCount(Math.min(500, Math.max(1, +e.target.value)))} />
             </div>
-            <div>
+            <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">Separator</label>
-              <select value={separator} onChange={e=>setSeparator(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none">
-                {SEPS.map(([l,v])=><option key={v} value={v}>{l}</option>)}
+              <select className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={sepLabel}
+                onChange={e => { setSepLabel(e.target.value); setSeparator(SEP_OPTIONS.find(o => o.label === e.target.value)?.value ?? '') }}>
+                {SEP_OPTIONS.map(o => <option key={o.label}>{o.label}</option>)}
               </select>
             </div>
           </div>
-          {separator==='custom'&&(
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Custom separator</label>
-              <input value={customSep} onChange={e=>setCustomSep(e.target.value)} placeholder="e.g., ---"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none" />
-            </div>
+          {result && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Result <span className="text-gray-400 font-normal">({count} repetitions)</span>
+                </label>
+                <textarea className="w-full border border-gray-200 rounded-lg p-3 bg-gray-50 text-sm h-40 resize-none font-mono" readOnly value={result} />
+              </div>
+              <button onClick={copy} className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                Copy Result
+              </button>
+            </>
           )}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Prefix (each line)</label>
-              <input value={prefix} onChange={e=>setPrefix(e.target.value)} placeholder="e.g., - "
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Suffix (each line)</label>
-              <input value={suffix} onChange={e=>setSuffix(e.target.value)} placeholder="e.g., ;"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none" />
-            </div>
-          </div>
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input type="checkbox" checked={numbered} onChange={e=>setNumbered(e.target.checked)} className="rounded" />
-            Add line numbers (1. 2. 3.)
-          </label>
-        </div>
-        <div className="mt-4 bg-white rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="px-4 py-2 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-600">Output ({items.length} repetitions · {output.length} characters)</span>
-            <div className="flex gap-2">
-              <button onClick={copy} className="text-xs px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded">{copied?'\u2713':'Copy'}</button>
-              <button onClick={download} className="text-xs px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded">Download</button>
-            </div>
-          </div>
-          <pre className="p-4 font-mono text-sm text-gray-700 max-h-64 overflow-auto whitespace-pre-wrap">{output.slice(0,2000)}{output.length>2000?'\n...(truncated for preview)':''}</pre>
         </div>
       </div>
     </main>
