@@ -61,6 +61,7 @@ export async function generateMetadata({
       languages: { en: '/en', ja: '/ja', ko: '/ko' },
     },
     robots: { index: true, follow: true },
+    verification: { google: 'bIZMj_KMLbd3nWjDe3PtE9Os2lK9PfGqB6Ds79uuXtE' },
   }
 }
 
