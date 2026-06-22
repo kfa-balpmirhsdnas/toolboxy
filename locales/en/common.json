@@ -335,7 +335,7 @@
     },
     "json-formatter": {
       "title": "JSON Formatter",
-      "description": "Format, validate and minify JSON data instantly with syntax highlighting and error detection"
+      "description": "Format, validate, and minify JSON data — with configurable indentation, key sorting, and byte size display"
     },
     "email-extractor": {
       "title": "Email Extractor",
@@ -343,7 +343,7 @@
     },
     "cron-expression-generator": {
       "title": "Cron Expression Generator",
-      "description": "Build cron schedule expressions visually with plain-English descriptions and common presets"
+      "description": "Build and understand cron schedules with an interactive builder, human-readable descriptions, and common presets"
     },
     "unix-timestamp-converter": {
       "title": "Unix Timestamp Converter",
@@ -480,6 +480,18 @@
     "url-encoder": {
       "title": "URL Encoder / Decoder",
       "description": "Encode or decode URL strings — supports both encodeURI and encodeURIComponent modes with common encoding reference"
+    },
+    "character-map": {
+      "title": "Character Map",
+      "description": "Browse Unicode characters by block, copy them to a string, and see code point, HTML entity, and CSS escape values"
+    },
+    "base64-image-encoder": {
+      "title": "Base64 Image Encoder",
+      "description": "Convert images to Base64 Data URLs for embedding in HTML, CSS, or JSON — drag & drop or click to upload"
+    },
+    "time-zone-converter": {
+      "title": "Time Zone Converter",
+      "description": "Convert a date and time across 17 global time zones simultaneously — select which zones to display"
     }
   }
 }
