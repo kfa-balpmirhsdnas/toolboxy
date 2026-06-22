@@ -18,7 +18,7 @@ export default function CurlBuilderPage({ params }: { params: { lang: string } }
     { key:'Content-Type', value:'application/json', enabled:true },
     { key:'Authorization', value:'Bearer YOUR_TOKEN', enabled:false },
   ])
-  const [params, setParams] = useState<Param[]>([
+  const [queryParams, setQueryParams] = useState<Param[]>([
     { key:'page', value:'1', enabled:true },
     { key:'limit', value:'20', enabled:true },
   ])
@@ -38,10 +38,10 @@ export default function CurlBuilderPage({ params }: { params: { lang: string } }
   function addHeader() { setHeaders(h=>[...h,{key:'',value:'',enabled:true}]) }
   function removeHeader(i: number) { setHeaders(h=>h.filter((_,idx)=>idx!==i)) }
   function updateParam(i: number, field: keyof Param, val: string|boolean) {
-    setParams(p=>{const n=[...p];n[i]={...n[i],[field]:val};return n}); track()
+    setQueryParams(p=>{const n=[...p];n[i]={...n[i],[field]:val};return n}); track()
   }
-  function addParam() { setParams(p=>[...p,{key:'',value:'',enabled:true}]) }
-  function removeParam(i: number) { setParams(p=>p.filter((_,idx)=>idx!==i)) }
+  function addParam() { setQueryParams(p=>[...p,{key:'',value:'',enabled:true}]) }
+  function removeParam(i: number) { setQueryParams(p=>p.filter((_,idx)=>idx!==i)) }
 
   function buildCurl(): string {
     const parts = ['curl']
@@ -53,7 +53,7 @@ export default function CurlBuilderPage({ params }: { params: { lang: string } }
     const activeHeaders = headers.filter(h=>h.enabled&&h.key)
     for (const h of activeHeaders) parts.push('-H', JSON.stringify(h.key+': '+h.value))
     
-    const activeParams = params.filter(p=>p.enabled&&p.key)
+    const activeParams = queryParams.filter(p=>p.enabled&&p.key)
     let finalUrl = url
     if (activeParams.length) {
       const qs = activeParams.map(p=>encodeURIComponent(p.key)+'='+encodeURIComponent(p.value)).join('&')
@@ -95,7 +95,7 @@ export default function CurlBuilderPage({ params }: { params: { lang: string } }
             <label className="text-xs font-medium text-gray-600">Query Parameters</label>
             <button onClick={addParam} className="text-xs text-brand-600 hover:underline">+ Add</button>
           </div>
-          {params.map((p,i)=>(
+          {queryParams.map((p,i)=>(
             <div key={i} className="flex gap-2 mb-1 items-center">
               <input type="checkbox" checked={p.enabled} onChange={e=>updateParam(i,'enabled',e.target.checked)} className="accent-brand-600" />
               <input value={p.key} onChange={e=>updateParam(i,'key',e.target.value)} placeholder="Key"
