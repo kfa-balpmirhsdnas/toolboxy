@@ -26,7 +26,7 @@ function parseField(field: string, min: number, max: number): number[] {
       result.add(parseInt(part))
     }
   }
-  return [...result].sort((a, b) => a - b)
+  return Array.from(result).sort((a, b) => a - b)
 }
 
 function describeCron(expr: string): string {
@@ -120,7 +120,7 @@ export default function CronParserPage({ params }: { params: { lang: string } })
             placeholder="* * * * *"
             className="w-full p-4 border border-gray-200 rounded-xl text-lg font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
-          <p className="text-xs text-gray-400 mt-1 font-mono">minute · hour · day-of-month · month · day-of-week</p>
+          <p className="text-xs text-gray-400 mt-1 font-mono">minute Â· hour Â· day-of-month Â· month Â· day-of-week</p>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -136,7 +136,7 @@ export default function CronParserPage({ params }: { params: { lang: string } })
         </div>
 
         {parseError ? (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-600 font-mono">❌ {parseError}</div>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-600 font-mono">â {parseError}</div>
         ) : (
           <>
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
@@ -160,7 +160,7 @@ export default function CronParserPage({ params }: { params: { lang: string } })
             )}
           </>
         )}
-        <p className="text-xs text-gray-400">Standard 5-field cron format · Local timezone</p>
+        <p className="text-xs text-gray-400">Standard 5-field cron format Â· Local timezone</p>
       </div>
     </ToolLayout>
   )
