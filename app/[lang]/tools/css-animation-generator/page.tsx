@@ -1,152 +1,99 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState, useEffect } from 'react'
 
-const tool = getToolBySlug('css-animation-generator')!
-
-type EasingKey = 'ease'|'ease-in'|'ease-out'|'ease-in-out'|'linear'|'bounce'|'elastic'
-
-const EASINGS: Record<EasingKey,string> = {
-  'ease': 'ease',
-  'ease-in': 'ease-in',
-  'ease-out': 'ease-out',
-  'ease-in-out': 'ease-in-out',
-  'linear': 'linear',
-  'bounce': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-  'elastic': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-}
-
-const PRESETS = [
-  { name:'Fade In',    keyframes:'@keyframes fadeIn {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}', animName:'fadeIn' },
-  { name:'Slide Up',   keyframes:'@keyframes slideUp {\n  from { transform: translateY(40px); opacity: 0; }\n  to { transform: translateY(0); opacity: 1; }\n}', animName:'slideUp' },
-  { name:'Zoom In',    keyframes:'@keyframes zoomIn {\n  from { transform: scale(0.5); opacity: 0; }\n  to { transform: scale(1); opacity: 1; }\n}', animName:'zoomIn' },
-  { name:'Shake',      keyframes:'@keyframes shake {\n  0%,100% { transform: translateX(0); }\n  25% { transform: translateX(-10px); }\n  75% { transform: translateX(10px); }\n}', animName:'shake' },
-  { name:'Bounce',     keyframes:'@keyframes bounce {\n  0%,100% { transform: translateY(0); }\n  50% { transform: translateY(-20px); }\n}', animName:'bounce' },
-  { name:'Spin',       keyframes:'@keyframes spin {\n  from { transform: rotate(0deg); }\n  to { transform: rotate(360deg); }\n}', animName:'spin' },
-  { name:'Pulse',      keyframes:'@keyframes pulse {\n  0%,100% { transform: scale(1); }\n  50% { transform: scale(1.1); }\n}', animName:'pulse' },
-  { name:'Flip',       keyframes:'@keyframes flip {\n  from { transform: rotateY(0deg); }\n  to { transform: rotateY(360deg); }\n}', animName:'flip' },
+const PRESETS=[
+  {name:'Fade In',css:'@keyframes fadeIn{from{opacity:0}to{opacity:1}}'},
+  {name:'Slide Up',css:'@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}'},
+  {name:'Bounce',css:'@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}'},
+  {name:'Pulse',css:'@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}'},
+  {name:'Spin',css:'@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}'},
+  {name:'Shake',css:'@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}'},
+  {name:'Flip',css:'@keyframes flip{0%{transform:rotateY(0)}100%{transform:rotateY(180deg)}}'},
+  {name:'Swing',css:'@keyframes swing{0%,100%{transform:rotate(0)}25%{transform:rotate(10deg)}75%{transform:rotate(-10deg)}}'},
 ]
 
-export default function CssAnimationGeneratorPage({ params }: { params: { lang: string } }) {
-  const [preset, setPreset] = useState(0)
-  const [duration, setDuration] = useState(1)
-  const [delay, setDelay] = useState(0)
-  const [iterations, setIterations] = useState('infinite')
-  const [easing, setEasing] = useState<EasingKey>('ease')
-  const [direction, setDirection] = useState('normal')
-  const [fillMode, setFillMode] = useState('both')
-  const [playing, setPlaying] = useState(true)
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
-  const animKey = useRef(0)
+export default function CssAnimationGeneratorPage() {
+  const [preset,setPreset]=useState(PRESETS[0])
+  const [duration,setDuration]=useState(1)
+  const [delay,setDelay]=useState(0)
+  const [iterCount,setIterCount]=useState('infinite')
+  const [direction,setDirection]=useState('normal')
+  const [easing,setEasing]=useState('ease')
+  const [fillMode,setFillMode]=useState('both')
+  const [playing,setPlaying]=useState(true)
+  const [copied,setCopied]=useState(false)
+  const [key,setKey]=useState(0)
 
-  function track() { if (!tracked.current) { trackToolUsed('css-animation-generator'); tracked.current = true } }
+  const animName=preset.name.toLowerCase().replace(/\s+/g,'-')
+  const shorthand=`${animName} ${duration}s ${easing} ${delay}s ${iterCount} ${direction} ${fillMode}`
+  const fullCss=`${preset.css}\n\n.element {\n  animation: ${shorthand};\n}`
 
-  const p = PRESETS[preset]
-  const animCSS = `${p.keyframes}
+  function copy(){navigator.clipboard.writeText(fullCss);setCopied(true);setTimeout(()=>setCopied(false),1500)}
+  function replay(){setKey(k=>k+1)}
 
-.animated-element {
-  animation-name: ${p.animName};
-  animation-duration: ${duration}s;
-  animation-delay: ${delay}s;
-  animation-iteration-count: ${iterations};
-  animation-timing-function: ${EASINGS[easing]};
-  animation-direction: ${direction};
-  animation-fill-mode: ${fillMode};
-  animation-play-state: ${playing ? 'running' : 'paused'};
-}`
-
-  async function copy() {
-    await navigator.clipboard.writeText(animCSS)
-    trackToolCopy('css-animation-generator')
-    setCopied(true); setTimeout(()=>setCopied(false),1500)
-  }
-
-  function replay() { animKey.current++; setPlaying(false); setTimeout(()=>setPlaying(true),50) }
-
-  const inlineStyle: React.CSSProperties = {
-    animationName: p.animName,
-    animationDuration: duration+'s',
-    animationDelay: delay+'s',
-    animationIterationCount: iterations === 'infinite' ? 'infinite' : parseInt(iterations),
-    animationTimingFunction: EASINGS[easing],
-    animationDirection: direction as 'normal'|'reverse'|'alternate'|'alternate-reverse',
-    animationFillMode: fillMode as 'none'|'forwards'|'backwards'|'both',
-    animationPlayState: playing ? 'running' : 'paused',
-  }
+  useEffect(()=>{setKey(k=>k+1)},[preset,duration,delay,iterCount,direction,easing,fillMode])
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <style>{p.keyframes}</style>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-2">Preset Animation</label>
-          <div className="flex flex-wrap gap-2">
-            {PRESETS.map((pr,i)=>(
-              <button key={pr.name} onClick={()=>{setPreset(i);track();replay()}}
-                className={'px-3 py-1.5 rounded-lg text-sm transition-colors ' + (preset===i?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                {pr.name}
-              </button>
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-3xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">CSS Animation Generator</h1>
+        <p className="text-gray-500 mb-6">Build CSS animations with live preview</p>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Preset Animation</label>
+              <div className="flex flex-wrap gap-2">
+                {PRESETS.map(p=>(
+                  <button key={p.name} onClick={()=>setPreset(p)}
+                    className={'px-3 py-1.5 text-sm rounded-lg font-medium '+(preset.name===p.name?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {[['Duration (s)',duration,0.1,10,0.1,setDuration],['Delay (s)',delay,0,5,0.1,setDelay]].map(([l,v,min,max,step,fn])=>(
+              <div key={l as string}>
+                <div className="flex justify-between text-sm mb-1"><span className="text-gray-700">{l as string}</span><span className="font-mono text-gray-500">{v as number}s</span></div>
+                <input type="range" min={min as number} max={max as number} step={step as number} value={v as number} onChange={e=>(fn as (n:number)=>void)(parseFloat(e.target.value))} className="w-full accent-brand-500" />
+              </div>
             ))}
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                ['Timing',easing,setEasing,['ease','linear','ease-in','ease-out','ease-in-out']],
+                ['Direction',direction,setDirection,['normal','reverse','alternate','alternate-reverse']],
+                ['Fill Mode',fillMode,setFillMode,['none','forwards','backwards','both']],
+                ['Iterations',iterCount,setIterCount,['1','2','3','5','infinite']],
+              ].map(([l,v,fn,opts])=>(
+                <div key={l as string}>
+                  <label className="block text-xs text-gray-500 mb-1">{l as string}</label>
+                  <select value={v as string} onChange={e=>(fn as (s:string)=>void)(e.target.value)} className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none">
+                    {(opts as string[]).map(o=><option key={o}>{o}</option>)}
+                  </select>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Duration: {duration}s</label>
-            <input type="range" min={0.1} max={5} step={0.1} value={duration} onChange={e=>{setDuration(parseFloat(e.target.value));track()}} className="w-full accent-brand-600" />
+          <div className="space-y-3">
+            <div className="bg-white rounded-2xl border border-gray-200 p-5">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-semibold text-gray-700">Preview</span>
+                <button onClick={replay} className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded">Replay</button>
+              </div>
+              <style>{`${preset.css}\n@keyframes fadeIn2{from{opacity:0}to{opacity:1}}`}</style>
+              <div className="flex items-center justify-center h-40 bg-gray-50 rounded-xl">
+                <div key={key} className="w-16 h-16 rounded-xl bg-brand-500" style={{animation:shorthand}} />
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl border border-gray-200 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-gray-700">CSS Output</span>
+                <button onClick={copy} className="text-xs px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded">{copied?'\u2713':'Copy'}</button>
+              </div>
+              <pre className="font-mono text-xs text-gray-600 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap overflow-auto max-h-48">{fullCss}</pre>
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Delay: {delay}s</label>
-            <input type="range" min={0} max={3} step={0.1} value={delay} onChange={e=>{setDelay(parseFloat(e.target.value));track()}} className="w-full accent-brand-600" />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Easing</label>
-            <select value={easing} onChange={e=>{setEasing(e.target.value as EasingKey);track()}} className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
-              {(Object.keys(EASINGS) as EasingKey[]).map(k=><option key={k}>{k}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Iterations</label>
-            <select value={iterations} onChange={e=>{setIterations(e.target.value);track()}} className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
-              {['infinite','1','2','3','5'].map(v=><option key={v}>{v}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Direction</label>
-            <select value={direction} onChange={e=>{setDirection(e.target.value);track()}} className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
-              {['normal','reverse','alternate','alternate-reverse'].map(v=><option key={v}>{v}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Fill Mode</label>
-            <select value={fillMode} onChange={e=>{setFillMode(e.target.value);track()}} className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
-              {['none','forwards','backwards','both'].map(v=><option key={v}>{v}</option>)}
-            </select>
-          </div>
-        </div>
-        <div className="flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-2xl" style={{height:160}}>
-          <div key={animKey.current} style={inlineStyle}
-            className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-purple-600 shadow-lg" />
-        </div>
-        <div className="flex gap-2">
-          <button onClick={()=>{setPlaying(!playing);track()}}
-            className="px-4 py-2 rounded-xl text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors">
-            {playing ? '⏸ Pause' : '▶ Play'}
-          </button>
-          <button onClick={()=>{replay();track()}} className="px-4 py-2 rounded-xl text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors">
-            ↺ Replay
-          </button>
-        </div>
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-medium text-gray-600">CSS</label>
-            <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'✓ Copied':'Copy'}</button>
-          </div>
-          <pre className="p-4 bg-gray-900 text-green-400 text-xs rounded-xl font-mono overflow-x-auto">{animCSS}</pre>
         </div>
       </div>
-    </ToolLayout>
+    </main>
   )
 }
