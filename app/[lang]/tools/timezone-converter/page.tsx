@@ -1,178 +1,99 @@
 'use client'
 import { useState, useEffect } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed } from '@/lib/gtag'
 
-const tool = getToolBySlug('timezone-converter')!
-
-const TIMEZONES = [
-  'UTC',
-  'America/New_York',
-  'America/Chicago',
-  'America/Denver',
-  'America/Los_Angeles',
-  'America/Toronto',
-  'America/Vancouver',
-  'America/Sao_Paulo',
-  'America/Mexico_City',
-  'America/Buenos_Aires',
-  'Europe/London',
-  'Europe/Paris',
-  'Europe/Berlin',
-  'Europe/Rome',
-  'Europe/Madrid',
-  'Europe/Amsterdam',
-  'Europe/Stockholm',
-  'Europe/Moscow',
-  'Europe/Istanbul',
-  'Africa/Cairo',
-  'Africa/Johannesburg',
-  'Africa/Lagos',
-  'Asia/Dubai',
-  'Asia/Karachi',
-  'Asia/Kolkata',
-  'Asia/Dhaka',
-  'Asia/Bangkok',
-  'Asia/Singapore',
-  'Asia/Shanghai',
-  'Asia/Tokyo',
-  'Asia/Seoul',
-  'Asia/Jakarta',
-  'Asia/Hong_Kong',
-  'Asia/Taipei',
-  'Australia/Sydney',
-  'Australia/Melbourne',
-  'Australia/Perth',
-  'Pacific/Auckland',
-  'Pacific/Honolulu',
+const ZONES = [
+  {label:'UTC',             tz:'UTC'},
+  {label:'New York (ET)',   tz:'America/New_York'},
+  {label:'Chicago (CT)',    tz:'America/Chicago'},
+  {label:'Denver (MT)',     tz:'America/Denver'},
+  {label:'Los Angeles (PT)',tz:'America/Los_Angeles'},
+  {label:'London (GMT/BST)',tz:'Europe/London'},
+  {label:'Paris (CET)',     tz:'Europe/Paris'},
+  {label:'Berlin (CET)',    tz:'Europe/Berlin'},
+  {label:'Moscow (MSK)',    tz:'Europe/Moscow'},
+  {label:'Dubai (GST)',     tz:'Asia/Dubai'},
+  {label:'Mumbai (IST)',    tz:'Asia/Kolkata'},
+  {label:'Bangkok (ICT)',   tz:'Asia/Bangkok'},
+  {label:'Singapore (SGT)', tz:'Asia/Singapore'},
+  {label:'Seoul (KST)',     tz:'Asia/Seoul'},
+  {label:'Tokyo (JST)',     tz:'Asia/Tokyo'},
+  {label:'Sydney (AEST)',   tz:'Australia/Sydney'},
+  {label:'Auckland (NZST)', tz:'Pacific/Auckland'},
 ]
 
-function formatInTz(date: Date, tz: string): string {
-  try {
-    return new Intl.DateTimeFormat('en-US', {
-      timeZone: tz,
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', second: '2-digit',
-      hour12: false,
-    }).format(date)
-  } catch {
-    return 'N/A'
-  }
+function fmtZone(date:Date, zone:string):string {
+  return date.toLocaleString('en-US',{timeZone:zone,weekday:'short',month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true})
 }
 
-function getOffset(date: Date, tz: string): string {
-  try {
-    const utcStr = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'shortOffset' }).format(date)
-    const tzStr = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'shortOffset' }).format(date)
-    const utcMs = new Date(utcStr.replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2')).getTime()
-    const tzMs = new Date(tzStr.replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2')).getTime()
-    const diffMin = Math.round((tzMs - utcMs) / 60000)
-    const sign = diffMin >= 0 ? '+' : '-'
-    const abs = Math.abs(diffMin)
-    return 'UTC' + sign + String(Math.floor(abs / 60)).padStart(2, '0') + ':' + String(abs % 60).padStart(2, '0')
-  } catch { return '' }
-}
+export default function TimezoneConverterPage() {
+  const [now, setNow] = useState(new Date())
+  const [custom, setCustom] = useState('')
+  const [from, setFrom] = useState('UTC')
+  const [to, setTo] = useState('America/New_York')
+  const [input, setInput] = useState('')
+  const [converted, setConverted] = useState('')
 
-export default function TimezoneConverterPage({ params }: { params: { lang: string } }) {
-  const [fromTz, setFromTz] = useState('UTC')
-  const [toTz, setToTz] = useState('America/New_York')
-  const [datetime, setDatetime] = useState('')
-  const [result, setResult] = useState('')
-  const [allZones, setAllZones] = useState<{ tz: string; time: string }[]>([])
-  const [tracked] = useState(() => ({ val: false }))
-
-  useEffect(() => {
-    const now = new Date()
-    // local datetime-local format
-    const pad = (n: number) => String(n).padStart(2, '0')
-    const localStr = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate()) + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes())
-    setDatetime(localStr)
-  }, [])
+  // Live clock
+  useEffect(()=>{
+    const id=setInterval(()=>setNow(new Date()),1000)
+    return ()=>clearInterval(id)
+  },[])
 
   function convert() {
-    if (!datetime) return
-    if (!tracked.val) { trackToolUsed('timezone-converter'); tracked.val = true }
-    try {
-      // Parse datetime as from timezone
-      // We use Intl to compute the date in fromTz, then convert to toTz
-      const [datePart, timePart] = datetime.split('T')
-      const [y, mo, d] = datePart.split('-').map(Number)
-      const [h, mi] = timePart.split(':').map(Number)
-      // Create a date that represents this time in fromTz
-      // Strategy: assume the datetime-local input is in fromTz, find the UTC equivalent
-      const approxDate = new Date(Date.UTC(y, mo - 1, d, h, mi, 0))
-      // Get offset of fromTz at this time
-      const fmt = (dt: Date) => new Intl.DateTimeFormat('en-CA', {
-        timeZone: fromTz, year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-      }).format(dt).replace(',', '')
-      // Binary search or simple: compute the offset by comparing formatted local to UTC
-      const localFormatted = new Intl.DateTimeFormat('en-CA', {
-        timeZone: fromTz, year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', hour12: false
-      }).format(approxDate)
-      const [localDate, localTime] = localFormatted.split(', ')
-      const [ly, lm, ld] = localDate.split('-').map(Number)
-      const [lh, lmi] = localTime.split(':').map(Number)
-      const diffMs = Date.UTC(y, mo - 1, d, h, mi) - Date.UTC(ly, lm - 1, ld, lh, lmi)
-      const actualUtc = new Date(approxDate.getTime() + diffMs)
-      setResult(formatInTz(actualUtc, toTz))
-      setAllZones(TIMEZONES.slice(0, 12).map(tz => ({ tz, time: formatInTz(actualUtc, tz) })))
-    } catch (e: unknown) {
-      setResult('Error: ' + (e as Error).message)
-    }
+    if(!input){setConverted('');return}
+    try{
+      const d=new Date(input)
+      if(isNaN(d.getTime())){setConverted('Invalid date');return}
+      setConverted(fmtZone(d,to))
+    }catch{setConverted('Error converting')}
   }
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Date &amp; Time</label>
-          <input
-            type="datetime-local"
-            value={datetime}
-            onChange={e => setDatetime(e.target.value)}
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
-          />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">From Timezone</label>
-            <select value={fromTz} onChange={e => setFromTz(e.target.value)} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white">
-              {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">To Timezone</label>
-            <select value={toTz} onChange={e => setToTz(e.target.value)} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white">
-              {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz}</option>)}
-            </select>
-          </div>
-        </div>
-        <button onClick={convert} disabled={!datetime} className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors">
-          Convert
-        </button>
-        {result && (
-          <div className="p-4 bg-brand-50 border border-brand-200 rounded-xl">
-            <p className="text-xs text-brand-600 font-medium mb-1">{toTz}</p>
-            <p className="text-2xl font-bold font-mono text-brand-900">{result}</p>
-          </div>
-        )}
-        {allZones.length > 0 && (
-          <div>
-            <p className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wide">World Clock</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {allZones.map(({ tz, time }) => (
-                <div key={tz} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm">
-                  <span className="text-gray-600 text-xs">{tz.replace('_', ' ')}</span>
-                  <span className="font-mono text-gray-800 text-xs">{time}</span>
-                </div>
-              ))}
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Time Zone Converter</h1>
+        <p className="text-gray-500 mb-6">See current time in every major time zone and convert specific times</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4 mb-6">
+          <h2 className="font-semibold text-gray-800">Convert a Specific Time</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">From Zone</label>
+              <select value={from} onChange={e=>setFrom(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                {ZONES.map(z=><option key={z.tz} value={z.tz}>{z.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">To Zone</label>
+              <select value={to} onChange={e=>setTo(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                {ZONES.map(z=><option key={z.tz} value={z.tz}>{z.label}</option>)}
+              </select>
             </div>
           </div>
-        )}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date &amp; Time</label>
+            <input type="datetime-local" value={input} onChange={e=>setInput(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <button onClick={convert} className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2.5 rounded-lg transition-colors">Convert</button>
+          {converted && (
+            <div className="bg-brand-50 border border-brand-200 rounded-xl p-4 text-center">
+              <div className="text-xs text-gray-500 mb-1">Result in {ZONES.find(z=>z.tz===to)?.label}</div>
+              <div className="text-lg font-semibold text-brand-700">{converted}</div>
+            </div>
+          )}
+        </div>
+        <div className="bg-white rounded-2xl border border-gray-200 p-5">
+          <h2 className="font-semibold text-gray-800 mb-4">Current World Clock</h2>
+          <div className="space-y-2">
+            {ZONES.map(z=>(
+              <div key={z.tz} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                <span className="text-sm text-gray-600 w-40 shrink-0">{z.label}</span>
+                <span className="text-sm font-mono text-gray-800 text-right">{fmtZone(now,z.tz)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-    </ToolLayout>
+    </main>
   )
 }
