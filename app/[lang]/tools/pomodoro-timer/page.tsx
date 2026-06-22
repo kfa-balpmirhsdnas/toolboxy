@@ -1,118 +1,123 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed } from '@/lib/gtag'
 
-const tool = getToolBySlug('pomodoro-timer')!
+type Mode = 'work'|'short'|'long'
 
-type Phase = 'work'|'short-break'|'long-break'
+const MODES:{id:Mode;label:string;default:number}[]=[
+  {id:'work',label:'Focus',default:25},
+  {id:'short',label:'Short Break',default:5},
+  {id:'long',label:'Long Break',default:15},
+]
 
-const PHASES: Record<Phase,{label:string;color:string;bg:string}> = {
-  'work':        { label:'Focus',       color:'text-red-600',   bg:'bg-red-50' },
-  'short-break': { label:'Short Break', color:'text-green-600', bg:'bg-green-50' },
-  'long-break':  { label:'Long Break',  color:'text-blue-600',  bg:'bg-blue-50' },
-}
+function pad(n:number){return String(n).padStart(2,'0')}
 
-export default function PomodoroTimerPage({ params }: { params: { lang: string } }) {
-  const [workMins, setWorkMins] = useState(25)
-  const [shortMins, setShortMins] = useState(5)
-  const [longMins, setLongMins] = useState(15)
-  const [phase, setPhase] = useState<Phase>('work')
-  const [seconds, setSeconds] = useState(25*60)
-  const [running, setRunning] = useState(false)
-  const [sessions, setSessions] = useState(0)
-  const intervalRef = useRef<ReturnType<typeof setInterval>|null>(null)
-  const tracked = useRef(false)
+export default function PomodoroTimerPage() {
+  const [mode,setMode]=useState<Mode>('work')
+  const [durations,setDurations]=useState({work:25,short:5,long:15})
+  const [secsLeft,setSecsLeft]=useState(25*60)
+  const [running,setRunning]=useState(false)
+  const [sessions,setSessions]=useState(0)
+  const intervalRef=useRef<NodeJS.Timeout|null>(null)
 
-  function track() { if (!tracked.current) { trackToolUsed('pomodoro-timer'); tracked.current = true } }
+  const totalSecs=durations[mode]*60
+  const pct=((totalSecs-secsLeft)/totalSecs)*100
+  const mins=Math.floor(secsLeft/60)
+  const secs=secsLeft%60
 
-  const totalSecs = phase==='work'?workMins*60:phase==='short-break'?shortMins*60:longMins*60
-  const progress = ((totalSecs-seconds)/totalSecs)*100
-
-  const nextPhase = useCallback(() => {
-    if (phase==='work') {
-      const newSessions = sessions+1
-      setSessions(newSessions)
-      if (newSessions%4===0) { setPhase('long-break'); setSeconds(longMins*60) }
-      else { setPhase('short-break'); setSeconds(shortMins*60) }
-    } else { setPhase('work'); setSeconds(workMins*60) }
-    setRunning(false)
-    try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA...').play().catch(()=>{}) } catch {}
-  },[phase,sessions,workMins,shortMins,longMins])
+  const switchMode=useCallback((m:Mode)=>{
+    setMode(m);setRunning(false);setSecsLeft(durations[m]*60)
+    if(intervalRef.current)clearInterval(intervalRef.current)
+  },[durations])
 
   useEffect(()=>{
     if(running){
       intervalRef.current=setInterval(()=>{
-        setSeconds(s=>{ if(s<=1){clearInterval(intervalRef.current!);nextPhase();return 0} return s-1 })
+        setSecsLeft(s=>{
+          if(s<=1){
+            clearInterval(intervalRef.current!)
+            setRunning(false)
+            if(mode==='work') setSessions(n=>n+1)
+            return 0
+          }
+          return s-1
+        })
       },1000)
-    } else { clearInterval(intervalRef.current!) }
-    return ()=>clearInterval(intervalRef.current!)
-  },[running,nextPhase])
+    }else{
+      if(intervalRef.current)clearInterval(intervalRef.current)
+    }
+    return()=>{if(intervalRef.current)clearInterval(intervalRef.current)}
+  },[running,mode])
 
-  function start() { track(); setRunning(true) }
-  function pause() { setRunning(false) }
-  function reset() { setRunning(false); setSeconds(phase==='work'?workMins*60:phase==='short-break'?shortMins*60:longMins*60) }
-  function changePhase(p:Phase) { setPhase(p); setRunning(false); setSeconds(p==='work'?workMins*60:p==='short-break'?shortMins*60:longMins*60); track() }
+  function reset(){setRunning(false);setSecsLeft(durations[mode]*60)}
 
-  const mins = Math.floor(seconds/60).toString().padStart(2,'0')
-  const secs = (seconds%60).toString().padStart(2,'0')
-  const info = PHASES[phase]
+  const r=50,circ=2*Math.PI*r
+  const dashOffset=circ*(1-pct/100)
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-6 max-w-sm mx-auto">
-        <div className="flex gap-1 justify-center">
-          {(Object.keys(PHASES) as Phase[]).map(p=>(
-            <button key={p} onClick={()=>changePhase(p)}
-              className={'px-3 py-1.5 rounded-lg text-xs transition-colors ' + (phase===p?'bg-gray-800 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {PHASES[p].label}
-            </button>
-          ))}
-        </div>
-        <div className={'flex flex-col items-center p-8 rounded-3xl transition-colors ' + info.bg}>
-          <div className="relative w-44 h-44">
-            <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-              <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" strokeWidth="8" />
-              <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="8"
-                strokeLinecap="round" strokeDasharray={2*Math.PI*45} strokeDashoffset={2*Math.PI*45*(1-progress/100)}
-                className={info.color} style={{transition:'stroke-dashoffset 0.5s ease'}} />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={'text-4xl font-bold font-mono ' + info.color}>{mins}:{secs}</span>
-              <span className="text-xs text-gray-500 mt-1">{info.label}</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-2 justify-center">
-          {running ? (
-            <button onClick={pause} className="px-6 py-3 rounded-2xl bg-gray-800 text-white font-semibold">⏸ Pause</button>
-          ) : (
-            <button onClick={start} className="px-6 py-3 rounded-2xl bg-gray-800 text-white font-semibold">▶ Start</button>
-          )}
-          <button onClick={reset} className="px-4 py-3 rounded-2xl bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold">↺</button>
-        </div>
-        <div className="flex justify-center">
-          <div className="flex gap-1">
-            {[...Array(4)].map((_,i)=>(
-              <div key={i} className={'w-3 h-3 rounded-full transition-colors ' + (sessions%4>i?'bg-red-500':'bg-gray-200')} />
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-md mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Pomodoro Timer</h1>
+        <p className="text-gray-500 mb-8">Stay focused with the Pomodoro technique — 25 min focus, 5 min break</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-6">
+          <div className="flex gap-2">
+            {MODES.map(m=>(
+              <button key={m.id} onClick={()=>switchMode(m.id)}
+                className={'flex-1 py-2 text-sm rounded-lg font-medium transition-colors '+(mode===m.id?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>
+                {m.label}
+              </button>
             ))}
           </div>
-          <span className="text-xs text-gray-500 ml-2">{sessions} sessions</span>
+          <div className="flex justify-center">
+            <div className="relative w-48 h-48">
+              <svg className="w-48 h-48 -rotate-90" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r={r} fill="none" stroke="#e5e7eb" strokeWidth="8" />
+                <circle cx="60" cy="60" r={r} fill="none" stroke="#3B82F6" strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray={circ}
+                  strokeDashoffset={dashOffset}
+                  className="transition-all duration-1000" />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div className="text-4xl font-bold font-mono text-gray-900">{pad(mins)}:{pad(secs)}</div>
+                <div className="text-sm text-gray-400 mt-1">{MODES.find(m2=>m2.id===mode)?.label}</div>
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={()=>setRunning(r=>!r)}
+              className="flex-1 py-3 rounded-xl font-semibold text-white bg-brand-500 hover:bg-brand-600 transition-colors">
+              {running?'Pause':'Start'}
+            </button>
+            <button onClick={reset} className="px-5 py-3 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors">
+              Reset
+            </button>
+          </div>
+          <div className="flex justify-center gap-1.5">
+            {Array.from({length:4}).map((_,i)=>(
+              <div key={i} className={'w-4 h-4 rounded-full '+(i<sessions%4?'bg-brand-500':'bg-gray-200')} />
+            ))}
+          </div>
+          {sessions>0&&<p className="text-center text-sm text-gray-500">{sessions} session{sessions!==1?'s':''} completed</p>}
         </div>
-        <details className="text-sm">
-          <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">⚙ Settings</summary>
-          <div className="mt-2 grid grid-cols-3 gap-2">
-            {[['Focus (min)',workMins,setWorkMins],['Short break',shortMins,setShortMins],['Long break',longMins,setLongMins]].map(([l,v,set])=>(
-              <div key={String(l)}>
-                <label className="text-xs text-gray-500">{String(l)}</label>
-                <input type="number" min={1} max={60} value={Number(v)} onChange={e=>{(set as (v:number)=>void)(parseInt(e.target.value)||1);track()}}
-                  className="w-full mt-0.5 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center focus:outline-none focus:ring-2 focus:ring-brand-400" />
+        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5">
+          <h2 className="font-semibold text-gray-800 mb-3">Customize Durations</h2>
+          <div className="space-y-3">
+            {MODES.map(m=>(
+              <div key={m.id} className="flex items-center justify-between">
+                <label className="text-sm text-gray-700">{m.label} (minutes)</label>
+                <input type="number" min={1} max={120}
+                  value={durations[m.id]}
+                  onChange={e=>{
+                    const v=Math.min(120,Math.max(1,parseInt(e.target.value)||1))
+                    setDurations(d=>({...d,[m.id]:v}))
+                    if(mode===m.id){setSecsLeft(v*60);setRunning(false)}
+                  }}
+                  className="w-20 border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-brand-500" />
               </div>
             ))}
           </div>
-        </details>
+        </div>
       </div>
-    </ToolLayout>
+    </main>
   )
 }
