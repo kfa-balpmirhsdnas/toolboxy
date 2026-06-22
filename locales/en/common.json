@@ -70,5 +70,12 @@
     "unsupported_format": "Unsupported file format.",
     "processing_failed": "Processing failed. Please try again.",
     "generic": "Something went wrong. Please try again."
+  },
+  "toolDescriptions": {
+    "pdf-to-text": "Extract plain text from PDF files instantly in your browser. No upload to server needed.",
+    "base64-decoder": "Decode Base64 encoded strings back to plain text. Supports Unicode / UTF-8.",
+    "url-decoder": "Decode percent-encoded URLs back to human-readable text. Fast and private.",
+    "csv-to-json": "Convert CSV data to JSON format. Paste CSV or upload a file — first row is treated as headers.",
+    "jwt-decoder": "Decode and inspect JWT tokens client-side. See header, payload, and expiry — token never leaves your browser."
   }
 }
