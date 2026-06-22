@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function clean(s:string,ignoreCase:boolean,ignoreSpaces:boolean,ignorePunct:boolean):string{
   let r=s
@@ -10,6 +12,9 @@ function clean(s:string,ignoreCase:boolean,ignoreSpaces:boolean,ignorePunct:bool
 }
 
 const EXAMPLES=['racecar','A man a plan a canal Panama','Never odd or even','Was it a car or a cat I saw','Hello World','Madam Im Adam','No lemon no melon']
+
+
+const tool = getToolBySlug('palindrome-checker')!
 
 export default function PalindromeCheckerPage() {
   const [input,setInput]=useState('')
@@ -22,7 +27,7 @@ export default function PalindromeCheckerPage() {
   const isPalin=cleaned.length>0&&cleaned===reversed
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Palindrome Checker</h1>
         <p className="text-gray-500 mb-8">Check if a word, phrase, or sentence reads the same forwards and backwards</p>
@@ -66,6 +71,6 @@ export default function PalindromeCheckerPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

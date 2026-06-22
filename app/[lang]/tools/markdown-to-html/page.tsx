@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 // Minimal markdown parser
 function parseMarkdown(md:string):string{
@@ -36,6 +38,9 @@ function parseMarkdown(md:string):string{
 
 const SAMPLE='# Hello World\n\nThis is **bold** and *italic* text.\n\n## Features\n\n- Easy to use\n- Real-time preview\n- Copy HTML output\n\n> Blockquotes are supported too!\n\nInline `code` looks like this.\n\n[Link example](https://toolboxy.net)'
 
+
+const tool = getToolBySlug('markdown-to-html')!
+
 export default function MarkdownToHtmlPage() {
   const [input,setInput]=useState(SAMPLE)
   const [tab,setTab]=useState<'preview'|'html'>('preview')
@@ -45,7 +50,7 @@ export default function MarkdownToHtmlPage() {
   function copy(){navigator.clipboard.writeText(html);setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-5xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Markdown to HTML</h1>
         <p className="text-gray-500 mb-6">Convert Markdown to HTML with a live side-by-side preview</p>
@@ -74,6 +79,6 @@ export default function MarkdownToHtmlPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

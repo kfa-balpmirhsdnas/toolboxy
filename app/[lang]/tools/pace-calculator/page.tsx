@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function parsePace(pace:string):number{const p=pace.split(':');return (parseInt(p[0])||0)*60+(parseInt(p[1])||0)}
 function fmtPace(secs:number):string{const m=Math.floor(secs/60),s=Math.round(secs%60);return m+':'+(s<10?'0':'')+s}
@@ -7,6 +9,9 @@ function parseTime(t:string):number{const p=t.split(':');if(p.length===3)return 
 function fmtTime(secs:number):string{const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=Math.round(secs%60);return(h>0?h+':':'')+String(m).padStart(h>0?2:1,'0')+':'+String(s).padStart(2,'0')}
 
 const RACES=[{name:'1K',km:1},{name:'5K',km:5},{name:'10K',km:10},{name:'Half',km:21.0975},{name:'Full',km:42.195}]
+
+
+const tool = getToolBySlug('pace-calculator')!
 
 export default function PaceCalculatorPage() {
   const [mode,setMode]=useState<'pace'|'time'|'distance'>('pace')
@@ -35,7 +40,7 @@ export default function PaceCalculatorPage() {
   const raceTimes=paceSecs>0?RACES.map(r=>({...r,time:fmtTime(r.km*paceSecs)})):[]
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Pace Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate running pace, finish time, or distance — plus race time predictions</p>
@@ -97,6 +102,6 @@ export default function PaceCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

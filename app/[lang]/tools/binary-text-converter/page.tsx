@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function textToBinary(text:string):string{
   return Array.from(text).map(c=>c.charCodeAt(0).toString(2).padStart(8,'0')).join(' ')
@@ -16,6 +18,9 @@ function hexToText(hex:string):string{
   try{return hex.trim().split(/\s+/).map(h=>String.fromCharCode(parseInt(h,16))).join('')}catch{return 'Invalid hex input'}
 }
 
+
+const tool = getToolBySlug('binary-text-converter')!
+
 export default function BinaryTextConverterPage() {
   const [mode,setMode]=useState<'to'|'from'>('to')
   const [format,setFormat]=useState<'binary'|'hex'>('binary')
@@ -29,7 +34,7 @@ export default function BinaryTextConverterPage() {
   function copy(){navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Binary Text Converter</h1>
         <p className="text-gray-500 mb-8">Convert text to binary or hexadecimal representation and decode it back</p>
@@ -67,6 +72,6 @@ export default function BinaryTextConverterPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

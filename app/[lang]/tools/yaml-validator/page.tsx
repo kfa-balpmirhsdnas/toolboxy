@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 // Lightweight YAML parser using JSON fallback + basic YAML detection
 function validateYaml(input:string):{valid:boolean;error:string;lines:number;keys:number;preview:string}{
@@ -50,6 +52,9 @@ features:
   - logging
   - metrics`
 
+
+const tool = getToolBySlug('yaml-validator')!
+
 export default function YamlValidatorPage() {
   const [input,setInput]=useState(SAMPLE)
   const [copied,setCopied]=useState(false)
@@ -68,7 +73,7 @@ export default function YamlValidatorPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-3xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">YAML Validator</h1>
         <p className="text-gray-500 mb-6">Validate and inspect YAML syntax in real time</p>
@@ -97,6 +102,6 @@ export default function YamlValidatorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

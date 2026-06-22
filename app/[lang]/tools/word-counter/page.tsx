@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('word-counter')!
 
 export default function WordCounterPage() {
   const [text, setText] = useState('')
@@ -32,7 +37,7 @@ export default function WordCounterPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Word Counter</h1>
         <p className="text-gray-500 mb-8">Count words, characters, sentences, and get detailed text statistics instantly</p>
@@ -63,6 +68,6 @@ export default function WordCounterPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

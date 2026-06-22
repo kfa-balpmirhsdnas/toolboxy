@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const ZONES = [
   {label:'UTC',             tz:'UTC'},
@@ -25,6 +27,9 @@ function fmtZone(date:Date, zone:string):string {
   return date.toLocaleString('en-US',{timeZone:zone,weekday:'short',month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true})
 }
 
+
+const tool = getToolBySlug('timezone-converter')!
+
 export default function TimezoneConverterPage() {
   const [now, setNow] = useState(new Date())
   const [custom, setCustom] = useState('')
@@ -49,7 +54,7 @@ export default function TimezoneConverterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Time Zone Converter</h1>
         <p className="text-gray-500 mb-6">See current time in every major time zone and convert specific times</p>
@@ -94,6 +99,6 @@ export default function TimezoneConverterPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

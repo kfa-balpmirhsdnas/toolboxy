@@ -1,7 +1,12 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function fmt(n:number):string{return isNaN(n)||!isFinite(n)?'—':parseFloat(n.toFixed(4)).toLocaleString()}
+
+
+const tool = getToolBySlug('percentage-calculator')!
 
 export default function PercentageCalculatorPage() {
   const [a,setA]=useState('25')
@@ -41,7 +46,7 @@ export default function PercentageCalculatorPage() {
   )
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Percentage Calculator</h1>
         <p className="text-gray-500 mb-8">Four common percentage calculation modes</p>
@@ -83,6 +88,6 @@ export default function PercentageCalculatorPage() {
           </Section>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

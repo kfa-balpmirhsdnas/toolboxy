@@ -1,11 +1,16 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function fmt(ms: number): string {
   const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000),cs=Math.floor((ms%1000)/10)
   const mm=m.toString().padStart(2,'0'),ss=s.toString().padStart(2,'0'),cc=cs.toString().padStart(2,'0')
   return (h>0?h.toString().padStart(2,'0')+':':'')+mm+':'+ss+'.'+cc
 }
+
+
+const tool = getToolBySlug('stopwatch-timer')!
 
 export default function StopwatchTimer() {
   const [elapsed,setElapsed]=useState(0)

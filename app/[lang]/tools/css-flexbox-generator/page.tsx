@@ -1,7 +1,12 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const COLORS=['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899','#14B8A6']
+
+
+const tool = getToolBySlug('css-flexbox-generator')!
 
 export default function FlexboxGeneratorPage() {
   const [direction,setDirection]=useState('row')
@@ -27,7 +32,7 @@ export default function FlexboxGeneratorPage() {
   )
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-3xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Flexbox Generator</h1>
         <p className="text-gray-500 mb-6">Build CSS flexbox layouts visually with a live preview</p>
@@ -69,6 +74,6 @@ export default function FlexboxGeneratorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

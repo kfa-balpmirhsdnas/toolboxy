@@ -1,7 +1,12 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const TEAM_COLORS=['bg-red-100 border-red-200','bg-blue-100 border-blue-200','bg-green-100 border-green-200','bg-yellow-100 border-yellow-200','bg-purple-100 border-purple-200','bg-pink-100 border-pink-200','bg-orange-100 border-orange-200','bg-teal-100 border-teal-200']
+
+
+const tool = getToolBySlug('random-team-generator')!
 
 export default function RandomTeamGeneratorPage() {
   const [names,setNames]=useState('Alice\nBob\nCharlie\nDave\nEve\nFrank\nGrace\nHank')
@@ -26,7 +31,7 @@ export default function RandomTeamGeneratorPage() {
   const nameCount=names.split('\n').filter(n=>n.trim()).length
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Random Team Generator</h1>
         <p className="text-gray-500 mb-8">Split any list of people into random, balanced teams instantly</p>
@@ -69,6 +74,6 @@ export default function RandomTeamGeneratorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

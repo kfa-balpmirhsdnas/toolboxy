@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function jsonToCsv(json:string):{csv:string;error:string}{
   try{
@@ -24,6 +26,9 @@ const SAMPLE=`[
   {"name": "Charlie", "age": 35, "city": "Tokyo"}
 ]`
 
+
+const tool = getToolBySlug('json-to-csv')!
+
 export default function JsonToCsvPage() {
   const [input,setInput]=useState(SAMPLE)
   const [copied,setCopied]=useState(false)
@@ -39,7 +44,7 @@ export default function JsonToCsvPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">JSON to CSV Converter</h1>
         <p className="text-gray-500 mb-6">Convert JSON arrays to CSV format — paste your data and download or copy</p>
@@ -70,6 +75,6 @@ export default function JsonToCsvPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

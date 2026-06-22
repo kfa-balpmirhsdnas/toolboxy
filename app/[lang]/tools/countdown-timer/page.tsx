@@ -1,5 +1,10 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('countdown-timer')!
 
 export default function CountdownTimerPage() {
   const [hours, setHours] = useState(0)
@@ -45,7 +50,7 @@ export default function CountdownTimerPage() {
   const pct = remaining !== null && total > 0 ? (remaining / total) * 100 : 100
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">Countdown Timer</h1>
         <p className="text-gray-500 mb-8 text-center">Set a countdown timer and get notified when time is up.</p>
@@ -107,6 +112,6 @@ export default function CountdownTimerPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

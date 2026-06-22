@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function hexToRgb(hex:string):{r:number;g:number;b:number}|null{
   const m=hex.replace('#','').match(/^([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i)
@@ -14,6 +16,9 @@ function rgbToHsl(r:number,g:number,b:number):[number,number,number]{
   if(max!==min){const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;}}
   return [Math.round(h*360),Math.round(s*100),Math.round(l*100)]
 }
+
+
+const tool = getToolBySlug('color-mixer')!
 
 export default function ColorMixerPage() {
   const [c1, setC1] = useState('#FF0000')
@@ -36,7 +41,7 @@ export default function ColorMixerPage() {
   }))
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Color Mixer</h1>
         <p className="text-gray-500 mb-8">Mix two colors together and get the result in HEX, RGB and HSL</p>
@@ -86,6 +91,6 @@ export default function ColorMixerPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

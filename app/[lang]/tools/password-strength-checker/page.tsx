@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 interface Check { label: string; pass: boolean }
 
@@ -29,6 +31,9 @@ function analyzePassword(pwd: string) {
   return { checks, score, strength, color, textColor, entropy }
 }
 
+
+const tool = getToolBySlug('password-strength-checker')!
+
 export default function PasswordStrengthCheckerPage() {
   const [pwd, setPwd] = useState('')
   const [show, setShow] = useState(false)
@@ -36,7 +41,7 @@ export default function PasswordStrengthCheckerPage() {
   const result = analyzePassword(pwd)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Password Strength Checker</h1>
         <p className="text-gray-500 mb-8">Analyze your password strength and get actionable improvement tips.</p>
@@ -99,6 +104,6 @@ export default function PasswordStrengthCheckerPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const WORDS=['lorem','ipsum','dolor','sit','amet','consectetur','adipiscing','elit','sed','do','eiusmod','tempor','incididunt','ut','labore','et','dolore','magna','aliqua','enim','ad','minim','veniam','quis','nostrud','exercitation','ullamco','laboris','nisi','aliquip','ex','ea','commodo','consequat','duis','aute','irure','in','reprehenderit','voluptate','velit','esse','cillum','fugiat','nulla','pariatur','excepteur','sint','occaecat','cupidatat','non','proident','sunt','culpa','qui','officia','deserunt','mollit','anim','id','est','laborum']
 
@@ -11,6 +13,9 @@ function sentence():string{
 function paragraph(sentCount:number):string{
   return Array.from({length:sentCount},()=>sentence()).join(' ')
 }
+
+
+const tool = getToolBySlug('lorem-ipsum-generator')!
 
 export default function LoremIpsumGeneratorPage() {
   const [type,setType]=useState<'paragraphs'|'sentences'|'words'>('paragraphs')
@@ -36,7 +41,7 @@ export default function LoremIpsumGeneratorPage() {
   function copy(){navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Lorem Ipsum Generator</h1>
         <p className="text-gray-500 mb-8">Generate placeholder Lorem Ipsum text for designs and mockups</p>
@@ -69,6 +74,6 @@ export default function LoremIpsumGeneratorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

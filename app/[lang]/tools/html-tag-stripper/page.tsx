@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function stripHtml(html: string, options: { stripAll: boolean; keepLineBreaks: boolean; decode: boolean }): string {
   let result = html
@@ -25,6 +27,9 @@ const SAMPLE = `<html>
   </ul>
 </body>
 </html>`
+
+
+const tool = getToolBySlug('html-tag-stripper')!
 
 export default function HtmlTagStripper() {
   const [input, setInput] = useState(SAMPLE)

@@ -1,5 +1,10 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('stopwatch')!
 
 export default function StopwatchPage() {
   const [elapsed, setElapsed] = useState(0)
@@ -31,7 +36,7 @@ export default function StopwatchPage() {
   const reset = () => { setRunning(false); setElapsed(0); setLaps([]) }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">Stopwatch</h1>
         <p className="text-gray-500 mb-8 text-center">Precise stopwatch with lap recording.</p>
@@ -74,6 +79,6 @@ export default function StopwatchPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

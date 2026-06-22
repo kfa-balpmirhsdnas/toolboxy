@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('fuel-economy-calculator')!
 
 export default function FuelEconomyCalculatorPage() {
   const [distance,setDistance]=useState('')
@@ -24,7 +29,7 @@ export default function FuelEconomyCalculatorPage() {
     :null
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Fuel Economy Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate fuel efficiency in L/100km, MPG, and km/L with trip cost estimation</p>
@@ -77,6 +82,6 @@ export default function FuelEconomyCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

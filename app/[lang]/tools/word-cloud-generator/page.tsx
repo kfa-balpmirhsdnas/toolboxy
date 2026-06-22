@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function getWordFreq(text: string): Array<{word:string,count:number}> {
   const words = text.toLowerCase().match(/[a-zA-Z'\u00C0-\u024F]+/g) || []
@@ -15,6 +17,9 @@ Technology innovation drives economic growth and social change.
 Machine learning artificial intelligence data science automation future.
 Creative design beautiful interface user experience product development.
 Music art culture literature philosophy science history human knowledge.`
+
+
+const tool = getToolBySlug('word-cloud-generator')!
 
 export default function WordCloudGenerator() {
   const [text,setText]=useState(SAMPLE)

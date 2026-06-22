@@ -1,11 +1,16 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function genFib(n:number):bigint[]{
   const seq:bigint[]=[0n,1n]
   for(let i=2;i<n;i++) seq.push(seq[i-1]+seq[i-2])
   return seq.slice(0,n)
 }
+
+
+const tool = getToolBySlug('fibonacci-generator')!
 
 export default function FibonacciGeneratorPage() {
   const [count, setCount] = useState(20)
@@ -20,7 +25,7 @@ export default function FibonacciGeneratorPage() {
   function copy(){navigator.clipboard.writeText(seq.join(', '));setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Fibonacci Generator</h1>
         <p className="text-gray-500 mb-8">Generate Fibonacci sequences and check if a number is a Fibonacci number</p>
@@ -58,6 +63,6 @@ export default function FibonacciGeneratorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

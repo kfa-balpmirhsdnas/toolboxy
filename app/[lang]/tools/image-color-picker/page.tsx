@@ -1,5 +1,7 @@
 'use client';
 import { useState, useRef, useCallback } from 'react';
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function hexToRgb(hex: string){
   const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
@@ -19,6 +21,9 @@ function rgbToHsl(r:number,g:number,b:number){
 }
 
 interface ColorEntry { hex:string; x:number; y:number; label:string; }
+
+
+const tool = getToolBySlug('image-color-picker')!
 
 export default function ImageColorPickerPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

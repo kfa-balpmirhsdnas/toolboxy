@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type Assignment={id:number;name:string;score:string;maxScore:string;weight:string}
 
@@ -27,6 +29,9 @@ function gradeColor(l:string):string{
   return 'text-red-600'
 }
 
+
+const tool = getToolBySlug('grade-calculator')!
+
 export default function GradeCalculatorPage() {
   const [mode,setMode]=useState<'simple'|'weighted'>('simple')
   const [items,setItems]=useState<Assignment[]>([{id:1,name:'Midterm',score:'85',maxScore:'100',weight:'30'},{id:2,name:'Final',score:'90',maxScore:'100',weight:'40'},{id:3,name:'Homework',score:'47',maxScore:'50',weight:'30'}])
@@ -53,7 +58,7 @@ export default function GradeCalculatorPage() {
   const letter=letterGrade(finalPct)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Grade Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate your overall grade from multiple assignments with optional weighting</p>
@@ -90,6 +95,6 @@ export default function GradeCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

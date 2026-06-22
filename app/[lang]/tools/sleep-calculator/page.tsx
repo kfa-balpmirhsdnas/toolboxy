@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 // Sleep cycle ~90 min. Fall asleep ~14 min average.
 const CYCLE_MIN=90
@@ -12,6 +14,9 @@ function fmtTime(date:Date):string{
   const ampm=h>=12?'PM':'AM'
   return pad(h%12||12)+':'+pad(m)+' '+ampm
 }
+
+
+const tool = getToolBySlug('sleep-calculator')!
 
 export default function SleepCalculatorPage() {
   const [mode,setMode]=useState<'wakeup'|'bedtime'>('wakeup')
@@ -37,7 +42,7 @@ export default function SleepCalculatorPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Sleep Calculator</h1>
         <p className="text-gray-500 mb-8">Find the ideal sleep or wake-up times based on 90-minute sleep cycles</p>
@@ -71,6 +76,6 @@ export default function SleepCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

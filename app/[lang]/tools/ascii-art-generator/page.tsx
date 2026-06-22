@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const FONTS: Record<string, Record<string, string[]>> = {
   block: {
@@ -58,6 +60,9 @@ function generateAscii(text: string, char: string = '#'): string {
 }
 
 const CHARS = ['#','@','*','█','▓','░','♦','✦','•','■']
+
+
+const tool = getToolBySlug('ascii-art-generator')!
 
 export default function AsciiArtGenerator() {
   const [text,setText]=useState('HELLO')

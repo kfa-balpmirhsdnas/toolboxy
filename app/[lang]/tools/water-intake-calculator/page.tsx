@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('water-intake-calculator')!
 
 export default function WaterIntakeCalculatorPage() {
   const [weight,setWeight]=useState('70')
@@ -21,7 +26,7 @@ export default function WaterIntakeCalculatorPage() {
   const pct=Math.min(100,(finalL/4)*100)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Water Intake Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate your recommended daily water intake based on weight, activity, and climate</p>
@@ -74,6 +79,6 @@ export default function WaterIntakeCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

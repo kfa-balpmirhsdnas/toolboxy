@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const CATEGORIES: Record<string, string[]> = {
   'Smileys': ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🥸','🤩','🥳'],
@@ -10,6 +12,9 @@ const CATEGORIES: Record<string, string[]> = {
   'Objects': ['💡','🔦','🕯','🪔','💰','💳','💎','⚖','🪜','🧲','🔧','🪛','🔩','⚙','🗜','🔗','⛓','🪝','🧰','🪤','🧲','🔑','🗝','🔐','🔏','🔓','🔒','🪪','🗂','📁','📂'],
   'Symbols': ['❤','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤‍🔥','❤‍🩹','💕','💞','💓','💗','💖','💘','💝','💟','❣','💠','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤'],
 }
+
+
+const tool = getToolBySlug('emoji-picker')!
 
 export default function EmojiPickerPage() {
   const [search, setSearch] = useState('')
@@ -31,7 +36,7 @@ export default function EmojiPickerPage() {
   const clear = () => setSelected([])
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Emoji Picker</h1>
         <p className="text-gray-500 mb-6">Browse, search, and copy emojis. Click to add to your collection.</p>
@@ -79,6 +84,6 @@ export default function EmojiPickerPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

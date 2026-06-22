@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('number-formatter')!
 
 export default function NumberFormatterPage() {
   const [input, setInput] = useState('')
@@ -31,7 +36,7 @@ export default function NumberFormatterPage() {
   function copy(v:string){navigator.clipboard.writeText(v);setCopied(v);setTimeout(()=>setCopied(''),2000)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Number Formatter</h1>
         <p className="text-gray-500 mb-8">Format numbers with locale-specific separators, currency symbols and percentage</p>
@@ -94,6 +99,6 @@ export default function NumberFormatterPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

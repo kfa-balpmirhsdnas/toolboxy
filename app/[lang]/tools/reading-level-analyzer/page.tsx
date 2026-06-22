@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 // Flesch-Kincaid Grade Level and Reading Ease
 function syllableCount(word:string):number{
@@ -33,12 +35,15 @@ function analyze(text:string){
 
 const SAMPLE="The quick brown fox jumps over the lazy dog. It was a sunny afternoon in the park. Children played happily while adults relaxed on benches nearby. The trees swayed gently in the warm summer breeze."
 
+
+const tool = getToolBySlug('reading-level-analyzer')!
+
 export default function ReadingLevelPage() {
   const [text,setText]=useState(SAMPLE)
   const result=analyze(text)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Reading Level Analyzer</h1>
         <p className="text-gray-500 mb-8">Analyze text readability using Flesch-Kincaid and Coleman-Liau scores</p>
@@ -72,6 +77,6 @@ export default function ReadingLevelPage() {
           </>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

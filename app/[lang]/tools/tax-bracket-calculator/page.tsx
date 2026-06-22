@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type FilingStatus = 'single'|'married'|'hoh'
 
@@ -31,6 +33,9 @@ function calcTax(income:number,status:FilingStatus):{bracket:number;taxable:numb
 const fmt=(n:number)=>n.toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0})
 const fmtPct=(n:number)=>n.toFixed(1)+'%'
 
+
+const tool = getToolBySlug('tax-bracket-calculator')!
+
 export default function TaxBracketCalculatorPage() {
   const [income,setIncome]=useState('75000')
   const [status,setStatus]=useState<FilingStatus>('single')
@@ -43,7 +48,7 @@ export default function TaxBracketCalculatorPage() {
   const afterTax=incomeNum-totalTax
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Tax Bracket Calculator</h1>
         <p className="text-gray-500 mb-8">2024 US Federal income tax breakdown by bracket (for reference only)</p>
@@ -97,6 +102,6 @@ export default function TaxBracketCalculatorPage() {
           </>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

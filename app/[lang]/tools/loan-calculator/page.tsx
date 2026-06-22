@@ -1,5 +1,10 @@
 'use client'
 import { useState, useMemo } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('loan-calculator')!
 
 export default function LoanCalculatorPage() {
   const [principal,setPrincipal]=useState('200000')
@@ -35,7 +40,7 @@ export default function LoanCalculatorPage() {
   },[showTable,p,r,n,monthly])
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Loan Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate monthly payments, total interest, and amortization schedule</p>
@@ -95,6 +100,6 @@ export default function LoanCalculatorPage() {
           </>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

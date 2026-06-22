@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('investment-calculator')!
 
 export default function InvestmentCalculatorPage() {
   const [principal,setPrincipal]=useState('10000')
@@ -32,7 +37,7 @@ export default function InvestmentCalculatorPage() {
   const fmt=(v:number)=>v.toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0})
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Investment Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate compound interest growth with regular monthly contributions</p>
@@ -106,6 +111,6 @@ export default function InvestmentCalculatorPage() {
           </>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

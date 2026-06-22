@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const KEYWORDS = ['SELECT','FROM','WHERE','JOIN','LEFT','RIGHT','INNER','OUTER','ON',
   'AND','OR','NOT','IN','IS','NULL','AS','GROUP','BY','ORDER','HAVING','LIMIT','OFFSET',
@@ -26,6 +28,9 @@ function formatSQL(sql: string): string {
   return s.trim()
 }
 
+
+const tool = getToolBySlug('sql-formatter')!
+
 export default function SQLFormatterPage() {
   const [input, setInput] = useState('')
   const [output, setOutput] = useState('')
@@ -35,7 +40,7 @@ export default function SQLFormatterPage() {
   const clear = () => { setInput(''); setOutput('') }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">SQL Formatter</h1>
         <p className="text-gray-500 mb-8">Format and beautify SQL queries for better readability.</p>
@@ -71,6 +76,6 @@ export default function SQLFormatterPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

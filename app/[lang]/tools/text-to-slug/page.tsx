@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function toSlug(text:string, sep:string): string {
   return text
@@ -10,6 +12,9 @@ function toSlug(text:string, sep:string): string {
     .trim()
     .replace(/[\s-]+/g, sep)
 }
+
+
+const tool = getToolBySlug('text-to-slug')!
 
 export default function TextToSlugPage() {
   const [input, setInput] = useState('')
@@ -23,7 +28,7 @@ export default function TextToSlugPage() {
   const examples=['Hello World', 'My Blog Post Title!', 'Cafe\u00E9 au lait', 'The Quick Brown Fox & more...']
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Text to Slug</h1>
         <p className="text-gray-500 mb-8">Convert any text to a clean, SEO-friendly URL slug</p>
@@ -63,6 +68,6 @@ export default function TextToSlugPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

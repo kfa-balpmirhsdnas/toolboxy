@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 // Unicode block ranges
 const BLOCKS=[
@@ -15,6 +17,9 @@ const BLOCKS=[
   {name:'Box Drawing',start:0x2500,end:0x257F},
   {name:'Emojis (Misc)',start:0x1F300,end:0x1F64F},
 ]
+
+
+const tool = getToolBySlug('character-map')!
 
 export default function CharMapPage() {
   const [block,setBlock]=useState(BLOCKS[0])
@@ -44,7 +49,7 @@ export default function CharMapPage() {
   function copy(){navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-3xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Character Map</h1>
         <p className="text-gray-500 mb-6">Browse Unicode characters, copy them, and build strings</p>
@@ -92,6 +97,6 @@ export default function CharMapPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

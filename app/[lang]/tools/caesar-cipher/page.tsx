@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function caesar(text: string, shift: number, decrypt: boolean): string {
   const n = decrypt ? (26 - (shift % 26)) % 26 : shift % 26
@@ -16,6 +18,9 @@ function bruteForce(text: string) {
     result: caesar(text, i + 1, false)
   }))
 }
+
+
+const tool = getToolBySlug('caesar-cipher')!
 
 export default function CaesarCipher() {
   const [input, setInput] = useState('Hello World')

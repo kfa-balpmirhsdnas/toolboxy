@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('regex-tester')!
 
 export default function RegexTesterPage() {
   const [pattern, setPattern] = useState('')
@@ -33,7 +38,7 @@ export default function RegexTesterPage() {
   const FLAG_LIST = ['g','i','m','s','u']
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Regex Tester</h1>
         <p className="text-gray-500 mb-8">Test and debug regular expressions with real-time match highlighting.</p>
@@ -98,6 +103,6 @@ export default function RegexTesterPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

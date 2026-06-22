@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type Mode = 'binary'|'hex'|'octal'|'decimal'
 type Dir = 'toCode'|'toText'
@@ -29,6 +31,9 @@ const MODES = [
   {value:'octal' as Mode,label:'Octal',ex:'110 145 154 154 157'},
   {value:'decimal' as Mode,label:'Decimal',ex:'72 101 108 108 111'},
 ]
+
+
+const tool = getToolBySlug('text-to-binary')!
 
 export default function TextToBinary() {
   const [mode,setMode] = useState<Mode>('binary')

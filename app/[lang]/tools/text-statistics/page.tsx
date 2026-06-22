@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function analyze(text: string) {
   const chars = text.length
@@ -13,6 +15,9 @@ function analyze(text: string) {
   const uniqueWords = words > 0 ? new Set(text.toLowerCase().match(/\b\w+\b/g) || []).size : 0
   return { chars, charsNoSpaces, words, sentences, paragraphs, readingTime, speakingTime, avgWordLen, uniqueWords }
 }
+
+
+const tool = getToolBySlug('text-statistics')!
 
 export default function TextStatisticsPage() {
   const [text, setText] = useState('')
@@ -31,7 +36,7 @@ export default function TextStatisticsPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Text Statistics</h1>
         <p className="text-gray-500 mb-8">Analyze your text — word count, reading time, sentence stats, and more.</p>
@@ -57,6 +62,6 @@ export default function TextStatisticsPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

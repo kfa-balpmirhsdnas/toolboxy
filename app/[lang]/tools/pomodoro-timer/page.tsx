@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type Mode = 'work'|'short'|'long'
 
@@ -10,6 +12,9 @@ const MODES:{id:Mode;label:string;default:number}[]=[
 ]
 
 function pad(n:number){return String(n).padStart(2,'0')}
+
+
+const tool = getToolBySlug('pomodoro-timer')!
 
 export default function PomodoroTimerPage() {
   const [mode,setMode]=useState<Mode>('work')
@@ -54,7 +59,7 @@ export default function PomodoroTimerPage() {
   const dashOffset=circ*(1-pct/100)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Pomodoro Timer</h1>
         <p className="text-gray-500 mb-8">Stay focused with the Pomodoro technique — 25 min focus, 5 min break</p>
@@ -118,6 +123,6 @@ export default function PomodoroTimerPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

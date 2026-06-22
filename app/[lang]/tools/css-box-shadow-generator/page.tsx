@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type Shadow={x:number;y:number;blur:number;spread:number;color:string;opacity:number;inset:boolean}
 
@@ -11,6 +13,9 @@ function shadowToCss(s:Shadow):string{
 }
 
 const DEFAULT:Shadow={x:0,y:4,blur:16,spread:0,color:'#000000',opacity:0.25,inset:false}
+
+
+const tool = getToolBySlug('css-box-shadow-generator')!
 
 export default function BoxShadowGeneratorPage() {
   const [shadows,setShadows]=useState<Shadow[]>([{...DEFAULT}])
@@ -36,7 +41,7 @@ export default function BoxShadowGeneratorPage() {
   )
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-3xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">CSS Box Shadow Generator</h1>
         <p className="text-gray-500 mb-6">Build multi-layer box shadows visually with live preview</p>
@@ -91,6 +96,6 @@ export default function BoxShadowGeneratorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

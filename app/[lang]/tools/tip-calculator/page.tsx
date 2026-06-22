@@ -1,7 +1,12 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const TIP_PRESETS=[10,15,18,20,25,30]
+
+
+const tool = getToolBySlug('tip-calculator')!
 
 export default function TipCalculatorPage() {
   const [bill,setBill]=useState('50')
@@ -23,7 +28,7 @@ export default function TipCalculatorPage() {
   const qualityIdx=activeTip<=10?0:activeTip<=15?1:activeTip<=18?2:activeTip<=22?3:4
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Tip Calculator</h1>
         <p className="text-gray-500 mb-8">Split the bill and calculate tip easily</p>
@@ -77,6 +82,6 @@ export default function TipCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

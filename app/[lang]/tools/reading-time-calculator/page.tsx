@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const WPM_PROFILES = [
   {label:'Slow (150 wpm)',wpm:150},
@@ -15,6 +17,9 @@ function formatTime(minutes:number):string {
   return h+' hour'+(h!==1?'s':'')+' '+(m>0?m+' min':'')
 }
 
+
+const tool = getToolBySlug('reading-time-calculator')!
+
 export default function ReadingTimeCalculatorPage() {
   const [text, setText] = useState('')
   const [wpmIdx, setWpmIdx] = useState(1)
@@ -27,7 +32,7 @@ export default function ReadingTimeCalculatorPage() {
   const readMin = words/wpm
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Reading Time Calculator</h1>
         <p className="text-gray-500 mb-8">Estimate how long it takes to read any text</p>
@@ -78,6 +83,6 @@ export default function ReadingTimeCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

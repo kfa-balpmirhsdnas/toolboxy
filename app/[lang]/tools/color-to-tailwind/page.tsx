@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 // Tailwind CSS color palette (selected)
 const TW:{name:string,hex:string}[]=[
@@ -30,6 +32,9 @@ function colorDist(a:{r:number,g:number,b:number},b:{r:number,g:number,b:number}
   return Math.sqrt((a.r-b.r)**2+(a.g-b.g)**2+(a.b-b.b)**2)
 }
 
+
+const tool = getToolBySlug('color-to-tailwind')!
+
 export default function ColorToTailwindPage() {
   const [input,setInput]=useState('#3b82f6')
   const [copied,setCopied]=useState('')
@@ -41,7 +46,7 @@ export default function ColorToTailwindPage() {
   function copy(v:string){navigator.clipboard.writeText(v);setCopied(v);setTimeout(()=>setCopied(''),2000)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Color to Tailwind CSS</h1>
         <p className="text-gray-500 mb-8">Find the closest Tailwind CSS color class for any hex color value</p>
@@ -89,6 +94,6 @@ export default function ColorToTailwindPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

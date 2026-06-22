@@ -1,7 +1,12 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const PI=Math.PI
+
+
+const tool = getToolBySlug('circle-calculator')!
 
 export default function CircleCalculatorPage() {
   const [input,setInput]=useState('5')
@@ -30,7 +35,7 @@ export default function CircleCalculatorPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Circle Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate radius, diameter, circumference, and area of a circle</p>
@@ -73,6 +78,6 @@ export default function CircleCalculatorPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type Item={id:number;name:string;amount:string;category:string;type:'income'|'expense'}
 
@@ -7,6 +9,9 @@ const CATS_INCOME=['Salary','Freelance','Investment','Other']
 const CATS_EXPENSE=['Housing','Food','Transport','Entertainment','Health','Education','Savings','Other']
 
 let _id=1
+
+
+const tool = getToolBySlug('budget-calculator')!
 
 export default function BudgetCalculatorPage() {
   const [items,setItems]=useState<Item[]>([
@@ -40,7 +45,7 @@ export default function BudgetCalculatorPage() {
   function update(id:number,f:keyof Item,v:string){setItems(prev=>prev.map(i=>i.id===id?{...i,[f]:v}:i))}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Budget Calculator</h1>
         <p className="text-gray-500 mb-6">Track income and expenses to see your monthly budget balance</p>
@@ -107,6 +112,6 @@ export default function BudgetCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

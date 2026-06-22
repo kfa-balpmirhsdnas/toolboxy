@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const ENTITIES:{char:string;entity:string;code:string;name:string}[]=[
   {char:'&',entity:'&amp;',code:'&#38;',name:'Ampersand'},
@@ -29,6 +31,9 @@ function decodeHtml(text:string):string{
   const d=document.createElement('div');d.innerHTML=text;return d.textContent||''
 }
 
+
+const tool = getToolBySlug('html-entity-encoder')!
+
 export default function HtmlEntityEncoderPage() {
   const [input,setInput]=useState('<div class="hello">Hello & World!</div>')
   const [mode,setMode]=useState<'encode'|'decode'>('encode')
@@ -39,7 +44,7 @@ export default function HtmlEntityEncoderPage() {
   function swap(){setInput(output);setMode(m=>m==='encode'?'decode':'encode')}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">HTML Entity Encoder</h1>
         <p className="text-gray-500 mb-8">Encode or decode HTML entities and special characters</p>
@@ -83,6 +88,6 @@ export default function HtmlEntityEncoderPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

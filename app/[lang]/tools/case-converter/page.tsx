@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function words(s:string):string[]{return s.trim().replace(/([A-Z])/g,' $1').replace(/[_\-]+/g,' ').split(/\s+/).filter(Boolean)}
 
@@ -16,6 +18,9 @@ const CASES=[
   {id:'dot',label:'dot.case',fn:(s:string)=>words(s).join('.').toLowerCase()},
 ]
 
+
+const tool = getToolBySlug('case-converter')!
+
 export default function CaseConverterPage() {
   const [input,setInput]=useState('')
   const [copied,setCopied]=useState('')
@@ -23,7 +28,7 @@ export default function CaseConverterPage() {
   function copy(val:string,id:string){navigator.clipboard.writeText(val);setCopied(id);setTimeout(()=>setCopied(''),2000)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Case Converter</h1>
         <p className="text-gray-500 mb-8">Convert text to camelCase, PascalCase, snake_case, kebab-case, Title Case, and more</p>
@@ -51,6 +56,6 @@ export default function CaseConverterPage() {
           })}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

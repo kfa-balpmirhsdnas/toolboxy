@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 interface IpData {
   ip: string
@@ -35,6 +37,9 @@ function isPrivate(ip: string): string|null {
   if(p[0]===169&&p[1]===254) return 'Link-local'
   return null
 }
+
+
+const tool = getToolBySlug('ip-address-info')!
 
 export default function IpAddressInfo() {
   const [myIp,setMyIp]=useState<IpData|null>(null)

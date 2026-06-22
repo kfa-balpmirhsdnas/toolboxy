@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('discount-calculator')!
 
 export default function DiscountCalculatorPage() {
   const [original,setOriginal]=useState('100')
@@ -19,7 +24,7 @@ export default function DiscountCalculatorPage() {
   const PRESETS=[5,10,15,20,25,30,40,50,60,70,75]
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Discount Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate sale prices, savings, and find the discount percentage from two prices</p>
@@ -85,6 +90,6 @@ export default function DiscountCalculatorPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

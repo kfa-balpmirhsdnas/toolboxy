@@ -1,7 +1,12 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const COLORS=['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899','#14B8A6','#F97316','#06B6D4']
+
+
+const tool = getToolBySlug('css-grid-generator')!
 
 export default function CssGridGeneratorPage() {
   const [cols,setCols]=useState(3)
@@ -19,7 +24,7 @@ export default function CssGridGeneratorPage() {
   function copy(){navigator.clipboard.writeText(css);setCopied(true);setTimeout(()=>setCopied(false),1500)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-3xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">CSS Grid Generator</h1>
         <p className="text-gray-500 mb-6">Build CSS grid layouts visually with live preview</p>
@@ -77,6 +82,6 @@ export default function CssGridGeneratorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

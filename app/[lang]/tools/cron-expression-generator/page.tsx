@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function parseNextRuns(expr:string):string[]{
   // Simple next-run approximator for common patterns
@@ -37,6 +39,9 @@ const PRESETS=[
   {label:'Every year Jan 1',expr:'0 0 1 1 *'},
 ]
 
+
+const tool = getToolBySlug('cron-expression-generator')!
+
 export default function CronGeneratorPage() {
   const [expr,setExpr]=useState('0 9 * * 1-5')
   const [min,setMin]=useState('0')
@@ -61,7 +66,7 @@ export default function CronGeneratorPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Cron Expression Generator</h1>
         <p className="text-gray-500 mb-8">Build and understand cron job schedules with an interactive builder</p>
@@ -104,6 +109,6 @@ export default function CronGeneratorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

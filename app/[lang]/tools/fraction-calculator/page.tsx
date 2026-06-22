@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function gcd(a:number,b:number):number{return b===0?a:gcd(b,a%b)}
 function simplify(n:number,d:number):{n:number,d:number}{const g=gcd(Math.abs(n),Math.abs(d));const sign=d<0?-1:1;return{n:sign*n/g,d:sign*d/g}}
@@ -17,6 +19,9 @@ function calc(a:Frac,b:Frac,op:string):{n:number,d:number}|string{
   if(op==='\u00F7') return simplify(an*bd,ad*bn)
   return 'Unknown op'
 }
+
+
+const tool = getToolBySlug('fraction-calculator')!
 
 export default function FractionCalculatorPage() {
   const [a,setA]=useState<Frac>({n:'1',d:'2'})
@@ -39,7 +44,7 @@ export default function FractionCalculatorPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Fraction Calculator</h1>
         <p className="text-gray-500 mb-8">Add, subtract, multiply, and divide fractions with automatic simplification</p>
@@ -85,6 +90,6 @@ export default function FractionCalculatorPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

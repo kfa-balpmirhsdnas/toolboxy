@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const M:Record<string,string>={
   A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',
@@ -14,6 +16,9 @@ function decode(code:string):string{
   return code.split('/ ').map(w=>w.trim().split(' ').map(s=>RM[s]||'?').join('')).join(' ')
 }
 
+
+const tool = getToolBySlug('morse-code-translator')!
+
 export default function MorseCodeTranslatorPage() {
   const [mode,setMode]=useState<'to'|'from'>('to')
   const [text,setText]=useState('HELLO WORLD')
@@ -24,7 +29,7 @@ export default function MorseCodeTranslatorPage() {
   function copy(){navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Morse Code Translator</h1>
         <p className="text-gray-500 mb-8">Translate text to Morse code and Morse code back to text</p>
@@ -62,6 +67,6 @@ export default function MorseCodeTranslatorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

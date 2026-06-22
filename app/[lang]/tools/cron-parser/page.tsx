@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 interface CronField { name: string; value: string; desc: string }
 
@@ -65,13 +67,16 @@ const EXAMPLES = [
   { label: 'First day of month', expr: '0 0 1 * *' },
 ]
 
+
+const tool = getToolBySlug('cron-parser')!
+
 export default function CronParserPage() {
   const [expr, setExpr] = useState('0 9 * * 1-5')
 
   const result = parseCron(expr)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Cron Expression Parser</h1>
         <p className="text-gray-500 mb-8">Parse and understand cron expressions with human-readable descriptions.</p>
@@ -124,6 +129,6 @@ export default function CronParserPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function genUuidV4():string{
   const bytes=new Uint8Array(16)
@@ -9,6 +11,9 @@ function genUuidV4():string{
   const hex=Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('')
   return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`
 }
+
+
+const tool = getToolBySlug('uuid-generator')!
 
 export default function UuidGeneratorPage() {
   const [count,setCount]=useState(5)
@@ -29,7 +34,7 @@ export default function UuidGeneratorPage() {
   function copyAll(){navigator.clipboard.writeText(uuids.map(fmt).join('\n'));setCopied('all');setTimeout(()=>setCopied(null),1500)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">UUID Generator</h1>
         <p className="text-gray-500 mb-8">Generate cryptographically secure UUID v4 identifiers</p>
@@ -67,6 +72,6 @@ export default function UuidGeneratorPage() {
           <p className="text-sm text-gray-600">UUID (Universally Unique Identifier) v4 generates 122 bits of randomness using a cryptographically secure random number generator. The probability of collision is astronomically low — approximately 1 in 5.3 undecillion (5.3 \u00D7 10\u00B3\u00B6). Safe for use as primary keys, session tokens, and unique identifiers.</p>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

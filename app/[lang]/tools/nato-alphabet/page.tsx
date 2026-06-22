@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const NATO: Record<string,string> = {
   A:'Alpha',B:'Bravo',C:'Charlie',D:'Delta',E:'Echo',F:'Foxtrot',G:'Golf',H:'Hotel',
@@ -9,6 +11,9 @@ const NATO: Record<string,string> = {
   '0':'Zero','1':'One','2':'Two','3':'Three','4':'Four',
   '5':'Five','6':'Six','7':'Seven','8':'Eight','9':'Nine'
 }
+
+
+const tool = getToolBySlug('nato-alphabet')!
 
 export default function NatoAlphabetPage() {
   const [input, setInput] = useState('')
@@ -21,7 +26,7 @@ export default function NatoAlphabetPage() {
   const copy = () => navigator.clipboard.writeText(result)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">NATO Phonetic Alphabet</h1>
         <p className="text-gray-500 mb-8">Convert text to NATO phonetic alphabet — Alpha, Bravo, Charlie...</p>
@@ -57,6 +62,6 @@ export default function NatoAlphabetPage() {
           </button>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('curl-builder')!
 
 export default function CurlBuilderPage() {
   const [method, setMethod] = useState('GET')

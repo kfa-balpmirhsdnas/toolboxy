@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const PRESETS=[
   {name:'Fade In',css:'@keyframes fadeIn{from{opacity:0}to{opacity:1}}'},
@@ -11,6 +13,9 @@ const PRESETS=[
   {name:'Flip',css:'@keyframes flip{0%{transform:rotateY(0)}100%{transform:rotateY(180deg)}}'},
   {name:'Swing',css:'@keyframes swing{0%,100%{transform:rotate(0)}25%{transform:rotate(10deg)}75%{transform:rotate(-10deg)}}'},
 ]
+
+
+const tool = getToolBySlug('css-animation-generator')!
 
 export default function CssAnimationGeneratorPage() {
   const [preset,setPreset]=useState(PRESETS[0])
@@ -34,7 +39,7 @@ export default function CssAnimationGeneratorPage() {
   useEffect(()=>{setKey(k=>k+1)},[preset,duration,delay,iterCount,direction,easing,fillMode])
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-3xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">CSS Animation Generator</h1>
         <p className="text-gray-500 mb-6">Build CSS animations with live preview</p>
@@ -94,6 +99,6 @@ export default function CssAnimationGeneratorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

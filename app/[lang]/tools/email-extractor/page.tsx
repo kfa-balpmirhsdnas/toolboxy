@@ -1,7 +1,12 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const EMAIL_RE = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g
+
+
+const tool = getToolBySlug('email-extractor')!
 
 export default function EmailExtractorPage() {
   const [input, setInput] = useState('')
@@ -18,7 +23,7 @@ export default function EmailExtractorPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Email Extractor</h1>
         <p className="text-gray-500 mb-8">Extract all email addresses from any block of text</p>
@@ -54,6 +59,6 @@ export default function EmailExtractorPage() {
           <div className="mt-4 text-center text-gray-500 py-6">No email addresses found in the text</div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('url-encoder')!
 
 export default function UrlEncoderPage() {
   const [input,setInput]=useState('Hello World! This is a test: https://example.com/path?q=hello&lang=en')
@@ -20,7 +25,7 @@ export default function UrlEncoderPage() {
   function swap(){setInput(output);setMode(m=>m==='encode'?'decode':'encode')}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">URL Encoder / Decoder</h1>
         <p className="text-gray-500 mb-8">Encode or decode URL strings and components</p>
@@ -65,6 +70,6 @@ export default function UrlEncoderPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type Unit = 'metric'|'imperial'
 
@@ -21,6 +23,9 @@ function category(bmi:number):{label:string;color:string;range:string}{
   return{label:'Obese',color:'text-red-600',range:'\u2265 30'}
 }
 
+
+const tool = getToolBySlug('bmi-calculator')!
+
 export default function BmiCalculatorPage() {
   const [unit,setUnit]=useState<Unit>('metric')
   const [weight,setWeight]=useState('')
@@ -37,7 +42,7 @@ export default function BmiCalculatorPage() {
   const cats=[{l:'Underweight',c:'bg-blue-400',w:24},{l:'Normal',c:'bg-green-400',w:26},{l:'Overweight',c:'bg-yellow-400',w:20},{l:'Obese',c:'bg-red-400',w:30}]
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">BMI Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate your Body Mass Index (BMI) and check which weight category you fall into</p>
@@ -100,6 +105,6 @@ export default function BmiCalculatorPage() {
           <p className="text-xs text-gray-400 mt-3">BMI is a screening tool, not a diagnostic measure. Consult a healthcare provider for medical advice.</p>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

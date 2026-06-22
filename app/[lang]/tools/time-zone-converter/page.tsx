@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const TZ_LIST=[
   {label:'UTC',tz:'UTC'},
@@ -28,6 +30,9 @@ function offsetInTz(date:Date,tz:string):string{
   return date.toLocaleString('en-US',{timeZone:tz,timeZoneName:'short'}).split(' ').pop()||tz
 }
 
+
+const tool = getToolBySlug('time-zone-converter')!
+
 export default function TimeZoneConverterPage() {
   const [now,setNow]=useState(new Date())
   const [fromTz,setFromTz]=useState('UTC')
@@ -44,7 +49,7 @@ export default function TimeZoneConverterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Time Zone Converter</h1>
         <p className="text-gray-500 mb-8">Convert a time across multiple time zones simultaneously</p>
@@ -78,6 +83,6 @@ export default function TimeZoneConverterPage() {
           ))}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

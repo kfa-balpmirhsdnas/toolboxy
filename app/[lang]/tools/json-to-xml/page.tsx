@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function toXmlTag(key: string): string {
   return key.replace(/[^a-zA-Z0-9_.-]/g,'_').replace(/^[^a-zA-Z_]/,'_$&') || 'item'
@@ -31,6 +33,9 @@ const SAMPLE = `{
     "address": { "city": "Seoul", "country": "Korea" }
   }
 }`
+
+
+const tool = getToolBySlug('json-to-xml')!
 
 export default function JsonToXml() {
   const [input, setInput] = useState(SAMPLE)

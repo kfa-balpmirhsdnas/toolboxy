@@ -1,5 +1,10 @@
 'use client'
 import { useState, useRef } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('base64-image-encoder')!
 
 export default function Base64ImageEncoderPage() {
   const [dataUrl,setDataUrl]=useState('')
@@ -32,7 +37,7 @@ export default function Base64ImageEncoderPage() {
   ]:[]
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Base64 Image Encoder</h1>
         <p className="text-gray-500 mb-8">Convert images to Base64 Data URLs for use in HTML, CSS, and JSON</p>
@@ -69,6 +74,6 @@ export default function Base64ImageEncoderPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

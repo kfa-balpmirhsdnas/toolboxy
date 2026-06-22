@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function minifyCSS(css: string): string {
   return css
@@ -24,6 +26,9 @@ function beautifyCSS(css: string): string {
   return out.trim()
 }
 
+
+const tool = getToolBySlug('css-minifier')!
+
 export default function CSSMinifierPage() {
   const [input, setInput] = useState('')
   const [mode, setMode] = useState<'minify'|'beautify'>('minify')
@@ -33,7 +38,7 @@ export default function CSSMinifierPage() {
   const copy = () => navigator.clipboard.writeText(output)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">CSS Minifier / Beautifier</h1>
         <p className="text-gray-500 mb-8">Minify CSS to reduce file size, or beautify minified CSS for readability.</p>
@@ -76,6 +81,6 @@ export default function CSSMinifierPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

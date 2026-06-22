@@ -1,9 +1,14 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function daysBetween(a:Date,b:Date):number{return Math.abs(Math.floor((b.getTime()-a.getTime())/86400000))}
 function addDays(d:Date,n:number):Date{const r=new Date(d);r.setDate(r.getDate()+n);return r}
 function fmtDate(d:Date):string{return d.toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'long',day:'numeric'})}
+
+
+const tool = getToolBySlug('date-calculator')!
 
 export default function DateCalculatorPage() {
   const [mode,setMode]=useState<'diff'|'add'>('diff')
@@ -24,7 +29,7 @@ export default function DateCalculatorPage() {
   const resultDate=baseDate&&!isNaN(daysNum)?addDays(baseDate,daysNum*sign):null
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Date Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate days between two dates or add/subtract days from a date</p>
@@ -88,6 +93,6 @@ export default function DateCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

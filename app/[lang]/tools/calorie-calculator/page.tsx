@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 // Harris-Benedict equation
 function bmr(weight:number,height:number,age:number,sex:'male'|'female'):number{
@@ -14,6 +16,9 @@ const ACTIVITY=[
   {id:'active',label:'Very active',desc:'Hard exercise 6-7 days/week',factor:1.725},
   {id:'extra',label:'Extra active',desc:'Very hard exercise & physical job',factor:1.9},
 ]
+
+
+const tool = getToolBySlug('calorie-calculator')!
 
 export default function CalorieCalculatorPage() {
   const [unit,setUnit]=useState<'metric'|'imperial'>('metric')
@@ -44,7 +49,7 @@ export default function CalorieCalculatorPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Calorie Calculator</h1>
         <p className="text-gray-500 mb-8">Estimate your daily calorie needs based on your body metrics and activity level</p>
@@ -123,6 +128,6 @@ export default function CalorieCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function isPrime(n:number):boolean{
   if(n<2) return false
@@ -17,6 +19,9 @@ function nextPrime(n:number):number{let x=n+1;while(!isPrime(x))x++;return x}
 function prevPrime(n:number):number{let x=n-1;while(x>1&&!isPrime(x))x--;return x>1?x:2}
 function primesUpTo(n:number):number[]{return Array.from({length:n-1},(_,i)=>i+2).filter(isPrime)}
 
+
+const tool = getToolBySlug('prime-number-checker')!
+
 export default function PrimeNumberCheckerPage() {
   const [input,setInput]=useState('17')
   const [rangeEnd,setRangeEnd]=useState('100')
@@ -29,7 +34,7 @@ export default function PrimeNumberCheckerPage() {
   const primes=primesUpTo(Math.min(parseInt(rangeEnd)||100,1000))
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Prime Number Checker</h1>
         <p className="text-gray-500 mb-8">Check if a number is prime, find its factors, and list all primes up to a given value</p>
@@ -77,6 +82,6 @@ export default function PrimeNumberCheckerPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

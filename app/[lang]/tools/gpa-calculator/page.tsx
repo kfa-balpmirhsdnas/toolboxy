@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type Scale = '4.0'|'5.0'|'10.0'|'100'
 
@@ -19,6 +21,9 @@ function gpaColor(gpa:number,max:number):string{
   if(pct>=0.6) return 'text-yellow-600'
   return 'text-red-500'
 }
+
+
+const tool = getToolBySlug('gpa-calculator')!
 
 export default function GpaCalculatorPage() {
   const [scale,setScale]=useState<Scale>('4.0')
@@ -47,7 +52,7 @@ export default function GpaCalculatorPage() {
   const maxGpa=parseFloat(scale)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">GPA Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate your GPA across multiple courses with credit weighting</p>
@@ -89,6 +94,6 @@ export default function GpaCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

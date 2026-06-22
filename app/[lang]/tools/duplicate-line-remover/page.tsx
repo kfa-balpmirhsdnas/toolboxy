@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('duplicate-line-remover')!
 
 export default function DuplicateLineRemoverPage() {
   const [input, setInput] = useState('')
@@ -18,7 +23,7 @@ export default function DuplicateLineRemoverPage() {
   function copy(){navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Duplicate Line Remover</h1>
         <p className="text-gray-500 mb-8">Remove duplicate lines from any text while preserving order</p>
@@ -51,6 +56,6 @@ export default function DuplicateLineRemoverPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type TUnit='C'|'F'|'K'|'R'
 
@@ -25,6 +27,9 @@ const REFS=[
   {label:'Boiling Point',C:100},{label:'Oven (180\u00B0C)',C:180},
 ]
 
+
+const tool = getToolBySlug('temperature-converter')!
+
 export default function TemperatureConverterPage() {
   const [val,setVal]=useState('100')
   const [from,setFrom]=useState<TUnit>('C')
@@ -35,7 +40,7 @@ export default function TemperatureConverterPage() {
   function fmt(n:number):string{return isNaN(n)?'—':parseFloat(n.toFixed(4)).toString()}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Temperature Converter</h1>
         <p className="text-gray-500 mb-8">Convert between Celsius, Fahrenheit, Kelvin, and Rankine</p>
@@ -69,6 +74,6 @@ export default function TemperatureConverterPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

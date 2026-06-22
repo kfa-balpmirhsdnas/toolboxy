@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const COLORS = [
   ['AliceBlue','#F0F8FF'],['AntiqueWhite','#FAEBD7'],['Aqua','#00FFFF'],['Aquamarine','#7FFFD4'],
@@ -39,6 +41,9 @@ const COLORS = [
   ['White','#FFFFFF'],['WhiteSmoke','#F5F5F5'],['Yellow','#FFFF00'],['YellowGreen','#9ACD32'],
 ] as const
 
+
+const tool = getToolBySlug('html-color-names')!
+
 export default function HTMLColorNamesPage() {
   const [search, setSearch] = useState('')
   const [copied, setCopied] = useState('')
@@ -54,7 +59,7 @@ export default function HTMLColorNamesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">HTML Color Names</h1>
         <p className="text-gray-500 mb-6">All 140+ CSS named colors with their hex values. Click to copy.</p>
@@ -78,6 +83,6 @@ export default function HTMLColorNamesPage() {
           {filtered.length === 0 && <p className="text-center text-gray-400 py-8">No colors found</p>}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

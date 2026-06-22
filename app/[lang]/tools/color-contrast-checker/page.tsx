@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function hexToRgb(hex: string): [number, number, number] | null {
   const clean = hex.replace('#', '')
@@ -25,6 +27,9 @@ function contrastRatio(rgb1: [number,number,number], rgb2: [number,number,number
   return (lighter + 0.05) / (darker + 0.05)
 }
 
+
+const tool = getToolBySlug('color-contrast-checker')!
+
 export default function ColorContrastCheckerPage() {
   const [fg, setFg] = useState('#000000')
   const [bg, setBg] = useState('#ffffff')
@@ -38,7 +43,7 @@ export default function ColorContrastCheckerPage() {
   const wcagAAA = ratio !== null ? ratio >= 7 : false
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Color Contrast Checker</h1>
         <p className="text-gray-500 mb-8">Check if your color combinations meet WCAG accessibility standards.</p>
@@ -91,6 +96,6 @@ export default function ColorContrastCheckerPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

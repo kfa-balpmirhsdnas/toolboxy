@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('border-radius-generator')!
 
 export default function BorderRadiusGeneratorPage() {
   const [linked,setLinked]=useState(true)
@@ -32,7 +37,7 @@ export default function BorderRadiusGeneratorPage() {
   const corners=[['Top Left',tl,setTl],['Top Right',tr,setTr],['Bottom Right',br,setBr],['Bottom Left',bl,setBl]] as const
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Border Radius Generator</h1>
         <p className="text-gray-500 mb-8">Create custom border radius shapes with live preview</p>
@@ -73,6 +78,6 @@ export default function BorderRadiusGeneratorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

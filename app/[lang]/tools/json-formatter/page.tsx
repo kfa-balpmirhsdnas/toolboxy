@@ -1,7 +1,12 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const SAMPLE='{"name":"Alice","age":30,"address":{"city":"New York","zip":"10001"},"hobbies":["reading","coding","hiking"]}'
+
+
+const tool = getToolBySlug('json-formatter')!
 
 export default function JsonFormatterPage() {
   const [input,setInput]=useState(SAMPLE)
@@ -31,7 +36,7 @@ export default function JsonFormatterPage() {
   const size=new TextEncoder().encode(output).length
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">JSON Formatter</h1>
         <p className="text-gray-500 mb-6">Format, validate, and minify JSON data</p>
@@ -74,6 +79,6 @@ export default function JsonFormatterPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

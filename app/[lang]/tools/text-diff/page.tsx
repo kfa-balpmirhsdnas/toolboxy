@@ -1,5 +1,7 @@
 'use client'
 import { useState, useMemo } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type DiffLine={type:'equal'|'add'|'remove';text:string;lineNum?:number}
 
@@ -22,6 +24,9 @@ function diffLines(a:string,b:string):DiffLine[]{
   return result
 }
 
+
+const tool = getToolBySlug('text-diff')!
+
 export default function TextDiffPage() {
   const [textA,setTextA]=useState('The quick brown fox\njumps over the lazy dog\nHello World')
   const [textB,setTextB]=useState('The quick brown fox\nleaps over the lazy cat\nHello World\nNew line here')
@@ -38,7 +43,7 @@ export default function TextDiffPage() {
   const unchanged=diffs.filter(d=>d.type==='equal').length
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-5xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Text Diff</h1>
         <p className="text-gray-500 mb-6">Compare two texts side-by-side and see what changed</p>
@@ -74,6 +79,6 @@ export default function TextDiffPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

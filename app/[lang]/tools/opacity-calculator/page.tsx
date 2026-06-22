@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function hexToRgb(hex:string):{r:number,g:number,b:number}|null{
   const m=hex.replace('#','').match(/^([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i)
@@ -7,6 +9,9 @@ function hexToRgb(hex:string):{r:number,g:number,b:number}|null{
   return {r:parseInt(m[1],16),g:parseInt(m[2],16),b:parseInt(m[3],16)}
 }
 function toHex(n:number){return n.toString(16).padStart(2,'0').toUpperCase()}
+
+
+const tool = getToolBySlug('opacity-calculator')!
 
 export default function OpacityCalculatorPage() {
   const [color,setColor]=useState('#3B82F6')
@@ -28,7 +33,7 @@ export default function OpacityCalculatorPage() {
   const steps=[100,90,80,70,60,50,40,30,20,10]
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Opacity Calculator</h1>
         <p className="text-gray-500 mb-8">Preview colors at different opacity levels and get the blended hex value</p>
@@ -86,6 +91,6 @@ export default function OpacityCalculatorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

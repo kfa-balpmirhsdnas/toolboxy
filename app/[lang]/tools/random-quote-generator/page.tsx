@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type Quote={text:string;author:string;category:string}
 
@@ -36,6 +38,9 @@ const QUOTES:Quote[]=[
 
 const CATEGORIES=[...new Set(QUOTES.map(q=>q.category))]
 
+
+const tool = getToolBySlug('random-quote-generator')!
+
 export default function RandomQuoteGeneratorPage() {
   const [category,setCategory]=useState('All')
   const [current,setCurrent]=useState(0)
@@ -55,7 +60,7 @@ export default function RandomQuoteGeneratorPage() {
   const isFav=favorites.includes(QUOTES.indexOf(quote))
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Quote Generator</h1>
         <p className="text-gray-500 mb-8">Discover inspiring quotes from history\'s greatest minds</p>
@@ -90,6 +95,6 @@ export default function RandomQuoteGeneratorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const SIGNS=[
   {name:'Aries',emoji:'\u2648',start:[3,21],end:[4,19],element:'Fire',planet:'Mars',traits:['Bold','Adventurous','Energetic','Courageous'],desc:'The first sign of the zodiac, Aries is a natural-born leader. Bold and ambitious, they dive headfirst into even the most challenging situations.'},
@@ -27,6 +29,9 @@ function getSign(month:number,day:number){
 
 const ELEM_COLORS:Record<string,string>={Fire:'text-red-500',Earth:'text-green-600',Air:'text-blue-500',Water:'text-cyan-500'}
 
+
+const tool = getToolBySlug('zodiac-sign')!
+
 export default function ZodiacSignPage() {
   const [date,setDate]=useState('')
 
@@ -34,7 +39,7 @@ export default function ZodiacSignPage() {
   const sign=d?getSign(d.getMonth()+1,d.getDate()):null
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Zodiac Sign Finder</h1>
         <p className="text-gray-500 mb-8">Find your zodiac sign and discover your traits, element, and ruling planet</p>
@@ -78,6 +83,6 @@ export default function ZodiacSignPage() {
           ))}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const APPLIANCES=[
   {name:'Refrigerator',watts:150},{name:'Air conditioner',watts:1500},{name:'Electric heater',watts:1500},
@@ -11,6 +13,9 @@ const APPLIANCES=[
 ]
 
 type Device={id:number;name:string;watts:string;hoursDay:string}
+
+
+const tool = getToolBySlug('electricity-cost-calculator')!
 
 export default function ElectricityCostCalculatorPage() {
   const [devices,setDevices]=useState<Device[]>([{id:1,name:'LED TV (55\")',watts:'80',hoursDay:'4'}])
@@ -31,7 +36,7 @@ export default function ElectricityCostCalculatorPage() {
   const totalCostDay=totals.reduce((s,d)=>s+d.costDay,0)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Electricity Cost Calculator</h1>
         <p className="text-gray-500 mb-8">Calculate electricity cost for your appliances and devices</p>
@@ -73,6 +78,6 @@ export default function ElectricityCostCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

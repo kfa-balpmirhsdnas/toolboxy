@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('scientific-calculator')!
 
 export default function ScientificCalculatorPage() {
   const [display, setDisplay] = useState('0')
@@ -54,7 +59,7 @@ export default function ScientificCalculatorPage() {
   const btnBase='h-12 rounded-xl font-medium transition-colors text-sm active:scale-95'
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Scientific Calculator</h1>
         <p className="text-gray-500 mb-6">Full scientific calculator with trig functions, logarithms, and history</p>
@@ -95,6 +100,6 @@ export default function ScientificCalculatorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

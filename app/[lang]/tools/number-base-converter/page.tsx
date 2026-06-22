@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const BASES = [
   { label: 'Binary', base: 2, prefix: '0b' },
@@ -7,6 +9,9 @@ const BASES = [
   { label: 'Decimal', base: 10, prefix: '' },
   { label: 'Hexadecimal', base: 16, prefix: '0x' },
 ]
+
+
+const tool = getToolBySlug('number-base-converter')!
 
 export default function NumberBaseConverterPage() {
   const [input, setInput] = useState('')
@@ -22,7 +27,7 @@ export default function NumberBaseConverterPage() {
   } catch { error = 'Invalid input' }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Number Base Converter</h1>
         <p className="text-gray-500 mb-8">Convert numbers between binary, octal, decimal, and hexadecimal.</p>
@@ -66,6 +71,6 @@ export default function NumberBaseConverterPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

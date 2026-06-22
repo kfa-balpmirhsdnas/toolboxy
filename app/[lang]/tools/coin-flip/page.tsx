@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('coin-flip')!
 
 export default function CoinFlipPage() {
   const [result,setResult]=useState<'heads'|'tails'|null>(null)
@@ -24,7 +29,7 @@ export default function CoinFlipPage() {
   const total=heads+tails
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-sm mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Coin Flip</h1>
         <p className="text-gray-500 mb-8">Flip a virtual coin — heads or tails?</p>
@@ -61,6 +66,6 @@ export default function CoinFlipPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

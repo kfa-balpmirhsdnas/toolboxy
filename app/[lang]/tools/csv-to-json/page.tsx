@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function csvToJson(csv:string,delimiter:string):{json:string;error:string;rows:number}{
   try{
@@ -31,6 +33,9 @@ Alice,30,New York,95.5
 Bob,25,London,87
 Charlie,35,Tokyo,92.3`
 
+
+const tool = getToolBySlug('csv-to-json')!
+
 export default function CsvToJsonPage() {
   const [input,setInput]=useState(SAMPLE)
   const [delimiter,setDelimiter]=useState(',')
@@ -47,7 +52,7 @@ export default function CsvToJsonPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">CSV to JSON Converter</h1>
         <p className="text-gray-500 mb-6">Convert CSV data to JSON format with automatic type detection</p>
@@ -86,6 +91,6 @@ export default function CsvToJsonPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function hexToHsl(hex:string):[number,number,number]{
   const r=parseInt(hex.slice(1,3),16)/255
@@ -39,6 +41,9 @@ function generatePalette(hex:string,scheme:SchemeType):string[]{
 
 const SCHEMES:SchemeType[]=['monochromatic','analogous','complementary','triadic','tetradic','split']
 
+
+const tool = getToolBySlug('color-palette-generator')!
+
 export default function ColorPaletteGeneratorPage() {
   const [baseColor,setBaseColor]=useState('#3B82F6')
   const [scheme,setScheme]=useState<SchemeType>('analogous')
@@ -50,7 +55,7 @@ export default function ColorPaletteGeneratorPage() {
   function copyAll(){navigator.clipboard.writeText(palette.join(', '));setCopied('all');setTimeout(()=>setCopied(null),1500)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Color Palette Generator</h1>
         <p className="text-gray-500 mb-8">Generate harmonious color palettes from any base color</p>
@@ -95,6 +100,6 @@ export default function ColorPaletteGeneratorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

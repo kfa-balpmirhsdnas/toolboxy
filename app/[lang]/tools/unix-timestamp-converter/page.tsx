@@ -1,5 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('unix-timestamp-converter')!
 
 export default function UnixTimestampConverterPage() {
   const [ts, setTs] = useState('')
@@ -24,7 +29,7 @@ export default function UnixTimestampConverterPage() {
   function useNow(){setTs(String(Math.floor(Date.now()/1000)))}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Unix Timestamp Converter</h1>
         <p className="text-gray-500 mb-8">Convert Unix timestamps to human-readable dates and vice versa</p>
@@ -64,6 +69,6 @@ export default function UnixTimestampConverterPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

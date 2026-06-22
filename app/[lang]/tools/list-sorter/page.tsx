@@ -1,7 +1,12 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type SortMode = 'az'|'za'|'num-asc'|'num-desc'|'len-asc'|'len-desc'|'random'|'reverse'
+
+
+const tool = getToolBySlug('list-sorter')!
 
 export default function ListSorterPage() {
   const [input, setInput] = useState('')
@@ -28,7 +33,7 @@ export default function ListSorterPage() {
   const MODES:[SortMode,string][]=[['az','A \u2192 Z'],['za','Z \u2192 A'],['num-asc','1 \u2192 9'],['num-desc','9 \u2192 1'],['len-asc','Short first'],['len-desc','Long first'],['random','Random'],['reverse','Reverse']]
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">List Sorter</h1>
         <p className="text-gray-500 mb-8">Sort, deduplicate and reorder lists in multiple ways</p>
@@ -62,6 +67,6 @@ export default function ListSorterPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

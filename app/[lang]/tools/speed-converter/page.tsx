@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const UNITS=[
   {id:'mps',label:'m/s',factor:1},
@@ -11,6 +13,9 @@ const UNITS=[
   {id:'light',label:'Speed of light',factor:299792458},
 ]
 
+
+const tool = getToolBySlug('speed-converter')!
+
 export default function SpeedConverterPage() {
   const [val,setVal]=useState('100')
   const [from,setFrom]=useState('kph')
@@ -18,7 +23,7 @@ export default function SpeedConverterPage() {
   const base=parseFloat(val)*(UNITS.find(u=>u.id===from)?.factor??1)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Speed Converter</h1>
         <p className="text-gray-500 mb-8">Convert between m/s, km/h, mph, knots, Mach, and more</p>
@@ -52,6 +57,6 @@ export default function SpeedConverterPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

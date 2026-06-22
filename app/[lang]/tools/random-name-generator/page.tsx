@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const FIRST_M=['James','John','Robert','Michael','William','David','Joseph','Thomas','Charles','Christopher','Daniel','Matthew','Anthony','Mark','Donald','Steven','Paul','Andrew','Joshua','Kenneth','Kevin','Brian','George','Timothy','Ronald']
 const FIRST_F=['Mary','Patricia','Jennifer','Linda','Barbara','Elizabeth','Susan','Jessica','Sarah','Karen','Lisa','Nancy','Betty','Margaret','Sandra','Ashley','Dorothy','Kimberly','Emily','Donna','Michelle','Carol','Amanda','Melissa','Deborah']
@@ -30,6 +32,9 @@ function genBusiness():string{
   return a+' '+b
 }
 
+
+const tool = getToolBySlug('random-name-generator')!
+
 export default function RandomNameGeneratorPage() {
   const [type,setType]=useState<GenType>('realistic')
   const [sex,setSex]=useState<'male'|'female'|'random'>('random')
@@ -48,7 +53,7 @@ export default function RandomNameGeneratorPage() {
   function copy(){navigator.clipboard.writeText(names.join('\n'));setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Random Name Generator</h1>
         <p className="text-gray-500 mb-8">Generate realistic names, fantasy character names, or business names instantly</p>
@@ -97,6 +102,6 @@ export default function RandomNameGeneratorPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function parseMarkdown(md: string): string {
   return md
@@ -41,6 +43,9 @@ console.log(hello);
 
 Paragraph with **emphasis** and line breaks.
 `;
+
+
+const tool = getToolBySlug('markdown-previewer')!
 
 export default function MarkdownPreviewerPage() {
   const [md, setMd] = useState(SAMPLE);

@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function parseUrl(raw: string): { valid: boolean; url?: URL; warnings: string[] } {
   const warnings: string[] = []
@@ -31,6 +33,9 @@ function getRiskLevel(warnings: string[]): 'safe'|'caution'|'suspicious' {
 }
 
 const RISK_COLORS = { safe: 'green', caution: 'yellow', suspicious: 'red' } as const
+
+
+const tool = getToolBySlug('url-analyzer')!
 
 export default function UrlPreview() {
   const [input,setInput]=useState('')

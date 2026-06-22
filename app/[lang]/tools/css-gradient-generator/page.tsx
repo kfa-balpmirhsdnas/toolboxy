@@ -1,8 +1,13 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type Stop = {color:string;pos:number}
 type GradType = 'linear'|'radial'|'conic'
+
+
+const tool = getToolBySlug('css-gradient-generator')!
 
 export default function CssGradientGeneratorPage() {
   const [stops, setStops] = useState<Stop[]>([{color:'#FF6B6B',pos:0},{color:'#4ECDC4',pos:100}])
@@ -24,7 +29,7 @@ export default function CssGradientGeneratorPage() {
   function copy(){navigator.clipboard.writeText(cssRule);setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">CSS Gradient Generator</h1>
         <p className="text-gray-500 mb-8">Build beautiful CSS gradients visually and copy the ready-to-use code</p>
@@ -72,6 +77,6 @@ export default function CssGradientGeneratorPage() {
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

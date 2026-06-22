@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+
+const tool = getToolBySlug('text-repeater')!
 
 export default function TextRepeaterPage() {
   const [text, setText] = useState('')
@@ -18,7 +23,7 @@ export default function TextRepeaterPage() {
   const copy = () => navigator.clipboard.writeText(result)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Text Repeater</h1>
         <p className="text-gray-500 mb-8">Repeat any text a specified number of times with a custom separator.</p>
@@ -63,6 +68,6 @@ export default function TextRepeaterPage() {
           )}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }

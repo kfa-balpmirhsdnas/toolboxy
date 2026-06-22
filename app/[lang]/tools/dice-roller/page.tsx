@@ -1,11 +1,16 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const DICE_TYPES=[4,6,8,10,12,20,100]
 
 const FACES_6=[
   '\u2680','\u2681','\u2682','\u2683','\u2684','\u2685'
 ]
+
+
+const tool = getToolBySlug('dice-roller')!
 
 export default function DiceRollerPage() {
   const [diceType,setDiceType]=useState(6)
@@ -30,7 +35,7 @@ export default function DiceRollerPage() {
   const max=Math.max(...results)
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Dice Roller</h1>
         <p className="text-gray-500 mb-8">Roll any number of RPG dice — d4, d6, d8, d10, d12, d20, d100</p>
@@ -90,6 +95,6 @@ export default function DiceRollerPage() {
           </div>
         )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }

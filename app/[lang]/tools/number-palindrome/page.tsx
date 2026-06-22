@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 function isPalindrome(s: string): boolean { return s === s.split('').reverse().join('') }
 
@@ -26,6 +28,9 @@ function lychrel(n: number, maxSteps=50): { steps: Array<{n:number,r:number,sum:
 function palindromesInRange(from:number,to:number):number[]{
   const r=[];for(let i=from;i<=Math.min(to,10000);i++) if(isPalindrome(String(i)))r.push(i);return r
 }
+
+
+const tool = getToolBySlug('number-palindrome')!
 
 export default function NumberPalindrome() {
   const [input,setInput]=useState('12321')

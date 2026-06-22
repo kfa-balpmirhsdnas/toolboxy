@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 type Category='length'|'weight'|'volume'|'area'
 
@@ -33,6 +35,9 @@ const CATS:{id:Category;label:string;units:{id:string;label:string;factor:number
   ]},
 ]
 
+
+const tool = getToolBySlug('unit-converter')!
+
 export default function UnitConverterPage() {
   const [cat,setCat]=useState<Category>('length')
   const [val,setVal]=useState('1')
@@ -45,7 +50,7 @@ export default function UnitConverterPage() {
   function switchCat(c:Category){setCat(c);setFrom(CATS.find(x=>x.id===c)!.units[2].id)}
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Unit Converter</h1>
         <p className="text-gray-500 mb-8">Convert length, weight, volume, and area units in one place</p>
@@ -82,6 +87,6 @@ export default function UnitConverterPage() {
           })}
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }
