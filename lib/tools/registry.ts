@@ -28,7 +28,7 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'pdf-watermark', category: 'pdf', isPro: false, isNew: false, phase: 2, tags: ['pdf','watermark'], acceptedFileTypes: ['.pdf'], maxFileSizeMB: { free: 10, pro: 100 } },
   { slug: 'pdf-ocr', category: 'pdf', isPro: true, isNew: false, phase: 2, tags: ['pdf','ocr','text'], acceptedFileTypes: ['.pdf'], maxFileSizeMB: { free: 0, pro: 100 } },
   // IMAGE
-  { slug: 'image-resizer', category: 'image', isPro: false, isNew: true, phase: 1, tags: ['image','resize','dimension'], acceptedFileTypes: ['.jpg','.jpeg','.png','.webp','.gif'], maxFileSizeMB: { free: 10, pro: 100 },
+  { slug: 'image-resizer', category: 'image', isPro: false, isNew: true, phase: 1, tags: ['image','resize','dimension'], acceptedFileTypes: ['.jpg','.jpeg','.png','.webp','.gif'], maxFileSizeMB: { free: 10, pro: 100 } },
   { slug: 'image-color-picker', category: 'image', isPro: false, isNew: true, phase: 1, tags: ['image','color','picker','hex','rgb'], acceptedFileTypes: ['.jpg','.jpeg','.png','.webp','.gif'], maxFileSizeMB: { free: 10, pro: 100 } },
   { slug: 'image-compress', category: 'image', isPro: false, isNew: true, phase: 1, tags: ['image','compress','reduce'], acceptedFileTypes: ['.jpg','.jpeg','.png','.webp'], maxFileSizeMB: { free: 10, pro: 100 } },
   { slug: 'jpg-to-png', category: 'image', isPro: false, isNew: true, phase: 1, tags: ['jpg','png','convert'], acceptedFileTypes: ['.jpg','.jpeg'], maxFileSizeMB: { free: 10, pro: 100 } },
