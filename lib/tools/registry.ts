@@ -447,6 +447,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'http-status-codes',category:'developer',phase:1,isPro:false,isNew:true,tags:['http','status','code','reference','api'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'pixel-art-maker',category:'image',phase:1,isPro:false,isNew:true,tags:['pixel','art','draw','grid','editor'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'currency-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['currency','exchange','rate','convert','money'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'palindrome-checker',category:'text',phase:1,isPro:false,isNew:true,tags:['palindrome','text','check','reverse'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'temperature-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['temperature','celsius','fahrenheit','kelvin'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'reading-time-estimator',category:'text',phase:1,isPro:false,isNew:true,tags:['reading','time','words','estimate'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'anagram-solver',category:'text',phase:1,isPro:false,isNew:true,tags:['anagram','words','letters','solve'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'regex-tester',category:'developer',phase:1,isPro:false,isNew:true,tags:['regex','regexp','test','pattern','match'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
