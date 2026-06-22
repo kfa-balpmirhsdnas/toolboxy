@@ -3,87 +3,83 @@ import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('bmi-calculator')!
-const CATEGORIES=[
-  {label:'Underweight',range:'< 18.5',color:'#3b82f6',min:0,max:18.5},
-  {label:'Normal',range:'18.5 - 24.9',color:'#22c55e',min:18.5,max:25},
-  {label:'Overweight',range:'25 - 29.9',color:'#f59e0b',min:25,max:30},
-  {label:'Obese',range:'>= 30',color:'#ef4444',min:30,max:Infinity},
-]
+function getBmiCategory(bmi:number):{label:string;color:string;desc:string}{
+  if(bmi<18.5)return{label:'Underweight',color:'text-blue-600',desc:'BMI less than 18.5'}
+  if(bmi<25)return{label:'Normal weight',color:'text-green-600',desc:'BMI 18.5 to 24.9'}
+  if(bmi<30)return{label:'Overweight',color:'text-yellow-600',desc:'BMI 25 to 29.9'}
+  if(bmi<35)return{label:'Obese Class I',color:'text-orange-600',desc:'BMI 30 to 34.9'}
+  if(bmi<40)return{label:'Obese Class II',color:'text-red-600',desc:'BMI 35 to 39.9'}
+  return{label:'Obese Class III',color:'text-red-800',desc:'BMI 40 or higher'}
+}
 export default function BmiCalculatorPage() {
   const [unit,setUnit]=useState<'metric'|'imperial'>('metric')
-  const [weight,setWeight]=useState('')
-  const [height,setHeight]=useState('')
-  const [heightFt,setHeightFt]=useState('')
-  const [heightIn,setHeightIn]=useState('')
-  const calcBmi=():number|null=>{
-    if(unit==='metric'){
-      const w=parseFloat(weight),h=parseFloat(height)/100
-      if(!w||!h||h<=0)return null
-      return w/(h*h)
-    } else {
-      const w=parseFloat(weight)*0.453592
-      const inches=(parseFloat(heightFt)||0)*12+(parseFloat(heightIn)||0)
-      const h=inches*0.0254
-      if(!w||!h||h<=0)return null
-      return w/(h*h)
-    }
-  }
-  const bmi=calcBmi()
-  const category=bmi?CATEGORIES.find(c=>bmi>=c.min&&bmi<c.max):null
-  const idealMin=18.5,idealMax=24.9
-  const idealWeightKg=unit==='metric'?{
-    min:(idealMin*Math.pow(parseFloat(height)/100,2)).toFixed(1),
-    max:(idealMax*Math.pow(parseFloat(height)/100,2)).toFixed(1)
-  }:null
+  const [height,setHeight]=useState(170)
+  const [heightFt,setHeightFt]=useState(5)
+  const [heightIn,setHeightIn]=useState(7)
+  const [weight,setWeight]=useState(70)
+  const [weightLb,setWeightLb]=useState(154)
+  const [age,setAge]=useState(30)
+  const [sex,setSex]=useState<'male'|'female'>('male')
+  const heightM=unit==='metric'?height/100:(heightFt*12+heightIn)*0.0254
+  const weightKg=unit==='metric'?weight:weightLb*0.453592
+  const bmi=parseFloat((weightKg/(heightM*heightM)).toFixed(1))
+  const {label,color,desc}=getBmiCategory(bmi)
+  const idealMin=parseFloat((18.5*heightM*heightM).toFixed(1))
+  const idealMax=parseFloat((24.9*heightM*heightM).toFixed(1))
+  const pct=Math.min(100,Math.max(0,(bmi-15)/25*100))
+  const RANGES=[{max:18.5,color:'bg-blue-400',label:'Underweight'},{max:25,color:'bg-green-400',label:'Normal'},{max:30,color:'bg-yellow-400',label:'Overweight'},{max:35,color:'bg-orange-400',label:'Obese I'},{max:40,color:'bg-red-500',label:'Obese II+'}]
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto px-4 space-y-5">
         <div className="flex rounded-lg overflow-hidden border border-gray-300">
-          {(['metric','imperial'] as const).map(u=>(
-            <button key={u} onClick={()=>setUnit(u)}
-              className={`flex-1 py-2 text-sm font-medium transition ${unit===u?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50'}`}>
-              {u==='metric'?'Metric (kg/cm)':'Imperial (lb/ft)'}
-            </button>
-          ))}
+          <button onClick={()=>setUnit('metric')} className={'flex-1 py-2 text-sm font-medium transition '+(unit==='metric'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Metric (cm, kg)</button>
+          <button onClick={()=>setUnit('imperial')} className={'flex-1 py-2 text-sm font-medium transition '+(unit==='imperial'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Imperial (ft, lb)</button>
         </div>
-        {unit==='metric'?(
-          <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
-              <input type="number" value={weight} onChange={e=>setWeight(e.target.value)} placeholder="e.g. 70" className="w-full rounded border border-gray-300 px-3 py-2"/></div>
+        <div className="grid grid-cols-2 gap-4">
+          {unit==='metric'?(
             <div><label className="block text-sm font-medium text-gray-700 mb-1">Height (cm)</label>
-              <input type="number" value={height} onChange={e=>setHeight(e.target.value)} placeholder="e.g. 175" className="w-full rounded border border-gray-300 px-3 py-2"/></div>
-          </div>
-        ):(
-          <div className="grid grid-cols-3 gap-3">
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Weight (lb)</label>
-              <input type="number" value={weight} onChange={e=>setWeight(e.target.value)} placeholder="154" className="w-full rounded border border-gray-300 px-3 py-2"/></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Height (ft)</label>
-              <input type="number" value={heightFt} onChange={e=>setHeightFt(e.target.value)} placeholder="5" className="w-full rounded border border-gray-300 px-3 py-2"/></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Inches</label>
-              <input type="number" value={heightIn} onChange={e=>setHeightIn(e.target.value)} placeholder="9" className="w-full rounded border border-gray-300 px-3 py-2"/></div>
-          </div>
-        )}
-        {bmi&&category&&(
-          <div className="rounded-xl p-5 text-center border-2" style={{borderColor:category.color,background:category.color+'15'}}>
-            <p className="text-5xl font-bold mb-1" style={{color:category.color}}>{bmi.toFixed(1)}</p>
-            <p className="text-lg font-semibold" style={{color:category.color}}>{category.label}</p>
-            <p className="text-sm text-gray-500 mt-1">BMI {category.range}</p>
-          </div>
-        )}
-        <div className="grid grid-cols-2 gap-2">
-          {CATEGORIES.map(c=>(
-            <div key={c.label} className={`rounded-lg p-2.5 text-center ${category?.label===c.label?'ring-2':'opacity-60'}`}
-              style={{background:c.color+'20',ringColor:c.color}}>
-              <p className="text-xs font-semibold" style={{color:c.color}}>{c.label}</p>
-              <p className="text-xs text-gray-500">{c.range}</p>
+              <input type="number" value={height} onChange={e=>setHeight(Number(e.target.value))} className="w-full rounded border border-gray-300 px-3 py-2.5 text-xl font-mono text-center" min="50" max="300"/></div>
+          ):(
+            <div><label className="block text-sm font-medium text-gray-700 mb-1">Height</label>
+              <div className="flex gap-1.5">
+                <input type="number" value={heightFt} onChange={e=>setHeightFt(Number(e.target.value))} className="w-14 rounded border border-gray-300 px-2 py-2.5 text-lg font-mono text-center" min="1" max="9"/>
+                <span className="self-end pb-2.5 text-gray-500 text-sm">ft</span>
+                <input type="number" value={heightIn} onChange={e=>setHeightIn(Number(e.target.value))} className="w-14 rounded border border-gray-300 px-2 py-2.5 text-lg font-mono text-center" min="0" max="11"/>
+                <span className="self-end pb-2.5 text-gray-500 text-sm">in</span>
+              </div>
             </div>
-          ))}
+          )}
+          {unit==='metric'?(
+            <div><label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+              <input type="number" value={weight} onChange={e=>setWeight(Number(e.target.value))} className="w-full rounded border border-gray-300 px-3 py-2.5 text-xl font-mono text-center" min="1" max="500"/></div>
+          ):(
+            <div><label className="block text-sm font-medium text-gray-700 mb-1">Weight (lb)</label>
+              <input type="number" value={weightLb} onChange={e=>setWeightLb(Number(e.target.value))} className="w-full rounded border border-gray-300 px-3 py-2.5 text-xl font-mono text-center" min="1" max="1100"/></div>
+          )}
         </div>
-        {idealWeightKg&&height&&(
-          <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-600 text-center">
-            Ideal weight for your height: <strong>{idealWeightKg.min} – {idealWeightKg.max} kg</strong>
+        <div className="text-center bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-6 border border-gray-100">
+          <p className="text-6xl font-bold text-gray-800 font-mono">{bmi}</p>
+          <p className={'text-xl font-semibold mt-1 '+color}>{label}</p>
+          <p className="text-xs text-gray-500 mt-1">{desc}</p>
+        </div>
+        <div className="space-y-1">
+          <div className="flex rounded-full overflow-hidden h-4">
+            {RANGES.map((r,i,arr)=>(
+              <div key={r.label} className={'flex-1 '+r.color} style={{flex:((r.max-(arr[i-1]?.max||15))/(40-15))}}/>
+            ))}
           </div>
-        )}
+          <div className="relative h-3">
+            <div className="absolute w-2 h-3 bg-gray-800 rounded-sm" style={{left:pct+'%',transform:'translateX(-50%)'}}/>
+          </div>
+          <div className="flex justify-between text-xs text-gray-400 font-mono">
+            <span>15</span><span>18.5</span><span>25</span><span>30</span><span>35</span><span>40</span>
+          </div>
+        </div>
+        <div className="bg-gray-50 rounded-xl p-4 text-sm">
+          <p className="font-medium text-gray-700 mb-1">Ideal weight range</p>
+          <p className="text-gray-600">For your height: <span className="font-semibold text-green-600">{idealMin} – {idealMax} kg</span>{unit==='imperial'&&<span className="text-gray-400"> ({(idealMin*2.20462).toFixed(1)} – {(idealMax*2.20462).toFixed(1)} lb)</span>}</p>
+        </div>
+        <p className="text-xs text-gray-400 text-center">BMI is a screening tool, not a diagnostic measure. Consult a healthcare provider for health assessment.</p>
       </div>
     </ToolLayout>
   )

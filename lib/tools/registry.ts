@@ -502,6 +502,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'prime-number-checker',category:'utility',phase:1,isPro:false,isNew:true,tags:['prime','number','sieve','factor','math'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'countdown-timer',category:'utility',phase:1,isPro:false,isNew:true,tags:['countdown','timer','alarm','event','date'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'color-blindness-simulator',category:'utility',phase:1,isPro:false,isNew:true,tags:['color','blindness','accessibility','vision','simulate'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'barcode-generator',category:'utility',phase:1,isPro:false,isNew:true,tags:['barcode','code128','ean','generate','scan'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'markdown-to-html',category:'text',phase:1,isPro:false,isNew:true,tags:['markdown','html','convert','render','preview'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-triangle-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','triangle','border','arrow','shape'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'time-zone-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['timezone','convert','world','clock','time'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'bmi-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['bmi','body','mass','index','health'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
