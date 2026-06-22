@@ -567,6 +567,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'unix-timestamp-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['unix','timestamp','epoch','time','convert'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'number-to-words',category:'text',phase:1,isPro:false,isNew:true,tags:['number','words','english','convert','spell'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'html-entity-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','entity','encode','decode','escape'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'base64-image-viewer',category:'image',phase:1,isPro:false,isNew:true,tags:['base64','image','viewer','decode','data-url'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'json-schema-validator',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','schema','validate','ajv','format'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'svg-viewer',category:'developer',phase:1,isPro:false,isNew:true,tags:['svg','viewer','preview','code','render'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-minifier',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','minify','compress','optimize','clean'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'meta-tag-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['meta','tag','seo','og','html'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
