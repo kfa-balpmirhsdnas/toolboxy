@@ -159,6 +159,11 @@
     "mime-type-checker": "Look up MIME types by file extension or type string. Covers images, video, audio, documents, fonts, and more.",
     "text-encryptor": "Apply classical ciphers to text: ROT13, Caesar (any shift), Atbash, and Vigenère with a custom key.",
     "svg-viewer": "Preview SVG files with configurable backgrounds. Minify SVG to remove comments and whitespace, with download.",
-    "json-path-tester": "Test JSONPath expressions against JSON data. Supports dot notation, array slicing, wildcards, and recursive descent."
+    "json-path-tester": "Test JSONPath expressions against JSON data. Supports dot notation, array slicing, wildcards, and recursive descent.",
+    "table-generator": "Create tables in Markdown, HTML, CSV, or TSV format with custom alignment. Add/remove rows and columns interactively.",
+    "date-calculator": "Calculate the difference between two dates, add or subtract durations, and compute age from a birth date.",
+    "hex-dump-viewer": "View hex dump of any text or hex input. Shows offset, hex bytes, and ASCII representation in classic dump format.",
+    "text-sort-by-length": "Sort lines of text by character or word count, alphabetically, descending, or randomly. Optionally show lengths.",
+    "pixel-ruler": "On-screen ruler for measuring distances in pixels, centimeters, or inches. Auto-detects screen DPI."
   }
 }
