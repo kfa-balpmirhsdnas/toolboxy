@@ -2,115 +2,80 @@
 import { useState, useEffect, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-
 const tool = getToolBySlug('countdown-timer')!
-
 export default function CountdownTimerPage() {
-  const [hours, setHours] = useState(0)
-  const [minutes, setMinutes] = useState(5)
-  const [secs, setSecs] = useState(0)
-  const [remaining, setRemaining] = useState<number | null>(null)
-  const [running, setRunning] = useState(false)
-  const [finished, setFinished] = useState(false)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  const total = hours * 3600 + minutes * 60 + secs
-
-  useEffect(() => {
-    if (running && remaining !== null && remaining > 0) {
-      intervalRef.current = setInterval(() => {
-        setRemaining(prev => {
-          if (prev === null || prev <= 1) {
-            setRunning(false)
-            setFinished(true)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [running])
-
-  const start = () => {
-    if (total <= 0) return
-    setRemaining(total)
-    setRunning(true)
-    setFinished(false)
-  }
-  const pause = () => { setRunning(false); if (intervalRef.current) clearInterval(intervalRef.current) }
-  const resume = () => setRunning(true)
-  const reset = () => { setRunning(false); setRemaining(null); setFinished(false); if (intervalRef.current) clearInterval(intervalRef.current) }
-
-  const display = remaining ?? total
-  const h = Math.floor(display / 3600)
-  const m = Math.floor((display % 3600) / 60)
-  const s = display % 60
-  const pct = remaining !== null && total > 0 ? (remaining / total) * 100 : 100
-
+  const [targetDate,setTargetDate]=useState(()=>{const d=new Date();d.setFullYear(d.getFullYear()+1);d.setMonth(0);d.setDate(1);return d.toISOString().slice(0,16)})
+  const [label,setLabel]=useState('New Year')
+  const [now,setNow]=useState(new Date())
+  const [seconds,setSeconds]=useState(60)
+  const [timerMode,setTimerMode]=useState<'date'|'simple'>('date')
+  const [running,setRunning]=useState(false)
+  const [remaining,setRemaining]=useState(60)
+  const intervalRef=useRef<ReturnType<typeof setInterval>|null>(null)
+  useEffect(()=>{const id=setInterval(()=>setNow(new Date()),1000);return()=>clearInterval(id)},[])
+  useEffect(()=>{
+    if(running){intervalRef.current=setInterval(()=>{setRemaining(r=>{if(r<=1){clearInterval(intervalRef.current!);setRunning(false);return 0}return r-1})},1000)}
+    else if(intervalRef.current){clearInterval(intervalRef.current)}
+    return()=>{if(intervalRef.current)clearInterval(intervalRef.current)}
+  },[running])
+  const target=new Date(targetDate)
+  const diff=Math.max(0,target.getTime()-now.getTime())
+  const days=Math.floor(diff/86400000)
+  const hours=Math.floor((diff%86400000)/3600000)
+  const mins=Math.floor((diff%3600000)/60000)
+  const secs=Math.floor((diff%60000)/1000)
+  const fmt2=(n:number)=>String(n).padStart(2,'0')
+  const pct=100-(remaining/seconds*100)
+  const r=44;const circ=2*Math.PI*r
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">Countdown Timer</h1>
-        <p className="text-gray-500 mb-8 text-center">Set a countdown timer and get notified when time is up.</p>
-        <div className="bg-white rounded-xl shadow p-8 space-y-6">
-          {remaining === null && (
-            <div className="flex gap-2 justify-center">
-              {[
-                { label: 'H', val: hours, set: setHours, max: 23 },
-                { label: 'M', val: minutes, set: setMinutes, max: 59 },
-                { label: 'S', val: secs, set: setSecs, max: 59 }
-              ].map(({label, val, set, max}) => (
-                <div key={label} className="text-center">
-                  <input type="number" min={0} max={max}
-                    className="w-20 text-center text-3xl font-bold border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={val} onChange={e => set(Math.min(max, Math.max(0, +e.target.value)))} />
-                  <div className="text-xs text-gray-400 mt-1">{label}</div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {remaining !== null && (
-            <div className="text-center">
-              <div className={`text-7xl font-mono font-bold ${finished ? 'text-red-500' : 'text-gray-900'}`}>
-                {String(h).padStart(2,'0')}:{String(m).padStart(2,'0')}:{String(s).padStart(2,'0')}
-              </div>
-              <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div className={`h-full transition-all duration-1000 ${finished ? 'bg-red-500' : 'bg-blue-500'}`}
-                  style={{width: pct + '%'}} />
-              </div>
-              {finished && <p className="text-red-500 font-bold mt-4 text-lg">Time is up!</p>}
-            </div>
-          )}
-
-          <div className="flex gap-2 justify-center">
-            {remaining === null ? (
-              <button onClick={start} disabled={total === 0}
-                className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 transition-colors font-medium">
-                Start
-              </button>
-            ) : running ? (
-              <button onClick={pause} className="px-8 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium">Pause</button>
-            ) : (
-              <button onClick={resume} className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">Resume</button>
-            )}
-            {remaining !== null && (
-              <button onClick={reset} className="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">Reset</button>
-            )}
-          </div>
-
-          <div className="flex flex-wrap gap-2 justify-center">
-            {[[0,1,0],[0,5,0],[0,10,0],[0,25,0],[0,30,0],[1,0,0]].map(([hh,mm,ss]) => (
-              <button key={`${hh}${mm}${ss}`}
-                onClick={() => { setHours(hh); setMinutes(mm); setSecs(ss); setRemaining(null); setRunning(false); setFinished(false) }}
-                className="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors">
-                {hh > 0 ? `${hh}h` : ''}{mm > 0 ? `${mm}m` : ''}{ss > 0 ? `${ss}s` : ''}
-              </button>
-            ))}
-          </div>
+      <div className="max-w-md mx-auto px-4 space-y-4">
+        <div className="flex rounded-lg overflow-hidden border border-gray-300">
+          <button onClick={()=>{setTimerMode('date');setRunning(false)}} className={'flex-1 py-2 text-sm font-medium transition '+(timerMode==='date'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Event Countdown</button>
+          <button onClick={()=>{setTimerMode('simple');setRunning(false)}} className={'flex-1 py-2 text-sm font-medium transition '+(timerMode==='simple'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Simple Timer</button>
         </div>
+        {timerMode==='date'?(
+          <div className="space-y-3">
+            <div><label className="block text-xs text-gray-600 mb-1">Event name</label>
+              <input value={label} onChange={e=>setLabel(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-2 text-sm"/></div>
+            <div><label className="block text-xs text-gray-600 mb-1">Target date & time</label>
+              <input type="datetime-local" value={targetDate} onChange={e=>setTargetDate(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-2 text-sm"/></div>
+            <div className="bg-blue-600 rounded-2xl p-6 text-white text-center">
+              <p className="text-sm opacity-80 mb-3">{label}</p>
+              {diff>0?(
+                <div className="grid grid-cols-4 gap-3">
+                  {[{v:days,l:'Days'},{v:hours,l:'Hours'},{v:mins,l:'Mins'},{v:secs,l:'Secs'}].map(({v,l})=>(
+                    <div key={l}>
+                      <p className="text-4xl font-bold font-mono">{v<100?fmt2(v):v}</p>
+                      <p className="text-xs opacity-70 mt-1">{l}</p>
+                    </div>
+                  ))}
+                </div>
+              ):<p className="text-2xl font-bold">Time is up!</p>}
+            </div>
+          </div>
+        ):(
+          <div className="space-y-4">
+            <div><label className="block text-xs text-gray-600 mb-1">Duration (seconds)</label>
+              <input type="number" value={seconds} onChange={e=>{const v=Math.max(1,Number(e.target.value));setSeconds(v);if(!running)setRemaining(v)}} min="1" className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-xl text-center"/></div>
+            <div className="flex justify-center">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r={r} fill="none" stroke="#e5e7eb" strokeWidth="8"/>
+                <circle cx="60" cy="60" r={r} fill="none" stroke={remaining>0?'#3b82f6':'#ef4444'} strokeWidth="8"
+                  strokeDasharray={circ} strokeDashoffset={circ*(1-pct/100)} strokeLinecap="round" transform="rotate(-90 60 60)" style={{transition:'stroke-dashoffset 0.9s linear'}}/>
+                <text x="60" y="64" textAnchor="middle" className="font-mono" fontSize="22" fontWeight="bold" fill={remaining>0?'#1d4ed8':'#dc2626'}>{fmt2(Math.floor(remaining/60))}:{fmt2(remaining%60)}</text>
+              </svg>
+            </div>
+            <div className="flex gap-2 justify-center">
+              <button onClick={()=>setRunning(r=>!r)} disabled={remaining===0}
+                className={'px-6 py-2.5 rounded-xl font-semibold text-white transition '+(remaining===0?'bg-gray-300':'running'?'bg-yellow-500 hover:bg-yellow-600':'bg-blue-600 hover:bg-blue-700')}
+                style={{backgroundColor:running?'#f59e0b':undefined}}>
+                {running?'Pause':'Start'}
+              </button>
+              <button onClick={()=>{setRunning(false);setRemaining(seconds)}} className="px-6 py-2.5 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50">Reset</button>
+            </div>
+          </div>
+        )}
       </div>
     </ToolLayout>
   )

@@ -497,6 +497,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'number-to-words',category:'text',phase:1,isPro:false,isNew:true,tags:['number','words','convert','english','spell'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'css-clip-path-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','clip-path','shape','polygon','generator'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'yaml-to-json',category:'developer',phase:1,isPro:false,isNew:true,tags:['yaml','json','convert','parse','format'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'fibonacci-generator',category:'utility',phase:1,isPro:false,isNew:true,tags:['fibonacci','sequence','number','math','series'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-encryption',category:'developer',phase:1,isPro:false,isNew:true,tags:['encrypt','decrypt','caesar','rot13','xor'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'prime-number-checker',category:'utility',phase:1,isPro:false,isNew:true,tags:['prime','number','sieve','factor','math'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'countdown-timer',category:'utility',phase:1,isPro:false,isNew:true,tags:['countdown','timer','alarm','event','date'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'color-blindness-simulator',category:'utility',phase:1,isPro:false,isNew:true,tags:['color','blindness','accessibility','vision','simulate'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
