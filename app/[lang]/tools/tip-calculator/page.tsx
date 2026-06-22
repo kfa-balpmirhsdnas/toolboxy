@@ -1,90 +1,79 @@
 'use client'
 import { useState } from 'react'
 
-const TIP_PRESETS = [10,15,18,20,25]
+const TIP_PRESETS=[10,15,18,20,25,30]
 
 export default function TipCalculatorPage() {
-  const [bill, setBill] = useState('')
-  const [tipPct, setTipPct] = useState(18)
-  const [people, setPeople] = useState(1)
-  const [round, setRound] = useState(false)
+  const [bill,setBill]=useState('50')
+  const [tipPct,setTipPct]=useState(20)
+  const [custom,setCustom]=useState('')
+  const [people,setPeople]=useState('2')
+  const [roundUp,setRoundUp]=useState(false)
 
-  const billAmt = parseFloat(bill) || 0
-  const tipAmt = billAmt * tipPct / 100
-  const total = billAmt + tipAmt
-  const perPerson = people > 1 ? total / people : total
-  const tipPerPerson = people > 1 ? tipAmt / people : tipAmt
-  const fmt = (n:number) => '$'+(round?Math.round(n):n.toFixed(2))
+  const billNum=parseFloat(bill)||0
+  const activeTip=custom!==''?parseFloat(custom)||0:tipPct
+  const tipAmt=billNum*activeTip/100
+  const total=billNum+tipAmt
+  const perPerson=parseFloat(people)>0?total/parseFloat(people):total
+  const perPersonRounded=Math.ceil(perPerson*100)/100
+  const displayed=roundUp?perPersonRounded:perPerson
+  const fmt=(n:number)=>'$'+n.toFixed(2)
+
+  const QUALITY=['Poor','Fair','Good','Great','Excellent']
+  const qualityIdx=activeTip<=10?0:activeTip<=15?1:activeTip<=18?2:activeTip<=22?3:4
 
   return (
     <main className="min-h-screen bg-gray-50 py-10">
-      <div className="max-w-xl mx-auto px-4">
+      <div className="max-w-md mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Tip Calculator</h1>
-        <p className="text-gray-500 mb-8">Calculate tip amount and split the bill between multiple people</p>
+        <p className="text-gray-500 mb-8">Split the bill and calculate tip easily</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Bill Amount</label>
             <div className="relative">
               <span className="absolute left-3 top-2.5 text-gray-500">$</span>
-              <input type="number" value={bill} onChange={e=>setBill(e.target.value)} placeholder="0.00"
-                className="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              <input type="number" value={bill} onChange={e=>setBill(e.target.value)} min={0}
+                className="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-lg font-mono focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
           </div>
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium text-gray-700">Tip Percentage</label>
-              <span className="text-brand-600 font-bold text-lg">{tipPct}%</span>
+              <span className="text-sm text-gray-500">{QUALITY[qualityIdx]} service</span>
             </div>
-            <input type="range" min={0} max={50} value={tipPct} onChange={e=>setTipPct(parseInt(e.target.value))}
-              className="w-full" />
-            <div className="flex gap-2 mt-2">
-              {TIP_PRESETS.map(p=>(
-                <button key={p} onClick={()=>setTipPct(p)}
-                  className={'flex-1 py-1 rounded-lg text-sm font-medium transition-colors '+(tipPct===p?'bg-brand-500 text-white':'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
-                  {p}%
+            <div className="flex flex-wrap gap-2 mb-3">
+              {TIP_PRESETS.map(t=>(
+                <button key={t} onClick={()=>{setTipPct(t);setCustom('')}}
+                  className={'px-3 py-1.5 rounded-lg text-sm font-bold transition-colors '+(activeTip===t&&custom===''?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>
+                  {t}%
                 </button>
               ))}
             </div>
+            <input type="number" value={custom} onChange={e=>setCustom(e.target.value)} placeholder="Custom %"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Number of People</label>
-              <input type="number" min={1} max={100} value={people} onChange={e=>setPeople(Math.max(1,parseInt(e.target.value)||1))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            </div>
-            <div className="flex items-end pb-1">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={round} onChange={e=>setRound(e.target.checked)} className="rounded" />
-                <span className="text-sm text-gray-700">Round amounts</span>
-              </label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Number of People</label>
+            <div className="flex items-center gap-3">
+              <button onClick={()=>setPeople(p=>String(Math.max(1,parseInt(p)-1)))} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 font-bold">-</button>
+              <input type="number" value={people} onChange={e=>setPeople(e.target.value)} min={1}
+                className="w-16 text-center border border-gray-300 rounded-lg py-1.5 font-mono focus:outline-none" />
+              <button onClick={()=>setPeople(p=>String(parseInt(p)+1))} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 font-bold">+</button>
             </div>
           </div>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked={roundUp} onChange={e=>setRoundUp(e.target.checked)} className="rounded" />
+            <span className="text-sm text-gray-700">Round up per person</span>
+          </label>
         </div>
-        {billAmt > 0 && (
-          <div className="mt-6 space-y-3">
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-white border border-gray-200 rounded-xl p-4 text-center">
-                <div className="text-xl font-bold text-gray-800">{fmt(tipAmt)}</div>
-                <div className="text-xs text-gray-500 mt-1">Tip Amount</div>
+        {billNum>0&&(
+          <div className="mt-4 bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            {[['Tip Amount',fmt(tipAmt)],['Total Bill',fmt(total)],['Per Person',fmt(displayed)]].map(([l,v],i)=>(
+              <div key={l} className={'flex justify-between items-center px-5 py-3 '+(i<2?'border-b border-gray-100':'bg-brand-50')}>
+                <span className={'text-gray-600 '+(i===2?'font-semibold text-gray-800':'')}>{l}</span>
+                <span className={'font-mono font-bold '+(i===2?'text-brand-700 text-xl':'text-gray-900')}>{v}</span>
               </div>
-              <div className="bg-brand-50 border-2 border-brand-200 rounded-xl p-4 text-center">
-                <div className="text-xl font-bold text-brand-600">{fmt(total)}</div>
-                <div className="text-xs text-gray-500 mt-1">Total</div>
-              </div>
-              <div className="bg-white border border-gray-200 rounded-xl p-4 text-center">
-                <div className="text-xl font-bold text-gray-800">{fmt(billAmt)}</div>
-                <div className="text-xs text-gray-500 mt-1">Bill</div>
-              </div>
-            </div>
-            {people > 1 && (
-              <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-700">{fmt(perPerson)}</div>
-                  <div className="text-sm text-green-600 mt-1">Per person ({people} people)</div>
-                  <div className="text-sm text-gray-500 mt-1">{fmt(billAmt/people)} + {fmt(tipPerPerson)} tip</div>
-                </div>
-              </div>
-            )}
+            ))}
           </div>
         )}
       </div>
