@@ -327,6 +327,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'fraction-calculator',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
   {slug:'fuel-economy-calculator',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
   {slug:'zodiac-sign',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'prime-number-checker',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'color-to-tailwind',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'unit-converter',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'random-team-generator',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'random-name-generator',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
 ]
 
 export function getToolBySlug(slug: string): ToolMeta | undefined {
