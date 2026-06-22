@@ -462,6 +462,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'number-formatter',category:'utility',phase:1,isPro:false,isNew:true,tags:['number','format','thousand','decimal','currency'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'typing-speed-test',category:'utility',phase:1,isPro:false,isNew:true,tags:['typing','speed','wpm','test','keyboard'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'json-diff-checker',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','diff','compare','checker'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'character-counter',category:'text',phase:1,isPro:false,isNew:true,tags:['character','count','text','stats','analysis'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-specificity-calculator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','specificity','selector','calculator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'color-contrast-checker',category:'utility',phase:1,isPro:false,isNew:true,tags:['color','contrast','wcag','accessibility','checker'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'file-size-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['file','size','convert','bytes','kb','mb','gb'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-diff-checker',category:'text',phase:1,isPro:false,isNew:true,tags:['text','diff','compare','differences'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
