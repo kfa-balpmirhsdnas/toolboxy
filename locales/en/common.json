@@ -105,7 +105,7 @@
     "json-minifier": "Minify JSON by removing whitespace and formatting. Shows byte savings and allows download.",
     "text-reverser": "Reverse text by characters, words, or lines. Simple and fast text manipulation tool.",
     "color-gradient-generator": "Generate CSS gradients with custom colors, direction, and type. Includes preset themes.",
-    "roman-numeral-converter": "Convert between numbers and Roman numerals. Supports values from 1 to 3999.",
+    "roman-numeral-converter": "Convert between Arabic numbers and Roman numerals (1–3999) instantly.",
     "lorem-ipsum-generator": "Generate Lorem Ipsum placeholder text by paragraphs, sentences, or words.",
     "css-box-shadow-generator": "Visually create CSS box shadows with sliders for offset, blur, spread, color, and opacity.",
     "string-length-counter": "Count characters, words, bytes, lines, and sentences in any text. Click any stat to copy.",
@@ -149,7 +149,7 @@
     "whitespace-remover": "Remove or normalize whitespace from text. Trim lines, collapse spaces, remove blank lines, and more.",
     "list-deduplicator": "Remove duplicate items from a list. Case-insensitive option, blank line removal, and sort support.",
     "text-truncator": "Truncate text to a set number of characters, words, or sentences, from the end, start, or middle.",
-    "ip-address-info": "Get detailed info about any IPv4 address: class, type, binary, hex, and subnet calculations with CIDR.",
+    "ip-address-info": "Look up geolocation, ISP, and network details for any IP address.",
     "cron-expression-builder": "Build and validate cron expressions visually. See human-readable descriptions and preview the next scheduled runs.",
     "text-line-numberer": "Add line numbers to text with configurable start, step, separator, zero-padding, and empty-line handling.",
     "css-unit-converter": "Convert between CSS units: px, rem, em, pt, vw, vh. Configurable base font size and viewport dimensions.",
@@ -181,13 +181,13 @@
     "color-blindness-simulator": "Upload an image and preview it as seen by people with protanopia, deuteranopia, tritanopia, achromatopsia, and other color vision deficiencies.",
     "font-pairing-tool": "Explore curated Google Font pairings for headings and body text. Preview with live rendering, adjust size, and copy the CSS import snippet.",
     "text-counter-advanced": "Count characters, words, sentences, paragraphs, syllables, and reading/speaking time. Shows top word frequency and average word/sentence length.",
-    "ascii-art-generator": "Convert text into block ASCII art using a pixel bitmap font. Choose fill character and scale. Supports A-Z, 0-9, and basic punctuation.",
+    "ascii-art-generator": "Transform text into large ASCII art banners with custom characters.",
     "html-color-picker": "Pick colors with a visual picker, view HEX/RGB/HSL/HSV values, check contrast ratios, and browse 60+ named HTML/CSS colors.",
     "keyboard-shortcut-tester": "Click the capture zone and press any key or shortcut to see the key name, code, and modifiers (Ctrl, Alt, Shift, Meta). Captures last 20 events.",
     "css-box-model-visualizer": "Visualize and configure CSS box model (margin, border, padding, content). Supports content-box and border-box. Copy the generated CSS.",
     "open-graph-preview": "Preview how your page looks on Facebook, Twitter, and LinkedIn when shared. Generate the Open Graph and Twitter meta tags.",
     "json-to-yaml": "Convert JSON to YAML format. Handles nested objects, arrays, strings with special characters, and boolean/null values correctly.",
-    "morse-code-translator": "Translate text to Morse code and back. Includes audio playback of the Morse signal and a visual reference chart.",
+    "morse-code-translator": "Translate text to Morse code and back — with real-time audio playback.",
     "html-previewer": "Live HTML editor with real-time preview. Write HTML, CSS, and JavaScript and see the result instantly in a sandboxed iframe.",
     "html-minifier": "Minify HTML by removing comments, collapsing whitespace, and optionally minifying inline CSS and JavaScript. Shows bytes saved.",
     "pomodoro-timer": "A focused Pomodoro timer with configurable work, short break, and long break intervals. Tracks session count with visual progress ring.",
@@ -209,6 +209,7 @@
     "html-tag-stripper": "Remove all HTML tags and extract clean plain text from HTML code.",
     "number-palindrome": "Check if a number is a palindrome, find palindromes in a range, and explore reverse-addition.",
     "image-color-picker": "Upload an image and click to pick colors. Get HEX, RGB, and HSL values instantly.",
-    "word-cloud-generator": "Generate a word cloud from any text. Visualize word frequency with automatic stop-word filtering."
+    "word-cloud-generator": "Generate a word cloud from any text. Visualize word frequency with automatic stop-word filtering.",
+    "url-analyzer": "Analyze URL structure and detect suspicious patterns before you visit a link."
   }
 }
