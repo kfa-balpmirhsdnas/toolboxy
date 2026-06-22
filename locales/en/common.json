@@ -149,6 +149,11 @@
     "whitespace-remover": "Remove or normalize whitespace from text. Trim lines, collapse spaces, remove blank lines, and more.",
     "list-deduplicator": "Remove duplicate items from a list. Case-insensitive option, blank line removal, and sort support.",
     "text-truncator": "Truncate text to a set number of characters, words, or sentences, from the end, start, or middle.",
-    "ip-address-info": "Get detailed info about any IPv4 address: class, type, binary, hex, and subnet calculations with CIDR."
+    "ip-address-info": "Get detailed info about any IPv4 address: class, type, binary, hex, and subnet calculations with CIDR.",
+    "cron-expression-builder": "Build and validate cron expressions visually. See human-readable descriptions and preview the next scheduled runs.",
+    "text-line-numberer": "Add line numbers to text with configurable start, step, separator, zero-padding, and empty-line handling.",
+    "css-unit-converter": "Convert between CSS units: px, rem, em, pt, vw, vh. Configurable base font size and viewport dimensions.",
+    "text-diff-inline": "Compare two texts and highlight inline differences by word or character, with addition and deletion counts.",
+    "color-palette-extractor": "Upload any image and extract its dominant color palette using k-means clustering. Click to copy hex codes."
   }
 }
