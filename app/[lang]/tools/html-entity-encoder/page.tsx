@@ -1,116 +1,86 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('html-entity-encoder')!
-
-function encodeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-    .replace(/\//g, '&#x2F;')
+const encodeMap: Record<string,string> = {
+  '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;',
+  '\u00A9':'&copy;', '\u00AE':'&reg;', '\u2122':'&trade;', '\u20AC':'&euro;',
+  '\u00A3':'&pound;', '\u00A5':'&yen;', '\u00B0':'&deg;', '\u00B1':'&plusmn;',
+  '\u00D7':'&times;', '\u00F7':'&divide;', '\u2013':'&ndash;', '\u2014':'&mdash;',
+  '\u00A0':'&nbsp;', '\u00AB':'&laquo;', '\u00BB':'&raquo;',
 }
+const decodeMap: Record<string,string> = Object.fromEntries(Object.entries(encodeMap).map(([k,v])=>[v,k]))
+const ENC_RE = /[&<>"'\u00A9\u00AE\u2122\u20AC\u00A3\u00A5\u00B0\u00B1\u00D7\u00F7\u2013\u2014\u00A0\u00AB\u00BB]/g
+const PREVIEW_ENTRIES = Object.entries(encodeMap).slice(0,12)
 
-function decodeHtml(s: string): string {
-  const el = typeof document !== 'undefined' ? document.createElement('div') : null
-  if (!el) return s
-  el.innerHTML = s
-  return el.textContent || el.innerText || s
-}
-
-function encodeAllHtml(s: string): string {
-  return Array.from(s).map(c => {
-    const code = c.codePointAt(0) || 0
-    if (code > 127 || /[&<>"'/]/.test(c)) return '&#' + code + ';'
-    return c
-  }).join('')
-}
-
-export default function HtmlEntityEncoderPage({ params }: { params: { lang: string } }) {
+export default function HtmlEntityEncoderPage() {
   const [input, setInput] = useState('')
-  const [mode, setMode] = useState<'encode'|'decode'|'encode-all'>('encode')
+  const [mode, setMode] = useState<'encode'|'decode'>('encode')
+  const [output, setOutput] = useState('')
   const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
 
-  function handleInput(v: string) {
-    if (!tracked.current) { trackToolUsed('html-entity-encoder'); tracked.current = true }
-    setInput(v)
+  function process() {
+    if (!input) return
+    if (mode === 'encode') {
+      setOutput(input.replace(ENC_RE, c => encodeMap[c] ?? c))
+    } else {
+      setOutput(input
+        .replace(/&[a-zA-Z]+;/g, e => decodeMap[e] ?? e)
+        .replace(/&#(\d+);/g, (_,n) => String.fromCharCode(parseInt(n)))
+        .replace(/&#x([0-9a-fA-F]+);/g, (_,h) => String.fromCharCode(parseInt(h,16)))
+      )
+    }
   }
 
-  const output = (() => {
-    if (!input) return ''
-    if (mode === 'encode') return encodeHtml(input)
-    if (mode === 'encode-all') return encodeAllHtml(input)
-    return decodeHtml(input)
-  })()
-
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('html-entity-encoder')
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
+  function copy() { navigator.clipboard.writeText(output); setCopied(true); setTimeout(()=>setCopied(false),2000) }
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="flex flex-wrap gap-2">
-          {([['encode', 'Encode (safe chars)'], ['encode-all', 'Encode (all chars)'], ['decode', 'Decode']] as const).map(([m, label]) => (
-            <button key={m} onClick={() => setMode(m)}
-              className={'px-4 py-2 rounded-lg text-sm font-medium transition-colors ' + (mode===m ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {label}
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">HTML Entity Encoder</h1>
+        <p className="text-gray-500 mb-6">Encode special characters to HTML entities and decode them back</p>
+        <div className="flex gap-2 mb-6">
+          {(['encode','decode'] as const).map(m=>(
+            <button key={m} onClick={()=>{setMode(m);setOutput('')}}
+              className={'px-4 py-2 rounded-lg font-medium capitalize transition-colors '+(mode===m?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50')}>
+              {m}
             </button>
           ))}
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Input</label>
-          <textarea
-            value={input}
-            onChange={e => handleInput(e.target.value)}
-            rows={6}
-            placeholder={mode === 'decode' ? '&lt;p&gt;Hello &amp; World&lt;/p&gt;' : '<p>Hello & "World"</p>'}
-            className="w-full p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400"
-          />
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {mode==='encode' ? 'Plain Text Input' : 'HTML with Entities'}
+            </label>
+            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={5}
+              placeholder={mode==='encode' ? 'Enter text with <tags> & "special" chars...' : 'Enter &lt;HTML&gt; &amp; entities...'}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
+          </div>
+          <button onClick={process} className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2.5 rounded-lg transition-colors">
+            {mode==='encode' ? 'Encode to HTML Entities' : 'Decode HTML Entities'}
+          </button>
+          {output && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-medium text-gray-700">Result</label>
+                <button onClick={copy} className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg">{copied?'\u2713 Copied':'Copy'}</button>
+              </div>
+              <textarea value={output} readOnly rows={5} className="w-full border border-gray-200 rounded-lg px-3 py-2 font-mono text-sm bg-gray-50 resize-none" />
+            </div>
+          )}
         </div>
-        {output && (
-          <>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400 font-medium px-2">OUTPUT</span>
-              <div className="flex-1 h-px bg-gray-200" />
-            </div>
-            <div className="relative">
-              <textarea
-                value={output}
-                readOnly
-                rows={6}
-                className="w-full p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono bg-gray-50 text-gray-700 focus:outline-none"
-              />
-              <button onClick={copy}
-                className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50">
-                {copied ? '✓ Copied' : 'Copy'}
-              </button>
-            </div>
-            <div className="flex gap-4 text-xs text-gray-500">
-              <span>Input: {input.length} chars</span>
-              <span>Output: {output.length} chars</span>
-            </div>
-          </>
-        )}
-        <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-500">
-          <p className="font-medium text-gray-600 mb-1">Common entities:</p>
-          <div className="grid grid-cols-3 gap-1 font-mono">
-            {[['&', '&amp;'], ['<', '&lt;'], ['>', '&gt;'], ['"', '&quot;'], ["'", '&#39;'], ['©', '&copy;'], ['®', '&reg;'], ['→', '&rarr;'], ['×', '&times;']].map(([c, e]) => (
-              <span key={c}>{c} = {e}</span>
+        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-6">
+          <h2 className="font-semibold text-gray-800 mb-3">Common HTML Entities Reference</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
+            {PREVIEW_ENTRIES.map(([char, entity]) => (
+              <div key={entity} className="flex items-center gap-2 bg-gray-50 rounded px-2 py-1.5">
+                <span className="font-mono text-brand-600 text-xs">{entity}</span>
+                <span className="text-gray-400">\u2192</span>
+                <span>{char==='\u00A0'?'NBSP':char}</span>
+              </div>
             ))}
           </div>
         </div>
       </div>
-    </ToolLayout>
+    </main>
   )
 }
