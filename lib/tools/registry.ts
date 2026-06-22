@@ -537,6 +537,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'html-minifier',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','minify','compress','optimize','whitespace'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-to-ascii-art',category:'text',phase:1,isPro:false,isNew:true,tags:['ascii','art','text','banner','figlet'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'percentage-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['percentage','percent','calculate','ratio','math'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'typing-speed-test',category:'utility',phase:1,isPro:false,isNew:true,tags:['typing','speed','wpm','test','keyboard'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'json-to-csv',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','csv','convert','export','data'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'number-sorter',category:'utility',phase:1,isPro:false,isNew:true,tags:['number','sort','order','list','rank'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-animation-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','animation','keyframe','transition','effect'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'color-mixer',category:'developer',phase:1,isPro:false,isNew:true,tags:['color','mix','blend','combine','palette'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
