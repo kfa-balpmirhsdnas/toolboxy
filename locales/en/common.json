@@ -101,8 +101,14 @@
     "unix-timestamp": "Convert Unix timestamps to human-readable dates and vice versa. Includes a live clock.",
     "word-frequency": "Analyze word frequency in any text. See counts, percentages, and rankings.",
     "url-parser": "Parse any URL into components: protocol, host, path, query parameters, and hash.",
-    "random-number-generator": "Generate random integers or decimals in any range. Supports unique numbers and bulk generation.",
-    "aspect-ratio-calculator": "Calculate aspect ratios and scale dimensions. Supports common presets like 16:9 and 4:3.",
+    "random-number-generator": {
+      "title": "Random Number Generator",
+      "description": "Generate random integers in a custom range with options for unique numbers and bulk generation"
+    },
+    "aspect-ratio-calculator": {
+      "title": "Aspect Ratio Calculator",
+      "description": "Calculate aspect ratios, find missing dimensions and explore common presets like 16:9 and 4:3"
+    },
     "binary-text-converter": "Convert text to binary and binary back to text. Quick encoding/decoding tool.",
     "percentage-calculator": {
       "title": "Percentage Calculator",
@@ -115,7 +121,10 @@
     "lorem-ipsum-generator": "Generate placeholder Lorem Ipsum text — paragraphs, sentences, or words.",
     "css-box-shadow-generator": "Visually create CSS box shadows with sliders for offset, blur, spread, color, and opacity.",
     "string-length-counter": "Count characters, words, bytes, lines, and sentences in any text. Click any stat to copy.",
-    "temperature-converter": "Convert between Celsius, Fahrenheit, Kelvin, and Rankine temperature units.",
+    "temperature-converter": {
+      "title": "Temperature Converter",
+      "description": "Convert between Celsius, Fahrenheit and Kelvin with a quick-reference table"
+    },
     "morse-code-converter": "Convert text to Morse code and Morse code back to text. Includes quick reference chart.",
     "countdown-timer": "Simple countdown timer with presets. Pause, resume, and reset with a visual progress bar.",
     "character-counter": "Count characters, words, bytes, lines, sentences and more. Includes reading time estimate.",
@@ -226,6 +235,14 @@
     "image-color-picker": "Upload an image and click to pick colors. Get HEX, RGB, and HSL values instantly.",
     "word-cloud-generator": "Generate a word cloud from any text. Visualize word frequency with automatic stop-word filtering.",
     "url-analyzer": "Analyze URL structure and detect suspicious patterns before you visit a link.",
-    "text-diff": "Compare two texts side by side and highlight line-by-line differences."
+    "text-diff": "Compare two texts side by side and highlight line-by-line differences.",
+    "flip-a-coin": {
+      "title": "Flip a Coin",
+      "description": "Flip a virtual coin and get heads or tails — tracks your flip history and statistics"
+    },
+    "reading-time-calculator": {
+      "title": "Reading Time Calculator",
+      "description": "Estimate how long it takes to read any text based on words per minute reading speed"
+    }
   }
 }
