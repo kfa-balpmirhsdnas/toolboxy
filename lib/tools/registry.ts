@@ -517,6 +517,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'lorem-ipsum-generator',category:'text',phase:1,isPro:false,isNew:true,tags:['lorem','ipsum','placeholder','text','dummy'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'css-flexbox-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','flexbox','layout','flex','generator'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'html-color-codes',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','color','codes','reference','hex'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'age-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['age','birthday','date','calculate','years'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'reading-time-estimator',category:'text',phase:1,isPro:false,isNew:true,tags:['reading','time','estimate','wpm','words'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-to-slug',category:'text',phase:1,isPro:false,isNew:true,tags:['slug','url','text','convert','seo'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'number-base-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['binary','hex','octal','decimal','convert'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'gradient-text-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['gradient','text','css','color','webkit'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
