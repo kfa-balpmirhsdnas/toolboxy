@@ -2,93 +2,51 @@
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-
 const tool = getToolBySlug('discount-calculator')!
-
 export default function DiscountCalculatorPage() {
-  const [original,setOriginal]=useState('100')
-  const [discount,setDiscount]=useState('20')
-  const [final,setFinal]=useState('')
-
-  const origNum=parseFloat(original)||0
-  const discNum=parseFloat(discount)||0
-  const salePrice=origNum*(1-discNum/100)
-  const savings=origNum-salePrice
-
-  // Reverse: find discount % from final price
-  const finalNum=parseFloat(final)||0
-  const revDisc=origNum>0&&finalNum>0?((origNum-finalNum)/origNum*100):0
-  const revSavings=origNum-finalNum
-
-  const PRESETS=[5,10,15,20,25,30,40,50,60,70,75]
-
+  const [mode,setMode]=useState<'pct'|'find-pct'|'find-orig'>('pct')
+  const [orig,setOrig]=useState('100')
+  const [disc,setDisc]=useState('20')
+  const [final,setFinal]=useState('80')
+  const o=parseFloat(orig),d=parseFloat(disc),f=parseFloat(final)
+  let result:{label:string;val:string}[]=[]
+  if(mode==='pct'&&o&&d){
+    const save=o*d/100,fp=o-save
+    result=[{label:'Sale Price',val:'$'+fp.toFixed(2)},{label:'You Save',val:'$'+save.toFixed(2)+' ('+d+'%)'},{label:'Original',val:'$'+o.toFixed(2)}]
+  } else if(mode==='find-pct'&&o&&f){
+    const pct=((o-f)/o*100)
+    result=[{label:'Discount',val:pct.toFixed(2)+'%'},{label:'Savings',val:'$'+(o-f).toFixed(2)},{label:'Final Price',val:'$'+f.toFixed(2)}]
+  } else if(mode==='find-orig'&&f&&d){
+    const op=f/(1-d/100)
+    result=[{label:'Original Price',val:'$'+op.toFixed(2)},{label:'You Saved',val:'$'+(op-f).toFixed(2)},{label:'Final Price',val:'$'+f.toFixed(2)}]
+  }
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Discount Calculator</h1>
-        <p className="text-gray-500 mb-8">Calculate sale prices, savings, and find the discount percentage from two prices</p>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-          <h2 className="font-semibold text-gray-800">Price after discount</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Original Price</label>
-              <input type="number" value={original} onChange={e=>setOriginal(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
-              <input type="number" value={discount} onChange={e=>setDiscount(e.target.value)} min={0} max={100}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {PRESETS.map(p=>(
-              <button key={p} onClick={()=>setDiscount(String(p))} className={'text-xs px-2.5 py-1 rounded-full font-medium '+(parseFloat(discount)===p?'bg-brand-500 text-white':'bg-gray-100 text-gray-600 hover:bg-brand-50 hover:text-brand-600')}>
-                {p}%
-              </button>
+      <div className="max-w-md mx-auto px-4 space-y-5">
+        <div className="grid grid-cols-3 gap-2">
+          {[['pct','Find sale price'],['find-pct','Find % off'],['find-orig','Find original']].map(([id,label])=>(
+            <button key={id} onClick={()=>setMode(id as typeof mode)}
+              className={`rounded-lg border p-2.5 text-xs font-medium text-center transition ${mode===id?'bg-blue-600 text-white border-blue-600':'border-gray-200 hover:bg-gray-50'}`}>{label}</button>
+          ))}
+        </div>
+        <div className="space-y-3">
+          {(mode==='pct'||mode==='find-pct')&&<div><label className="block text-sm font-medium text-gray-700 mb-1">Original Price ($)</label>
+            <input type="number" value={orig} onChange={e=>setOrig(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-2"/></div>}
+          {(mode==='pct'||mode==='find-orig')&&<div><label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
+            <input type="number" value={disc} onChange={e=>setDisc(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-2"/></div>}
+          {(mode==='find-pct'||mode==='find-orig')&&<div><label className="block text-sm font-medium text-gray-700 mb-1">Final Price ($)</label>
+            <input type="number" value={final} onChange={e=>setFinal(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-2"/></div>}
+        </div>
+        {result.length>0&&(
+          <div className="divide-y divide-gray-100 rounded-xl border border-gray-200 overflow-hidden">
+            {result.map(r=>(
+              <div key={r.label} className="flex justify-between items-center px-4 py-3">
+                <span className="text-sm text-gray-600">{r.label}</span>
+                <span className="text-lg font-bold text-blue-700">{r.val}</span>
+              </div>
             ))}
           </div>
-          {origNum>0&&discNum>=0&&discNum<=100&&(
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-brand-50 border border-brand-200 rounded-xl p-3 text-center">
-                <div className="text-xs text-gray-500">Sale Price</div>
-                <div className="text-2xl font-bold text-brand-700">{salePrice.toFixed(2)}</div>
-              </div>
-              <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
-                <div className="text-xs text-gray-500">You Save</div>
-                <div className="text-2xl font-bold text-green-700">{savings.toFixed(2)}</div>
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="mt-4 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-          <h2 className="font-semibold text-gray-800">Find the discount %</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Original Price</label>
-              <input type="number" value={original} onChange={e=>setOriginal(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Final Price</label>
-              <input type="number" value={final} onChange={e=>setFinal(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            </div>
-          </div>
-          {origNum>0&&finalNum>0&&finalNum<=origNum&&(
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 text-center">
-                <div className="text-xs text-gray-500">Discount</div>
-                <div className="text-2xl font-bold text-purple-700">{revDisc.toFixed(1)}%</div>
-              </div>
-              <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 text-center">
-                <div className="text-xs text-gray-500">Amount Saved</div>
-                <div className="text-2xl font-bold text-orange-700">{revSavings.toFixed(2)}</div>
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </ToolLayout>
   )

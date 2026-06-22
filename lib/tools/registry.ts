@@ -422,6 +422,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'cron-expression-parser',category:'developer',phase:1,isPro:false,isNew:true,tags:['cron','schedule','expression','parse'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-to-binary',category:'developer',phase:1,isPro:false,isNew:true,tags:['text','binary','convert','encode'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'number-to-words',category:'utility',phase:1,isPro:false,isNew:true,tags:['number','words','spell','convert'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'loan-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['loan','mortgage','interest','payment'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'tip-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['tip','restaurant','split','bill'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'discount-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['discount','sale','price','percent'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'calorie-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['calorie','diet','nutrition','tdee'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'color-name-finder',category:'developer',phase:1,isPro:false,isNew:true,tags:['color','name','hex','rgb','palette'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
