@@ -149,7 +149,10 @@
       "title": "Lorem Ipsum生成ツール",
       "description": "デザインやモックアップ用のLorem Ipsumダミーテキストを段落・文・単語数で生成します"
     },
-    "css-box-shadow-generator": "ã¹ã©ã¤ãã¼ã§ãªãã»ããããã©ã¼ãã¹ãã¬ãããè²ãèª¿æ´ãCSSããã¯ã¹ã·ã£ãã¦ãçæãã¾ãã",
+    "css-box-shadow-generator": {
+      "title": "ボックスシャドウジェネレーター",
+      "description": "多層CSSボックスシャドウをビジュアルで作成 — X・Y・blur・spread・色・不透明度・insetをライブプレビューで調整"
+    },
     "string-length-counter": "ãã­ã¹ãã®æå­æ°ãåèªæ°ããã¤ãæ°ãè¡æ°ãæã®æ°ãã«ã¦ã³ããã¾ãã",
     "temperature-converter": {
       "title": "温度変換ツール",
@@ -253,7 +256,10 @@
     "number-converter": "2進数・8進数・10進数・16進数の間で数値を変換します。ビット数・バイト数・整形済み出力も表示。",
     "text-rotate": "テキストを楽しく変換：逆さまにする・鏡文字・単語/行の逆順・文字回転・ザルゴエフェクト。",
     "speech-to-text": "ブラウザの音声認識APIを使って話し言葉をテキストに変換。複数言語対応、途中結果もリアルタイム表示。",
-    "css-animation-generator": "CSSアニメーションをビジュアルで構築。8プリセットから選びデュレーション・イージング・反復・方向を設定してCSSをコピー。",
+    "css-animation-generator": {
+      "title": "CSSアニメーションジェネレーター",
+      "description": "ライブプレビューでCSSキーフレームアニメーションを作成 — 時間・イージング・遅延・繰り返し・方向・フィルモードを設定"
+    },
     "markdown-table-generator": "インタラクティブにテーブルを作成しMarkdown・HTML・CSVでエクスポート。列の整列・行列の追加削除・ダウンロードに対応。",
     "uuid-bulk-generator": "最大1000個のUUIDを一括生成。v4・ハイフンなし・大文字・nil・ショートID形式に対応。全コピーまたはテキストダウンロード。",
     "color-blindness-simulator": "画像をアップロードして赤色覚異常・緑色覚異常・青色覚異常・全色盲など色覚特性者の見え方をシミュレート。",
@@ -499,6 +505,18 @@
     "character-frequency": {
       "title": "文字頻度分析ツール",
       "description": "テキストの文字・単語・n-gram頻度を棒グラフとパーセントで分析します"
+    },
+    "border-radius-generator": {
+      "title": "ボーダーラジウスジェネレーター",
+      "description": "カスタムCSSボーダーラジウス形状を作成 — 角のリンク/個別設定、プリセット選択、即時CSS出力"
+    },
+    "css-flexbox-generator": {
+      "title": "Flexboxジェネレーター",
+      "description": "CSSフレックスボックスレイアウトをビジュアルで作成 — 方向・wrap・justify・align・gapをライブプレビューで調整"
+    },
+    "css-grid-generator": {
+      "title": "CSSグリッドジェネレーター",
+      "description": "CSSグリッドレイアウトをビジュアルで作成 — 列・行数・gap・テンプレート値をライブグリッドプレビューで設定"
     }
   }
 }
