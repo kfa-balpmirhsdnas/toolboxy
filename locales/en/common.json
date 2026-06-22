@@ -75,8 +75,8 @@
     "pdf-to-text": "Extract plain text from PDF files instantly in your browser. No upload to server needed.",
     "base64-decoder": "Decode Base64 encoded strings back to plain text. Supports Unicode / UTF-8.",
     "url-decoder": "Decode percent-encoded URLs back to human-readable text. Fast and private.",
-    "csv-to-json": "Convert CSV data to JSON format. Paste CSV or upload a file Ã¢ÂÂ first row is treated as headers.",
-    "jwt-decoder": "Decode and inspect JWT tokens client-side. See header, payload, and expiry Ã¢ÂÂ token never leaves your browser.",
+    "csv-to-json": "Convert CSV data to JSON format. Paste CSV or upload a file ÃÂ¢ÃÂÃÂ first row is treated as headers.",
+    "jwt-decoder": "Decode and inspect JWT tokens client-side. See header, payload, and expiry ÃÂ¢ÃÂÃÂ token never leaves your browser.",
     "json-validator": "Validate JSON syntax instantly. Paste your JSON and get clear error messages with line numbers.",
     "json-to-csv": "Convert JSON arrays to CSV format. Download or copy the result for use in Excel, Google Sheets, and more.",
     "text-compare": "Compare two texts side by side and highlight differences line by line. Perfect for spotting changes in code or documents.",
@@ -86,7 +86,12 @@
     "regex-tester": "Test regular expressions against text in real time with match highlighting and group capture details.",
     "unit-converter": "Convert between units of length, weight, temperature, area, volume, speed, and data instantly.",
     "timezone-converter": "Convert date and time between any world timezone with a live world clock view.",
-    "color-palette-generator": "Generate beautiful color palettes — monochromatic, analogous, complementary, triadic, and more.",
-    "image-compress": "Compress and resize images in your browser to reduce file size without losing quality."
+    "color-palette-generator": "Generate beautiful color palettes â monochromatic, analogous, complementary, triadic, and more.",
+    "image-compress": "Compress and resize images in your browser to reduce file size without losing quality.",
+    "jpg-to-png": "Convert JPG and JPEG images to lossless PNG format directly in your browser.",
+    "png-to-jpg": "Convert PNG images to JPG with adjustable quality. Transparent areas filled white.",
+    "svg-to-png": "Render SVG files to PNG at any scale. Paste SVG code or upload a file.",
+    "checksum-generator": "Compute SHA-1, SHA-256, SHA-384, and SHA-512 checksums for files or text. Verify file integrity.",
+    "image-crop": "Crop images by specifying pixel coordinates. No upload required — runs in browser."
   }
 }
