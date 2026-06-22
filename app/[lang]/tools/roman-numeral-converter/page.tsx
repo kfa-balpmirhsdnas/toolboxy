@@ -1,108 +1,93 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('roman-numeral-converter')!
-
-const VALS: [number, string][] = [
-  [1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],
-  [100,'C'],[90,'XC'],[50,'L'],[40,'XL'],
-  [10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I'],
+const ROMAN_MAP: Array<[number, string]> = [
+  [1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],
+  [50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']
 ]
 
 function toRoman(n: number): string {
-  if (n < 1 || n > 3999) return 'Out of range (1–3999)'
-  let result = ''
-  let num = n
-  for (const [val, sym] of VALS) {
-    while (num >= val) { result += sym; num -= val }
+  if(n<=0||n>3999) return 'Out of range (1–3999)'
+  let result=''
+  for(const [val,sym] of ROMAN_MAP) {
+    while(n>=val) { result+=sym; n-=val }
   }
   return result
 }
 
-function fromRoman(s: string): number | null {
-  const upper = s.toUpperCase().trim()
-  if (!/^[IVXLCDM]+$/.test(upper)) return null
-  const map: Record<string, number> = { I:1, V:5, X:10, L:50, C:100, D:500, M:1000 }
-  let result = 0
-  for (let i = 0; i < upper.length; i++) {
-    const cur = map[upper[i]], next = map[upper[i+1]]
-    if (next && cur < next) result -= cur
-    else result += cur
+function fromRoman(s: string): number|null {
+  const str=s.toUpperCase().trim()
+  if(!str) return null
+  const map: Record<string,number>={I:1,V:5,X:10,L:50,C:100,D:500,M:1000}
+  let total=0
+  for(let i=0;i<str.length;i++) {
+    const cur=map[str[i]]
+    const next=map[str[i+1]]
+    if(cur===undefined) return null
+    if(next&&cur<next) total-=cur
+    else total+=cur
   }
-  return result > 0 ? result : null
+  return total>0&&total<=3999?total:null
 }
 
-export default function RomanNumeralConverterPage({ params }: { params: { lang: string } }) {
-  const [mode, setMode] = useState<'to-roman'|'from-roman'>('to-roman')
-  const [input, setInput] = useState('')
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
+export default function RomanNumeralConverter() {
+  const [mode,setMode]=useState<'toRoman'|'fromRoman'>('toRoman')
+  const [input,setInput]=useState('2024')
+  const [copied,setCopied]=useState(false)
 
-  function track() {
-    if (!tracked.current) { trackToolUsed('roman-numeral-converter'); tracked.current = true }
-  }
+  const num=parseInt(input)
+  const outputRoman=!isNaN(num)?toRoman(num):''
+  const outputArabic=fromRoman(input)
 
-  const numVal = parseInt(input)
-  const output = (() => {
-    if (!input.trim()) return ''
-    if (mode === 'to-roman') {
-      if (isNaN(numVal)) return 'Enter a number'
-      return toRoman(numVal)
-    } else {
-      const n = fromRoman(input)
-      return n !== null ? String(n) : 'Invalid Roman numeral'
-    }
-  })()
+  const output=mode==='toRoman'?outputRoman:(outputArabic!==null?String(outputArabic):'Invalid Roman numeral')
+  const copy=async()=>{await navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('roman-numeral-converter')
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
+  // Year range for fun facts
+  const currentYear=2024
+  const romanYear=toRoman(currentYear)
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-5">
-        <div className="flex gap-2">
-          {([['to-roman','Number \u2192 Roman'],['from-roman','Roman \u2192 Number']] as [typeof mode, string][]).map(([m,label]) => (
-            <button key={m} onClick={() => { setMode(m); setInput('') }}
-              className={'px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (mode===m ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {label}
-            </button>
-          ))}
+    <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Roman Numeral Converter</h1>
+        <p className="text-gray-500 mb-8">Convert between Arabic numbers and Roman numerals instantly.</p>
+        <div className="flex gap-2 mb-6">
+          <button onClick={()=>{setMode('toRoman');setInput('2024')}} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${mode==='toRoman'?'bg-blue-600 text-white':'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+            Arabic → Roman
+          </button>
+          <button onClick={()=>{setMode('fromRoman');setInput('MMXXIV')}} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${mode==='fromRoman'?'bg-blue-600 text-white':'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+            Roman → Arabic
+          </button>
         </div>
-        <input
-          value={input}
-          onChange={e => { setInput(e.target.value); track() }}
-          placeholder={mode === 'to-roman' ? 'e.g. 2024' : 'e.g. MMXXIV'}
-          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400"
-        />
-        {output && (
-          <div className="p-4 bg-brand-50 border border-brand-200 rounded-xl flex items-center justify-between">
-            <div>
-              <p className="text-xs text-brand-600 font-medium mb-0.5">Result</p>
-              <p className="text-3xl font-bold tracking-wide text-brand-800">{output}</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            {mode==='toRoman'?'Enter number (1–3999)':'Enter Roman numeral'}
+          </label>
+          <input type="text" value={input} onChange={e=>setInput(e.target.value)}
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-2xl font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6 text-center tracking-widest"
+            placeholder={mode==='toRoman'?'e.g. 42':'e.g. XLII'}/>
+          {input && (
+            <div className="text-center">
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-4">
+                <p className="text-sm text-blue-500 mb-1">{mode==='toRoman'?'Roman numeral':'Arabic number'}</p>
+                <p className="text-4xl font-black text-blue-700 tracking-widest">{output}</p>
+              </div>
+              <button onClick={copy} className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl font-medium">{copied?'✓ Copied!':'Copy'}</button>
             </div>
-            {!/range|invalid|Enter/.test(output) && (
-              <button onClick={copy} className="px-3 py-1.5 bg-brand-600 text-white text-xs rounded-lg hover:bg-brand-700">
-                {copied ? '\u2713 Copied' : 'Copy'}
+          )}
+        </div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Quick Reference</h3>
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+            {ROMAN_MAP.map(([val,sym])=>(
+              <button key={sym} onClick={()=>{setMode('toRoman');setInput(String(val))}} className="bg-gray-50 hover:bg-blue-50 rounded-lg p-2 text-center transition-colors">
+                <div className="text-xs font-bold text-blue-600">{sym}</div>
+                <div className="text-xs text-gray-500">{val}</div>
               </button>
-            )}
-          </div>
-        )}
-        <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
-          <p className="text-xs font-semibold text-gray-600 mb-2">Quick Reference</p>
-          <div className="grid grid-cols-4 gap-1 text-xs font-mono">
-            {VALS.map(([v, s]) => (
-              <div key={s} className="flex gap-1.5"><span className="text-brand-600 w-8">{s}</span><span className="text-gray-500">{v}</span></div>
             ))}
           </div>
         </div>
       </div>
-    </ToolLayout>
+    </div>
   )
 }
