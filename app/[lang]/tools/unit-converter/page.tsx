@@ -2,90 +2,81 @@
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-type Category='length'|'weight'|'volume'|'area'
-
-const CATS:{id:Category;label:string;units:{id:string;label:string;factor:number}[]}[]=[
-  {id:'length',label:'Length',units:[
-    {id:'mm',label:'Millimeter (mm)',factor:0.001},{id:'cm',label:'Centimeter (cm)',factor:0.01},
-    {id:'m',label:'Meter (m)',factor:1},{id:'km',label:'Kilometer (km)',factor:1000},
-    {id:'in',label:'Inch (in)',factor:0.0254},{id:'ft',label:'Foot (ft)',factor:0.3048},
-    {id:'yd',label:'Yard (yd)',factor:0.9144},{id:'mi',label:'Mile (mi)',factor:1609.344},
-    {id:'nm',label:'Nautical mile',factor:1852},{id:'ly',label:'Light year',factor:9.461e15},
+const tool = getToolBySlug('unit-converter')!
+type U={label:string;tb:(v:number)=>number;fb:(v:number)=>number}
+type C={name:string;units:U[]}
+const CATS:C[]=[
+  {name:'Length',units:[
+    {label:'Meter',tb:v=>v,fb:v=>v},{label:'Kilometer',tb:v=>v*1000,fb:v=>v/1000},
+    {label:'Centimeter',tb:v=>v/100,fb:v=>v*100},{label:'Millimeter',tb:v=>v/1000,fb:v=>v*1000},
+    {label:'Mile',tb:v=>v*1609.344,fb:v=>v/1609.344},{label:'Yard',tb:v=>v*0.9144,fb:v=>v/0.9144},
+    {label:'Foot',tb:v=>v*0.3048,fb:v=>v/0.3048},{label:'Inch',tb:v=>v*0.0254,fb:v=>v/0.0254},
   ]},
-  {id:'weight',label:'Weight',units:[
-    {id:'mg',label:'Milligram (mg)',factor:0.000001},{id:'g',label:'Gram (g)',factor:0.001},
-    {id:'kg',label:'Kilogram (kg)',factor:1},{id:'t',label:'Metric ton',factor:1000},
-    {id:'oz',label:'Ounce (oz)',factor:0.0283495},{id:'lb',label:'Pound (lb)',factor:0.453592},
-    {id:'st',label:'Stone (st)',factor:6.35029},{id:'ton',label:'US ton',factor:907.185},
+  {name:'Weight',units:[
+    {label:'Kilogram',tb:v=>v,fb:v=>v},{label:'Gram',tb:v=>v/1000,fb:v=>v*1000},
+    {label:'Pound',tb:v=>v*0.453592,fb:v=>v/0.453592},{label:'Ounce',tb:v=>v*0.0283495,fb:v=>v/0.0283495},
+    {label:'Metric Ton',tb:v=>v*1000,fb:v=>v/1000},
   ]},
-  {id:'volume',label:'Volume',units:[
-    {id:'ml',label:'Milliliter (ml)',factor:0.001},{id:'l',label:'Liter (L)',factor:1},
-    {id:'m3',label:'Cubic meter (m\u00B3)',factor:1000},{id:'cm3',label:'Cubic cm (cm\u00B3)',factor:0.001},
-    {id:'floz',label:'US fl oz',factor:0.0295735},{id:'cup',label:'US cup',factor:0.236588},
-    {id:'pt',label:'US pint',factor:0.473176},{id:'qt',label:'US quart',factor:0.946353},
-    {id:'gal',label:'US gallon',factor:3.78541},{id:'tsp',label:'Teaspoon',factor:0.00492892},
-    {id:'tbsp',label:'Tablespoon',factor:0.0147868},
+  {name:'Temperature',units:[
+    {label:'Celsius',tb:v=>v,fb:v=>v},
+    {label:'Fahrenheit',tb:v=>(v-32)*5/9,fb:v=>v*9/5+32},
+    {label:'Kelvin',tb:v=>v-273.15,fb:v=>v+273.15},
   ]},
-  {id:'area',label:'Area',units:[
-    {id:'mm2',label:'mm\u00B2',factor:0.000001},{id:'cm2',label:'cm\u00B2',factor:0.0001},
-    {id:'m2',label:'m\u00B2',factor:1},{id:'km2',label:'km\u00B2',factor:1000000},
-    {id:'ha',label:'Hectare',factor:10000},{id:'ac',label:'Acre',factor:4046.86},
-    {id:'ft2',label:'ft\u00B2',factor:0.092903},{id:'mi2',label:'mi\u00B2',factor:2589988},
+  {name:'Area',units:[
+    {label:'Sq Meter',tb:v=>v,fb:v=>v},{label:'Sq Km',tb:v=>v*1e6,fb:v=>v/1e6},
+    {label:'Sq Mile',tb:v=>v*2589988,fb:v=>v/2589988},{label:'Sq Foot',tb:v=>v*0.092903,fb:v=>v/0.092903},
+    {label:'Acre',tb:v=>v*4046.86,fb:v=>v/4046.86},{label:'Hectare',tb:v=>v*10000,fb:v=>v/10000},
+  ]},
+  {name:'Speed',units:[
+    {label:'m/s',tb:v=>v,fb:v=>v},{label:'km/h',tb:v=>v/3.6,fb:v=>v*3.6},
+    {label:'mph',tb:v=>v*0.44704,fb:v=>v/0.44704},{label:'knot',tb:v=>v*0.514444,fb:v=>v/0.514444},
+  ]},
+  {name:'Volume',units:[
+    {label:'Liter',tb:v=>v,fb:v=>v},{label:'Milliliter',tb:v=>v/1000,fb:v=>v*1000},
+    {label:'Gallon (US)',tb:v=>v*3.78541,fb:v=>v/3.78541},{label:'Fluid Oz',tb:v=>v*0.0295735,fb:v=>v/0.0295735},
+    {label:'Cup',tb:v=>v*0.236588,fb:v=>v/0.236588},{label:'Cubic Meter',tb:v=>v*1000,fb:v=>v/1000},
   ]},
 ]
-
-
-const tool = getToolBySlug('unit-converter')!
-
 export default function UnitConverterPage() {
-  const [cat,setCat]=useState<Category>('length')
+  const [ci,setCi]=useState(0)
+  const [fi,setFi]=useState(0)
+  const [ti,setTi]=useState(1)
   const [val,setVal]=useState('1')
-  const [from,setFrom]=useState('m')
-
-  const catData=CATS.find(c=>c.id===cat)!
-  const fromUnit=catData.units.find(u=>u.id===from)
-  const base=(parseFloat(val)||0)*(fromUnit?.factor??1)
-
-  function switchCat(c:Category){setCat(c);setFrom(CATS.find(x=>x.id===c)!.units[2].id)}
-
+  const cat=CATS[ci],from=cat.units[fi],to=cat.units[ti]
+  const n=parseFloat(val)
+  const result=isNaN(n)?'':(() => {
+    const r=to.fb(from.tb(n))
+    if(!isFinite(r))return 'N/A'
+    if(Math.abs(r)<0.0001&&r!==0||Math.abs(r)>1e9)return r.toExponential(6)
+    return parseFloat(r.toFixed(8)).toString()
+  })()
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Unit Converter</h1>
-        <p className="text-gray-500 mb-8">Convert length, weight, volume, and area units in one place</p>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-          <div className="flex flex-wrap gap-2">
-            {CATS.map(c=>(
-              <button key={c.id} onClick={()=>switchCat(c.id)} className={'px-4 py-2 rounded-lg font-medium transition-colors '+(cat===c.id?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>{c.label}</button>
-            ))}
+      <div className="max-w-xl mx-auto px-4 space-y-5">
+        <div className="flex flex-wrap gap-1.5">
+          {CATS.map((c,i)=>(
+            <button key={c.name} onClick={()=>{setCi(i);setFi(0);setTi(1)}}
+              className={`px-3 py-1 rounded-full text-sm font-medium border transition ${i===ci?'bg-blue-600 text-white border-blue-600':'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}>{c.name}</button>
+          ))}
+        </div>
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <input type="number" value={val} onChange={e=>setVal(e.target.value)} className="flex-1 rounded border border-gray-300 px-3 py-2 text-lg"/>
+            <select value={fi} onChange={e=>setFi(Number(e.target.value))} className="rounded border border-gray-300 px-2 py-2 text-sm">
+              {cat.units.map((u,i)=><option key={u.label} value={i}>{u.label}</option>)}
+            </select>
           </div>
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Value</label>
-              <input type="number" value={val} onChange={e=>setVal(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-lg font-mono focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
-              <select value={from} onChange={e=>setFrom(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 h-[46px] focus:outline-none focus:ring-2 focus:ring-brand-500">
-                {catData.units.map(u=><option key={u.id} value={u.id}>{u.label}</option>)}
-              </select>
-            </div>
+          <div className="text-center text-gray-400 text-2xl">&#8597;</div>
+          <div className="flex gap-2">
+            <input readOnly value={result} className="flex-1 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-lg font-mono text-blue-700"/>
+            <select value={ti} onChange={e=>setTi(Number(e.target.value))} className="rounded border border-gray-300 px-2 py-2 text-sm">
+              {cat.units.map((u,i)=><option key={u.label} value={i}>{u.label}</option>)}
+            </select>
           </div>
         </div>
-        <div className="mt-4 space-y-1.5">
-          {catData.units.map(u=>{
-            const v=base/u.factor
-            const fmt=v===0?'0':Math.abs(v)>=0.0001&&Math.abs(v)<1e13?parseFloat(v.toPrecision(7)).toLocaleString('en-US',{maximumSignificantDigits:7}):v.toExponential(4)
-            return(
-              <div key={u.id} onClick={()=>setFrom(u.id)} className={'flex items-center justify-between px-4 py-2.5 rounded-xl border cursor-pointer transition-colors '+(u.id===from?'border-brand-300 bg-brand-50':'bg-white border-gray-200 hover:border-gray-300')}>
-                <span className="text-sm font-medium text-gray-600">{u.label}</span>
-                <span className="font-mono text-sm font-semibold text-gray-900">{fmt}</span>
-              </div>
-            )
-          })}
-        </div>
+        {result&&<div className="bg-blue-50 rounded-lg p-3 text-sm text-center text-blue-800">
+          <strong>{val} {from.label}</strong> = <strong>{result} {to.label}</strong>
+        </div>}
       </div>
     </ToolLayout>
   )

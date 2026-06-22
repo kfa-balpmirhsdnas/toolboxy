@@ -2,84 +2,67 @@
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
+const tool = getToolBySlug('prime-number-checker')!
 function isPrime(n:number):boolean{
-  if(n<2) return false
-  if(n===2) return true
-  if(n%2===0) return false
-  for(let i=3;i<=Math.sqrt(n);i+=2) if(n%i===0) return false
+  if(n<2)return false
+  if(n===2||n===3)return true
+  if(n%2===0||n%3===0)return false
+  for(let i=5;i*i<=n;i+=6)if(n%i===0||n%(i+2)===0)return false
   return true
 }
 function getFactors(n:number):number[]{
   const f:number[]=[]
-  for(let i=2;i<=n;i++) while(n%i===0){f.push(i);n/=i}
-  return f
+  for(let i=1;i*i<=n;i++)if(n%i===0){f.push(i);if(i!==n/i)f.push(n/i)}
+  return f.sort((a,b)=>a-b)
 }
-function nextPrime(n:number):number{let x=n+1;while(!isPrime(x))x++;return x}
-function prevPrime(n:number):number{let x=n-1;while(x>1&&!isPrime(x))x--;return x>1?x:2}
-function primesUpTo(n:number):number[]{return Array.from({length:n-1},(_,i)=>i+2).filter(isPrime)}
-
-
-const tool = getToolBySlug('prime-number-checker')!
-
+function primesInRange(s:number,e:number):number[]{
+  const r:number[]=[]
+  for(let i=Math.max(2,s);i<=e&&r.length<500;i++)if(isPrime(i))r.push(i)
+  return r
+}
 export default function PrimeNumberCheckerPage() {
-  const [input,setInput]=useState('17')
-  const [rangeEnd,setRangeEnd]=useState('100')
-
-  const n=parseInt(input)||0
-  const prime=isPrime(n)
-  const factors=n>1&&!prime?getFactors(n):[]
-  const np=n>0?nextPrime(n):null
-  const pp=n>2?prevPrime(n):null
-  const primes=primesUpTo(Math.min(parseInt(rangeEnd)||100,1000))
-
+  const [num,setNum]=useState('17')
+  const [rs,setRs]=useState('1')
+  const [re,setRe]=useState('100')
+  const [rp,setRp]=useState<number[]|null>(null)
+  const n=parseInt(num)
+  const valid=!isNaN(n)&&n>=0&&n<=999999999
+  const prime=valid?isPrime(n):null
+  const factors=valid&&prime===false&&n>1?getFactors(n):[]
+  const nextP=()=>{let x=n+1;while(!isPrime(x))x++;return x}
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Prime Number Checker</h1>
-        <p className="text-gray-500 mb-8">Check if a number is prime, find its factors, and list all primes up to a given value</p>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Check Number</label>
-            <input type="number" value={input} onChange={e=>setInput(e.target.value)} min={2}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-lg font-mono focus:outline-none focus:ring-2 focus:ring-brand-500" />
+      <div className="max-w-xl mx-auto px-4 space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Enter a number</label>
+          <input type="number" value={num} onChange={e=>setNum(e.target.value)}
+            className="w-full rounded border border-gray-300 px-3 py-2 text-xl" min="0" max="999999999"/>
+        </div>
+        {valid&&prime!==null&&(
+          <div className={`rounded-xl p-6 text-center border-2 ${prime?'bg-green-50 border-green-300':'bg-red-50 border-red-300'}`}>
+            <p className="text-4xl font-bold mb-2" style={{color:prime?'#15803d':'#b91c1c'}}>
+              {n} is {prime?'PRIME':'NOT PRIME'}
+            </p>
+            {!prime&&n>1&&<p className="text-sm text-gray-600 mt-1">Factors: {factors.join(', ')}</p>}
+            {prime&&n<999999999&&<p className="text-sm text-gray-500 mt-1">Next prime: {nextP()}</p>}
           </div>
-          {n>0&&(
-            <div className={'rounded-xl p-4 border '+(prime?'bg-green-50 border-green-200':'bg-orange-50 border-orange-200')}>
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">{prime?'\u2713':'\u00D7'}</span>
-                <div>
-                  <p className={'text-xl font-bold '+(prime?'text-green-700':'text-orange-700')}>
-                    {n.toLocaleString()} is {prime?'a prime number':'not prime'}
-                  </p>
-                  {!prime&&factors.length>0&&<p className="text-sm text-gray-500 mt-0.5">Factors: {factors.join(' \u00D7 ')}</p>}
-                </div>
-              </div>
-              <div className="flex gap-4 mt-3 text-sm">
-                {pp&&<div><span className="text-gray-500">Previous prime: </span><button onClick={()=>setInput(String(pp))} className="font-mono font-semibold text-brand-600 hover:underline">{pp}</button></div>}
-                {np&&<div><span className="text-gray-500">Next prime: </span><button onClick={()=>setInput(String(np))} className="font-mono font-semibold text-brand-600 hover:underline">{np}</button></div>}
-              </div>
+        )}
+        <div className="border-t pt-5">
+          <p className="text-sm font-medium text-gray-700 mb-3">Find primes in a range</p>
+          <div className="flex gap-2 items-end">
+            <div className="flex-1"><label className="block text-xs text-gray-500 mb-1">From</label>
+              <input type="number" value={rs} onChange={e=>setRs(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-2"/></div>
+            <div className="flex-1"><label className="block text-xs text-gray-500 mb-1">To</label>
+              <input type="number" value={re} onChange={e=>setRe(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-2"/></div>
+            <button onClick={()=>{const s=parseInt(rs),e=parseInt(re);if(!isNaN(s)&&!isNaN(e)&&e>=s&&e-s<=100000)setRp(primesInRange(s,e))}}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 whitespace-nowrap">Find</button>
+          </div>
+          {rp!==null&&(
+            <div className="mt-3 bg-gray-50 rounded-lg p-4 max-h-48 overflow-y-auto">
+              <p className="text-xs text-gray-500 mb-2 font-medium">{rp.length} primes found</p>
+              <p className="font-mono text-sm text-gray-800 break-all leading-relaxed">{rp.join(', ')}</p>
             </div>
           )}
-        </div>
-        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-semibold text-gray-800">Primes up to:</h2>
-            <div className="flex items-center gap-2">
-              <input type="number" value={rangeEnd} onChange={e=>setRangeEnd(e.target.value)} min={2} max={1000}
-                className="w-24 border border-gray-300 rounded-lg px-2 py-1 text-sm font-mono" />
-              <span className="text-xs text-gray-400">(max 1000)</span>
-            </div>
-          </div>
-          <p className="text-sm text-gray-500 mb-2">{primes.length} prime numbers found</p>
-          <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
-            {primes.map(p=>(
-              <button key={p} onClick={()=>setInput(String(p))}
-                className={'px-2 py-1 rounded text-sm font-mono '+(n===p?'bg-brand-500 text-white':'bg-gray-100 hover:bg-brand-50 hover:text-brand-600 text-gray-700')}>
-                {p}
-              </button>
-            ))}
-          </div>
         </div>
       </div>
     </ToolLayout>

@@ -402,6 +402,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'html-color-names',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0} },
 ]
 
+  {slug:'aspect-ratio-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['aspect','ratio','screen'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'unit-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['unit','convert','length','weight'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'percentage-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['percentage','percent','math'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'prime-number-checker',category:'utility',phase:1,isPro:false,isNew:true,tags:['prime','number','math'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-encrypt-decrypt',category:'developer',phase:1,isPro:false,isNew:true,tags:['encrypt','decrypt','cipher'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
