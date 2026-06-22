@@ -1,110 +1,73 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
-
 const tool = getToolBySlug('font-pairing-tool')!
-
-const PAIRS = [
-  { heading:'Playfair Display', body:'Source Sans Pro',    style:'serif+sans',    mood:'Elegant' },
-  { heading:'Montserrat',        body:'Merriweather',      style:'sans+serif',    mood:'Modern Classic' },
-  { heading:'Oswald',            body:'Lato',              style:'sans+sans',     mood:'Bold Clean' },
-  { heading:'Raleway',           body:'Raleway',           style:'sans+sans',     mood:'Minimal' },
-  { heading:'Playfair Display',  body:'Raleway',           style:'serif+sans',    mood:'Editorial' },
-  { heading:'Roboto Slab',       body:'Roboto',            style:'serif+sans',    mood:'Tech Friendly' },
-  { heading:'Abril Fatface',     body:'Lato',              style:'display+sans',  mood:'Bold Statement' },
-  { heading:'Libre Baskerville', body:'Libre Baskerville', style:'serif+serif',   mood:'Literary' },
-  { heading:'Josefin Sans',      body:'Josefin Sans',      style:'sans+sans',     mood:'Geometric' },
-  { heading:'Nunito',            body:'Nunito',            style:'rounded+rounded',mood:'Friendly' },
-  { heading:'Bebas Neue',        body:'Open Sans',         style:'display+sans',  mood:'Impact' },
-  { heading:'Crimson Text',      body:'Work Sans',         style:'serif+sans',    mood:'Refined' },
+const PAIRINGS=[
+  {heading:'Playfair Display',body:'Source Sans Pro',style:'elegant',preview:'Serif heading with clean sans-serif body — perfect for editorial and blog layouts.'},
+  {heading:'Montserrat',body:'Merriweather',style:'modern',preview:'Bold geometric header paired with a readable serif — great for magazines.'},
+  {heading:'Raleway',body:'Lato',style:'minimal',preview:'Thin elegant heading with a versatile body font — suits portfolios and landing pages.'},
+  {heading:'Oswald',body:'Lora',style:'strong',preview:'Condensed bold headline contrasts beautifully with a literary serif body.'},
+  {heading:'Nunito',body:'Open Sans',style:'friendly',preview:'Rounded heading and neutral body — ideal for apps and friendly interfaces.'},
+  {heading:'Libre Baskerville',body:'Libre Franklin',style:'classic',preview:'Classic old-style serif heading with a modern humanist body — timeless.'},
+  {heading:'Bebas Neue',body:'Roboto',style:'bold',preview:'Impactful all-caps heading with Google’s most popular sans-serif body font.'},
+  {heading:'DM Serif Display',body:'DM Sans',style:'refined',preview:'DM family pairing — display serif header with matching geometric sans body.'},
 ]
-
-const SAMPLE_TEXTS = [
-  { heading:'The quick brown fox', body:'The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.' },
-  { heading:'Design Matters', body:'Good design is not just what looks good. It also needs to perform, engages, surprises and makes life better.' },
-  { heading:'Hello World', body:'This is a sample paragraph to demonstrate how the font pairing looks in practice. Typography sets the tone of your content.' },
-]
-
-export default function FontPairingToolPage({ params }: { params: { lang: string } }) {
-  const [pairIdx, setPairIdx] = useState(0)
-  const [sampleIdx, setSampleIdx] = useState(0)
-  const [fontSize, setFontSize] = useState(20)
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
-
-  function track() { if (!tracked.current) { trackToolUsed('font-pairing-tool'); tracked.current = true } }
-
-  const pair = PAIRS[pairIdx]
-  const sample = SAMPLE_TEXTS[sampleIdx]
-  const hFont = pair.heading.replace(/ /g,'+')
-  const bFont = pair.body.replace(/ /g,'+')
-  const googleUrl = `https://fonts.googleapis.com/css2?family=${hFont}:wght@700&family=${bFont}&display=swap`
-
-  const css = `/* Google Fonts import */
-@import url('${googleUrl}');
-
-h1, h2, h3 {
-  font-family: '${pair.heading}', serif;
-  font-weight: 700;
-}
-
-body, p {
-  font-family: '${pair.body}', sans-serif;
-}`
-
-  async function copy() {
-    await navigator.clipboard.writeText(css)
-    trackToolCopy('font-pairing-tool')
-    setCopied(true); setTimeout(()=>setCopied(false),1500)
-  }
-
+const STYLES=['all','elegant','modern','minimal','strong','friendly','classic','bold','refined']
+const SIZES={xs:12,sm:14,md:16,lg:18,xl:20}
+const sampleText='The quick brown fox jumps over the lazy dog. Sphinx of black quartz, judge my vow.'
+export default function FontPairingToolPage() {
+  const [filter,setFilter]=useState('all')
+  const [bg,setBg]=useState('#ffffff')
+  const [fgH,setFgH]=useState('#111827')
+  const [fgB,setFgB]=useState('#374151')
+  const [bodySize,setBodySize]=useState(16)
+  const [sampleBody,setSampleBody]=useState('Discover the perfect harmony of typefaces. Good typography elevates your design and guides the reader effortlessly through your content. Choose a pairing that matches your brand’s personality.')
+  const filtered=filter==='all'?PAIRINGS:PAIRINGS.filter(p=>p.style===filter)
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <link href={googleUrl} rel="stylesheet" />
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {PAIRS.map((p,i)=>(
-            <button key={i} onClick={()=>{setPairIdx(i);track()}}
-              className={'p-2 rounded-xl border text-left transition-all ' + (pairIdx===i?'border-brand-400 bg-brand-50':'border-gray-200 hover:border-gray-300')}>
-              <p className="text-xs text-gray-500">{p.mood}</p>
-              <p className="text-xs font-medium truncate">{p.heading}</p>
-              <p className="text-xs text-gray-400 truncate">{p.body}</p>
+    <ToolLayout tool={tool}>
+      <div className="max-w-2xl mx-auto px-4 space-y-4">
+        <div className="flex flex-wrap gap-1.5 items-center">
+          {STYLES.map(s=>(
+            <button key={s} onClick={()=>setFilter(s)}
+              className={'px-3 py-1 rounded-full text-xs font-medium capitalize transition border '+(filter===s?'bg-blue-600 text-white border-blue-600':'border-gray-200 hover:bg-gray-50 text-gray-600')}>
+              {s}
             </button>
           ))}
+          <div className="ml-auto flex items-center gap-2">
+            <label className="text-xs text-gray-500">Body size</label>
+            <select value={bodySize} onChange={e=>setBodySize(Number(e.target.value))} className="rounded border border-gray-300 px-2 py-1 text-xs">
+              {Object.entries(SIZES).map(([k,v])=><option key={k} value={v}>{k} ({v}px)</option>)}
+            </select>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2 items-center">
-          {SAMPLE_TEXTS.map((s,i)=>(
-            <button key={i} onClick={()=>{setSampleIdx(i);track()}}
-              className={'px-3 py-1.5 rounded-lg text-xs transition-colors ' + (sampleIdx===i?'bg-gray-700 text-white':'bg-gray-100 text-gray-600')}>
-              Sample {i+1}
-            </button>
+        <div className="flex gap-2 text-xs text-gray-500 items-center">
+          <label>BG</label><input type="color" value={bg} onChange={e=>setBg(e.target.value)} className="w-8 h-6 rounded border border-gray-300 p-0.5 cursor-pointer"/>
+          <label>Heading</label><input type="color" value={fgH} onChange={e=>setFgH(e.target.value)} className="w-8 h-6 rounded border border-gray-300 p-0.5 cursor-pointer"/>
+          <label>Body</label><input type="color" value={fgB} onChange={e=>setFgB(e.target.value)} className="w-8 h-6 rounded border border-gray-300 p-0.5 cursor-pointer"/>
+        </div>
+        <div className="space-y-4">
+          {filtered.map((p,i)=>(
+            <div key={i} className="rounded-2xl border border-gray-200 overflow-hidden">
+              <div className="px-6 py-5" style={{background:bg}}>
+                <link rel="preconnect" href="https://fonts.googleapis.com"/>
+                <style>{'@import url('https://fonts.googleapis.com/css2?family='+encodeURIComponent(p.heading).replace(/%20/g,'+')+'&family='+encodeURIComponent(p.body).replace(/%20/g,'+')+'&display=swap')'}</style>
+                <h2 className="text-3xl font-bold mb-3" style={{fontFamily:"'"+p.heading+"', serif",color:fgH,lineHeight:1.2}}>
+                  {p.heading} + {p.body}
+                </h2>
+                <p className="leading-relaxed" style={{fontFamily:"'"+p.body+"', sans-serif",color:fgB,fontSize:bodySize+'px'}}>
+                  {sampleBody}
+                </p>
+              </div>
+              <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-t border-gray-100">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-white border border-gray-200 text-gray-600 capitalize">{p.style}</span>
+                  <span className="text-xs text-gray-500">{p.preview}</span>
+                </div>
+                <a href={'https://fonts.google.com/?query='+encodeURIComponent(p.heading)} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline flex-shrink-0">Google Fonts</a>
+              </div>
+            </div>
           ))}
-          <div className="flex items-center gap-2 ml-auto text-xs text-gray-600">
-            <span>Size: {fontSize}px</span>
-            <input type="range" min={12} max={36} value={fontSize} onChange={e=>{setFontSize(parseInt(e.target.value));track()}} className="w-24 accent-brand-600" />
-          </div>
-        </div>
-        <div className="p-6 bg-white border border-gray-200 rounded-2xl">
-          <h2 style={{fontFamily:"'"+pair.heading+"', serif", fontSize:fontSize*1.8+'px', fontWeight:700, lineHeight:1.2, marginBottom:'0.5em'}}>
-            {sample.heading}
-          </h2>
-          <p style={{fontFamily:"'"+pair.body+"', sans-serif", fontSize:fontSize+'px', lineHeight:1.7, color:'#374151'}}>
-            {sample.body}
-          </p>
-          <div className="mt-4 text-xs text-gray-400">
-            Heading: <span className="font-semibold text-gray-600">{pair.heading}</span> &nbsp;·&nbsp;
-            Body: <span className="font-semibold text-gray-600">{pair.body}</span> &nbsp;·&nbsp;
-            <span className="text-brand-600">{pair.mood}</span>
-          </div>
-        </div>
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-medium text-gray-600">CSS Import</label>
-            <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'✓ Copied':'Copy'}</button>
-          </div>
-          <pre className="p-4 bg-gray-900 text-green-400 text-xs rounded-xl font-mono overflow-x-auto">{css}</pre>
         </div>
       </div>
     </ToolLayout>

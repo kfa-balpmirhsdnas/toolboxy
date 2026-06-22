@@ -507,6 +507,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'css-triangle-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','triangle','border','arrow','shape'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'time-zone-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['timezone','convert','world','clock','time'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'bmi-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['bmi','body','mass','index','health'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'email-validator',category:'developer',phase:1,isPro:false,isNew:true,tags:['email','validate','check','format','syntax'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'screen-resolution-checker',category:'utility',phase:1,isPro:false,isNew:true,tags:['screen','resolution','display','pixel','viewport'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['calculator','math','compute','arithmetic','basic'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'image-color-extractor',category:'image',phase:1,isPro:false,isNew:true,tags:['image','color','extract','palette','dominant'],maxFileSizeMB:{free:5,pro:10} },
+  {slug:'font-pairing-tool',category:'text',phase:1,isPro:false,isNew:true,tags:['font','pairing','typography','google','design'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
