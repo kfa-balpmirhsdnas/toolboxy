@@ -1,110 +1,72 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('binary-text-converter')!
-
-function textToBinary(text: string): string {
-  return Array.from(text).map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' ')
+function textToBinary(text:string):string{
+  return Array.from(text).map(c=>c.charCodeAt(0).toString(2).padStart(8,'0')).join(' ')
+}
+function binaryToText(bin:string):string{
+  try{
+    return bin.trim().split(/\s+/).map(b=>String.fromCharCode(parseInt(b,2))).join('')
+  }catch{return 'Invalid binary input'}
+}
+function textToHex(text:string):string{
+  return Array.from(text).map(c=>c.charCodeAt(0).toString(16).padStart(2,'0').toUpperCase()).join(' ')
+}
+function hexToText(hex:string):string{
+  try{return hex.trim().split(/\s+/).map(h=>String.fromCharCode(parseInt(h,16))).join('')}catch{return 'Invalid hex input'}
 }
 
-function binaryToText(bin: string): string {
-  const clean = bin.trim().replace(/[^01\s]/g, '')
-  const groups = clean.split(/\s+/).filter(g => g.length > 0)
-  return groups.map(g => String.fromCharCode(parseInt(g.padStart(8, '0'), 2))).join('')
-}
+export default function BinaryTextConverterPage() {
+  const [mode,setMode]=useState<'to'|'from'>('to')
+  const [format,setFormat]=useState<'binary'|'hex'>('binary')
+  const [input,setInput]=useState('Hello World')
+  const [copied,setCopied]=useState(false)
 
-function isValidBinary(s: string): boolean {
-  return /^[01\s]+$/.test(s.trim()) && s.trim().length > 0
-}
+  const output=mode==='to'
+    ?(format==='binary'?textToBinary(input):textToHex(input))
+    :(format==='binary'?binaryToText(input):hexToText(input))
 
-export default function BinaryTextConverterPage({ params }: { params: { lang: string } }) {
-  const [mode, setMode] = useState<'to-binary' | 'to-text'>('to-binary')
-  const [input, setInput] = useState('')
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
-
-  function track() {
-    if (!tracked.current) { trackToolUsed('binary-text-converter'); tracked.current = true }
-  }
-
-  const output = (() => {
-    if (!input.trim()) return ''
-    if (mode === 'to-binary') return textToBinary(input)
-    if (!isValidBinary(input)) return ''
-    return binaryToText(input)
-  })()
-
-  const isError = mode === 'to-text' && input.trim() && !isValidBinary(input)
-
-  async function copy() {
-    if (!output) return
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('binary-text-converter')
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
-
-  function swap() {
-    if (output) {
-      setInput(output)
-      setMode(m => m === 'to-binary' ? 'to-text' : 'to-binary')
-    }
-  }
+  function copy(){navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-5">
-        <div className="flex gap-2">
-          {([['to-binary', 'Text \u2192 Binary'], ['to-text', 'Binary \u2192 Text']] as const).map(([m, label]) => (
-            <button key={m} onClick={() => { setMode(m); setInput('') }}
-              className={'px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (mode===m ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {label}
-            </button>
-          ))}
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
-            {mode === 'to-binary' ? 'Text Input' : 'Binary Input (space-separated 8-bit groups)'}
-          </label>
-          <textarea
-            value={input}
-            onChange={e => { setInput(e.target.value); track() }}
-            placeholder={mode === 'to-binary' ? 'Hello World' : '01001000 01100101 01101100 01101100 01101111'}
-            rows={4}
-            className={'w-full px-4 py-3 border rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none ' + (isError ? 'border-red-300' : 'border-gray-200')}
-          />
-          {isError && <p className="mt-1 text-xs text-red-600">Input must contain only 0s, 1s, and spaces</p>}
-        </div>
-        {output && (
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">
-                {mode === 'to-binary' ? 'Binary Output' : 'Text Output'}
-              </label>
-              <div className="flex gap-2">
-                <button onClick={swap} className="text-xs text-gray-500 hover:underline">&#x21C4; Swap</button>
-                <button onClick={copy} className="text-xs text-brand-600 hover:underline">
-                  {copied ? '\u2713 Copied' : 'Copy'}
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Binary Text Converter</h1>
+        <p className="text-gray-500 mb-8">Convert text to binary or hexadecimal representation and decode it back</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <div className="flex gap-2">
+            <div className="flex gap-1 flex-1">
+              {(['to','from'] as const).map(m=>(
+                <button key={m} onClick={()=>setMode(m)} className={'flex-1 py-2 rounded-lg font-medium text-sm transition-colors '+(mode===m?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>
+                  {m==='to'?'Text \u2192 Code':'Code \u2192 Text'}
                 </button>
-              </div>
+              ))}
             </div>
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl font-mono text-sm text-gray-800 break-all max-h-48 overflow-y-auto">
-              {output}
+            <div className="flex gap-1">
+              {(['binary','hex'] as const).map(f=>(
+                <button key={f} onClick={()=>setFormat(f)} className={'px-3 py-2 rounded-lg font-medium text-sm transition-colors capitalize '+(format===f?'bg-purple-500 text-white':'bg-gray-100 text-gray-700')}>{f}</button>
+              ))}
             </div>
           </div>
-        )}
-        <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
-          <p className="text-xs font-semibold text-gray-600 mb-1.5">Quick Reference</p>
-          <div className="grid grid-cols-2 gap-1 text-xs font-mono">
-            {[['A','01000001'],['a','01100001'],['0','00110000'],['space','00100000']].map(([ch, bin]) => (
-              <div key={ch} className="flex gap-2"><span className="text-brand-600 w-10">{ch}</span><span className="text-gray-500">{bin}</span></div>
-            ))}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {mode==='to'?'Text':''+format.charAt(0).toUpperCase()+format.slice(1)+' Code'}
+            </label>
+            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={4}
+              placeholder={mode==='to'?'Type text here...':format==='binary'?'e.g. 01001000 01100101 01101100':'e.g. 48 65 6C 6C 6F'}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm font-medium text-gray-700">
+                {mode==='from'?'Text':format.charAt(0).toUpperCase()+format.slice(1)+' Code'}
+              </label>
+              <button onClick={copy} className="text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg">{copied?'\u2713 Copied':'Copy'}</button>
+            </div>
+            <div className="bg-gray-900 rounded-xl px-4 py-3 font-mono text-green-400 text-sm break-all min-h-[80px]">{output}</div>
           </div>
         </div>
       </div>
-    </ToolLayout>
+    </main>
   )
 }
