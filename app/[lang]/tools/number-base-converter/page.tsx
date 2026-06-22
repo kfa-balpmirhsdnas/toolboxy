@@ -7,6 +7,7 @@ import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 const tool = getToolBySlug('number-base-converter')!
 
 type BaseKey = 'bin' | 'oct' | 'dec' | 'hex'
+
 const BASES: { key: BaseKey; label: string; base: number; prefix: string }[] = [
   { key: 'bin', label: 'Binary (Base 2)', base: 2, prefix: '0b' },
   { key: 'oct', label: 'Octal (Base 8)', base: 8, prefix: '0o' },
@@ -14,14 +15,19 @@ const BASES: { key: BaseKey; label: string; base: number; prefix: string }[] = [
   { key: 'hex', label: 'Hexadecimal (Base 16)', base: 16, prefix: '0x' },
 ]
 
-function convertFromDec(n: bigint): Record<BaseKey, string> {
+function convertFromDec(n: number): Record<BaseKey, string> {
+  const isNeg = n < 0
+  const abs = Math.abs(n)
+  const sign = isNeg ? '-' : ''
   return {
-    bin: n < 0n ? '-' + (-n).toString(2) : n.toString(2),
-    oct: n < 0n ? '-' + (-n).toString(8) : n.toString(8),
+    bin: sign + abs.toString(2),
+    oct: sign + abs.toString(8),
     dec: n.toString(10),
-    hex: n < 0n ? '-' + (-n).toString(16).toUpperCase() : n.toString(16).toUpperCase(),
+    hex: (sign + abs.toString(16)).toUpperCase(),
   }
 }
+
+const QUICK_REF = [0,1,2,4,8,10,15,16,32,64,128,255]
 
 export default function NumberBaseConverterPage({ params }: { params: { lang: string } }) {
   const [fromBase, setFromBase] = useState<BaseKey>('dec')
@@ -34,22 +40,19 @@ export default function NumberBaseConverterPage({ params }: { params: { lang: st
   function convert(val: string, base: BaseKey) {
     if (!val.trim()) { setResults(null); setError(''); return }
     if (!tracked.current) { trackToolUsed('number-base-converter'); tracked.current = true }
-    try {
-      const b = BASES.find(x => x.key === base)!.base
-      const cleaned = val.trim().replace(/^0[xXbBoO]/, '')
-      const n = BigInt(parseInt(cleaned, b))
+    const bDef = BASES.find(x => x.key === base)!
+    const cleaned = val.trim().replace(/^0[xXbBoO]/,'')
+    const n = parseInt(cleaned, bDef.base)
+    if (isNaN(n)) {
+      setError('Invalid number for base ' + bDef.base)
+      setResults(null)
+    } else {
       setResults(convertFromDec(n))
       setError('')
-    } catch {
-      setError('Invalid number for base ' + BASES.find(x => x.key === base)!.base)
-      setResults(null)
     }
   }
 
-  function handleInput(v: string) {
-    setInput(v)
-    convert(v, fromBase)
-  }
+  function handleInput(v: string) { setInput(v); convert(v, fromBase) }
 
   function handleBaseChange(b: BaseKey) {
     setFromBase(b)
@@ -66,10 +69,7 @@ export default function NumberBaseConverterPage({ params }: { params: { lang: st
   }
 
   const validChars: Record<BaseKey, string> = {
-    bin: '0-1',
-    oct: '0-7',
-    dec: '0-9, -',
-    hex: '0-9, A-F',
+    bin: '0–1', oct: '0–7', dec: '0–9, −', hex: '0–9, A–F',
   }
 
   return (
@@ -88,15 +88,12 @@ export default function NumberBaseConverterPage({ params }: { params: { lang: st
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Enter {BASES.find(b => b.key===fromBase)!.label} number
+            Enter {BASES.find(b => b.key===fromBase)!.label}
             <span className="ml-2 text-xs text-gray-400 font-normal">({validChars[fromBase]})</span>
           </label>
-          <input
-            value={input}
-            onChange={e => handleInput(e.target.value)}
-            placeholder={fromBase === 'hex' ? 'e.g. FF or 0xFF' : fromBase === 'bin' ? 'e.g. 1010' : fromBase === 'oct' ? 'e.g. 17' : 'e.g. 255'}
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400"
-          />
+          <input value={input} onChange={e => handleInput(e.target.value)}
+            placeholder={fromBase==='hex' ? '0xFF or FF' : fromBase==='bin' ? '1010' : fromBase==='oct' ? '17' : '255'}
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
           {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
         </div>
         {results && (
@@ -106,7 +103,7 @@ export default function NumberBaseConverterPage({ params }: { params: { lang: st
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="text-xs font-semibold text-gray-500">{label}</span>
                   <button onClick={() => copy(results[key], key)} className="text-xs text-brand-600 hover:underline">
-                    {copied===key ? '✓ Copied' : 'Copy'}
+                    {copied===key ? '&#x2713; Copied' : 'Copy'}
                   </button>
                 </div>
                 <p className="text-sm font-mono font-semibold text-gray-800 break-all">
@@ -116,20 +113,19 @@ export default function NumberBaseConverterPage({ params }: { params: { lang: st
             ))}
           </div>
         )}
-        {/* Quick reference */}
         <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
           <p className="text-xs font-semibold text-gray-600 mb-2">Quick Reference</p>
           <div className="overflow-x-auto">
-            <table className="text-xs font-mono">
-              <thead><tr className="text-gray-400">
-                <th className="pr-4">Dec</th><th className="pr-4">Bin</th><th className="pr-4">Oct</th><th>Hex</th>
+            <table className="text-xs font-mono w-full">
+              <thead><tr className="text-gray-400 text-left">
+                <th className="pr-3 pb-1">Dec</th><th className="pr-3 pb-1">Binary</th><th className="pr-3 pb-1">Octal</th><th className="pb-1">Hex</th>
               </tr></thead>
               <tbody>
-                {[0,1,2,4,8,10,15,16,32,64,128,255].map(n => (
+                {QUICK_REF.map(n => (
                   <tr key={n} className="text-gray-600">
-                    <td className="pr-4">{n}</td>
-                    <td className="pr-4">{n.toString(2)}</td>
-                    <td className="pr-4">{n.toString(8)}</td>
+                    <td className="pr-3">{n}</td>
+                    <td className="pr-3">{n.toString(2)}</td>
+                    <td className="pr-3">{n.toString(8)}</td>
                     <td>{n.toString(16).toUpperCase()}</td>
                   </tr>
                 ))}
