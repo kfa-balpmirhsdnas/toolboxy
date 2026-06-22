@@ -179,6 +179,11 @@
     "markdown-table-generator": "インタラクティブにテーブルを作成しMarkdown・HTML・CSVでエクスポート。列の整列・行列の追加削除・ダウンロードに対応。",
     "uuid-bulk-generator": "最大1000個のUUIDを一括生成。v4・ハイフンなし・大文字・nil・ショートID形式に対応。全コピーまたはテキストダウンロード。",
     "color-blindness-simulator": "画像をアップロードして赤色覚異常・緑色覚異常・青色覚異常・全色盲など色覚特性者の見え方をシミュレート。",
-    "font-pairing-tool": "見出しと本文に合ったGoogleフォントのペアリングを探索。ライブレンダリングでプレビュー、サイズ調整してCSSをコピー。"
+    "font-pairing-tool": "見出しと本文に合ったGoogleフォントのペアリングを探索。ライブレンダリングでプレビュー、サイズ調整してCSSをコピー。",
+    "text-counter-advanced": "文字数・単語数・文数・段落数・音節数・読み/話し時間をカウント。単語頻度と平均単語/文の長さも表示。",
+    "ascii-art-generator": "ピクセルビットマップフォントでテキストをブロックASCIIアートに変換。塗りつぶし文字とスケールを選択可能。",
+    "html-color-picker": "ビジュアルピッカーで色を選び、HEX/RGB/HSL/HSV値を確認してコントラスト比をチェック。60以上のHTML命名色も閲覧。",
+    "keyboard-shortcut-tester": "キャプチャゾーンをクリックしてキーやショートカットを押すと、キー名・コード・修飾キーを表示。直近20件を記録。",
+    "css-box-model-visualizer": "CSSボックスモデル（マージン・ボーダー・パディング・コンテンツ）をビジュアルで設定。content-box/border-box対応。"
   }
 }
