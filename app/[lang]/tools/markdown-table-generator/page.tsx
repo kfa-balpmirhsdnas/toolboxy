@@ -3,69 +3,64 @@ import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('markdown-table-generator')!
+type Align='left'|'center'|'right'
 export default function MarkdownTableGeneratorPage() {
   const [rows,setRows]=useState(3)
   const [cols,setCols]=useState(3)
-  const [headers,setHeaders]=useState<string[]>(['Name','Value','Description'])
-  const [data,setData]=useState<string[][]>([['Item 1','100','First item'],['Item 2','200','Second item'],['Item 3','300','Third item']])
-  const [aligns,setAligns]=useState<('left'|'center'|'right')[]>(['left','center','left'])
+  const [headers,setHeaders]=useState(['Name','Age','City'])
+  const [data,setData]=useState([['Alice','30','New York'],['Bob','25','London'],['Carol','35','Tokyo']])
+  const [aligns,setAligns]=useState<Align[]>(['left','left','left'])
   const [copied,setCopied]=useState(false)
-  const setHeader=(i:number,v:string)=>{const h=[...headers];h[i]=v;setHeaders(h)}
-  const setCell=(r:number,c:number,v:string)=>{const d=data.map(row=>[...row]);d[r][c]=v;setData(d)}
-  const setAlign=(i:number,a:'left'|'center'|'right')=>{const al=[...aligns];al[i]=a;setAligns(al)}
-  const addRow=()=>{setRows(r=>r+1);setData(d=>[...d,Array(cols).fill('')])}
-  const addCol=()=>{setCols(c=>c+1);setHeaders(h=>[...h,'Header']);setAligns(a=>[...a,'left']);setData(d=>d.map(r=>[...r,'']))}
-  const remRow=()=>{if(rows>1){setRows(r=>r-1);setData(d=>d.slice(0,-1))}}
-  const remCol=()=>{if(cols>1){setCols(c=>c-1);setHeaders(h=>h.slice(0,-1));setAligns(a=>a.slice(0,-1));setData(d=>d.map(r=>r.slice(0,-1)))}}
-  const alignChar=(a:string)=>a==='center'?':---:':a==='right'?'---:':'---'
-  const pad=(s:string,l:number)=>s+('' ).repeat(Math.max(0,l-s.length))
-  const colWidths=Array.from({length:cols},(_,c)=>Math.max(headers[c]?.length||0,...data.map(r=>r[c]?.length||0),3))
-  const md=[
-    '| '+headers.map((h,i)=>pad(h||'',colWidths[i])).join(' | ')+' |',
-    '| '+aligns.map((a,i)=>pad(alignChar(a),colWidths[i])).join(' | ')+' |',
-    ...data.map(r=>'| '+r.map((c,i)=>pad(c||'',colWidths[i])).join(' | ')+' |'),
-  ].join('\n')
+  const setRows2=(n:number)=>{const nr=Math.max(1,Math.min(20,n));setRows(nr);setData(d=>{const nd=[...d];while(nd.length<nr)nd.push(Array(cols).fill(''));while(nd.length>nr)nd.pop();return nd})}
+  const setCols2=(n:number)=>{const nc=Math.max(1,Math.min(8,n));setCols(nc);setHeaders(h=>{const nh=[...h];while(nh.length<nc)nh.push('Col '+(nh.length+1));while(nh.length>nc)nh.pop();return nh});setAligns(a=>{const na=[...a];while(na.length<nc)na.push('left');while(na.length>nc)na.pop();return na});setData(d=>d.map(r=>{const nr=[...r];while(nr.length<nc)nr.push('');while(nr.length>nc)nr.pop();return nr}))}
+  const pad=(s:string,w:number)=>s+' '.repeat(Math.max(0,w-s.length))
+  const colWidths=Array.from({length:cols},(_,i)=>Math.max(3,headers[i]?.length||3,...data.map(r=>r[i]?.length||0)))
+  const sepChar=(a:Align,i:number)=>a==='left'?':'+'-'.repeat(colWidths[i]-1):a==='right'?'-'.repeat(colWidths[i]-1)+':':':'+'-'.repeat(colWidths[i]-2)+':'
+  const md=['| '+headers.map((h,i)=>pad(h,colWidths[i])).join(' | ')+' |','| '+aligns.map((a,i)=>sepChar(a,i)).join(' | ')+' |',...data.map(r=>'| '+r.map((c,i)=>pad(c,colWidths[i])).join(' | ')+' |')].join('
+')
   const copy=()=>{navigator.clipboard.writeText(md);setCopied(true);setTimeout(()=>setCopied(false),1500)}
-  const ABtn=({col,a}:{col:number;a:'left'|'center'|'right'})=>(
-    <button onClick={()=>setAlign(col,a)} className={`px-1.5 py-0.5 rounded text-xs ${aligns[col]===a?'bg-blue-600 text-white':'text-gray-400 hover:text-gray-600'}`}>
-      {a==='left'?'⬅':a==='center'?'⬛':'➡'}
-    </button>
-  )
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-2xl mx-auto px-4 space-y-4">
-        <div className="flex gap-2 flex-wrap">
-          <button onClick={addRow} className="px-3 py-1.5 bg-green-600 text-white rounded text-sm hover:bg-green-700">+ Row</button>
-          <button onClick={remRow} className="px-3 py-1.5 bg-red-500 text-white rounded text-sm hover:bg-red-600 disabled:opacity-40" disabled={rows<=1}>- Row</button>
-          <button onClick={addCol} className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">+ Col</button>
-          <button onClick={remCol} className="px-3 py-1.5 bg-orange-500 text-white rounded text-sm hover:bg-orange-600 disabled:opacity-40" disabled={cols<=1}>- Col</button>
+      <div className="max-w-xl mx-auto px-4 space-y-4">
+        <div className="flex gap-4 items-center flex-wrap">
+          <div className="flex items-center gap-2"><label className="text-sm text-gray-600">Rows:</label>
+            <input type="number" value={rows} onChange={e=>setRows2(Number(e.target.value))} min="1" max="20" className="w-16 rounded border border-gray-300 px-2 py-1.5 text-sm text-center"/></div>
+          <div className="flex items-center gap-2"><label className="text-sm text-gray-600">Cols:</label>
+            <input type="number" value={cols} onChange={e=>setCols2(Number(e.target.value))} min="1" max="8" className="w-16 rounded border border-gray-300 px-2 py-1.5 text-sm text-center"/></div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="border-collapse w-full text-sm">
-            <thead><tr>
-              {headers.map((h,i)=>(
-                <th key={i} className="border border-gray-300 bg-blue-50 p-1">
-                  <input value={h} onChange={e=>setHeader(i,e.target.value)} className="w-full bg-transparent text-center font-semibold outline-none min-w-16"/>
-                  <div className="flex justify-center gap-0.5 mt-1">
-                    <ABtn col={i} a="left"/><ABtn col={i} a="center"/><ABtn col={i} a="right"/>
-                  </div>
-                </th>
-              ))}
-            </tr></thead>
+        <div className="overflow-auto">
+          <table className="text-sm border-collapse w-full">
+            <thead>
+              <tr>
+                {headers.map((h,i)=>(
+                  <th key={i} className="border border-gray-300 bg-gray-50 p-0 min-w-24">
+                    <input value={h} onChange={e=>{const nh=[...headers];nh[i]=e.target.value;setHeaders(nh)}} className="w-full px-2 py-1.5 font-semibold bg-transparent text-center text-xs focus:outline-none focus:bg-blue-50"/>
+                    <select value={aligns[i]} onChange={e=>{const na=[...aligns];na[i]=e.target.value as Align;setAligns(na)}} className="w-full border-t border-gray-300 bg-gray-50 text-xs text-center py-0.5">
+                      <option value="left">Left</option><option value="center">Center</option><option value="right">Right</option>
+                    </select>
+                  </th>
+                ))}
+              </tr>
+            </thead>
             <tbody>
               {data.map((row,ri)=>(
-                <tr key={ri}>{row.map((cell,ci)=>(
-                  <td key={ci} className="border border-gray-300 p-1">
-                    <input value={cell} onChange={e=>setCell(ri,ci,e.target.value)} className="w-full outline-none text-center min-w-16"/>
-                  </td>
-                ))}</tr>
+                <tr key={ri} className={ri%2===1?'bg-gray-50':''}>
+                  {row.map((c,ci)=>(
+                    <td key={ci} className="border border-gray-300 p-0">
+                      <input value={c} onChange={e=>{const nd=data.map((r,rr)=>rr===ri?r.map((cc,cc2)=>cc2===ci?e.target.value:cc):r);setData(nd)}} className="w-full px-2 py-1.5 bg-transparent text-xs focus:outline-none focus:bg-blue-50"/>
+                    </td>
+                  ))}
+                </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <div className="bg-gray-900 rounded-xl p-4 flex items-start justify-between gap-3">
-          <pre className="text-green-400 text-sm font-mono flex-1 overflow-x-auto">{md}</pre>
-          <button onClick={copy} className="flex-shrink-0 bg-blue-600 text-white px-3 py-1.5 rounded text-xs hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
+        <div className="bg-gray-900 rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
+            <span className="text-xs text-gray-400">Markdown table</span>
+            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
+          </div>
+          <pre className="px-4 py-3 text-green-400 font-mono text-xs overflow-x-auto">{md}</pre>
         </div>
       </div>
     </ToolLayout>

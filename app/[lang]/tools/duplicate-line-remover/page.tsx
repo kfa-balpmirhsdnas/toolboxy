@@ -1,60 +1,93 @@
 'use client'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-
 const tool = getToolBySlug('duplicate-line-remover')!
-
 export default function DuplicateLineRemoverPage() {
-  const [input, setInput] = useState('')
-  const [caseSensitive, setCaseSensitive] = useState(true)
-  const [keepOrder, setKeepOrder] = useState(true)
-  const [trimLines, setTrimLines] = useState(true)
-  const [copied, setCopied] = useState(false)
-
-  const lines = input.split('\n').map(l=>trimLines?l.trim():l)
-  const nonEmpty = lines.filter(l=>l!=='')
-  const seen = new Set<string>()
-  const unique = nonEmpty.filter(l=>{ const k=caseSensitive?l:l.toLowerCase(); if(seen.has(k))return false; seen.add(k); return true })
-  const output = unique.join('\n')
-  const removed = nonEmpty.length - unique.length
-
-  function copy(){navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),2000)}
-
+  const [input,setInput]=useState('apple
+banana
+apple
+cherry
+banana
+date
+apple
+elderbery')
+  const [caseI,setCaseI]=useState(true)
+  const [trim,setTrim]=useState(true)
+  const [removeEmpty,setRemoveEmpty]=useState(false)
+  const [keepFirst,setKeepFirst]=useState(true)
+  const [copied,setCopied]=useState(false)
+  const [mode,setMode]=useState<'unique'|'dups'>('unique')
+  const result=useMemo(()=>{
+    const lines=input.split('
+')
+    const seen=new Set<string>()
+    const dups=new Set<string>()
+    for(const l of lines){
+      const key=(trim?l.trim():l)+(caseI?'_lower':'')
+      const k=caseI?key.toLowerCase():key
+      if(seen.has(k))dups.add(k)
+      seen.add(k)
+    }
+    if(mode==='dups'){
+      const dupSeen=new Set<string>()
+      return lines.filter(l=>{
+        const key=(trim?l.trim():l)
+        const k=caseI?key.toLowerCase():key
+        if(!dups.has(k))return false
+        if(keepFirst&&!dupSeen.has(k)){dupSeen.add(k);return false}
+        return true
+      })
+    }
+    const uniqSeen=new Set<string>()
+    return lines.filter(l=>{
+      const key=(trim?l.trim():l)
+      const k=caseI?key.toLowerCase():key
+      if(removeEmpty&&!key)return false
+      if(uniqSeen.has(k))return false
+      uniqSeen.add(k);return true
+    })
+  },[input,caseI,trim,removeEmpty,keepFirst,mode])
+  const copy=()=>{navigator.clipboard.writeText(result.join('
+'));setCopied(true);setTimeout(()=>setCopied(false),1500)}
+  const totalLines=input.split('
+').length
+  const removed=totalLines-result.length
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Duplicate Line Remover</h1>
-        <p className="text-gray-500 mb-8">Remove duplicate lines from any text while preserving order</p>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Input Text</label>
-            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={10}
-              placeholder="Paste lines here..."
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={caseSensitive} onChange={e=>setCaseSensitive(e.target.checked)} className="rounded" /><span className="text-sm">Case sensitive</span></label>
-            <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={trimLines} onChange={e=>setTrimLines(e.target.checked)} className="rounded" /><span className="text-sm">Trim whitespace</span></label>
-          </div>
-          {nonEmpty.length>0&&(
-            <div className="flex gap-4 text-sm">
-              <span className="text-gray-600">Original: <b>{nonEmpty.length}</b> lines</span>
-              <span className="text-green-600">Unique: <b>{unique.length}</b> lines</span>
-              {removed>0&&<span className="text-red-500">Removed: <b>{removed}</b> duplicates</span>}
-            </div>
-          )}
+      <div className="max-w-lg mx-auto px-4 space-y-4">
+        <div className="flex rounded-lg overflow-hidden border border-gray-300">
+          <button onClick={()=>setMode('unique')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='unique'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Keep unique lines</button>
+          <button onClick={()=>setMode('dups')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='dups'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Show duplicates only</button>
         </div>
-        {unique.length>0&&(
-          <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-3">
-              <span className="font-semibold text-gray-700">Result</span>
-              <button onClick={copy} className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg">{copied?'\u2713 Copied':'Copy'}</button>
-            </div>
-            <textarea value={output} readOnly rows={10} className="w-full border border-gray-200 rounded-lg px-3 py-2 font-mono text-sm bg-gray-50 resize-none" />
+        <div className="flex flex-wrap gap-3 text-sm">
+          {[['Case insensitive',caseI,setCaseI],['Trim spaces',trim,setTrim],['Remove empty',removeEmpty,setRemoveEmpty]].map(([l,v,s])=>(
+            <label key={l as string} className="flex items-center gap-1.5 cursor-pointer text-gray-600">
+              <input type="checkbox" checked={v as boolean} onChange={e=>(s as Function)(e.target.checked)} className="rounded"/>{l as string}
+            </label>
+          ))}
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">Input ({totalLines} lines)</label>
+            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={10}
+              className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-sm resize-none focus:outline-none focus:border-blue-400"/></div>
+          <div><div className="flex items-center justify-between mb-1">
+            <label className="text-xs font-medium text-gray-600">Result ({result.length} lines)</label>
+            <button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?'Copied!':'Copy'}</button>
           </div>
-        )}
+            <div className="rounded-xl border border-gray-200 bg-gray-50 h-60 overflow-y-auto">
+              {result.map((l,i)=><div key={i} className={'px-3 py-1.5 text-sm font-mono border-b border-gray-100 last:border-0 '+(i%2===0?'bg-white':'')}>{l||' '}</div>)}
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3 text-center">
+          {[['Input',totalLines],['Output',result.length],['Removed',removed]].map(([l,v])=>(
+            <div key={l} className={'flex-1 rounded-xl py-2.5 '+(l==='Removed'?'bg-red-50':'bg-gray-50')}>
+              <p className={'font-bold text-lg '+(l==='Removed'?'text-red-600':'text-gray-800')}>{v}</p>
+              <p className="text-xs text-gray-500">{l}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </ToolLayout>
   )

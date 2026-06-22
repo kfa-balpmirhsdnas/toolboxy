@@ -1,68 +1,85 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
-
 const tool = getToolBySlug('whitespace-remover')!
+type Mode='all'|'leading'|'trailing'|'both'|'extra'|'lines'
+export default function WhitespaceRemoverPage() {
+  const [input,setInput]=useState('  Hello   World  
 
-type Option = { id:string; label:string; fn:(s:string)=>string }
-const OPTIONS: Option[] = [
-  { id:'trim',     label:'Trim each line',       fn:s=>s.split('\n').map(l=>l.trim()).join('\n') },
-  { id:'leading',  label:'Remove leading spaces', fn:s=>s.split('\n').map(l=>l.replace(/^\s+/,'')).join('\n') },
-  { id:'trailing', label:'Remove trailing spaces',fn:s=>s.split('\n').map(l=>l.replace(/\s+$/,'')).join('\n') },
-  { id:'multiple', label:'Collapse multiple spaces',fn:s=>s.replace(/ {2,}/g,' ') },
-  { id:'blanklines',label:'Remove blank lines',   fn:s=>s.split('\n').filter(l=>l.trim()).join('\n') },
-  { id:'tabs',     label:'Tabs to spaces',         fn:s=>s.replace(/\t/g,'    ') },
-  { id:'all',      label:'Strip all whitespace',   fn:s=>s.replace(/\s+/g,'') },
-  { id:'normalize',label:'Normalize (trim + collapse)', fn:s=>s.split('\n').map(l=>l.trim().replace(/ {2,}/g,' ')).filter(l=>l).join('\n') },
-]
+  This is   a test.  
 
-export default function WhitespaceRemoverPage({ params }: { params: { lang: string } }) {
-  const [input, setInput] = useState('  Hello    World  \n  \n  This   has   extra    spaces  \n\tAnd a tab here  ')
-  const [active, setActive] = useState<string[]>(['trim','multiple'])
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
 
-  function track() { if (!tracked.current) { trackToolUsed('whitespace-remover'); tracked.current = true } }
+Line with   multiple   spaces.  ')
+  const [mode,setMode]=useState<Mode>('both')
+  const [newlines,setNewlines]=useState(false)
+  const [copied,setCopied]=useState(false)
+  const process=(t:string):string=>{
+    let s=t
+    const lines=s.split('
+')
+    const processed=lines.map(l=>{
+      if(mode==='all')return l.replace(/s/g,'')
+      if(mode==='leading')return l.trimStart()
+      if(mode==='trailing')return l.trimEnd()
+      if(mode==='both')return l.trim()
+      if(mode==='extra')return l.trim().replace(/s{2,}/g,' ')
+      return l
+    })
+    s=processed.join('
+')
+    if(mode==='lines'||newlines)s=s.replace(/
+{3,}/g,'
 
-  function toggle(id: string) {
-    setActive(prev=>prev.includes(id)?prev.filter(x=>x!==id):[...prev,id])
-    track()
+').replace(/^
++|
++$/g,'')
+    return s
   }
-
-  const output = active.reduce((s, id) => {
-    const opt = OPTIONS.find(o=>o.id===id)
-    return opt ? opt.fn(s) : s
-  }, input)
-
-  const removed = input.replace(/\r\n?/g,'\n').length - output.replace(/\r\n?/g,'\n').length
-
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('whitespace-remover')
-    setCopied(true); setTimeout(()=>setCopied(false),1500)
-  }
-
+  const result=process(input)
+  const origLen=input.length,resLen=result.length,saved=origLen-resLen
+  const copy=()=>{navigator.clipboard.writeText(result);setCopied(true);setTimeout(()=>setCopied(false),1500)}
+  const MODES:Array<{v:Mode;l:string;desc:string}>=[
+    {v:'both',l:'Trim',desc:'Remove leading & trailing spaces per line'},
+    {v:'leading',l:'Leading',desc:'Remove leading spaces only'},
+    {v:'trailing',l:'Trailing',desc:'Remove trailing spaces only'},
+    {v:'extra',l:'Extra spaces',desc:'Collapse multiple spaces to one'},
+    {v:'all',l:'All spaces',desc:'Remove all whitespace characters'},
+    {v:'lines',l:'Empty lines',desc:'Remove consecutive empty lines'},
+  ]
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} rows={5} placeholder="Paste text..."
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none" />
-        <div className="grid grid-cols-2 gap-2">
-          {OPTIONS.map(opt=>(
-            <label key={opt.id} className="flex items-center gap-2 cursor-pointer text-sm p-2 rounded-lg hover:bg-gray-50">
-              <input type="checkbox" checked={active.includes(opt.id)} onChange={()=>toggle(opt.id)} className="accent-brand-600" />
-              {opt.label}
-            </label>
+    <ToolLayout tool={tool}>
+      <div className="max-w-lg mx-auto px-4 space-y-4">
+        <div className="grid grid-cols-3 gap-2">
+          {MODES.map(m=>(
+            <button key={m.v} onClick={()=>setMode(m.v)}
+              className={'px-3 py-2 rounded-xl text-xs font-medium border text-left transition '+(mode===m.v?'bg-blue-600 text-white border-blue-600':'border-gray-200 text-gray-600 hover:bg-gray-50')}>
+              <p className="font-semibold">{m.l}</p>
+              <p className={'text-xs mt-0.5 '+(mode===m.v?'opacity-80':'text-gray-400')}>{m.desc}</p>
+            </button>
           ))}
         </div>
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-medium text-gray-600">Output <span className="text-gray-400">({removed > 0 ? '-'+removed+' chars' : 'no change'})</span></label>
-            <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
+        {mode!=='lines'&&<label className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-600">
+          <input type="checkbox" checked={newlines} onChange={e=>setNewlines(e.target.checked)} className="rounded"/>
+          Also clean consecutive empty lines
+        </label>}
+        <div className="grid grid-cols-2 gap-3">
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">Input</label>
+            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={8}
+              className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-sm resize-none focus:outline-none focus:border-blue-400"/></div>
+          <div><div className="flex items-center justify-between mb-1">
+            <label className="text-xs font-medium text-gray-600">Result</label>
+            <button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?'Copied!':'Copy'}</button>
           </div>
-          <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono whitespace-pre-wrap min-h-12 max-h-48 overflow-y-auto">{output}</div>
+            <div className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 font-mono text-sm h-48 overflow-auto whitespace-pre">{result}</div>
+          </div>
+        </div>
+        <div className="flex gap-3 text-sm text-center">
+          {[['Before',origLen+' chars'],['After',resLen+' chars'],['Saved',saved+' chars']].map(([l,v])=>(
+            <div key={l} className="flex-1 bg-gray-50 rounded-xl py-2.5">
+              <p className="font-bold text-gray-800">{v}</p><p className="text-xs text-gray-500">{l}</p>
+            </div>
+          ))}
         </div>
       </div>
     </ToolLayout>

@@ -547,6 +547,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'interest-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['interest','compound','simple','loan','finance'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'currency-formatter',category:'utility',phase:1,isPro:false,isNew:true,tags:['currency','format','money','locale','number'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'json-tree-viewer',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','tree','viewer','parse','explore'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'whitespace-remover',category:'text',phase:1,isPro:false,isNew:true,tags:['whitespace','space','trim','remove','clean'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'duplicate-line-remover',category:'text',phase:1,isPro:false,isNew:true,tags:['duplicate','line','remove','unique','dedupe'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-unit-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','unit','px','em','rem','convert'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'markdown-table-generator',category:'text',phase:1,isPro:false,isNew:true,tags:['markdown','table','generate','md','format'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'regex-tester',category:'developer',phase:1,isPro:false,isNew:true,tags:['regex','regexp','test','pattern','match'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
