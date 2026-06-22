@@ -407,6 +407,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'percentage-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['percentage','percent','math'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'prime-number-checker',category:'utility',phase:1,isPro:false,isNew:true,tags:['prime','number','math'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-encrypt-decrypt',category:'developer',phase:1,isPro:false,isNew:true,tags:['encrypt','decrypt','cipher'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'fibonacci-generator',category:'utility',phase:1,isPro:false,isNew:true,tags:['fibonacci','sequence','math','generate'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'random-number-generator',category:'utility',phase:1,isPro:false,isNew:true,tags:['random','number','generate','dice'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'timezone-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['timezone','time','convert','world'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'color-mixer',category:'developer',phase:1,isPro:false,isNew:true,tags:['color','mix','blend','hex','rgb'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'bmi-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['bmi','body','mass','health','calculator'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
