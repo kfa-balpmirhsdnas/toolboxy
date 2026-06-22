@@ -189,6 +189,11 @@
     "json-to-yaml": "Convert JSON to YAML format. Handles nested objects, arrays, strings with special characters, and boolean/null values correctly.",
     "morse-code-translator": "Translate text to Morse code and back. Includes audio playback of the Morse signal and a visual reference chart.",
     "html-previewer": "Live HTML editor with real-time preview. Write HTML, CSS, and JavaScript and see the result instantly in a sandboxed iframe.",
-    "html-minifier": "Minify HTML by removing comments, collapsing whitespace, and optionally minifying inline CSS and JavaScript. Shows bytes saved."
+    "html-minifier": "Minify HTML by removing comments, collapsing whitespace, and optionally minifying inline CSS and JavaScript. Shows bytes saved.",
+    "pomodoro-timer": "A focused Pomodoro timer with configurable work, short break, and long break intervals. Tracks session count with visual progress ring.",
+    "stopwatch-timer": "Precision stopwatch with lap recording. Shows split times and total elapsed time per lap, highlights best and worst laps.",
+    "typing-speed-test": "Measure your typing speed in WPM and accuracy. Choose from 5 sample texts. Highlights correct and incorrect characters in real time.",
+    "random-quote-generator": "Browse 20+ curated quotes across categories like Motivation, Wisdom, and Life. Save favorites, copy, and filter by category.",
+    "habit-tracker": "Track daily habits with a 7-day grid. Add custom habits with emojis, check off completions, and see your current streak."
   }
 }
