@@ -149,7 +149,10 @@
       "title": "Lorem Ipsum Generator",
       "description": "Generate placeholder Lorem Ipsum text by paragraph, sentence, or word count for designs and mockups"
     },
-    "css-box-shadow-generator": "Visually create CSS box shadows with sliders for offset, blur, spread, color, and opacity.",
+    "css-box-shadow-generator": {
+      "title": "Box Shadow Generator",
+      "description": "Build multi-layer CSS box shadows visually — control X, Y, blur, spread, color, opacity, and inset with live preview"
+    },
     "string-length-counter": "Count characters, words, bytes, lines, and sentences in any text. Click any stat to copy.",
     "temperature-converter": {
       "title": "Temperature Converter",
@@ -253,7 +256,10 @@
     "number-converter": "Convert numbers between binary, octal, decimal, and hexadecimal. Shows bit count, byte size, and formatted output.",
     "text-rotate": "Transform text with fun effects: flip upside down, mirror, reverse words or lines, rotate characters, or add Zalgo distortion.",
     "speech-to-text": "Convert spoken words to text using your browser's speech recognition API. Supports multiple languages with interim results.",
-    "css-animation-generator": "Build CSS animations visually. Choose from 8 presets, configure duration, easing, iteration, and direction, then copy the generated keyframes and CSS.",
+    "css-animation-generator": {
+      "title": "CSS Animation Generator",
+      "description": "Build CSS keyframe animations with live preview — control duration, easing, delay, iteration, direction, and fill mode"
+    },
     "markdown-table-generator": "Create tables interactively and export as Markdown, HTML, or CSV. Set column alignment, add or remove rows and columns, and download the result.",
     "uuid-bulk-generator": "Generate up to 1000 UUIDs at once. Supports v4, no-hyphens, uppercase, nil, and short ID formats. Copy all or download as a text file.",
     "color-blindness-simulator": "Upload an image and preview it as seen by people with protanopia, deuteranopia, tritanopia, achromatopsia, and other color vision deficiencies.",
@@ -499,6 +505,18 @@
     "character-frequency": {
       "title": "Character Frequency",
       "description": "Analyze character, word, or n-gram frequency in any text with visual bar chart and percentage breakdown"
+    },
+    "border-radius-generator": {
+      "title": "Border Radius Generator",
+      "description": "Create custom CSS border radius shapes — link or unlink corners, choose presets, and get the CSS output instantly"
+    },
+    "css-flexbox-generator": {
+      "title": "Flexbox Generator",
+      "description": "Generate CSS flexbox layouts visually — control direction, wrap, justify, align, and gap with a live item preview"
+    },
+    "css-grid-generator": {
+      "title": "CSS Grid Generator",
+      "description": "Build CSS grid layouts visually — set column/row counts, gaps, and template values with live grid preview"
     }
   }
 }
