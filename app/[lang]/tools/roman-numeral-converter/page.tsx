@@ -1,88 +1,62 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
-const VALS:[number,string][]=[
-  [1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],
-  [50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']
-]
-
-function toRoman(n:number):string{
-  if(n<1||n>3999) return 'Out of range (1-3999)'
-  let r=''
-  for(const [v,s] of VALS){while(n>=v){r+=s;n-=v}}
-  return r
-}
-
-function fromRoman(s:string):number|null{
-  const map:Record<string,number>={I:1,V:5,X:10,L:50,C:100,D:500,M:1000}
-  const u=s.toUpperCase().trim()
-  if(!/^[IVXLCDM]+$/.test(u)) return null
-  let result=0
-  for(let i=0;i<u.length;i++){
-    const cur=map[u[i]],next=map[u[i+1]]
-    if(next&&cur<next){result+=next-cur;i++}else result+=cur
+function toRoman(num: number): string {
+  if (num < 1 || num > 3999) return 'Out of range (1–3999)'
+  const vals = [1000,900,500,400,100,90,50,40,10,9,5,4,1]
+  const syms = ['M','CM','D','CD','C','XC','L','XL','X','IX','V','IV','I']
+  let result = ''
+  for (let i = 0; i < vals.length; i++) {
+    while (num >= vals[i]) { result += syms[i]; num -= vals[i] }
   }
   return result
 }
 
-export default function RomanNumeralConverterPage() {
-  const [mode,setMode]=useState<'to'|'from'>('to')
-  const [num,setNum]=useState('2024')
-  const [rom,setRom]=useState('MMXXIV')
-  const [copied,setCopied]=useState(false)
+function fromRoman(str: string): string {
+  const map: Record<string, number> = {M:1000,D:500,C:100,L:50,X:10,V:5,I:1}
+  const upper = str.toUpperCase().trim()
+  if (!upper || !/^[MDCLXVI]+$/.test(upper)) return 'Invalid Roman numeral'
+  let result = 0
+  for (let i = 0; i < upper.length; i++) {
+    const cur = map[upper[i]]
+    const next = map[upper[i+1]] || 0
+    result += cur < next ? -cur : cur
+  }
+  return String(result)
+}
 
-  const toResult=toRoman(parseInt(num)||0)
-  const fromResult=fromRoman(rom)
-  const result=mode==='to'?toResult:(fromResult!==null?fromResult.toString():'Invalid Roman numeral')
-
-  function copy(){navigator.clipboard.writeText(result);setCopied(true);setTimeout(()=>setCopied(false),2000)}
-
-  const examples=[[1,2024,42,1999,3999],[2024,'MMXXIV',42,'XLII',1999,'MCMXCIX']]
-
+export default function RomanNumeralConverterPage({ params }: { params: { lang: string } }) {
+  const [decInput, setDecInput] = useState('2024')
+  const [romInput, setRomInput] = useState('MMXXIV')
+  const tool = getToolBySlug('roman-numeral-converter')!
+  const romanResult = toRoman(parseInt(decInput) || 0)
+  const decResult = fromRoman(romInput)
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
-      <div className="max-w-xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Roman Numeral Converter</h1>
-        <p className="text-gray-500 mb-8">Convert between Arabic numbers and Roman numerals (1\u20133999)</p>
-        <div className="flex gap-2 mb-4">
-          <button onClick={()=>setMode('to')} className={'flex-1 py-2 rounded-lg font-medium transition-colors '+(mode==='to'?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>
-            Number \u2192 Roman
-          </button>
-          <button onClick={()=>setMode('from')} className={'flex-1 py-2 rounded-lg font-medium transition-colors '+(mode==='from'?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>
-            Roman \u2192 Number
-          </button>
-        </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-          {mode==='to'?(
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Arabic Number (1\u20133999)</label>
-              <input type="number" min={1} max={3999} value={num} onChange={e=>setNum(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-lg font-mono focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            </div>
-          ):(
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Roman Numeral</label>
-              <input type="text" value={rom} onChange={e=>setRom(e.target.value)} placeholder="e.g. MMXXIV"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-lg font-mono uppercase focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            </div>
-          )}
-          <div className="bg-brand-50 border border-brand-200 rounded-xl p-4 flex items-center justify-between">
-            <span className="text-3xl font-bold text-brand-700 font-mono">{result}</span>
-            <button onClick={copy} className="text-sm px-3 py-1.5 bg-white border border-brand-200 rounded-lg">{copied?'\u2713':'Copy'}</button>
+    <ToolLayout tool={tool} lang={params.lang}>
+      <div className="space-y-8">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+          <h2 className="font-semibold text-gray-800">Decimal to Roman</h2>
+          <input type="number" min="1" max="3999" value={decInput}
+            onChange={e => setDecInput(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400" />
+          <div className="bg-gray-50 rounded-lg p-4">
+            <p className="text-sm text-gray-500 mb-1">Result</p>
+            <p className="text-3xl font-bold text-brand-600 font-mono">{romanResult}</p>
           </div>
         </div>
-        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5">
-          <h2 className="font-semibold text-gray-800 mb-3">Quick Reference</h2>
-          <div className="grid grid-cols-2 gap-2">
-            {VALS.map(([v,s])=>(
-              <div key={s} className="flex items-center justify-between px-3 py-1.5 bg-gray-50 rounded-lg">
-                <span className="font-mono text-brand-600 font-semibold">{s}</span>
-                <span className="text-gray-600">{v.toLocaleString()}</span>
-              </div>
-            ))}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+          <h2 className="font-semibold text-gray-800">Roman to Decimal</h2>
+          <input type="text" placeholder="e.g. MMXXIV" value={romInput}
+            onChange={e => setRomInput(e.target.value.toUpperCase())}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 uppercase focus:outline-none focus:ring-2 focus:ring-brand-400" />
+          <div className="bg-gray-50 rounded-lg p-4">
+            <p className="text-sm text-gray-500 mb-1">Result</p>
+            <p className="text-3xl font-bold text-brand-600">{decResult}</p>
           </div>
         </div>
       </div>
-    </main>
+    </ToolLayout>
   )
 }
