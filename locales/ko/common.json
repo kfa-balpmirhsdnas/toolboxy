@@ -262,7 +262,10 @@
     },
     "stopwatch-timer": "랩 타임 기록 기능이 있는 정밀 스톱워치와 카운트다운 타이머.",
     "typing-speed-test": "WPM과 정확도로 타이핑 속도를 측정합니다. 5가지 샘플 텍스트 중 선택하고 실시간으로 맞고 틀린 문자를 확인합니다.",
-    "random-quote-generator": "동기부여, 지혜, 삶 등 카테고리의 20개 이상 명언을 탐색합니다. 즐겨찾기 저장, 복사, 카테고리 필터링 기능 제공.",
+    "random-quote-generator": {
+      "title": "명언 생성기",
+      "description": "역사적 위인들의 영감을 주는 명언을 카테고리별로 탐색하고 좋아요한 명언을 저장합니다"
+    },
     "habit-tracker": "7일 그리드로 일일 습관을 추적합니다. 이모지로 커스텀 습관을 추가하고 완료를 체크하며 연속 달성 일수를 확인하세요.",
     "bmi-calculator": {
       "title": "BMI 계산기",
@@ -422,6 +425,22 @@
     "water-intake-calculator": {
       "title": "하루 수분 섭취량 계산기",
       "description": "체중, 활동량, 기후를 기반으로 하루 권장 수분 섭취량을 계산합니다"
+    },
+    "sleep-calculator": {
+      "title": "수면 계산기",
+      "description": "90분 수면 주기에 기반하여 최적의 취침 또는 기상 시간을 찾아 개운하게 일어납니다"
+    },
+    "pace-calculator": {
+      "title": "페이스 계산기",
+      "description": "달리기 페이스, 완주 시간, 또는 거리를 계산하고 5K, 10K, 하프·풀 마라톤 기록을 예측합니다"
+    },
+    "circle-calculator": {
+      "title": "원 계산기",
+      "description": "알고 있는 한 값(반지름, 지름, 둘레, 면적)으로 원의 모든 치수를 계산합니다"
+    },
+    "tax-bracket-calculator": {
+      "title": "세금 구간 계산기",
+      "description": "2024 미국 연방 소득세 구간별 세금을 계산하고 실효세율과 한계세율을 확인합니다"
     }
   }
 }
