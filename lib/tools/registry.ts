@@ -472,6 +472,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'random-color-generator',category:'utility',phase:1,isPro:false,isNew:true,tags:['random','color','hex','rgb','generate'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'epoch-timestamp-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['epoch','timestamp','unix','convert','date'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'git-commit-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['git','commit','message','conventional','generate'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'statistics-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['statistics','mean','median','standard','deviation'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-border-radius-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','border-radius','rounded','generator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'html-entities-encoder',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','entities','encode','decode','escape'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'string-padding-tool',category:'text',phase:1,isPro:false,isNew:true,tags:['string','pad','align','format','text'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'tax-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['tax','vat','gst','sales','calculator'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
