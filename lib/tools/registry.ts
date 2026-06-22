@@ -512,6 +512,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['calculator','math','compute','arithmetic','basic'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'image-color-extractor',category:'image',phase:1,isPro:false,isNew:true,tags:['image','color','extract','palette','dominant'],maxFileSizeMB:{free:5,pro:10} },
   {slug:'font-pairing-tool',category:'text',phase:1,isPro:false,isNew:true,tags:['font','pairing','typography','google','design'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'word-frequency-counter',category:'text',phase:1,isPro:false,isNew:true,tags:['word','frequency','count','text','analysis'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'roman-numeral-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['roman','numeral','convert','number','latin'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'lorem-ipsum-generator',category:'text',phase:1,isPro:false,isNew:true,tags:['lorem','ipsum','placeholder','text','dummy'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-flexbox-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','flexbox','layout','flex','generator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'html-color-codes',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','color','codes','reference','hex'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
