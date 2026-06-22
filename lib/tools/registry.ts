@@ -482,6 +482,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'color-palette-generator',category:'utility',phase:1,isPro:false,isNew:true,tags:['color','palette','shades','tints','complementary'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'cron-expression-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['cron','schedule','expression','unix','job'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'morse-code-translator',category:'utility',phase:1,isPro:false,isNew:true,tags:['morse','code','translate','audio','signal'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'aspect-ratio-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['aspect','ratio','width','height','resize'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'binary-to-text',category:'developer',phase:1,isPro:false,isNew:true,tags:['binary','text','convert','bit','byte'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'speed-distance-time-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['speed','distance','time','velocity','calculate'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'json-minifier',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','minify','compress','format','pretty'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'html-to-markdown',category:'text',phase:1,isPro:false,isNew:true,tags:['html','markdown','convert','transform','text'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }

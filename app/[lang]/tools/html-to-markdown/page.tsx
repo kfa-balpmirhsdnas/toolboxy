@@ -1,85 +1,60 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
-
 const tool = getToolBySlug('html-to-markdown')!
-
-function htmlToMarkdown(html: string): string {
-  let md = html
-  // Remove scripts and styles
-  md = md.replace(/<script[\s\S]*?<\/script>/gi,'')
-  md = md.replace(/<style[\s\S]*?<\/style>/gi,'')
-  // Headings
-  for (let i=6;i>=1;i--) md = md.replace(new RegExp('<h'+i+'[^>]*>([\\s\\S]*?)<\/h'+i+'>','gi'),(_,t)=>'\n'+'#'.repeat(i)+' '+t.replace(/<[^>]+>/g,'').trim()+'\n')
-  // Bold/italic
-  md = md.replace(/<(strong|b)[^>]*>([\s\S]*?)<\/(strong|b)>/gi,'**$2**')
-  md = md.replace(/<(em|i)[^>]*>([\s\S]*?)<\/(em|i)>/gi,'*$2*')
-  // Code
-  md = md.replace(/<pre[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/gi,(_,c)=>'\n```\n'+c.replace(/<[^>]+>/g,'').trim()+'\n```\n')
-  md = md.replace(/<code[^>]*>([^<]+)<\/code>/gi,'`$1`')
-  // Links
-  md = md.replace(/<a[^>]+href="([^"]+)"[^>]*>([^<]+)<\/a>/gi,'[$2]($1)')
-  // Images
-  md = md.replace(/<img[^>]+alt="([^"]*)"[^>]+src="([^"]+)"[^>]*\/?>/gi,'![$1]($2)')
-  md = md.replace(/<img[^>]+src="([^"]+)"[^>]+alt="([^"]*)"[^>]*\/?>/gi,'![$2]($1)')
-  // Blockquote
-  md = md.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi,(_,c)=>c.split('\n').map((l:string)=>'> '+l).join('\n'))
-  // Lists
-  md = md.replace(/<ul[^>]*>([sS]*?)<\/ul>/gi,(_,c)=>c)
-  md = md.replace(/<ol[^>]*>([sS]*?)<\/ol>/gi,(_,c)=>c)
-  md = md.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi,'- $1')
-  // Paragraphs and breaks
-  md = md.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi,'$1\n\n')
-  md = md.replace(/<br\s*\/?>/gi,'\n')
-  md = md.replace(/<hr\s*\/?>/gi,'\n---\n')
-  // Strikethrough
-  md = md.replace(/<(del|s)[^>]*>([\s\S]*?)<\/(del|s)>/gi,'~~$2~~')
-  // Strip remaining tags
-  md = md.replace(/<[^>]+>/g,'')
-  // Decode HTML entities
-  md = md.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&nbsp;/g,' ')
-  // Clean up whitespace
-  md = md.replace(/\n{3,}/g,'\n\n').trim()
-  return md
+const BT = '`'
+function htmlToMd(html:string):string{
+  let s=html
+  s=s.replace(/<h1[^>]*>([sS]*?)<\/h1>/gi,(_,t)=>'# '+t.replace(/<[^>]+>/g,'').trim()+'\n\n')
+  s=s.replace(/<h2[^>]*>([sS]*?)<\/h2>/gi,(_,t)=>'## '+t.replace(/<[^>]+>/g,'').trim()+'\n\n')
+  s=s.replace(/<h3[^>]*>([sS]*?)<\/h3>/gi,(_,t)=>'### '+t.replace(/<[^>]+>/g,'').trim()+'\n\n')
+  s=s.replace(/<h4[^>]*>([sS]*?)<\/h4>/gi,(_,t)=>'#### '+t.replace(/<[^>]+>/g,'').trim()+'\n\n')
+  s=s.replace(/<h5[^>]*>([sS]*?)<\/h5>/gi,(_,t)=>'##### '+t.replace(/<[^>]+>/g,'').trim()+'\n\n')
+  s=s.replace(/<h6[^>]*>([sS]*?)<\/h6>/gi,(_,t)=>'###### '+t.replace(/<[^>]+>/g,'').trim()+'\n\n')
+  s=s.replace(/<strong[^>]*>([sS]*?)<\/strong>/gi,'**$1**')
+  s=s.replace(/<b[^>]*>([sS]*?)<\/b>/gi,'**$1**')
+  s=s.replace(/<em[^>]*>([sS]*?)<\/em>/gi,'*$1*')
+  s=s.replace(/<i[^>]*>([sS]*?)<\/i>/gi,'*$1*')
+  s=s.replace(/<code[^>]*>([sS]*?)<\/code>/gi,BT+'$1'+BT)
+  s=s.replace(/<a[^>]*href="([^"]*)"[^>]*>([sS]*?)<\/a>/gi,'[$2]($1)')
+  s=s.replace(/<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*\/?>/gi,'![$2]($1)')
+  s=s.replace(/<blockquote[^>]*>([sS]*?)<\/blockquote>/gi,(_,t)=>t.split('\n').map((l:string)=>'> '+l.trim()).join('\n')+'\n\n')
+  s=s.replace(/<hr[^>]*\/?>/gi,'---\n\n')
+  s=s.replace(/<br[^>]*\/?>/gi,'\n')
+  s=s.replace(/<ul[^>]*>([sS]*?)<\/ul>/gi,(_,t)=>t.replace(/<li[^>]*>([sS]*?)<\/li>/gi,(_:string,c:string)=>'- '+c.replace(/<[^>]+>/g,'').trim()+'\n')+'\n')
+  s=s.replace(/<ol[^>]*>([sS]*?)<\/ol>/gi,(_,t)=>{let i=0;return t.replace(/<li[^>]*>([sS]*?)<\/li>/gi,(_:string,c:string)=>++i+'. '+c.replace(/<[^>]+>/g,'').trim()+'\n')+'\n'})
+  s=s.replace(/<p[^>]*>([sS]*?)<\/p>/gi,'$1\n\n')
+  s=s.replace(/<[^>]+>/g,'')
+  s=s.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&nbsp;/g,' ')
+  s=s.replace(/\n{3,}/g,'\n\n').trim()
+  return s
 }
-
-export default function HtmlToMarkdownPage({ params }: { params: { lang: string } }) {
-  const [input, setInput] = useState('<h1>Hello World</h1>\n<p>This is a <strong>bold</strong> paragraph with a <a href="https://toolboxy.net">link</a>.</p>\n<ul>\n  <li>Item one</li>\n  <li>Item two</li>\n</ul>')
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
-
-  function track() {
-    if (!tracked.current) { trackToolUsed('html-to-markdown'); tracked.current = true }
-  }
-
-  const output = input.trim() ? htmlToMarkdown(input) : ''
-
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('html-to-markdown')
-    setCopied(true); setTimeout(()=>setCopied(false),1500)
-  }
-
+export default function HtmlToMarkdownPage() {
+  const [input,setInput]=useState('<h1>Hello World</h1>\n<p>This is a <strong>bold</strong> and <em>italic</em> paragraph with a <a href="https://example.com">link</a>.</p>\n<ul>\n  <li>Item one</li>\n  <li>Item two</li>\n</ul>\n<blockquote>A wise quote</blockquote>')
+  const [copied,setCopied]=useState(false)
+  const output=htmlToMd(input)
+  const copy=()=>{navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">HTML Input</label>
-            <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} rows={12}
-              className="w-full px-3 py-3 border border-gray-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none" />
+    <ToolLayout tool={tool}>
+      <div className="max-w-3xl mx-auto px-4 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">HTML Input</label>
+            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={14}
+              className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-xs resize-none" spellCheck={false}/>
           </div>
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">Markdown Output</label>
-              {output && <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>}
+            <div className="flex justify-between mb-1">
+              <label className="text-sm font-medium text-gray-700">Markdown Output</label>
+              <button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?'Copied!':'Copy'}</button>
             </div>
-            <div className="h-full px-3 py-3 border border-gray-200 rounded-xl text-xs font-mono bg-gray-50 whitespace-pre-wrap break-words min-h-48 max-h-80 overflow-y-auto">
-              {output || <span className="text-gray-400">Output appears here...</span>}
-            </div>
+            <textarea readOnly value={output} rows={14} className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-xs resize-none"/>
           </div>
+        </div>
+        <div>
+          <p className="text-xs font-medium text-gray-600 mb-2">HTML Preview</p>
+          <div className="prose prose-sm max-w-none border border-gray-200 rounded-xl p-4 bg-white min-h-16"
+            dangerouslySetInnerHTML={{__html:input}}/>
         </div>
       </div>
     </ToolLayout>

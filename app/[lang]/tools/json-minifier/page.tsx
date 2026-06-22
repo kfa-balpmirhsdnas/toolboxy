@@ -1,85 +1,68 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
-
 const tool = getToolBySlug('json-minifier')!
-
-export default function JsonMinifierPage({ params }: { params: { lang: string } }) {
-  const [input, setInput] = useState('')
-  const [output, setOutput] = useState('')
-  const [error, setError] = useState('')
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
-
-  function process(raw: string) {
-    setInput(raw)
-    if (!raw.trim()) { setOutput(''); setError(''); return }
-    if (!tracked.current) { trackToolUsed('json-minifier'); tracked.current = true }
-    try {
-      const parsed = JSON.parse(raw)
-      setOutput(JSON.stringify(parsed))
-      setError('')
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Invalid JSON')
-      setOutput('')
-    }
+export default function JsonMinifierPage() {
+  const [input,setInput]=useState('{
+  "name": "Alice",
+  "age": 30,
+  "city": "New York"
+}')
+  const [indent,setIndent]=useState(2)
+  const [mode,setMode]=useState<'minify'|'pretty'>('minify')
+  const [sortKeys,setSortKeys]=useState(false)
+  const [copied,setCopied]=useState(false)
+  const process=():string=>{
+    try{
+      const parsed=JSON.parse(input)
+      const replacer=sortKeys?((_:string,v:unknown)=>
+        v&&typeof v==='object'&&!Array.isArray(v)?Object.keys(v as Record<string,unknown>).sort().reduce((r:Record<string,unknown>,k)=>{r[k]=(v as Record<string,unknown>)[k];return r},{}) as unknown:v):null
+      return mode==='minify'?JSON.stringify(parsed,replacer):JSON.stringify(parsed,replacer,indent)
+    }catch(e:unknown){return 'Error: '+(e instanceof Error?e.message:String(e))}
   }
-
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('json-minifier')
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
-
-  function download() {
-    const blob = new Blob([output], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url; a.download = 'minified.json'; a.click()
-    URL.revokeObjectURL(url)
-    trackToolDownload('json-minifier', 'json')
-  }
-
-  const savings = input && output ? Math.round((1 - output.length / input.length) * 100) : 0
-
+  const output=process()
+  const isError=output.startsWith('Error:')
+  const inSize=new Blob([input]).size
+  const outSize=new Blob([output]).size
+  const savings=inSize>0?((1-outSize/inSize)*100).toFixed(1):'0'
+  const copy=()=>{navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">JSON Input</label>
-          <textarea
-            value={input}
-            onChange={e => process(e.target.value)}
-            placeholder={'\{\n  "key": "value",\n  "array": [1, 2, 3]\n}'}
-            rows={8}
-            className={'w-full px-4 py-3 border rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none ' + (error ? 'border-red-300' : 'border-gray-200')}
-          />
-          {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+    <ToolLayout tool={tool}>
+      <div className="max-w-2xl mx-auto px-4 space-y-4">
+        <div className="flex gap-3 flex-wrap items-center">
+          <div className="flex rounded overflow-hidden border border-gray-300">
+            <button onClick={()=>setMode('minify')} className={'px-3 py-1.5 text-sm font-medium transition '+(mode==='minify'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Minify</button>
+            <button onClick={()=>setMode('pretty')} className={'px-3 py-1.5 text-sm font-medium transition '+(mode==='pretty'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Prettify</button>
+          </div>
+          {mode==='pretty'&&(
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-gray-600">Indent:</span>
+              {[2,4].map(n=>(
+                <button key={n} onClick={()=>setIndent(n)}
+                  className={'w-9 h-8 rounded border font-mono text-sm transition '+(indent===n?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>{n}</button>
+              ))}
+              <button onClick={()=>setIndent(-1)}
+                className={'px-2 h-8 rounded border text-xs transition '+(indent===-1?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>Tab</button>
+            </div>
+          )}
+          <label className="flex items-center gap-1.5 text-sm cursor-pointer ml-auto">
+            <input type="checkbox" checked={sortKeys} onChange={e=>setSortKeys(e.target.checked)} className="rounded"/>Sort keys
+          </label>
         </div>
-        {output && (
-          <>
-            <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl text-sm">
-              <span className="text-green-700 font-medium">\u2713 Minified</span>
-              <span className="text-green-600">{input.length} \u2192 {output.length} bytes</span>
-              <span className="ml-auto font-bold text-green-700">{savings}% smaller</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">Input JSON</label>
+            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={10} className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-xs resize-none" spellCheck={false}/>
+            <p className="text-xs text-gray-400 mt-0.5">{inSize} bytes</p></div>
+          <div>
+            <div className="flex justify-between mb-1">
+              <label className="text-sm font-medium text-gray-700">Output</label>
+              <button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?'Copied!':'Copy'}</button>
             </div>
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-medium text-gray-600">Minified Output</label>
-                <div className="flex gap-2">
-                  <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied ? '\u2713 Copied' : 'Copy'}</button>
-                  <button onClick={download} className="text-xs text-brand-600 hover:underline">Download</button>
-                </div>
-              </div>
-              <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl font-mono text-xs text-gray-800 break-all max-h-40 overflow-y-auto">
-                {output}
-              </div>
-            </div>
-          </>
-        )}
+            <textarea readOnly value={output} rows={10} className={'w-full rounded border px-3 py-2 font-mono text-xs resize-none '+(isError?'border-red-200 bg-red-50 text-red-700':'border-gray-200 bg-gray-50')}/>
+            {!isError&&<p className="text-xs text-gray-400 mt-0.5">{outSize} bytes{mode==='minify'&&' (saved '+savings+'%)'}</p>}
+          </div>
+        </div>
       </div>
     </ToolLayout>
   )
