@@ -199,6 +199,11 @@
     "tip-calculator": "Calculate restaurant tips with preset percentages or a custom rate. Split the bill among multiple people and copy the summary.",
     "age-calculator": "Calculate exact age in years, months, and days. Shows total days, weeks, months, and hours lived, plus days until next birthday.",
     "loan-calculator": "Calculate monthly mortgage or loan payments. Shows total interest, principal vs interest breakdown, and a 12-month amortization preview.",
-    "currency-converter": "Convert between 40+ currencies using approximate exchange rates. Quick compare panel and swap button included."
+    "currency-converter": "Convert between 40+ currencies using approximate exchange rates. Quick compare panel and swap button included.",
+    "color-contrast-checker": "Check WCAG 2.1 color contrast ratios for text and UI accessibility compliance.",
+    "markdown-to-html": "Convert Markdown to clean, semantic HTML with live preview.",
+    "json-to-xml": "Convert JSON data to well-formed XML with customizable root element.",
+    "text-to-binary": "Convert text to Binary, Hexadecimal, Octal, or Decimal — and back.",
+    "prime-number-checker": "Check if a number is prime, find the Nth prime, or list primes in a range."
   }
 }
