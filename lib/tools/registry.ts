@@ -362,6 +362,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'url-encoder',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
   {slug:'regex-tester',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
   {slug:'html-entity-encoder',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'json-formatter',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'character-map',category:'text',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'base64-image-encoder',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'cron-expression-generator',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'time-zone-converter',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
 ]
 
 export function getToolBySlug(slug: string): ToolMeta | undefined {
