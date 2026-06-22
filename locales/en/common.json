@@ -130,7 +130,10 @@
       "title": "Roman Numeral Converter",
       "description": "Convert numbers to Roman numerals and Roman numerals back to numbers for values from 1 to 3999"
     },
-    "lorem-ipsum-generator": "Generate placeholder Lorem Ipsum text — paragraphs, sentences, or words.",
+    "lorem-ipsum-generator": {
+      "title": "Lorem Ipsum Generator",
+      "description": "Generate placeholder Lorem Ipsum text by paragraph, sentence, or word count for designs and mockups"
+    },
     "css-box-shadow-generator": "Visually create CSS box shadows with sliders for offset, blur, spread, color, and opacity.",
     "string-length-counter": "Count characters, words, bytes, lines, and sentences in any text. Click any stat to copy.",
     "temperature-converter": {
@@ -264,7 +267,10 @@
     },
     "currency-converter": "Convert between 40+ currencies using approximate exchange rates. Quick compare panel and swap button included.",
     "color-contrast-checker": "Check WCAG 2.1 color contrast ratios for text and UI accessibility compliance.",
-    "markdown-to-html": "Convert Markdown to clean, semantic HTML with live preview.",
+    "markdown-to-html": {
+      "title": "Markdown to HTML",
+      "description": "Convert Markdown to HTML with a live side-by-side preview, supporting headings, bold, lists, links, and code"
+    },
     "json-to-xml": "Convert JSON data to well-formed XML with customizable root element.",
     "text-to-binary": "Convert text to Binary, Hexadecimal, Octal, or Decimal — and back.",
     "prime-number-checker": "Check if a number is prime, find the Nth prime, or list primes in a range.",
@@ -330,6 +336,18 @@
     "nato-alphabet": {
       "title": "NATO Phonetic Alphabet",
       "description": "Convert any text to NATO phonetic alphabet spelling — Alpha, Bravo, Charlie — with a visual character-by-character breakdown"
+    },
+    "word-counter": {
+      "title": "Word Counter",
+      "description": "Count words, characters, sentences, paragraphs and get reading time and top word frequency statistics"
+    },
+    "opacity-calculator": {
+      "title": "Opacity Calculator",
+      "description": "Preview colors at different opacity levels and calculate the blended hex value against any background color"
+    },
+    "palindrome-checker": {
+      "title": "Palindrome Checker",
+      "description": "Check if a word, phrase, or sentence reads the same forwards and backwards with configurable matching options"
     }
   }
 }
