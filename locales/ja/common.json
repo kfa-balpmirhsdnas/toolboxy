@@ -402,6 +402,26 @@
     "random-name-generator": {
       "title": "ランダム名前生成ツール",
       "description": "リアルな名前・ファンタジー名・ビジネス名を大量生成します"
+    },
+    "investment-calculator": {
+      "title": "投資計算ツール",
+      "description": "月次積立を含む複利成長を計算し、年ごとの残高推移を確認できます"
+    },
+    "discount-calculator": {
+      "title": "割引計算ツール",
+      "description": "割引率からセール価格と節約額を計算するか、2つの価格から割引率を求めます"
+    },
+    "electricity-cost-calculator": {
+      "title": "電気代計算ツール",
+      "description": "家電の消費電力と1日の使用時間を入力して電気代を計算します"
+    },
+    "grade-calculator": {
+      "title": "成績計算ツール",
+      "description": "複数の課題の点数から最終成績を単純平均または加重平均で計算します"
+    },
+    "water-intake-calculator": {
+      "title": "1日の水分摂取量計算ツール",
+      "description": "体重・活動量・気候から1日に推奨される水分摂取量を計算します"
     }
   }
 }
