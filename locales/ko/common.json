@@ -179,6 +179,11 @@
     "markdown-table-generator": "인터랙티브하게 테이블을 만들고 Markdown, HTML, CSV로 내보냅니다. 열 정렬 설정, 행/열 추가/삭제, 다운로드 지원.",
     "uuid-bulk-generator": "한 번에 최대 1000개의 UUID를 생성합니다. v4, 하이픈 없음, 대문자, nil, 짧은 ID 형식을 지원합니다. 전체 복사 또는 텍스트 파일로 다운로드.",
     "color-blindness-simulator": "이미지를 업로드하여 적색약, 녹색약, 청색약, 전색맹 등 색각 이상자가 보는 방식으로 미리 봅니다.",
-    "font-pairing-tool": "제목과 본문에 어울리는 Google Font 페어링을 탐색합니다. 실시간 렌더링으로 미리 보고 크기를 조정하여 CSS를 복사하세요."
+    "font-pairing-tool": "제목과 본문에 어울리는 Google Font 페어링을 탐색합니다. 실시간 렌더링으로 미리 보고 크기를 조정하여 CSS를 복사하세요.",
+    "text-counter-advanced": "문자, 단어, 문장, 단락, 음절, 읽기/말하기 시간을 계산합니다. 단어 빈도 및 평균 단어/문장 길이도 표시합니다.",
+    "ascii-art-generator": "픽셀 비트맵 폰트를 사용하여 텍스트를 블록 ASCII 아트로 변환합니다. 채우기 문자와 크기를 선택하세요.",
+    "html-color-picker": "시각적 피커로 색상을 선택하고 HEX/RGB/HSL/HSV 값을 확인하며 대비율을 검사합니다. 60개 이상의 HTML 명명 색상 탐색.",
+    "keyboard-shortcut-tester": "캡처 영역을 클릭하고 아무 키나 단축키를 눌러 키 이름, 코드, 수식자(Ctrl, Alt, Shift, Meta)를 확인합니다.",
+    "css-box-model-visualizer": "CSS 박스 모델(마진, 보더, 패딩, 콘텐츠)을 시각화하고 구성합니다. content-box와 border-box를 지원합니다."
   }
 }
