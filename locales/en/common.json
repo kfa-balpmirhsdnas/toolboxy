@@ -106,7 +106,7 @@
     "binary-text-converter": "Convert text to binary and binary back to text. Quick encoding/decoding tool.",
     "percentage-calculator": {
       "title": "Percentage Calculator",
-      "description": "Calculate percentages in multiple modes: X% of Y, what percent is X of Y, percentage change, increase and decrease"
+      "description": "Calculate percentages: X% of Y, what percent is X of Y, percentage change, increase and decrease"
     },
     "json-minifier": "Minify JSON by removing whitespace and formatting. Shows byte savings and allows download.",
     "text-reverser": "Reverse text by characters, words, or lines. Simple and fast text manipulation tool.",
