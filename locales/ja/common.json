@@ -130,7 +130,10 @@
       "title": "ローマ数字変換ツール",
       "description": "アラビア数字をローマ数字に、ローマ数字をアラビア数字に変換します（1〜3999）"
     },
-    "lorem-ipsum-generator": "デザインモックアップ用のLorem Ipsumテキストを生成します。",
+    "lorem-ipsum-generator": {
+      "title": "Lorem Ipsum生成ツール",
+      "description": "デザインやモックアップ用のLorem Ipsumダミーテキストを段落・文・単語数で生成します"
+    },
     "css-box-shadow-generator": "ã¹ã©ã¤ãã¼ã§ãªãã»ããããã©ã¼ãã¹ãã¬ãããè²ãèª¿æ´ãCSSããã¯ã¹ã·ã£ãã¦ãçæãã¾ãã",
     "string-length-counter": "ãã­ã¹ãã®æå­æ°ãåèªæ°ããã¤ãæ°ãè¡æ°ãæã®æ°ãã«ã¦ã³ããã¾ãã",
     "temperature-converter": {
@@ -264,7 +267,10 @@
     },
     "currency-converter": "40以上の通貨間を概算レートで変換。クイック比較パネルとスワップボタン付き。",
     "color-contrast-checker": "WCAG 2.1基準でテキストやUIのカラーコントラスト比を確認します。",
-    "markdown-to-html": "MarkdownをきれいなHTMLに変換。リアルタイムプレビュー付き。",
+    "markdown-to-html": {
+      "title": "Markdown→HTML変換ツール",
+      "description": "MarkdownをHTMLにリアルタイムプレビューつきで変換します。見出し・太字・リスト・リンク・コードに対応"
+    },
     "json-to-xml": "JSONデータを整形されたXMLに即座に変換します。",
     "text-to-binary": "テキストを2進数・16進数・8進数・10進数に変換（逆変換も可）。",
     "prime-number-checker": "素数チェック、N番目の素数検索、範囲内の素数一覧生成。",
@@ -330,6 +336,18 @@
     "nato-alphabet": {
       "title": "NATOフォネティックアルファベット",
       "description": "テキストをNATOフォネティックアルファベット（Alpha・Bravo・Charlie…）に変換し、文字ごとに表示します"
+    },
+    "word-counter": {
+      "title": "ワードカウンター",
+      "description": "単語・文字・文・段落を数え、読書時間や頻出単語の統計を表示します"
+    },
+    "opacity-calculator": {
+      "title": "不透明度計算ツール",
+      "description": "異なる不透明度での色をプレビューし、任意の背景色との合成Hex値を計算します"
+    },
+    "palindrome-checker": {
+      "title": "回文チェッカー",
+      "description": "単語や文が前から読んでも後ろから読んでも同じ回文かどうかを確認します"
     }
   }
 }
