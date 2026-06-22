@@ -184,6 +184,11 @@
     "ascii-art-generator": "픽셀 비트맵 폰트를 사용하여 텍스트를 블록 ASCII 아트로 변환합니다. 채우기 문자와 크기를 선택하세요.",
     "html-color-picker": "시각적 피커로 색상을 선택하고 HEX/RGB/HSL/HSV 값을 확인하며 대비율을 검사합니다. 60개 이상의 HTML 명명 색상 탐색.",
     "keyboard-shortcut-tester": "캡처 영역을 클릭하고 아무 키나 단축키를 눌러 키 이름, 코드, 수식자(Ctrl, Alt, Shift, Meta)를 확인합니다.",
-    "css-box-model-visualizer": "CSS 박스 모델(마진, 보더, 패딩, 콘텐츠)을 시각화하고 구성합니다. content-box와 border-box를 지원합니다."
+    "css-box-model-visualizer": "CSS 박스 모델(마진, 보더, 패딩, 콘텐츠)을 시각화하고 구성합니다. content-box와 border-box를 지원합니다.",
+    "open-graph-preview": "페이스북, 트위터, 링크드인에서 페이지 공유 시 모습을 미리 봅니다. Open Graph 및 Twitter 메타 태그를 생성합니다.",
+    "json-to-yaml": "JSON을 YAML 형식으로 변환합니다. 중첩 객체, 배열, 특수 문자가 포함된 문자열, 불리언/null 값을 올바르게 처리합니다.",
+    "morse-code-translator": "텍스트를 모스 부호로 변환하고 그 반대도 가능합니다. 모스 신호 오디오 재생과 참조 차트를 포함합니다.",
+    "html-previewer": "실시간 미리 보기가 있는 라이브 HTML 에디터. HTML, CSS, JavaScript를 작성하고 샌드박스 iframe에서 즉시 결과를 확인합니다.",
+    "html-minifier": "주석 제거, 공백 압축, 인라인 CSS/JS 최소화로 HTML을 압축합니다. 절약된 바이트 수를 표시합니다."
   }
 }
