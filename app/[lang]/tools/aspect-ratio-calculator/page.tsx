@@ -1,106 +1,104 @@
 'use client'
 import { useState } from 'react'
 
-function gcd(a:number,b:number):number{return b===0?a:gcd(b,a%b)}
-
 const PRESETS=[
-  {label:'16:9',w:16,h:9},{label:'4:3',w:4,h:3},{label:'1:1',w:1,h:1},
-  {label:'21:9',w:21,h:9},{label:'3:2',w:3,h:2},{label:'4:5',w:4,h:5},
-  {label:'9:16',w:9,h:16},{label:'2:1',w:2,h:1},
+  {name:'16:9',w:16,h:9},{name:'4:3',w:4,h:3},{name:'1:1',w:1,h:1},
+  {name:'21:9',w:21,h:9},{name:'3:2',w:3,h:2},{name:'2:3',w:2,h:3},
+  {name:'4:5',w:4,h:5},{name:'9:16',w:9,h:16},{name:'5:4',w:5,h:4},
 ]
 
+function gcd(a:number,b:number):number{return b===0?a:gcd(b,a%b)}
+
 export default function AspectRatioCalculatorPage() {
-  const [mode, setMode] = useState<'ratio'|'dims'>('ratio')
-  const [rW, setRW] = useState('16')
-  const [rH, setRH] = useState('9')
-  const [dimW, setDimW] = useState('')
-  const [dimH, setDimH] = useState('')
-  const [fixW, setFixW] = useState('')
-  const [fixH, setFixH] = useState('')
+  const [width,setWidth]=useState('1920')
+  const [height,setHeight]=useState('1080')
+  const [lockOn,setLockOn]=useState<'width'|'height'|null>(null)
+  const [targetW,setTargetW]=useState('1280')
+  const [targetH,setTargetH]=useState('')
 
-  // From dimensions: compute ratio
-  const dw=parseInt(dimW), dh=parseInt(dimH)
-  const dimValid = !isNaN(dw)&&!isNaN(dh)&&dw>0&&dh>0
-  const dimGcd = dimValid ? gcd(dw,dh) : 1
-  const dimRatio = dimValid ? (dw/dimGcd)+':'+(dh/dimGcd) : ''
-  const dimDec = dimValid ? (dw/dh).toFixed(4) : ''
+  const w=parseFloat(width)||0,h=parseFloat(height)||0
+  const g=w>0&&h>0?gcd(Math.round(w),Math.round(h)):1
+  const ratioW=w>0&&h>0?Math.round(w)/g:0
+  const ratioH=w>0&&h>0?Math.round(h)/g:0
+  const ratio=h>0?w/h:0
+  const pct=h>0?(h/w*100).toFixed(4):'—'
 
-  // From ratio: compute missing dimension
-  const rwN=parseInt(rW), rhN=parseInt(rH)
-  const ratioValid = !isNaN(rwN)&&!isNaN(rhN)&&rwN>0&&rhN>0
-  const fwN=parseFloat(fixW), fhN=parseFloat(fixH)
-  const calcH = ratioValid&&!isNaN(fwN)&&fwN>0 ? (fwN*rhN/rwN).toFixed(2) : ''
-  const calcW = ratioValid&&!isNaN(fhN)&&fhN>0 ? (fhN*rwN/rhN).toFixed(2) : ''
+  // Scale calculation
+  const tw=parseFloat(targetW)||0,th=parseFloat(targetH)||0
+  let scaledW='',scaledH=''
+  if(tw>0&&ratio>0){scaledH=(tw/ratio).toFixed(0)}
+  if(th>0&&ratio>0){scaledW=(th*ratio).toFixed(0)}
 
-  function applyPreset(w:number,h:number){setRW(String(w));setRH(String(h))}
+  function applyPreset(pw:number,ph:number){
+    setWidth(String(pw*100));setHeight(String(ph*100))
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 py-10">
-      <div className="max-w-2xl mx-auto px-4">
+      <div className="max-w-xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Aspect Ratio Calculator</h1>
-        <p className="text-gray-500 mb-6">Calculate aspect ratios, find missing dimensions and explore common presets</p>
-        <div className="flex gap-2 mb-6">
-          {([['ratio','From Ratio'],['dims','From Dimensions']] as const).map(([m,l])=>(
-            <button key={m} onClick={()=>setMode(m)}
-              className={'px-4 py-2 rounded-lg font-medium transition-colors '+(mode===m?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>
-              {l}
-            </button>
-          ))}
-        </div>
-        {mode==='ratio' ? (
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+        <p className="text-gray-500 mb-8">Calculate and convert image or video aspect ratios</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Common Presets</label>
+            <div className="flex flex-wrap gap-2">
+              {PRESETS.map(p=>(
+                <button key={p.name} onClick={()=>applyPreset(p.w,p.h)}
+                  className="px-3 py-1.5 text-sm rounded-lg bg-gray-100 hover:bg-brand-50 hover:text-brand-700 font-medium">
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Aspect Ratio</label>
-              <div className="flex items-center gap-3">
-                <input type="number" value={rW} onChange={e=>setRW(e.target.value)} className="w-24 border border-gray-300 rounded-lg px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-brand-500" />
-                <span className="text-2xl font-bold text-gray-400">:</span>
-                <input type="number" value={rH} onChange={e=>setRH(e.target.value)} className="w-24 border border-gray-300 rounded-lg px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-brand-500" />
-              </div>
-              <div className="flex flex-wrap gap-2 mt-3">
-                {PRESETS.map(p=>(<button key={p.label} onClick={()=>applyPreset(p.w,p.h)} className="px-2.5 py-1 text-xs bg-gray-100 hover:bg-brand-50 hover:text-brand-600 rounded-lg">{p.label}</button>))}
+              <label className="block text-sm font-medium text-gray-700 mb-1">Width</label>
+              <input type="number" value={width} onChange={e=>setWidth(e.target.value)} min={1}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Height</label>
+              <input type="number" value={height} onChange={e=>setHeight(e.target.value)} min={1}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+          </div>
+          {w>0&&h>0&&(
+            <div className="grid grid-cols-3 gap-3">
+              {[['Ratio',ratioW+':'+ratioH],['Decimal',ratio.toFixed(4)],['Height %',pct+'%']].map(([l,v])=>(
+                <div key={l} className="bg-brand-50 border border-brand-100 rounded-xl p-3 text-center">
+                  <div className="font-bold text-brand-700">{v}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">{l}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          {w>0&&h>0&&(
+            <div className="border-t border-gray-100 pt-4">
+              <div className="flex justify-center mb-3">
+                <div style={{width:160,height:Math.round(160/ratio)||80,background:'#EFF6FF',border:'2px solid #3B82F6',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <span className="text-xs text-blue-500 font-medium">{ratioW}:{ratioH}</span>
+                </div>
               </div>
             </div>
-            {ratioValid && (
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Known Width</label>
-                  <input type="number" value={fixW} onChange={e=>setFixW(e.target.value)} placeholder="e.g. 1920" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
-                  {calcH && <p className="text-brand-600 font-semibold mt-2">\u2192 Height: {calcH}px</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Known Height</label>
-                  <input type="number" value={fixH} onChange={e=>setFixH(e.target.value)} placeholder="e.g. 1080" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
-                  {calcW && <p className="text-brand-600 font-semibold mt-2">\u2192 Width: {calcW}px</p>}
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Width (px)</label>
-                <input type="number" value={dimW} onChange={e=>setDimW(e.target.value)} placeholder="e.g. 1920" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Height (px)</label>
-                <input type="number" value={dimH} onChange={e=>setDimH(e.target.value)} placeholder="e.g. 1080" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
-              </div>
+          )}
+        </div>
+        <div className="mt-4 bg-white rounded-2xl border border-gray-200 p-5">
+          <h2 className="font-semibold text-gray-800 mb-3">Scale to New Size</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Target Width</label>
+              <input type="number" value={targetW} onChange={e=>{setTargetW(e.target.value);setTargetH('')}} min={1}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              {targetW&&scaledH&&<p className="text-xs text-gray-400 mt-1">Height = <strong>{scaledH}px</strong></p>}
             </div>
-            {dimValid && (
-              <div className="grid grid-cols-2 gap-4 pt-2">
-                <div className="bg-brand-50 border border-brand-200 rounded-xl p-4 text-center">
-                  <div className="text-3xl font-bold text-brand-600">{dimRatio}</div>
-                  <div className="text-sm text-gray-500 mt-1">Simplified Ratio</div>
-                </div>
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
-                  <div className="text-3xl font-bold text-gray-700">{dimDec}</div>
-                  <div className="text-sm text-gray-500 mt-1">Decimal Ratio</div>
-                </div>
-              </div>
-            )}
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Target Height</label>
+              <input type="number" value={targetH} onChange={e=>{setTargetH(e.target.value);setTargetW('')}} min={1}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              {targetH&&scaledW&&<p className="text-xs text-gray-400 mt-1">Width = <strong>{scaledW}px</strong></p>}
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </main>
   )
