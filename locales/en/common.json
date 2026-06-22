@@ -144,6 +144,11 @@
     "ini-parser": "Parse INI configuration files into structured tables or JSON. Handles sections, keys, and comments.",
     "slug-to-title": "Convert URL slugs or kebab-case text into Title Case, Sentence case, camelCase, and more.",
     "number-to-words": "Convert numbers to English words: cardinal (one, two) and ordinal (first, second) forms.",
-    "camel-case-converter": "Convert between all common naming conventions: camelCase, snake_case, PascalCase, kebab-case, and more."
+    "camel-case-converter": "Convert between all common naming conventions: camelCase, snake_case, PascalCase, kebab-case, and more.",
+    "html-entity-converter": "Encode or decode HTML entities. Supports named entities, numeric, full non-ASCII encoding, and decoding.",
+    "whitespace-remover": "Remove or normalize whitespace from text. Trim lines, collapse spaces, remove blank lines, and more.",
+    "list-deduplicator": "Remove duplicate items from a list. Case-insensitive option, blank line removal, and sort support.",
+    "text-truncator": "Truncate text to a set number of characters, words, or sentences, from the end, start, or middle.",
+    "ip-address-info": "Get detailed info about any IPv4 address: class, type, binary, hex, and subnet calculations with CIDR."
   }
 }
