@@ -87,7 +87,10 @@
       "title": "Regex Tester",
       "description": "Test and debug regular expressions in real time with match highlighting and group details"
     },
-    "unit-converter": "Convert between units of length, weight, temperature, area, volume, speed, and data instantly.",
+    "unit-converter": {
+      "title": "Unit Converter",
+      "description": "Convert length, weight, volume, and area units all in one place — from millimeters to light years"
+    },
     "timezone-converter": {
       "title": "Time Zone Converter",
       "description": "Convert times between time zones and see the current time in every major city around the world"
@@ -285,7 +288,10 @@
     },
     "json-to-xml": "Convert JSON data to well-formed XML with customizable root element.",
     "text-to-binary": "Convert text to Binary, Hexadecimal, Octal, or Decimal — and back.",
-    "prime-number-checker": "Check if a number is prime, find the Nth prime, or list primes in a range.",
+    "prime-number-checker": {
+      "title": "Prime Number Checker",
+      "description": "Check if any number is prime, find its prime factors, and list all prime numbers up to 1000"
+    },
     "caesar-cipher": "Encrypt or decrypt text using the classic Caesar cipher. Supports brute-force decryption.",
     "html-tag-stripper": "Remove all HTML tags and extract clean plain text from HTML code.",
     "number-palindrome": "Check if a number is a palindrome, find palindromes in a range, and explore reverse-addition.",
@@ -384,6 +390,18 @@
     "zodiac-sign": {
       "title": "Zodiac Sign Finder",
       "description": "Find your Western zodiac sign by birthday and explore your element, ruling planet, and personality traits"
+    },
+    "color-to-tailwind": {
+      "title": "Color to Tailwind CSS",
+      "description": "Find the closest Tailwind CSS color class for any hex color, with the top 5 nearest matches and one-click copy"
+    },
+    "random-team-generator": {
+      "title": "Random Team Generator",
+      "description": "Split any list of names into balanced random teams instantly, with reshuffling and one-click copy"
+    },
+    "random-name-generator": {
+      "title": "Random Name Generator",
+      "description": "Generate realistic names, fantasy character names, or business names in bulk with customizable options"
     }
   }
 }
