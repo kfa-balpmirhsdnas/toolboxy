@@ -1,64 +1,70 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('text-repeater')!
+const SEPS = [
+  {id:'nl',  label:'New Line', fn:()=>'\n'},
+  {id:'none',label:'None',     fn:()=>''},
+  {id:'sp',  label:'Space',    fn:()=>' '},
+  {id:'cm',  label:'Comma',    fn:()=>', '},
+  {id:'tb',  label:'Tab',      fn:()=>'\t'},
+  {id:'pp',  label:'Pipe',     fn:()=>' | '},
+]
 
-export default function TextRepeaterPage({ params }: { params: { lang: string } }) {
+export default function TextRepeaterPage() {
   const [text, setText] = useState('')
   const [count, setCount] = useState(5)
-  const [separator, setSeparator] = useState('\n')
+  const [sepId, setSepId] = useState('nl')
+  const [output, setOutput] = useState('')
   const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
 
-  function track() { if (!tracked.current) { trackToolUsed('text-repeater'); tracked.current = true } }
-
-  const sep = separator === '\\n' ? '\n' : separator === '\\t' ? '\t' : separator
-  const output = text && count > 0 ? Array(Math.min(count,10000)).fill(text).join(sep) : ''
-
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('text-repeater')
-    setCopied(true); setTimeout(()=>setCopied(false),1500)
+  function repeat() {
+    if (!text || count < 1) return
+    const sep = SEPS.find(s=>s.id===sepId)?.fn() ?? '\n'
+    setOutput(Array(count).fill(text).join(sep))
   }
 
+  function copy() { navigator.clipboard.writeText(output); setCopied(true); setTimeout(()=>setCopied(false),2000) }
+
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <textarea value={text} onChange={e=>{setText(e.target.value);track()}} placeholder="Text to repeat..." rows={3}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none" />
-        <div className="flex flex-wrap gap-4 items-end">
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Text Repeater</h1>
+        <p className="text-gray-500 mb-8">Repeat any text multiple times with a custom separator</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Repeat count</label>
-            <input type="number" value={count} min={1} max={10000} onChange={e=>{setCount(parseInt(e.target.value)||1);track()}}
-              className="w-24 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            <label className="block text-sm font-medium text-gray-700 mb-1">Text to Repeat</label>
+            <textarea value={text} onChange={e=>setText(e.target.value)} rows={3} placeholder="Enter text here..."
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
           </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Separator</label>
-            <div className="flex gap-1">
-              {[['\\n','New line'],[' ','Space'],['','None'],[', ',', '],['\\t','Tab']].map(([v,label])=>(
-                <button key={label} onClick={()=>{setSeparator(v);track()}}
-                  className={'px-2.5 py-1.5 rounded-lg text-xs transition-colors ' + (separator===v?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                  {label}
-                </button>
-              ))}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Repeat Count</label>
+              <input type="number" min={1} max={1000} value={count} onChange={e=>setCount(Math.max(1,parseInt(e.target.value)||1))}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Separator</label>
+              <select value={sepId} onChange={e=>setSepId(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                {SEPS.map(s=><option key={s.id} value={s.id}>{s.label}</option>)}
+              </select>
             </div>
           </div>
+          <button onClick={repeat} className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2.5 rounded-lg transition-colors">Repeat Text</button>
         </div>
         {output && (
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-gray-500">{output.length.toLocaleString()} characters</span>
-              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
+          <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-gray-700">Output ({count} repetitions)</span>
+              <button onClick={copy} className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                {copied ? '\u2713 Copied' : 'Copy'}
+              </button>
             </div>
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm whitespace-pre-wrap break-all max-h-48 overflow-y-auto">
-              {output.slice(0,1000)}{output.length>1000?'...':''}
-            </div>
+            <textarea value={output} readOnly rows={10}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono bg-gray-50 resize-none" />
           </div>
         )}
       </div>
-    </ToolLayout>
+    </main>
   )
 }
