@@ -184,6 +184,11 @@
     "ascii-art-generator": "Convert text into block ASCII art using a pixel bitmap font. Choose fill character and scale. Supports A-Z, 0-9, and basic punctuation.",
     "html-color-picker": "Pick colors with a visual picker, view HEX/RGB/HSL/HSV values, check contrast ratios, and browse 60+ named HTML/CSS colors.",
     "keyboard-shortcut-tester": "Click the capture zone and press any key or shortcut to see the key name, code, and modifiers (Ctrl, Alt, Shift, Meta). Captures last 20 events.",
-    "css-box-model-visualizer": "Visualize and configure CSS box model (margin, border, padding, content). Supports content-box and border-box. Copy the generated CSS."
+    "css-box-model-visualizer": "Visualize and configure CSS box model (margin, border, padding, content). Supports content-box and border-box. Copy the generated CSS.",
+    "open-graph-preview": "Preview how your page looks on Facebook, Twitter, and LinkedIn when shared. Generate the Open Graph and Twitter meta tags.",
+    "json-to-yaml": "Convert JSON to YAML format. Handles nested objects, arrays, strings with special characters, and boolean/null values correctly.",
+    "morse-code-translator": "Translate text to Morse code and back. Includes audio playback of the Morse signal and a visual reference chart.",
+    "html-previewer": "Live HTML editor with real-time preview. Write HTML, CSS, and JavaScript and see the result instantly in a sandboxed iframe.",
+    "html-minifier": "Minify HTML by removing comments, collapsing whitespace, and optionally minifying inline CSS and JavaScript. Shows bytes saved."
   }
 }
