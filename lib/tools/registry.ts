@@ -155,10 +155,10 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'pixel-ruler', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['pixel','ruler','measure','screen'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'color-contrast-checker', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['color','contrast','wcag','accessibility'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'json-to-xml', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['json','xml','convert'], maxFileSizeMB: { free: 1, pro: 10 } },
-  { slug: 'text-to-binary', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['text','binary','hex','octal','convert'], maxFileSizeMB: { free: 0, pro: 0 }
-  { slug: 'caesar-cipher', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['caesar','cipher','encrypt','decrypt','rot13'], maxFileSizeMB: { free: 0, pro: 0 }
+  { slug: 'text-to-binary', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['text','binary','hex','octal','convert'], maxFileSizeMB: { free: 0, pro: 0 } },
+  { slug: 'caesar-cipher', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['caesar','cipher','encrypt','decrypt','rot13'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'ascii-art-generator', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['ascii','art','text','banner'], maxFileSizeMB: { free: 0, pro: 0 } },
-  { slug: 'url-analyzer', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['url','analyze','preview','security'], maxFileSizeMB: { free: 0, pro: 0 }
+  { slug: 'url-analyzer', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['url','analyze','preview','security'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'text-diff', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['text','diff','compare','lines'], maxFileSizeMB: { free: 0, pro: 0 } }, }, }, },
   { slug: 'jwt-decoder', category: 'developer', isPro: false, isNew: false, phase: 1, tags: ['jwt','token','decode'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'yaml-to-json', category: 'developer', isPro: false, isNew: false, phase: 1, tags: ['yaml','json','convert'], maxFileSizeMB: { free: 1, pro: 10 } },
@@ -199,8 +199,8 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'number-sequence-generator', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['number','sequence','generate','list'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'timezone-converter', category: 'utility', isPro: false, isNew: false, phase: 1, tags: ['timezone','convert','time'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'color-palette-generator', category: 'utility', isPro: false, isNew: false, phase: 1, tags: ['color','palette','design'], maxFileSizeMB: { free: 0, pro: 0 } },
-  { slug: 'prime-number-checker', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['prime','number','check','math'], maxFileSizeMB: { free: 0, pro: 0 }
-  { slug: 'number-palindrome', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['palindrome','number','math','reverse'], maxFileSizeMB: { free: 0, pro: 0 }
+  { slug: 'prime-number-checker', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['prime','number','check','math'], maxFileSizeMB: { free: 0, pro: 0 } },
+  { slug: 'number-palindrome', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['palindrome','number','math','reverse'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'bmi-calculator', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['bmi','body','mass','index','health'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'stopwatch-timer', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['stopwatch','timer','countdown','lap'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'roman-numeral-converter', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['roman','numeral','convert','arabic'], maxFileSizeMB: { free: 0, pro: 0 } },
