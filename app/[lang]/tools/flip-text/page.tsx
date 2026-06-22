@@ -1,55 +1,57 @@
 'use client'
 import { useState } from 'react'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
 
-const FLIP_MAP: Record<string,string> = {
-  'a':'É','b':'q','c':'É','d':'p','e':'Ç','f':'É','g':'Æ','h':'É¥','i':'Ä±',
-  'j':'É¾','k':'Ê','l':'l','m':'w','n':'u','o':'o','p':'d','q':'b','r':'É¹','s':'s',
-  't':'Ê','u':'n','v':'Ê','w':'m','x':'x','y':'Ê','z':'z',
-  'A':'â','B':'áº','C':'Æ','D':'á¡','E':'Æ','F':'â²','G':'â','H':'H',
-  'I':'I','J':'á','K':'â','L':'J','M':'W','N':'N','O':'O','P':'Ô','Q':'Ô',
-  'R':'á´','S':'S','T':'â¥','U':'â©','V':'â§','W':'M','X':'X','Y':'â','Z':'Z',
-  '0':'0','1':'Æ','2':'Æ»','3':'Æ','4':'á­','5':'5','6':'9','7':'â±¢','8':'8','9':'6',
-  '.':'Ë',',':'â','?':'Â¿','!':'Â¡',''':',','"':'â','(':')',')':'(','[':']',']':'[',
-  ' ':' '
-};
+const tool = getToolBySlug('flip-text')!
+
+const FLIP: Record<string, string> = {
+  a:'ɐ',b:'q',c:'ɔ',d:'p',e:'ǝ',f:'ɟ',g:'ƃ',
+  h:'ɥ',i:'ı',j:'ɾ',k:'ʞ',l:'l',m:'w',n:'u',o:'o',
+  p:'d',q:'b',r:'ɹ',s:'s',t:'ʇ',u:'n',v:'ʌ',w:'m',x:'x',
+  y:'ʎ',z:'z',
+  A:'∀',B:'ᗺ',C:'Ɔ',D:'ᗡ',E:'Ǝ',F:'Ⅎ',
+  G:'⅁',H:'H',I:'I',J:'r',K:'⋊',L:'J',M:'W',N:'N',O:'O',
+  P:'Ԁ',Q:'Ԁ',R:'ᴚ',S:'S',T:'⊥',U:'∩',
+  V:'∧',W:'M',X:'X',Y:'ʎ',Z:'Z',
+  '0':'0','1':'Ɩ','2':'ƻ','3':'Ɛ','4':'ូ',
+  '5':'5','6':'9','7':'⅂','8':'8','9':'6',
+  '.':'˙',',':'‘','?':'¿','!':'¡',
+  '(':')',')':'(','[':']',']':'[','{':'}','}':'{',' ':' '
+}
 
 export default function FlipTextPage() {
   const [input, setInput] = useState('')
-  
-  const flipped = input.split('').map(c => FLIP_MAP[c] || c).reverse().join('')
-  
-  const copy = () => navigator.clipboard.writeText(flipped)
+  const flipped = input.split('').map(c => FLIP[c] ?? c).reverse().join('')
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Flip Text Upside Down</h1>
-        <p className="text-gray-500 mb-8">Convert your text to upside-down unicode characters instantly.</p>
-        <div className="bg-white rounded-xl shadow p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Input Text</label>
-            <textarea
-              className="w-full border border-gray-300 rounded-lg p-3 text-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Type something to flip..."
-              value={input}
-              onChange={e => setInput(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Flipped Text</label>
-            <div className="w-full border border-gray-200 rounded-lg p-3 bg-gray-50 text-sm h-32 overflow-auto break-all select-all">
-              {flipped || <span className="text-gray-400">Flipped text appears here...</span>}
-            </div>
-          </div>
-          <button
-            onClick={copy}
-            disabled={!flipped}
-            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 transition-colors"
-          >
-            Copy Flipped Text
-          </button>
+    <ToolLayout tool={tool}>
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Input Text</label>
+          <textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="Type text to flip upside down..."
+            rows={4}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+          />
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Flipped Text</label>
+          <div className="w-full border border-gray-200 bg-gray-50 rounded-lg px-4 py-3 font-mono text-gray-800 min-h-[80px] break-all">
+            {flipped || <span className="text-gray-400">Flipped text appears here...</span>}
+          </div>
+        </div>
+        {flipped && (
+          <button
+            onClick={() => navigator.clipboard.writeText(flipped)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+          >
+            Copy
+          </button>
+        )}
       </div>
-    </main>
+    </ToolLayout>
   )
 }
