@@ -4,65 +4,79 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('html-minifier')!
 function minifyHtml(html:string,opts:{comments:boolean;whitespace:boolean;attrs:boolean}):string{
-  let r=html
-  if(opts.comments)r=r.replace(/<!--(?!\[if)[\s\S]*?-->/g,'')
+  let s=html
+  if(opts.comments)s=s.replace(/<!--[\s\S]*?-->/g,'')
   if(opts.whitespace){
-    r=r.replace(/\s+/g,' ')
-    r=r.replace(/> </g,'><')
-    r=r.replace(/\s+</g,'<')
-    r=r.replace(/>\s+/g,'>')
+    s=s.replace(/\s*\n\s*/g,' ')
+    s=s.replace(/>\s+</g,'><')
+    s=s.replace(/\s{2,}/g,' ')
+    s=s.trim()
   }
   if(opts.attrs){
-    r=r.replace(/ (class|id|style)=\s*["']\s*["']/g,'')
-    r=r.replace(/\s+=/g,'=')
-    r=r.replace(/=\s+/g,'=')
+    s=s.replace(/ (class|id|style|data-[\w-]+)="([^"]*)"/g,(m,attr,val)=>val?' '+attr+'="'+val+'"':'')
+    s=s.replace(/="([^"]*)"(?=[\s>])/g,(m,v)=>v===''?'':m)
   }
-  return r.trim()
+  return s
 }
+const SAMPLE='<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Page</title>
+  </head>
+  <body>
+    <!-- Main content -->
+    <div class="container">
+      <h1>Hello World</h1>
+      <p>This is a paragraph with some   extra   spaces.</p>
+    </div>
+  </body>
+</html>'
 export default function HtmlMinifierPage() {
-  const [input,setInput]=useState('<!DOCTYPE html>\n<html lang="en">\n  <head>\n    <!-- Page title -->\n    <title>  Hello World  </title>\n  </head>\n  <body>\n    <h1 class="  title  ">Hello</h1>\n    <p>  World  </p>\n  </body>\n</html>')
-  const [opts,setOpts]=useState({comments:true,whitespace:true,attrs:false})
+  const [input,setInput]=useState(SAMPLE)
+  const [comments,setComments]=useState(true)
+  const [whitespace,setWhitespace]=useState(true)
+  const [attrs,setAttrs]=useState(false)
   const [copied,setCopied]=useState(false)
-  const output=input?minifyHtml(input,opts):''
-  const savings=input?Math.round((1-output.length/input.length)*100):0
-  const copy=()=>{navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
+  const minified=minifyHtml(input,{comments,whitespace,attrs})
+  const origBytes=new Blob([input]).size
+  const minBytes=new Blob([minified]).size
+  const savings=origBytes>0?Math.round((1-minBytes/origBytes)*100):0
+  const copy=()=>{navigator.clipboard.writeText(minified);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-2xl mx-auto px-4 space-y-4">
-        <div className="flex flex-wrap gap-4">
-          {([['comments','Remove comments'],['whitespace','Collapse whitespace'],['attrs','Clean attributes']] as [keyof typeof opts,string][]).map(([k,label])=>(
-            <label key={k} className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={opts[k]} onChange={e=>setOpts({...opts,[k]:e.target.checked})} className="rounded"/>
-              <span className="text-sm text-gray-700">{label}</span>
+      <div className="max-w-xl mx-auto px-4 space-y-3">
+        <div className="flex flex-wrap gap-3">
+          {[['Remove comments',comments,setComments],['Collapse whitespace',whitespace,setWhitespace],['Optimize attributes',attrs,setAttrs]].map(([l,v,s])=>(
+            <label key={l as string} className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-600">
+              <input type="checkbox" checked={v as boolean} onChange={e=>(s as Function)(e.target.checked)} className="rounded"/>{l as string}
             </label>
           ))}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-sm font-medium text-gray-700">Input HTML</label>
-              <span className="text-xs text-gray-400">{input.length} chars</span>
-            </div>
-            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={12}
-              className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-xs resize-none" spellCheck={false}/>
+        <div><label className="block text-xs font-medium text-gray-600 mb-1">Input HTML</label>
+          <textarea value={input} onChange={e=>setInput(e.target.value)} rows={7}
+            className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-sm resize-none focus:outline-none focus:border-blue-400"
+            placeholder="Paste HTML..."/></div>
+        <div className="flex gap-3 text-sm">
+          <div className="flex-1 bg-gray-50 rounded-xl px-3 py-2 text-center">
+            <p className="text-lg font-bold text-gray-800">{origBytes}</p><p className="text-xs text-gray-500">Original (bytes)</p>
           </div>
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-sm font-medium text-gray-700">Minified Output</label>
-              <div className="flex items-center gap-2">
-                {savings>0&&<span className="text-xs text-green-600 font-semibold">-{savings}%</span>}
-                <button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?'Copied!':'Copy'}</button>
-              </div>
-            </div>
-            <textarea readOnly value={output} rows={12}
-              className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-xs resize-none"/>
+          <div className="flex-1 bg-green-50 rounded-xl px-3 py-2 text-center">
+            <p className="text-lg font-bold text-green-700">{minBytes}</p><p className="text-xs text-green-600">Minified (bytes)</p>
+          </div>
+          <div className="flex-1 bg-blue-50 rounded-xl px-3 py-2 text-center">
+            <p className="text-lg font-bold text-blue-700">{savings}%</p><p className="text-xs text-blue-600">Savings</p>
           </div>
         </div>
-        {input&&<div className="bg-gray-50 rounded-lg p-3 flex gap-6 text-sm text-gray-600">
-          <span>Original: <strong>{input.length}</strong> chars</span>
-          <span>Minified: <strong>{output.length}</strong> chars</span>
-          <span>Saved: <strong className="text-green-600">{savings}%</strong></span>
-        </div>}
+        <div className="bg-gray-900 rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
+            <span className="text-xs text-gray-400">Minified output</span>
+            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
+          </div>
+          <pre className="px-4 py-3 text-green-400 font-mono text-xs overflow-x-auto whitespace-pre-wrap max-h-40">{minified}</pre>
+        </div>
       </div>
     </ToolLayout>
   )

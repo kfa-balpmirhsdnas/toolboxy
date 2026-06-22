@@ -3,51 +3,48 @@ import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('percentage-calculator')!
-type Mode='pct'|'of'|'change'|'total'
-const MODES=[
-  {id:'pct' as Mode,label:'X% of Y = ?',aL:'Percent (X)',bL:'Total (Y)',hint:'e.g. 15% of 200'},
-  {id:'of' as Mode,label:'X is ?% of Y',aL:'Part (X)',bL:'Total (Y)',hint:'e.g. 30 is ?% of 200'},
-  {id:'change' as Mode,label:'% Change X to Y',aL:'From (X)',bL:'To (Y)',hint:'e.g. 100 to 125'},
-  {id:'total' as Mode,label:'X is P% of total',aL:'Part (X)',bL:'Percent (P)',hint:'e.g. 30 is 15%'},
-]
+function fmt(n:number):string{return isFinite(n)?parseFloat(n.toFixed(6)).toString():'N/A'}
 export default function PercentageCalculatorPage() {
-  const [mode,setMode]=useState<Mode>('pct')
-  const [a,setA]=useState('')
-  const [b,setB]=useState('')
-  const [result,setResult]=useState<string|null>(null)
-  const calc=()=>{
-    const na=parseFloat(a),nb=parseFloat(b)
-    if(isNaN(na)||isNaN(nb))return setResult('Enter valid numbers')
-    let r=''
-    if(mode==='pct')r=(na*nb/100).toFixed(6).replace(/\.?0+$/,'')+' ('+na+'% of '+nb+')'
-    else if(mode==='of')r=(na/nb*100).toFixed(4).replace(/\.?0+$/,'')+'%'
-    else if(mode==='change')r=((nb-na)/Math.abs(na)*100).toFixed(4).replace(/\.?0+$/,'')+'%'
-    else r=(na/(nb/100)).toFixed(6).replace(/\.?0+$/,'')
-    setResult(r)
-  }
-  const cur=MODES.find(m=>m.id===mode)!
+  const [a1,setA1]=useState('25')
+  const [b1,setB1]=useState('200')
+  const [a2,setA2]=useState('50')
+  const [b2,setB2]=useState('200')
+  const [a3,setA3]=useState('50')
+  const [b3,setB3]=useState('25')
+  const [a4,setA4]=useState('100')
+  const [b4,setB4]=useState('120')
+  const r1=fmt(parseFloat(a1)/parseFloat(b1)*100)
+  const r2=fmt(parseFloat(a2)/100*parseFloat(b2))
+  const r3=fmt((parseFloat(a3)-parseFloat(b3))/parseFloat(b3)*100)
+  const r4=fmt(parseFloat(a4)*(1+parseFloat(b4)/100))
+  const Input=({val,set,w}:{val:string;set:(v:string)=>void;w?:string})=>(
+    <input value={val} onChange={e=>set(e.target.value)} type="number" className={'rounded border border-gray-300 px-2 py-1.5 text-center font-mono text-sm w-'+(w||'20')}/>
+  )
+  const Card=({title,children,result,unit}:{title:string;children:React.ReactNode;result:string;unit?:string})=>(
+    <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{title}</p>
+      <div className="flex items-center gap-2 flex-wrap text-sm text-gray-700 mb-3">{children}</div>
+      <div className="bg-blue-50 rounded-xl px-4 py-2.5 flex items-center gap-2">
+        <span className="text-xs text-blue-500">Result:</span>
+        <span className="text-xl font-bold text-blue-700 font-mono">{result}{unit||''}</span>
+      </div>
+    </div>
+  )
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-lg mx-auto px-4 space-y-5">
-        <div className="grid grid-cols-2 gap-2">
-          {MODES.map(m=>(
-            <button key={m.id} onClick={()=>{setMode(m.id);setResult(null)}}
-              className={`rounded-lg border p-3 text-left transition ${mode===m.id?'border-blue-500 bg-blue-50':'border-gray-200 hover:bg-gray-50'}`}>
-              <p className="text-sm font-semibold text-gray-800">{m.label}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{m.hint}</p>
-            </button>
-          ))}
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">{cur.aL}</label>
-            <input type="number" value={a} onChange={e=>setA(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-2"/></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">{cur.bL}</label>
-            <input type="number" value={b} onChange={e=>setB(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-2"/></div>
-        </div>
-        <button onClick={calc} className="w-full bg-blue-600 text-white rounded-lg py-2.5 font-semibold hover:bg-blue-700">Calculate</button>
-        {result!==null&&<div className="bg-green-50 border border-green-200 rounded-xl p-5 text-center">
-          <p className="text-2xl font-bold text-green-700">{result}</p>
-        </div>}
+      <div className="max-w-lg mx-auto px-4 space-y-3">
+        <Card title="X% of Y" result={r2} unit="">
+          <Input val={a2} set={setA2}/> <span>% of</span> <Input val={b2} set={setB2}/>
+        </Card>
+        <Card title="X is what % of Y?" result={r1} unit="%">
+          <Input val={a1} set={setA1}/> <span>is what % of</span> <Input val={b1} set={setB1}/>
+        </Card>
+        <Card title="% change from X to Y" result={r3} unit="%">
+          <span>From</span> <Input val={b3} set={setB3}/> <span>to</span> <Input val={a3} set={setA3}/>
+        </Card>
+        <Card title="Increase by %" result={r4}>
+          <Input val={a4} set={setA4}/> <span>increased by</span> <Input val={b4} set={setB4}/> <span>%</span>
+        </Card>
       </div>
     </ToolLayout>
   )

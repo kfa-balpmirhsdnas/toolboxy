@@ -532,6 +532,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'html-table-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','table','generator','rows','columns'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'xml-formatter',category:'developer',phase:1,isPro:false,isNew:true,tags:['xml','format','beautify','indent','parse'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'file-size-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['file','size','bytes','kb','mb','convert'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'color-contrast-checker',category:'developer',phase:1,isPro:false,isNew:true,tags:['color','contrast','wcag','accessibility','a11y'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'dice-roller',category:'utility',phase:1,isPro:false,isNew:true,tags:['dice','roller','random','d6','rpg'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'html-minifier',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','minify','compress','optimize','whitespace'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-to-ascii-art',category:'text',phase:1,isPro:false,isNew:true,tags:['ascii','art','text','banner','figlet'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'percentage-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['percentage','percent','calculate','ratio','math'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }

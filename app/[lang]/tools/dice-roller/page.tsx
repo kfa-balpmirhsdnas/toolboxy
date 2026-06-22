@@ -2,96 +2,79 @@
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-const DICE_TYPES=[4,6,8,10,12,20,100]
-
-const FACES_6=[
-  '\u2680','\u2681','\u2682','\u2683','\u2684','\u2685'
-]
-
-
 const tool = getToolBySlug('dice-roller')!
-
+type DieType=4|6|8|10|12|20|100
+const DICE:DieType[]=[4,6,8,10,12,20,100]
+const FACES:Record<number,string>={4:'D4',6:'D6',8:'D8',10:'D10',12:'D12',20:'D20',100:'D100'}
+function rollDie(sides:number):number{return Math.floor(Math.random()*sides)+1}
+function faceStr(n:number,sides:DieType):string{
+  if(sides===20&&n===20)return '★'+n
+  if(sides===20&&n===1)return '☠'+n
+  return String(n)
+}
 export default function DiceRollerPage() {
-  const [diceType,setDiceType]=useState(6)
-  const [count,setCount]=useState(1)
-  const [results,setResults]=useState<number[]>([])
-  const [rolling,setRolling]=useState(false)
-  const [history,setHistory]=useState<{dice:string;results:number[];total:number}[]>([])
-
-  async function roll(){
-    if(rolling) return
-    setRolling(true)
-    setResults([])
-    await new Promise(r=>setTimeout(r,400))
-    const rolls=Array.from({length:count},()=>Math.floor(Math.random()*diceType)+1)
-    setResults(rolls)
-    setRolling(false)
-    setHistory(h=>[{dice:`${count}d${diceType}`,results:rolls,total:rolls.reduce((a,b)=>a+b,0)},...h].slice(0,10))
+  const [config,setConfig]=useState<{type:DieType;count:number}[]>([{type:6,count:2}])
+  const [results,setResults]=useState<{type:DieType;rolls:number[]}[]>([])
+  const [history,setHistory]=useState<string[]>([])
+  const [modifier,setModifier]=useState(0)
+  const roll=()=>{
+    const res=config.filter(c=>c.count>0).map(c=>({type:c.type,rolls:Array.from({length:c.count},()=>rollDie(c.type))}))
+    setResults(res)
+    const total=res.reduce((s,r)=>s+r.rolls.reduce((a,b)=>a+b,0),0)+modifier
+    const desc=res.map(r=>r.count+'d'+r.type+'['+r.rolls.join(',')+']').join(' + ')+(modifier?'+'+modifier:'')
+    setHistory(h=>[desc+' = '+total,...h.slice(0,9)])
   }
-
-  const total=results.reduce((a,b)=>a+b,0)
-  const min=Math.min(...results)
-  const max=Math.max(...results)
-
+  const total=results.reduce((s,r)=>s+r.rolls.reduce((a,b)=>a+b,0),0)+modifier
+  const addDie=(t:DieType)=>setConfig(c=>{const e=c.find(x=>x.type===t);return e?c.map(x=>x.type===t?{...x,count:x.count+1}:x):[...c,{type:t,count:1}]})
+  const rmDie=(t:DieType)=>setConfig(c=>c.map(x=>x.type===t?{...x,count:Math.max(0,x.count-1)}:x).filter(x=>x.count>0))
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-lg mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dice Roller</h1>
-        <p className="text-gray-500 mb-8">Roll any number of RPG dice — d4, d6, d8, d10, d12, d20, d100</p>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Dice Type</label>
-            <div className="flex flex-wrap gap-2">
-              {DICE_TYPES.map(d=>(
-                <button key={d} onClick={()=>setDiceType(d)}
-                  className={'px-3 py-2 rounded-lg font-bold text-sm transition-colors '+(diceType===d?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>
+      <div className="max-w-sm mx-auto px-4 space-y-4">
+        <div className="grid grid-cols-4 gap-2">
+          {DICE.map(d=>{
+            const count=config.find(c=>c.type===d)?.count||0
+            return(
+              <div key={d} className="text-center">
+                <button onClick={()=>addDie(d)} className={'w-full py-3 rounded-xl font-bold text-sm transition '+(count>0?'bg-blue-600 text-white':'border-2 border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-600')}>
                   d{d}
                 </button>
-              ))}
-            </div>
+                {count>0&&<div className="flex items-center justify-center gap-1 mt-1">
+                  <button onClick={()=>rmDie(d)} className="w-5 h-5 rounded bg-gray-200 text-xs font-bold hover:bg-red-100">-</button>
+                  <span className="text-xs font-bold text-blue-600">{count}</span>
+                  <button onClick={()=>addDie(d)} className="w-5 h-5 rounded bg-gray-200 text-xs font-bold hover:bg-green-100">+</button>
+                </div>}
+              </div>
+            )
+          })}
+          <div className="text-center">
+            <div className="text-xs text-gray-500 mb-1">Mod</div>
+            <input type="number" value={modifier} onChange={e=>setModifier(Number(e.target.value))} className="w-full py-2.5 rounded-xl border-2 border-gray-200 text-center font-bold text-sm" min="-99" max="99"/>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Number of Dice: {count}</label>
-            <input type="range" min={1} max={20} value={count} onChange={e=>setCount(parseInt(e.target.value))}
-              className="w-full accent-brand-500" />
-          </div>
-          <button onClick={roll} disabled={rolling}
-            className="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold text-lg transition-colors disabled:opacity-60">
-            {rolling?'Rolling...':'Roll '+count+'d'+diceType}
-          </button>
         </div>
+        <button onClick={roll} disabled={config.length===0} className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-xl hover:bg-blue-700 active:scale-98 transition disabled:opacity-40">
+          Roll Dice
+        </button>
         {results.length>0&&(
-          <div className="mt-4 bg-white rounded-2xl border border-gray-200 p-5">
-            <div className="flex flex-wrap gap-3 justify-center mb-4">
-              {results.map((r,i)=>(
-                <div key={i} className={'w-14 h-14 rounded-xl flex items-center justify-center text-xl font-black shadow-sm border-2 '+(r===diceType?'border-green-400 bg-green-50 text-green-700':r===1?'border-red-400 bg-red-50 text-red-700':'border-gray-200 bg-gray-50 text-gray-800')}>
-                  {diceType===6?FACES_6[r-1]:r}
+          <div className="bg-gray-50 rounded-2xl p-4 space-y-3">
+            <div className="flex flex-wrap gap-1.5">
+              {results.map((r,ri)=>r.rolls.map((n,i)=>(
+                <div key={ri+'-'+i}
+                  className={'flex items-center justify-center rounded-xl font-bold text-xl '+(r.type===20&&n===20?'bg-yellow-400 text-yellow-900':r.type===20&&n===1?'bg-red-400 text-white':'bg-white border-2 border-gray-200 text-gray-800')}
+                  style={{width:52,height:52}}>
+                  {n}
                 </div>
-              ))}
+              )))}
             </div>
-            <div className="flex gap-3">
-              {[['Total',total],['Min',min],['Max',max],['Avg',(total/results.length).toFixed(1)]].map(([l,v])=>(
-                <div key={l as string} className="flex-1 text-center bg-gray-50 rounded-xl p-2">
-                  <div className="font-bold text-gray-900">{v}</div>
-                  <div className="text-xs text-gray-500">{l}</div>
-                </div>
-              ))}
+            <div className="text-center">
+              <p className="text-xs text-gray-500">Total</p>
+              <p className="text-4xl font-bold text-blue-700">{total}</p>
             </div>
           </div>
         )}
         {history.length>0&&(
-          <div className="mt-4 bg-white rounded-2xl border border-gray-200 p-5">
-            <h2 className="font-semibold text-gray-700 mb-3 text-sm">Roll History</h2>
-            <div className="space-y-2">
-              {history.map((h,i)=>(
-                <div key={i} className="flex items-center justify-between text-sm">
-                  <span className="font-mono text-gray-600">{h.dice}</span>
-                  <span className="text-gray-400">[{h.results.join(', ')}]</span>
-                  <span className="font-bold text-brand-600">={h.total}</span>
-                </div>
-              ))}
-            </div>
+          <div className="space-y-1">
+            <p className="text-xs font-medium text-gray-600">History</p>
+            {history.map((h,i)=><p key={i} className="text-xs font-mono text-gray-500 py-0.5 border-b border-gray-100 last:border-0">{h}</p>)}
           </div>
         )}
       </div>
