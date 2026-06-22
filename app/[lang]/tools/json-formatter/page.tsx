@@ -1,12 +1,7 @@
 'use client'
-
 import { useState } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
 
-const tool = getToolBySlug('json-formatter')!
-
-export default function JsonFormatterPage({ params }: { params: { lang: string } }) {
+export default function JsonFormatterPage() {
   const [input, setInput] = useState('')
   const [output, setOutput] = useState('')
   const [error, setError] = useState('')
@@ -14,49 +9,73 @@ export default function JsonFormatterPage({ params }: { params: { lang: string }
   const [copied, setCopied] = useState(false)
 
   function format() {
-    try { setOutput(JSON.stringify(JSON.parse(input), null, indent)); setError('') }
-    catch (e: unknown) { setError(e instanceof Error ? e.message : 'Invalid JSON'); setOutput('') }
+    try {
+      const parsed = JSON.parse(input)
+      setOutput(JSON.stringify(parsed, null, indent))
+      setError('')
+    } catch(e:any) { setError(e.message); setOutput('') }
   }
 
   function minify() {
-    try { setOutput(JSON.stringify(JSON.parse(input))); setError('') }
-    catch (e: unknown) { setError(e instanceof Error ? e.message : 'Invalid JSON'); setOutput('') }
+    try {
+      const parsed = JSON.parse(input)
+      setOutput(JSON.stringify(parsed))
+      setError('')
+    } catch(e:any) { setError(e.message); setOutput('') }
   }
 
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    setCopied(true); setTimeout(() => setCopied(false), 1500)
+  function validate() {
+    try { JSON.parse(input); setError('\u2713 Valid JSON'); setOutput('') }
+    catch(e:any) { setError(e.message); setOutput('') }
   }
+
+  function copy() { navigator.clipboard.writeText(output); setCopied(true); setTimeout(()=>setCopied(false),2000) }
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Input JSON</label>
-          <textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder='{"key": "value"}'
-            className="w-full h-64 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Output</label>
-          <div className="relative">
-            <textarea value={output} readOnly placeholder="Formatted JSON will appear here…"
-              className="w-full h-64 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-800 bg-gray-50 focus:outline-none" />
-            {output && <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? '✓ Copied' : 'Copy'}</button>}
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-3xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">JSON Formatter</h1>
+        <p className="text-gray-500 mb-8">Format, validate and minify JSON data instantly</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Input JSON</label>
+            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={10}
+              placeholder='{"key": "value", "array": [1, 2, 3]}'
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
           </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Indent:</span>
+              {[2,4].map(n=>(
+                <button key={n} onClick={()=>setIndent(n)}
+                  className={'px-2.5 py-1 rounded text-sm transition-colors '+(indent===n?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>
+                  {n} spaces
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 ml-auto">
+              <button onClick={format} className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-medium transition-colors">Format</button>
+              <button onClick={minify} className="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors">Minify</button>
+              <button onClick={validate} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors">Validate</button>
+            </div>
+          </div>
+          {error&&(
+            <p className={'text-sm px-3 py-2 rounded-lg '+(error.startsWith('\u2713')?'text-green-700 bg-green-50':'text-red-600 bg-red-50')}>
+              {error}
+            </p>
+          )}
+          {output&&(
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-medium text-gray-700">Output</label>
+                <button onClick={copy} className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg">{copied?'\u2713 Copied':'Copy'}</button>
+              </div>
+              <textarea value={output} readOnly rows={10}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 font-mono text-sm bg-gray-50 resize-none" />
+            </div>
+          )}
         </div>
       </div>
-      {error && <p className="mt-2 text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">⚠ {error}</p>}
-      <div className="flex flex-wrap items-center gap-3 mt-4">
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600">Indent:</label>
-          {[2, 4].map((n) => (
-            <button key={n} onClick={() => setIndent(n)} className={`text-sm px-3 py-1 rounded-lg border transition-colors ${indent === n ? 'bg-brand-600 text-white border-brand-600' : 'border-gray-200 text-gray-600 hover:border-brand-400'}`}>{n} spaces</button>
-          ))}
-        </div>
-        <button onClick={format} disabled={!input.trim()} className="bg-brand-600 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors disabled:opacity-40">Format</button>
-        <button onClick={minify} disabled={!input.trim()} className="bg-gray-800 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-gray-700 transition-colors disabled:opacity-40">Minify</button>
-        <button onClick={() => { setInput(''); setOutput(''); setError('') }} className="text-sm text-gray-400 hover:text-red-500 transition-colors ml-auto">Clear</button>
-      </div>
-    </ToolLayout>
+    </main>
   )
 }
