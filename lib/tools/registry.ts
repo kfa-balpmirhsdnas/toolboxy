@@ -452,6 +452,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'reading-time-estimator',category:'text',phase:1,isPro:false,isNew:true,tags:['reading','time','words','estimate'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'anagram-solver',category:'text',phase:1,isPro:false,isNew:true,tags:['anagram','words','letters','solve'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'regex-tester',category:'developer',phase:1,isPro:false,isNew:true,tags:['regex','regexp','test','pattern','match'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'date-difference-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['date','difference','days','calculator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'sha-hash-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['sha','hash','sha256','sha512','crypto'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'json-to-typescript',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','typescript','interface','type','generate'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'gradient-text-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['gradient','text','css','color','generator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'uuid-bulk-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['uuid','bulk','generate','v4','random'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }

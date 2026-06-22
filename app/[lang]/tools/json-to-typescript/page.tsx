@@ -1,137 +1,71 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
-
 const tool = getToolBySlug('json-to-typescript')!
-
-type JsonVal = string | number | boolean | null | JsonVal[] | { [k: string]: JsonVal }
-
-function jsonToTs(data: JsonVal, name = 'Root', indent = 0): string {
-  const pad = '  '.repeat(indent)
-  const ipad = '  '.repeat(indent+1)
-  
-  if (data === null) return 'null'
-  if (Array.isArray(data)) {
-    if (!data.length) return 'unknown[]'
-    const types = Array.from(new Set(data.map(item=>jsonToTs(item, name+'Item', indent)))).join(' | ')
-    return '(' + types + ')[]'
+function jsonTypeOf(val:unknown):string{
+  if(val===null)return 'null'
+  if(Array.isArray(val)){
+    if(val.length===0)return 'unknown[]'
+    const types=[...new Set(val.map(v=>jsonTypeOf(v)))]
+    return types.length===1?types[0]+'[]':('('+types.join('|')+')[]')
   }
-  if (typeof data === 'object') {
-    const entries = Object.entries(data)
-    if (!entries.length) return 'Record<string, unknown>'
-    const fields = entries.map(([k,v]) => {
-      const optional = v === null ? '?' : ''
-      const childName = k.charAt(0).toUpperCase()+k.slice(1)
-      return ipad + k + optional + ': ' + jsonToTs(v, childName, indent+1)
-    })
-    return '{\n' + fields.join('\n') + '\n' + pad + '}'
-  }
-  if (typeof data === 'string') return 'string'
-  if (typeof data === 'number') return Number.isInteger(data) ? 'number' : 'number'
-  if (typeof data === 'boolean') return 'boolean'
-  return 'unknown'
+  if(typeof val==='object'){return generateInterface(val as Record<string,unknown>)}
+  return typeof val
 }
-
-function generateInterfaces(data: JsonVal, name = 'Root'): string {
-  const lines: string[] = []
-  
-  function process(d: JsonVal, n: string) {
-    if (d === null || typeof d !== 'object') return
-    if (Array.isArray(d)) {
-      if (d.length > 0 && typeof d[0] === 'object' && d[0] !== null) process(d[0], n+'Item')
-      return
-    }
-    const entries = Object.entries(d as Record<string,JsonVal>)
-    const fields = entries.map(([k,v]) => {
-      const opt = v===null?'?':''
-      const childName = n+k.charAt(0).toUpperCase()+k.slice(1)
-      let type: string
-      if (v===null) type='null'
-      else if (Array.isArray(v)) { type=(v.length>0&&typeof v[0]==='object')?childName+'Item[]':'unknown[]' }
-      else if (typeof v==='object') type=childName
-      else type=typeof v
-      return '  '+k+opt+': '+type+';'
-    })
-    lines.push('export interface '+n+' {')
-    lines.push(...fields)
-    lines.push('}')
-    lines.push('')
-    entries.forEach(([k,v])=>{
-      const childName=n+k.charAt(0).toUpperCase()+k.slice(1)
-      process(v,childName)
-    })
-  }
-  
-  process(data, name)
-  return lines.join('\n')
+function generateInterface(obj:Record<string,unknown>,indent=0):string{
+  const sp='  '.repeat(indent)
+  const isp='  '.repeat(indent+1)
+  const lines=Object.entries(obj).map(([k,v])=>{
+    const safeKey=/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(k)?k:`'${k}'`
+    return `${isp}${safeKey}: ${jsonTypeOf(v)};`
+  })
+  return '{
+'+lines.join('
+')+'
+'+sp+'}'
 }
-
-const SAMPLE = JSON.stringify({
-  user: { id: 1, name: 'Alice', email: 'alice@example.com', active: true },
-  posts: [{ id: 1, title: 'Hello World', tags: ['typescript','json'] }],
-  meta: { total: 42, page: 1 }
-}, null, 2)
-
-export default function JsonToTypescriptPage({ params }: { params: { lang: string } }) {
-  const [input, setInput] = useState(SAMPLE)
-  const [rootName, setRootName] = useState('Root')
-  const [copied, setCopied] = useState(false)
-  const [error, setError] = useState('')
-  const tracked = useRef(false)
-
-  function track() { if (!tracked.current) { trackToolUsed('json-to-typescript'); tracked.current = true } }
-
-  let output = ''
-  try {
-    const parsed = JSON.parse(input)
-    setError('')
-    output = generateInterfaces(parsed, rootName)
-  } catch(e: unknown) {
-    if (input) setError(e instanceof Error ? e.message : 'Invalid JSON')
+function convert(json:string,name:string):string{
+  const obj=JSON.parse(json)
+  if(Array.isArray(obj)){
+    const inner=obj.length>0&&typeof obj[0]==='object'&&!Array.isArray(obj[0])?generateInterface(obj[0] as Record<string,unknown>):'unknown'
+    return `export type ${name} = ${inner}[];`
   }
-
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('json-to-typescript')
-    setCopied(true); setTimeout(()=>setCopied(false),1500)
+  if(typeof obj==='object'&&obj!==null){
+    return `export interface ${name} ${generateInterface(obj as Record<string,unknown>)}`
   }
-  function download() {
-    const blob = new Blob([output],{type:'text/plain'})
-    const url=URL.createObjectURL(blob); const a=document.createElement('a')
-    a.href=url; a.download='types.ts'; a.click(); URL.revokeObjectURL(url)
-    trackToolDownload('json-to-typescript','ts')
+  return `export type ${name} = ${typeof obj};`
+}
+export default function JsonToTypescriptPage() {
+  const [input,setInput]=useState('{"name":"John","age":30,"email":"john@example.com","scores":[95,87,92],"address":{"city":"New York","country":"USA"},"active":true}')
+  const [name,setName]=useState('MyType')
+  const [output,setOutput]=useState('')
+  const [err,setErr]=useState('')
+  const [copied,setCopied]=useState(false)
+  const convert2=()=>{
+    try{setOutput(convert(input,name));setErr('')}catch(e){setErr((e as Error).message);setOutput('')}
   }
-
+  const copy=()=>{navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="flex gap-3 items-end">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Root interface name</label>
-            <input value={rootName} onChange={e=>{setRootName(e.target.value||'Root');track()}}
-              className="px-3 py-2 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
-          </div>
+    <ToolLayout tool={tool}>
+      <div className="max-w-2xl mx-auto px-4 space-y-4">
+        <div className="flex gap-2 items-end">
+          <div className="flex-1"><label className="block text-sm font-medium text-gray-700 mb-1">Interface/Type name</label>
+            <input value={name} onChange={e=>setName(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-2"/></div>
         </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">JSON Input</label>
-          <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} rows={8}
-            className={'w-full px-4 py-3 border rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none ' + (error?'border-red-300':'border-gray-200')} />
-          {error && <p className="text-xs text-red-600 mt-0.5">{error}</p>}
-        </div>
-        {output && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">JSON Input</label>
+            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={12} className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-xs resize-none" spellCheck={false}/></div>
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">TypeScript interfaces</label>
-              <div className="flex gap-2">
-                <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
-                <button onClick={download} className="text-xs text-brand-600 hover:underline">Download .ts</button>
-              </div>
+            <div className="flex justify-between mb-1">
+              <label className="text-sm font-medium text-gray-700">TypeScript Output</label>
+              {output&&<button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?'Copied!':'Copy'}</button>}
             </div>
-            <pre className="p-4 bg-gray-900 text-green-400 text-xs rounded-xl font-mono overflow-x-auto max-h-64">{output}</pre>
+            <textarea readOnly value={output} rows={12} className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-xs resize-none"/>
           </div>
-        )}
+        </div>
+        {err&&<p className="text-red-500 text-sm">{err}</p>}
+        <button onClick={convert2} className="w-full bg-blue-600 text-white rounded-lg py-2.5 font-semibold hover:bg-blue-700">Convert to TypeScript</button>
       </div>
     </ToolLayout>
   )

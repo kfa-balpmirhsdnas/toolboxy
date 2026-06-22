@@ -1,91 +1,58 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
-
 const tool = getToolBySlug('uuid-bulk-generator')!
-
-function uuid4(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = Math.random()*16|0, v = c==='x'?r:(r&0x3|0x8)
-    return v.toString(16)
+function genUUID():string{
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
+    const r=Math.random()*16|0
+    return (c==='x'?r:(r&0x3|0x8)).toString(16)
   })
 }
-function uuidNIL(): string { return '00000000-0000-0000-0000-000000000000' }
-function uuidShort(): string { return Math.random().toString(36).slice(2,10)+Math.random().toString(36).slice(2,10) }
-
-type Format = 'v4'|'nil'|'short'|'no-hyphens'|'uppercase'
-
-function generate(format: Format): string {
-  const raw = format==='nil' ? uuidNIL() : format==='short' ? uuidShort() : uuid4()
-  if (format==='no-hyphens') return raw.replace(/-/g,'')
-  if (format==='uppercase') return raw.toUpperCase()
-  return raw
-}
-
-export default function UuidBulkGeneratorPage({ params }: { params: { lang: string } }) {
-  const [count, setCount] = useState(10)
-  const [format, setFormat] = useState<Format>('v4')
-  const [uuids, setUuids] = useState<string[]>([])
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
-
-  function track() { if (!tracked.current) { trackToolUsed('uuid-bulk-generator'); tracked.current = true } }
-
-  function gen() {
-    track()
-    setUuids(Array.from({length:count},()=>generate(format)))
+export default function UuidBulkGeneratorPage() {
+  const [count,setCount]=useState(10)
+  const [uuids,setUuids]=useState<string[]>(()=>Array.from({length:10},genUUID))
+  const [format,setFormat]=useState<'default'|'upper'|'no-dash'|'braces'>('default')
+  const [copied,setCopied]=useState(false)
+  const fmt=(u:string)=>{
+    if(format==='upper')return u.toUpperCase()
+    if(format==='no-dash')return u.replace(/-/g,'')
+    if(format==='braces')return '{'+u+'}'
+    return u
   }
-
-  const text = uuids.join('\n')
-  async function copy() { await navigator.clipboard.writeText(text); trackToolCopy('uuid-bulk-generator'); setCopied(true); setTimeout(()=>setCopied(false),1500) }
-  function download() {
-    const blob = new Blob([text],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='uuids.txt'; a.click()
-    trackToolDownload('uuid-bulk-generator','txt')
-  }
-
+  const generate=()=>setUuids(Array.from({length:Math.min(count,1000)},genUUID))
+  const copyAll=()=>{navigator.clipboard.writeText(uuids.map(fmt).join('\n'));setCopied(true);setTimeout(()=>setCopied(false),1500)}
+  const FORMATS=[{id:'default',label:'Default'},{id:'upper',label:'UPPERCASE'},{id:'no-dash',label:'No dashes'},{id:'braces',label:'{Braces}'}]
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="flex flex-wrap gap-3 items-end">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Count</label>
-            <input type="number" min={1} max={1000} value={count} onChange={e=>{setCount(Math.min(1000,Math.max(1,parseInt(e.target.value)||1)));track()}}
-              className="w-24 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+    <ToolLayout tool={tool}>
+      <div className="max-w-lg mx-auto px-4 space-y-4">
+        <div className="grid grid-cols-2 gap-3">
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">Count: {count}</label>
+            <input type="range" min="1" max="100" value={count} onChange={e=>setCount(Number(e.target.value))} className="w-full"/>
+            <input type="number" min="1" max="1000" value={count} onChange={e=>setCount(Math.min(1000,Math.max(1,Number(e.target.value))))} className="w-full mt-1 rounded border border-gray-300 px-2 py-1 text-center text-sm"/>
           </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Format</label>
-            <select value={format} onChange={e=>{setFormat(e.target.value as Format);track()}}
-              className="px-3 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
-              <option value="v4">UUID v4</option>
-              <option value="no-hyphens">No hyphens</option>
-              <option value="uppercase">Uppercase</option>
-              <option value="nil">Nil UUID</option>
-              <option value="short">Short ID</option>
-            </select>
-          </div>
-          <button onClick={gen} className="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold transition-colors">
-            Generate
-          </button>
-        </div>
-        {uuids.length > 0 && (
-          <>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">{uuids.length} UUIDs generated</span>
-              <div className="flex gap-2">
-                <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'✓ Copied':'Copy All'}</button>
-                <button onClick={download} className="text-xs text-gray-500 hover:text-gray-700">Download .txt</button>
-              </div>
-            </div>
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono max-h-80 overflow-y-auto space-y-0.5">
-              {uuids.map((u,i)=>(
-                <div key={i} onClick={async()=>{await navigator.clipboard.writeText(u);trackToolCopy('uuid-bulk-generator')}}
-                  className="cursor-pointer hover:bg-brand-50 rounded px-1 py-0.5 transition-colors">{u}</div>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">Format</label>
+            <div className="grid grid-cols-2 gap-1">
+              {FORMATS.map(f=>(
+                <button key={f.id} onClick={()=>setFormat(f.id as typeof format)}
+                  className={`py-1.5 rounded border text-xs font-medium transition ${format===f.id?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50'}`}>{f.label}</button>
               ))}
             </div>
-          </>
-        )}
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={generate} className="flex-1 bg-blue-600 text-white rounded-lg py-2.5 font-semibold hover:bg-blue-700">Generate {count} UUIDs</button>
+          <button onClick={copyAll} className="px-4 py-2.5 rounded-lg border border-gray-300 text-sm hover:bg-gray-50">{copied?'Copied!':'Copy All'}</button>
+        </div>
+        <div className="max-h-80 overflow-y-auto space-y-1">
+          {uuids.map((u,i)=>(
+            <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded hover:bg-gray-100 group">
+              <span className="text-xs text-gray-400 w-5 text-right">{i+1}</span>
+              <span className="font-mono text-xs text-gray-700 flex-1 select-all">{fmt(u)}</span>
+              <button onClick={()=>navigator.clipboard.writeText(fmt(u))} className="text-xs text-blue-500 opacity-0 group-hover:opacity-100">Copy</button>
+            </div>
+          ))}
+        </div>
       </div>
     </ToolLayout>
   )
