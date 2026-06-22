@@ -1,125 +1,109 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('regex-tester')!
-
-export default function RegexTesterPage({ params }: { params: { lang: string } }) {
+export default function RegexTesterPage() {
   const [pattern, setPattern] = useState('')
   const [flags, setFlags] = useState('g')
-  const [text, setText] = useState('')
-  const [matches, setMatches] = useState<RegExpMatchArray[]>([])
+  const [testStr, setTestStr] = useState('')
   const [error, setError] = useState('')
-  const [matchCount, setMatchCount] = useState(0)
-  const tracked = useRef(false)
 
-  function test() {
-    if (!pattern) return
-    if (!tracked.current) { trackToolUsed('regex-tester'); tracked.current = true }
+  const FLAG_LIST = ['g','i','m','s']
+  function toggleFlag(f:string){setFlags(prev=>prev.includes(f)?prev.replace(f,''):prev+f)}
+
+  let matches: RegExpExecArray[] = []
+  let highlighted = ''
+  if (pattern && testStr && !error) {
     try {
-      const re = new RegExp(pattern, flags)
-      const all: RegExpMatchArray[] = []
-      let m: RegExpMatchArray | null
-      if (flags.includes('g')) {
-        const tmp = new RegExp(pattern, flags)
-        while ((m = tmp.exec(text)) !== null) {
-          all.push(m)
-          if (all.length > 500) break
-        }
-      } else {
-        m = re.exec(text)
-        if (m) all.push(m)
+      const re = new RegExp(pattern, flags.includes('g')?flags:flags+'g')
+      let m: RegExpExecArray|null
+      while((m=re.exec(testStr))!==null){
+        matches.push(m)
+        if(!flags.includes('g'))break
+        if(m.index===re.lastIndex)re.lastIndex++
       }
-      setMatches(all)
-      setMatchCount(all.length)
+      // Build highlighted HTML
+      const re2 = new RegExp(pattern, flags.includes('g')?flags:flags+'g')
+      highlighted = testStr.replace(re2, match =>
+        '<mark class="bg-yellow-200 rounded px-0.5">'+match.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</mark>'
+      )
       setError('')
-    } catch (e: unknown) {
-      setError((e as Error).message)
-      setMatches([])
-      setMatchCount(0)
-    }
+    } catch(e:any) { setError(e.message) }
   }
 
-  function highlight() {
-    if (!pattern || !text) return text
-    try {
-      const re = new RegExp(pattern, flags.includes('g') ? flags : flags + 'g')
-      return text.replace(re, m => '<mark class="bg-yellow-200 rounded px-0.5">' + m + '</mark>')
-    } catch { return text }
+  function validate() {
+    if(!pattern){setError('');return}
+    try{new RegExp(pattern,flags);setError('')}
+    catch(e:any){setError(e.message)}
   }
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="sm:col-span-2">
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-3xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Regex Tester</h1>
+        <p className="text-gray-500 mb-8">Test and debug regular expressions in real time with match highlighting</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Pattern</label>
-            <input
-              value={pattern}
-              onChange={e => { setPattern(e.target.value); setMatches([]); setError('') }}
-              placeholder="e.g. \d+"
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400"
-            />
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 font-mono">/</span>
+              <input value={pattern} onChange={e=>{setPattern(e.target.value);validate()}}
+                placeholder="e.g. [a-z]+@[a-z]+\.(com|org)"
+                className={'flex-1 border rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 '+(error?'border-red-400 focus:ring-red-400':'border-gray-300 focus:ring-brand-500')} />
+              <span className="text-gray-400 font-mono">/</span>
+              <span className="font-mono text-brand-600">{flags}</span>
+            </div>
+            {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+          </div>
+          <div className="flex gap-2 items-center">
+            <span className="text-sm text-gray-600">Flags:</span>
+            {FLAG_LIST.map(f=>(
+              <button key={f} onClick={()=>toggleFlag(f)}
+                className={'px-2.5 py-1 rounded font-mono text-sm transition-colors '+(flags.includes(f)?'bg-brand-500 text-white':'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
+                {f}
+              </button>
+            ))}
+            <span className="text-xs text-gray-400 ml-2">(g=global, i=case insensitive, m=multiline, s=dotAll)</span>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Flags</label>
-            <input
-              value={flags}
-              onChange={e => setFlags(e.target.value)}
-              placeholder="g i m"
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400"
-            />
+            <label className="block text-sm font-medium text-gray-700 mb-1">Test String</label>
+            <textarea value={testStr} onChange={e=>setTestStr(e.target.value)} rows={5}
+              placeholder="Enter text to test against the pattern..."
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
           </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Test String</label>
-          <textarea
-            value={text}
-            onChange={e => { setText(e.target.value); setMatches([]); setError('') }}
-            rows={6}
-            placeholder="Paste your text here..."
-            className="w-full p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400"
-          />
-        </div>
-        <button
-          onClick={test}
-          disabled={!pattern || !text}
-          className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors"
-        >
-          Test Regex
-        </button>
-        {error && <p className="text-sm text-red-600 font-mono bg-red-50 p-3 rounded-xl border border-red-200">&#x274C; {error}</p>}
-        {matches.length > 0 && (
-          <div className="space-y-3">
-            <p className="text-sm font-semibold text-gray-700">{matchCount} match{matchCount !== 1 ? 'es' : ''} found</p>
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: highlight() }} />
-            <div className="space-y-2">
-              {matches.slice(0, 20).map((m, i) => (
-                <div key={i} className="flex items-start gap-3 p-3 bg-white border border-gray-200 rounded-xl text-sm">
-                  <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded font-mono shrink-0">#{i + 1}</span>
-                  <div className="min-w-0">
-                    <span className="font-mono text-gray-800">&ldquo;{m[0]}&rdquo;</span>
-                    <span className="text-gray-400 ml-2 text-xs">index {m.index}</span>
-                    {m.length > 1 && (
-                      <div className="mt-1 text-xs text-gray-500">
-                        Groups: {m.slice(1).map((g, gi) => (
-                          <span key={gi} className="mr-2 font-mono">#{gi + 1}=&ldquo;{g ?? 'undefined'}&rdquo;</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-              {matches.length > 20 && <p className="text-xs text-gray-400">...and {matches.length - 20} more</p>}
+        {pattern&&testStr&&!error&&(
+          <div className="mt-4 space-y-4">
+            <div className="bg-white border border-gray-200 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-semibold text-gray-700">Matches</span>
+                <span className={'px-2 py-0.5 rounded-full text-xs font-bold '+(matches.length?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500')}>
+                  {matches.length}
+                </span>
+              </div>
+              {highlighted && (
+                <div className="font-mono text-sm bg-gray-50 rounded-lg p-3 whitespace-pre-wrap break-all" dangerouslySetInnerHTML={{__html:highlighted.replace(/\n/g,'<br/>')}} />
+              )}
             </div>
+            {matches.length>0&&(
+              <div className="bg-white border border-gray-200 rounded-xl p-4">
+                <h2 className="font-semibold text-gray-700 mb-3">Match Details</h2>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {matches.map((m,i)=>(
+                    <div key={i} className="flex items-start gap-3 text-sm">
+                      <span className="shrink-0 w-6 h-6 bg-brand-100 text-brand-700 rounded-full flex items-center justify-center text-xs font-bold">{i+1}</span>
+                      <div>
+                        <span className="font-mono bg-yellow-50 px-1 rounded">{JSON.stringify(m[0])}</span>
+                        <span className="text-gray-400 ml-2">at index {m.index}</span>
+                        {m.length>1&&<div className="text-xs text-gray-500 mt-0.5">Groups: {m.slice(1).map((g,gi)=>'$'+(gi+1)+'='+JSON.stringify(g)).join(', ')}</div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
-        {pattern && text && matches.length === 0 && !error && (
-          <p className="text-sm text-gray-500 italic">No matches found.</p>
         )}
       </div>
-    </ToolLayout>
+    </main>
   )
 }
