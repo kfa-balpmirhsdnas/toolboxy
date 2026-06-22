@@ -65,7 +65,7 @@ export default function ImageCompressPage({ params }: { params: { lang: string }
     a.href = compressedUrl
     a.download = name
     a.click()
-    trackToolDownload('image-compress')
+    trackToolDownload('image-compress', 'image')
   }
 
   return (
