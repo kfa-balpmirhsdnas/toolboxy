@@ -85,7 +85,10 @@
     "cron-expression-parser": "Parse and understand cron expressions. See a plain-English description and the next scheduled run times.",
     "regex-tester": "Test regular expressions against text in real time with match highlighting and group capture details.",
     "unit-converter": "Convert between units of length, weight, temperature, area, volume, speed, and data instantly.",
-    "timezone-converter": "Convert date and time between any world timezone with a live world clock view.",
+    "timezone-converter": {
+      "title": "Time Zone Converter",
+      "description": "Convert times between time zones and see the current time in every major city around the world"
+    },
     "color-palette-generator": "Generate beautiful color palettes from any base color: monochromatic, complementary, triadic, and more.",
     "image-compress": "Compress and resize images in your browser to reduce file size without losing quality.",
     "jpg-to-png": "Convert JPG and JPEG images to lossless PNG format directly in your browser.",
@@ -217,12 +220,18 @@
     "random-quote-generator": "Browse 20+ curated quotes across categories like Motivation, Wisdom, and Life. Save favorites, copy, and filter by category.",
     "habit-tracker": "Track daily habits with a 7-day grid. Add custom habits with emojis, check off completions, and see your current streak.",
     "bmi-calculator": "Calculate your Body Mass Index (BMI) and understand what the result means for your health.",
-    "tip-calculator": "Calculate restaurant tips with preset percentages or a custom rate. Split the bill among multiple people and copy the summary.",
+    "tip-calculator": {
+      "title": "Tip Calculator",
+      "description": "Calculate tip amounts and split the bill between multiple people with common tip percentage presets"
+    },
     "age-calculator": {
       "title": "Age Calculator",
       "description": "Calculate your exact age in years, months, days, hours and minutes from your date of birth"
     },
-    "loan-calculator": "Calculate monthly mortgage or loan payments. Shows total interest, principal vs interest breakdown, and a 12-month amortization preview.",
+    "loan-calculator": {
+      "title": "Loan Calculator",
+      "description": "Calculate monthly loan payments, total interest and amortization schedule for any loan or mortgage"
+    },
     "currency-converter": "Convert between 40+ currencies using approximate exchange rates. Quick compare panel and swap button included.",
     "color-contrast-checker": "Check WCAG 2.1 color contrast ratios for text and UI accessibility compliance.",
     "markdown-to-html": "Convert Markdown to clean, semantic HTML with live preview.",
@@ -243,6 +252,14 @@
     "reading-time-calculator": {
       "title": "Reading Time Calculator",
       "description": "Estimate how long it takes to read any text based on words per minute reading speed"
+    },
+    "dice-roller": {
+      "title": "Dice Roller",
+      "description": "Roll d4, d6, d8, d10, d12 or d20 dice with modifiers — perfect for RPG and tabletop games"
+    },
+    "hash-generator": {
+      "title": "Hash Generator",
+      "description": "Generate SHA-1, SHA-256, SHA-384 and SHA-512 cryptographic hashes from any text in your browser"
     }
   }
 }
