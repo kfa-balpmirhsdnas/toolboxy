@@ -83,7 +83,10 @@
     "yaml-to-json": "Convert YAML configuration files to JSON format. Supports nested objects, lists, and all common YAML types.",
     "css-minifier": "Minify CSS by removing comments and whitespace. See the exact percentage saved and download the result.",
     "cron-expression-parser": "Parse and understand cron expressions. See a plain-English description and the next scheduled run times.",
-    "regex-tester": "Test regular expressions against text in real time with match highlighting and group capture details.",
+    "regex-tester": {
+      "title": "Regex Tester",
+      "description": "Test and debug regular expressions in real time with match highlighting and group details"
+    },
     "unit-converter": "Convert between units of length, weight, temperature, area, volume, speed, and data instantly.",
     "timezone-converter": {
       "title": "Time Zone Converter",
@@ -131,7 +134,10 @@
     "morse-code-converter": "Convert text to Morse code and Morse code back to text. Includes quick reference chart.",
     "countdown-timer": "Simple countdown timer with presets. Pause, resume, and reset with a visual progress bar.",
     "character-counter": "Count characters, words, bytes, lines, sentences and more. Includes reading time estimate.",
-    "color-mixer": "Mix multiple colors by weight. Shows the blended result in HEX, RGB, and HSL.",
+    "color-mixer": {
+      "title": "Color Mixer",
+      "description": "Mix two colors together and get the blended result in HEX, RGB and HSL with gradient preview"
+    },
     "text-to-slug": "Convert any text into a URL-friendly slug with custom separator and case options.",
     "csv-viewer": "View and search CSV files in a table. Drag & drop files or paste CSV text directly.",
     "color-codes-converter": "Convert colors between HEX, RGB, and HSL formats. Visual color picker included.",
@@ -260,6 +266,18 @@
     "hash-generator": {
       "title": "Hash Generator",
       "description": "Generate SHA-1, SHA-256, SHA-384 and SHA-512 cryptographic hashes from any text in your browser"
+    },
+    "json-formatter": {
+      "title": "JSON Formatter",
+      "description": "Format, validate and minify JSON data instantly with syntax highlighting and error detection"
+    },
+    "email-extractor": {
+      "title": "Email Extractor",
+      "description": "Extract all email addresses from any block of text with duplicate removal option"
+    },
+    "cron-expression-generator": {
+      "title": "Cron Expression Generator",
+      "description": "Build cron schedule expressions visually with plain-English descriptions and common presets"
     }
   }
 }
