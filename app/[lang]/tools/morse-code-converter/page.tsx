@@ -12,17 +12,26 @@ const MORSE: Record<string, string> = {
   Y:'-.--',Z:'--..',
   '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-',
   '5':'.....','6':'-....','7':'--...','8':'---..','9':'----.',
-  '.':'.-.-.-',',':'--..--','?':'..--..','!':'-.-.--','/':'-..-.','(':'-.--.',')':'-.--.-'
+  '.':'.-.-.-',',':'--..--','?':'..--..',"!":'-.-.--',"/":'-..-.','(':'-.--.',")":'-.--.-'
 }
-const REVERSE = Object.fromEntries(Object.entries(MORSE).map(([k,v])=>[v,k]))
+const REVERSE: Record<string, string> = {}
+Object.entries(MORSE).forEach(([k,v]) => { REVERSE[v] = k })
 
 export default function MorseCodeConverterPage() {
   const [mode, setMode] = useState<'toMorse'|'fromMorse'>('toMorse')
   const [input, setInput] = useState('')
 
-  const output = mode === 'toMorse'
-    ? input.toUpperCase().split('').map(c => c === ' ' ? '/' : (MORSE[c] || '?')).join(' ')
-    : input.trim().split(/s+/s+|s+/).map(code => code === '/' ? ' ' : (REVERSE[code] || '?')).join('')
+  function convert(text: string, m: 'toMorse'|'fromMorse') {
+    if (m === 'toMorse') {
+      return text.toUpperCase().split('').map(c => c === ' ' ? '/' : (MORSE[c] || '?')).join(' ')
+    } else {
+      return text.trim().split('/').map(word =>
+        word.trim().split(' ').filter(Boolean).map(code => REVERSE[code] || '?').join('')
+      ).join(' ')
+    }
+  }
+
+  const output = convert(input, mode)
 
   return (
     <ToolLayout tool={tool}>
@@ -40,7 +49,7 @@ export default function MorseCodeConverterPage() {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {mode === 'toMorse' ? 'Text Input' : 'Morse Input (use space between letters, / between words)'}
+            {mode === 'toMorse' ? 'Text Input' : 'Morse Input (space between letters, / between words)'}
           </label>
           <textarea
             value={input}

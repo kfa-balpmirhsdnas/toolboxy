@@ -5,13 +5,11 @@ import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('passphrase-strength')!
 
-function analyzePassphrase(pp: string) {
-  const words = pp.trim().split(/s+/).filter(Boolean)
+function analyze(pp: string) {
+  const words = pp.trim().split(' ').filter(w => w.length > 0)
   const len = pp.length
-  const hasUpper = /[A-Z]/.test(pp)
-  const hasLower = /[a-z]/.test(pp)
   const hasDigit = /[0-9]/.test(pp)
-  const hasSpecial = /[^a-zA-Z0-9s]/.test(pp)
+  const hasSpecial = /[^a-zA-Z0-9 ]/.test(pp)
   let score = 0
   if (words.length >= 4) score++
   if (words.length >= 6) score++
@@ -19,20 +17,20 @@ function analyzePassphrase(pp: string) {
   if (len >= 30) score++
   if (hasDigit || hasSpecial) score++
   const labels = ['Very Weak','Weak','Fair','Good','Strong','Very Strong']
-  const colors = ['red','orange','yellow','blue','green','green']
-  return { score, label: labels[score] || 'Strong', color: colors[score] || 'green', words: words.length, len, hasUpper, hasLower, hasDigit, hasSpecial }
+  return { score, label: labels[Math.min(score, 5)], words: words.length, len, hasDigit, hasSpecial }
 }
 
 export default function PassphraseStrengthPage() {
   const [pp, setPp] = useState('')
-  const r = pp ? analyzePassphrase(pp) : null
+  const r = pp ? analyze(pp) : null
   const pct = r ? Math.round((r.score / 5) * 100) : 0
+  const barColor = pct < 40 ? 'bg-red-500' : pct < 60 ? 'bg-yellow-500' : pct < 80 ? 'bg-blue-500' : 'bg-green-500'
 
   return (
     <ToolLayout tool={tool}>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Enter Passphrase</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Passphrase</label>
           <textarea
             value={pp}
             onChange={e => setPp(e.target.value)}
@@ -45,21 +43,16 @@ export default function PassphraseStrengthPage() {
           <div className="space-y-3">
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span className="font-medium text-gray-700">Strength</span>
-                <span className="font-semibold text-gray-900">{r.label}</span>
+                <span className="font-medium text-gray-700">Strength: {r.label}</span>
+                <span className="text-gray-500">{r.words} words / {r.len} chars</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
-                <div
-                  className={`h-3 rounded-full transition-all ${pct < 40 ? 'bg-red-500' : pct < 60 ? 'bg-yellow-500' : pct < 80 ? 'bg-blue-500' : 'bg-green-500'}`}
-                  style={{width: pct + '%'}}
-                />
+                <div className={`h-3 rounded-full transition-all ${barColor}`} style={{width: pct + '%'}} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <div className="bg-gray-50 rounded p-2">Words: <strong>{r.words}</strong></div>
-              <div className="bg-gray-50 rounded p-2">Length: <strong>{r.len}</strong></div>
-              <div className={`rounded p-2 ${r.hasDigit ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-500'}`}>Has numbers: {r.hasDigit ? 'Yes' : 'No'}</div>
-              <div className={`rounded p-2 ${r.hasSpecial ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-500'}`}>Has symbols: {r.hasSpecial ? 'Yes' : 'No'}</div>
+              <div className={`rounded p-2 ${r.hasDigit ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-500'}`}>Numbers: {r.hasDigit ? 'Yes' : 'No'}</div>
+              <div className={`rounded p-2 ${r.hasSpecial ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-500'}`}>Symbols: {r.hasSpecial ? 'Yes' : 'No'}</div>
             </div>
           </div>
         )}
