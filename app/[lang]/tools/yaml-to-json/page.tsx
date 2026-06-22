@@ -1,148 +1,116 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
-
 const tool = getToolBySlug('yaml-to-json')!
-
-// Lightweight YAML parser (supports key: value, lists, nesting, strings, numbers, booleans)
-function parseYaml(yaml: string): Record<string, unknown> | unknown[] {
-  const lines = yaml.split('\n')
-  type Frame = { indent: number; obj: Record<string, unknown> | unknown[]; key?: string }
-  const stack: Frame[] = [{ indent: -1, obj: {} as Record<string, unknown> }]
-
-  function parseScalar(v: string): unknown {
-    const t = v.trim()
-    if (t === 'true') return true
-    if (t === 'false') return false
-    if (t === 'null' || t === '~') return null
-    if (/^-?\d+$/.test(t)) return parseInt(t, 10)
-    if (/^-?\d*\.\d+$/.test(t)) return parseFloat(t)
-    return t.replace(/^["']|["']$/g, '')
-  }
-
-  for (const rawLine of lines) {
-    if (rawLine.trim() === '' || rawLine.trim().startsWith('#')) continue
-    const indent = rawLine.search(/\S/)
-    const line = rawLine.trim()
-
-    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) stack.pop()
-    const parent = stack[stack.length - 1]
-
-    if (line.startsWith('- ')) {
-      const val = parseScalar(line.slice(2))
-      if (Array.isArray(parent.obj)) {
-        parent.obj.push(val)
-      } else if (parent.key !== undefined) {
-        const arr: unknown[] = [val]
-        ;(parent.obj as Record<string, unknown>)[parent.key] = arr
-        stack.push({ indent, obj: arr })
+function yamlToObj(yaml:string):unknown{
+  const lines=yaml.split('
+')
+  const root:unknown[]=[]
+  type Frame={obj:Record<string,unknown>|unknown[];indent:number;key:string|number}
+  const stack:Frame[]=[{obj:root as unknown[],indent:-1,key:0}]
+  for(let line of lines){
+    if(!line.trim()||line.trim().startsWith('#'))continue
+    const indent=line.search(/S/)
+    const content=line.trim()
+    while(stack.length>1&&stack[stack.length-1].indent>=indent)stack.pop()
+    const parent=stack[stack.length-1]
+    if(content.startsWith('- ')){
+      const val=content.slice(2).trim()
+      const arr=Array.isArray(parent.obj)?parent.obj:(parent.obj as Record<string,unknown>)[parent.key as string]
+      if(!Array.isArray(arr)){
+        ;(parent.obj as Record<string,unknown>)[parent.key as string]=[]
       }
-    } else if (line.includes(': ')) {
-      const colonIdx = line.indexOf(': ')
-      const key = line.slice(0, colonIdx).trim()
-      const val = line.slice(colonIdx + 2).trim()
-      const target = Array.isArray(parent.obj)
-        ? ({} as Record<string, unknown>)
-        : (parent.obj as Record<string, unknown>)
-      if (Array.isArray(parent.obj)) parent.obj.push(target)
-      if (val === '' || val === '|' || val === '>') {
-        const nested: Record<string, unknown> = {}
-        target[key] = nested
-        stack.push({ indent, obj: target, key })
-        stack.push({ indent: indent + 2, obj: nested })
-      } else {
-        target[key] = parseScalar(val)
-        stack[stack.length - 1] = { ...parent, key }
+      const a=(Array.isArray(parent.obj)?parent.obj:(parent.obj as Record<string,unknown>)[parent.key as string]) as unknown[]
+      if(val){a.push(parseVal(val))}
+    }else if(content.includes(': ')||content.endsWith(':')){
+      const colonIdx=content.indexOf(':')
+      const key=content.slice(0,colonIdx).trim().replace(/^['"]|['"]$/g,'')
+      const val=content.slice(colonIdx+1).trim().replace(/^['"]|['"]$/g,'')
+      const target=Array.isArray(parent.obj)?{}:parent.obj as Record<string,unknown>
+      if(Array.isArray(parent.obj)){parent.obj.push(target)}
+      if(val){(target as Record<string,unknown>)[key]=parseVal(val)
+      }else{
+        const child:Record<string,unknown>={}
+        ;(target as Record<string,unknown>)[key]=child
+        stack.push({obj:target as Record<string,unknown>,indent,key})
+        stack.push({obj:child,indent:indent+2,key})
       }
-    } else if (line.endsWith(':')) {
-      const key = line.slice(0, -1).trim()
-      const nested: Record<string, unknown> = {}
-      ;(parent.obj as Record<string, unknown>)[key] = nested
-      stack.push({ indent, obj: nested, key })
     }
   }
-  return stack[0].obj as Record<string, unknown>
+  return root.length===1?root[0]:root
 }
-
-const PLACEHOLDER = `name: ToolBoxy
-version: 1
-features:
-  - json-formatter
-  - base64-encoder
-settings:
-  theme: dark
-  language: en`
-
-export default function YamlToJsonPage({ params }: { params: { lang: string } }) {
-  const [input, setInput] = useState('')
-  const [output, setOutput] = useState('')
-  const [error, setError] = useState('')
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
-
-  function convert() {
-    if (!input.trim()) return
-    if (!tracked.current) { trackToolUsed('yaml-to-json'); tracked.current = true }
-    try {
-      const parsed = parseYaml(input)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setOutput(JSON.stringify(parsed as any, null, 2))
-      setError('')
-    } catch (e: unknown) {
-      setError((e as Error).message)
-      setOutput('')
+function parseVal(v:string):unknown{
+  if(v==='true')return true
+  if(v==='false')return false
+  if(v==='null'||v==='~')return null
+  if(!isNaN(Number(v))&&v!=='')return Number(v)
+  return v
+}
+export default function YamlToJsonPage() {
+  const [yaml,setYaml]=useState('name: Alice\nage: 30\nactive: true\naddress:\n  city: New York\n  zip: "10001"\ntags:\n  - developer\n  - designer')
+  const [indent,setIndent]=useState(2)
+  const [mode,setMode]=useState<'yaml2json'|'json2yaml'>('yaml2json')
+  const [copied,setCopied]=useState(false)
+  const convert=():string=>{
+    if(mode==='yaml2json'){
+      try{const obj=yamlToObj(yaml);return JSON.stringify(obj,null,indent)}
+      catch(e:unknown){return 'Parse error: '+(e instanceof Error?e.message:String(e))}
+    }else{
+      try{
+        const obj=JSON.parse(yaml)
+        const toYaml=(v:unknown,lvl:number):string=>{
+          const pad=' '.repeat(lvl*2)
+          if(v===null)return 'null'
+          if(typeof v==='boolean'||typeof v==='number')return String(v)
+          if(typeof v==='string')return v.includes('
+')?'"'+v.replace(/"/g,'\"')+'"':v
+          if(Array.isArray(v))return '
+'+v.map((i)=>pad+'- '+toYaml(i,lvl+1)).join('
+')
+          return '
+'+Object.entries(v as Record<string,unknown>).map(([k,val])=>pad+k+': '+toYaml(val,lvl+1)).join('
+')
+        }
+        return Object.entries(obj as Record<string,unknown>).map(([k,v])=>k+': '+toYaml(v,1)).join('
+')
+      }catch(e:unknown){return 'Invalid JSON: '+(e instanceof Error?e.message:String(e))}
     }
   }
-
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('yaml-to-json')
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
-
+  const output=convert()
+  const copy=()=>{navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">YAML Input</label>
-          <textarea
-            value={input}
-            onChange={e => { setInput(e.target.value); setOutput(''); setError('') }}
-            placeholder={PLACEHOLDER}
-            className="w-full h-48 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
-          />
+    <ToolLayout tool={tool}>
+      <div className="max-w-3xl mx-auto px-4 space-y-4">
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex rounded-lg overflow-hidden border border-gray-300">
+            <button onClick={()=>setMode('yaml2json')} className={'flex-1 px-4 py-2 text-sm font-medium transition whitespace-nowrap '+(mode==='yaml2json'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>YAML to JSON</button>
+            <button onClick={()=>setMode('json2yaml')} className={'flex-1 px-4 py-2 text-sm font-medium transition whitespace-nowrap '+(mode==='json2yaml'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>JSON to YAML</button>
+          </div>
+          {mode==='yaml2json'&&(
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-gray-600">Indent:</span>
+              {[2,4].map(n=>(
+                <button key={n} onClick={()=>setIndent(n)}
+                  className={'w-9 h-8 rounded border font-mono transition '+(indent===n?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>{n}</button>
+              ))}
+            </div>
+          )}
         </div>
-        <button
-          onClick={convert}
-          disabled={!input.trim()}
-          className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors"
-        >
-          Convert to JSON
-        </button>
-        {error && <p className="text-sm text-red-600 font-mono bg-red-50 p-3 rounded-xl border border-red-200">&#x274C; {error}</p>}
-        {output && (
-          <>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400 font-medium px-2">JSON OUTPUT</span>
-              <div className="flex-1 h-px bg-gray-200" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{mode==='yaml2json'?'YAML':'JSON'} Input</label>
+            <textarea value={yaml} onChange={e=>setYaml(e.target.value)} rows={12}
+              className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-xs resize-none" spellCheck={false}/>
+          </div>
+          <div>
+            <div className="flex justify-between mb-1">
+              <label className="text-sm font-medium text-gray-700">{mode==='yaml2json'?'JSON':'YAML'} Output</label>
+              <button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?'Copied!':'Copy'}</button>
             </div>
-            <div className="relative">
-              <textarea
-                value={output}
-                readOnly
-                className="w-full h-48 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-600 bg-gray-50 focus:outline-none"
-              />
-              <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50">
-                {copied ? '&#x2713; Copied' : 'Copy'}
-              </button>
-            </div>
-          </>
-        )}
-        <p className="text-xs text-gray-400">Supports key-value pairs, lists, nested objects, strings, numbers, booleans</p>
+            <textarea readOnly value={output} rows={12} className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-xs resize-none"/>
+          </div>
+        </div>
       </div>
     </ToolLayout>
   )

@@ -492,6 +492,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'svg-path-visualizer',category:'developer',phase:1,isPro:false,isNew:true,tags:['svg','path','visualize','d','commands'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'ip-address-lookup',category:'developer',phase:1,isPro:false,isNew:true,tags:['ip','address','geolocation','whois','lookup'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'css-gradient-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','gradient','linear','radial','color'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'invoice-generator',category:'utility',phase:1,isPro:false,isNew:true,tags:['invoice','billing','pdf','freelance','business'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'password-generator-pro',category:'utility',phase:1,isPro:false,isNew:true,tags:['password','generate','secure','strong','random'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'number-to-words',category:'text',phase:1,isPro:false,isNew:true,tags:['number','words','convert','english','spell'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-clip-path-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','clip-path','shape','polygon','generator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'yaml-to-json',category:'developer',phase:1,isPro:false,isNew:true,tags:['yaml','json','convert','parse','format'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }

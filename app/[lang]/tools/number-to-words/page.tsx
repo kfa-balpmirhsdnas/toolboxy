@@ -3,77 +3,90 @@ import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('number-to-words')!
-const ones=['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen']
-const tens=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety']
-function toWords(n:number):string{
-  if(n===0)return 'zero'
-  if(n<0)return 'negative '+toWords(-n)
-  if(n<20)return ones[n]
-  if(n<100)return tens[Math.floor(n/10)]+(n%10?'-'+ones[n%10]:'')
-  if(n<1000)return ones[Math.floor(n/100)]+' hundred'+(n%100?' '+toWords(n%100):'')
-  if(n<1000000)return toWords(Math.floor(n/1000))+' thousand'+(n%1000?' '+toWords(n%1000):'')
-  if(n<1000000000)return toWords(Math.floor(n/1000000))+' million'+(n%1000000?' '+toWords(n%1000000):'')
-  if(n<1000000000000)return toWords(Math.floor(n/1000000000))+' billion'+(n%1000000000?' '+toWords(n%1000000000):'')
-  return toWords(Math.floor(n/1000000000000))+' trillion'+(n%1000000000000?' '+toWords(n%1000000000000):'')
+const ONES=['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen']
+const TENS=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety']
+function belt100(n:number):string{
+  if(n<20)return ONES[n]
+  return TENS[Math.floor(n/10)]+(n%10?' '+ONES[n%10]:'')
 }
-function toOrdinal(n:number):string{
-  const w=toWords(n)
-  const suffixes:{[k:string]:string}={one:'first',two:'second',three:'third',five:'fifth',eight:'eighth',nine:'ninth',twelve:'twelfth'}
-  const last=w.split(/[-\s]/).pop()||''
-  if(suffixes[last])return w.slice(0,w.length-last.length)+suffixes[last]
-  if(last.endsWith('y'))return w.slice(0,-1)+'ieth'
-  return w+'th'
+function convert(n:number):string{
+  if(n===0)return 'zero'
+  if(n<0)return 'negative '+convert(-n)
+  const CHUNKS=['','thousand','million','billion','trillion']
+  const parts:string[]=[]
+  let num=n
+  for(let i=0;i<CHUNKS.length&&num>0;i++){
+    const chunk=num%1000;num=Math.floor(num/1000)
+    if(chunk===0)continue
+    let str=''
+    if(chunk>=100){str+=ONES[Math.floor(chunk/100)]+' hundred';if(chunk%100)str+=' '+belt100(chunk%100)}
+    else str=belt100(chunk)
+    parts.unshift(CHUNKS[i]?str+' '+CHUNKS[i]:str)
+  }
+  return parts.join(', ')
+}
+function toOrdinal(s:string):string{
+  const end=s.split(' ').pop()||''
+  const map:Record<string,string>={one:'first',two:'second',three:'third',four:'fourth',five:'fifth',six:'sixth',seven:'seventh',eight:'eighth',nine:'ninth',ten:'tenth',eleven:'eleventh',twelve:'twelfth',thirteen:'thirteenth'}
+  const words=s.split(' ')
+  const last=words[words.length-1]
+  if(map[last])words[words.length-1]=map[last]
+  else if(last.endsWith('y'))words[words.length-1]=last.slice(0,-1)+'ieth'
+  else words[words.length-1]=last+'th'
+  return words.join(' ')
 }
 export default function NumberToWordsPage() {
-  const [num,setNum]=useState('42')
-  const n=parseInt(num)
-  const valid=!isNaN(n)&&n>=-999999999999&&n<=999999999999
-  const words=valid?toWords(n):''
-  const ordinal=valid&&n>0?toOrdinal(n):''
-  const [copied,setCopied]=useState('')
-  const copy=(val:string,k:string)=>{navigator.clipboard.writeText(val);setCopied(k);setTimeout(()=>setCopied(''),1500)}
-  const EXAMPLES=[0,1,13,42,100,1000,1000000,1000000000]
+  const [input,setInput]=useState('1234567')
+  const [mode,setMode]=useState<'cardinal'|'ordinal'|'currency'>('cardinal')
+  const [currency,setCurrency]=useState('USD')
+  const [copied,setCopied]=useState(false)
+  const n=parseInt(input.replace(/,/g,''))
+  const isValid=!isNaN(n)&&Math.abs(n)<=999999999999999
+  const result=():string=>{
+    if(!isValid)return 'Enter a valid integer (up to 999 trillion)'
+    if(mode==='cardinal')return convert(n)
+    if(mode==='ordinal')return toOrdinal(convert(n))
+    const dollars=Math.floor(Math.abs(n))
+    const r=currency==='USD'?convert(dollars)+' dollar'+(dollars!==1?'s':'')
+      :currency==='EUR'?convert(dollars)+' euro'+(dollars!==1?'s':'')
+      :currency==='GBP'?convert(dollars)+' pound'+(dollars!==1?'s':'')
+      :convert(dollars)+' yen'
+    return (n<0?'negative ':'')+r
+  }
+  const output=result()
+  const copy=()=>{navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-lg mx-auto px-4 space-y-5">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Enter a number</label>
-          <input type="number" value={num} onChange={e=>setNum(e.target.value)}
-            min="-999999999999" max="999999999999" className="w-full rounded border border-gray-300 px-3 py-2 text-xl font-mono"/>
+      <div className="max-w-md mx-auto px-4 space-y-4">
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">Number</label>
+          <input value={input} onChange={e=>setInput(e.target.value)} placeholder="e.g. 1234567" className="w-full rounded border border-gray-300 px-3 py-3 text-2xl font-mono"/></div>
+        <div className="flex gap-2">
+          {([['cardinal','Cardinal'],['ordinal','Ordinal'],['currency','Currency']] as const).map(([id,label])=>(
+            <button key={id} onClick={()=>setMode(id)}
+              className={'flex-1 py-2 rounded-lg border text-sm font-medium transition '+(mode===id?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>{label}</button>
+          ))}
         </div>
-        {valid&&words&&(
-          <div className="space-y-3">
-            <div className="bg-blue-50 rounded-xl p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-xs text-blue-500 font-medium mb-1">Cardinal</p>
-                  <p className="text-lg font-semibold text-blue-900 capitalize">{words}</p>
-                </div>
-                <button onClick={()=>copy(words,'card')} className="text-xs text-blue-500 hover:underline flex-shrink-0">{copied==='card'?'Copied!':'Copy'}</button>
-              </div>
-            </div>
-            {ordinal&&(
-              <div className="bg-purple-50 rounded-xl p-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-xs text-purple-500 font-medium mb-1">Ordinal</p>
-                    <p className="text-lg font-semibold text-purple-900 capitalize">{ordinal}</p>
-                  </div>
-                  <button onClick={()=>copy(ordinal,'ord')} className="text-xs text-purple-500 hover:underline flex-shrink-0">{copied==='ord'?'Copied!':'Copy'}</button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-        <div>
-          <p className="text-xs text-gray-500 mb-2">Quick examples</p>
-          <div className="flex flex-wrap gap-2">
-            {EXAMPLES.map(e=>(
-              <button key={e} onClick={()=>setNum(String(e))}
-                className="px-3 py-1 rounded border border-gray-200 text-sm hover:bg-gray-50 font-mono">{e.toLocaleString()}</button>
+        {mode==='currency'&&(
+          <div className="flex gap-2">
+            {['USD','EUR','GBP','JPY'].map(c=>(
+              <button key={c} onClick={()=>setCurrency(c)}
+                className={'flex-1 py-1.5 rounded border text-xs font-mono font-medium transition '+(currency===c?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>{c}</button>
             ))}
           </div>
+        )}
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+          <div className="flex justify-between mb-1">
+            <span className="text-xs text-blue-500 font-medium">Result</span>
+            <button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?'Copied!':'Copy'}</button>
+          </div>
+          <p className="text-blue-800 font-medium capitalize leading-relaxed">{isValid?output:<span className="text-red-500 font-normal">{output}</span>}</p>
         </div>
+        {isValid&&<div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="bg-gray-50 rounded-lg p-2"><span className="text-gray-500">Formatted:</span><p className="font-mono font-medium mt-0.5">{n.toLocaleString()}</p></div>
+          <div className="bg-gray-50 rounded-lg p-2"><span className="text-gray-500">Scientific:</span><p className="font-mono font-medium mt-0.5">{n.toExponential(2)}</p></div>
+          <div className="bg-gray-50 rounded-lg p-2"><span className="text-gray-500">Hex:</span><p className="font-mono font-medium mt-0.5">{n.toString(16).toUpperCase()}</p></div>
+          <div className="bg-gray-50 rounded-lg p-2"><span className="text-gray-500">Binary:</span><p className="font-mono font-medium mt-0.5 truncate">{n.toString(2)}</p></div>
+        </div>}
       </div>
     </ToolLayout>
   )
