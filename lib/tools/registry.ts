@@ -352,6 +352,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'dice-roller',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
   {slug:'uuid-generator',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
   {slug:'passphrase-strength',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'hash-generator',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'text-diff',category:'text',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'csv-to-json',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'color-palette-generator',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'reading-level-analyzer',category:'text',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
 ]
 
 export function getToolBySlug(slug: string): ToolMeta | undefined {
