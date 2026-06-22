@@ -402,6 +402,26 @@
     "random-name-generator": {
       "title": "Random Name Generator",
       "description": "Generate realistic names, fantasy character names, or business names in bulk with customizable options"
+    },
+    "investment-calculator": {
+      "title": "Investment Calculator",
+      "description": "Calculate compound interest growth with regular monthly contributions and view a year-by-year breakdown"
+    },
+    "discount-calculator": {
+      "title": "Discount Calculator",
+      "description": "Calculate sale price and savings from a discount percentage, or find the discount rate between two prices"
+    },
+    "electricity-cost-calculator": {
+      "title": "Electricity Cost Calculator",
+      "description": "Calculate electricity costs for your home appliances by wattage and daily hours of use"
+    },
+    "grade-calculator": {
+      "title": "Grade Calculator",
+      "description": "Calculate your overall grade from multiple assignments using simple average or weighted grading"
+    },
+    "water-intake-calculator": {
+      "title": "Water Intake Calculator",
+      "description": "Calculate your recommended daily water intake based on body weight, activity level, and climate"
     }
   }
 }
