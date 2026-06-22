@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { CATEGORY_META, type ToolMeta } from '@/lib/tools/registry'
-import { cn } from '@/lib/utils/cn'
 
 interface ToolCardProps {
   tool: ToolMeta
@@ -16,7 +15,7 @@ function slugToName(slug: string): string {
 }
 
 export default function ToolCard({ tool, lang }: ToolCardProps) {
-  const catMeta = CATEGORY_META[tool.category]
+  const catMeta = CATEGORY_META[tool.category] ?? { icon: '', label: '', color: 'gray' }
 
   return (
     <Link href={`/${lang}/tools/${tool.slug}`} className="tool-card group block">
@@ -32,7 +31,7 @@ export default function ToolCard({ tool, lang }: ToolCardProps) {
             {!tool.isPro && <span className="badge-free">Free</span>}
           </div>
           <p className="text-xs text-gray-500 mt-1 truncate">
-            {tool.tags.slice(0, 3).join(' · ')}
+            {(tool.tags ?? []).slice(0, 3).join(' · ')}
           </p>
         </div>
       </div>
