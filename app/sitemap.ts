@@ -5,19 +5,28 @@ const BASE_URL = 'https://toolboxy.net'
 const LANGS = ['en', 'ja', 'ko']
 const now = new Date()
 
-// Slugs that have an actual page.tsx implemented
 const IMPLEMENTED_SLUGS = new Set([
-  // Phase 1
+  // Developer tools
   'base64-encoder', 'base64-decoder', 'color-converter', 'hash-generator',
-  'image-resizer', 'json-formatter', 'lorem-ipsum-generator', 'markdown-editor',
-  'password-generator', 'pdf-to-text', 'qr-generator', 'text-case-converter',
-  'url-encoder', 'url-decoder', 'uuid-generator', 'word-counter',
-  'csv-to-json', 'jwt-decoder',
+  'json-formatter', 'json-validator', 'url-encoder', 'url-decoder',
+  'uuid-generator', 'jwt-decoder', 'yaml-to-json', 'css-minifier',
+  'cron-expression-parser',
+  // Text tools
+  'lorem-ipsum-generator', 'markdown-editor', 'text-case-converter',
+  'word-counter', 'text-compare',
+  // File tools
+  'csv-to-json', 'json-to-csv',
+  // Image tools
+  'image-resizer',
+  // Utility tools
+  'password-generator', 'qr-generator',
+  // PDF tools
+  'pdf-to-text',
 ])
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const homeUrls = LANGS.map((lang) => ({
-    url: `${BASE_URL}/${lang}`,
+    url: \`\${BASE_URL}/\${lang}\`,
     lastModified: now,
     changeFrequency: 'daily' as const,
     priority: 1.0,
@@ -25,7 +34,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticUrls = LANGS.flatMap((lang) =>
     ['/tools', '/pricing'].map((path) => ({
-      url: `${BASE_URL}/${lang}${path}`,
+      url: \`\${BASE_URL}/\${lang}\${path}\`,
       lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.9,
@@ -34,7 +43,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const categoryUrls = LANGS.flatMap((lang) =>
     ['pdf', 'image', 'video', 'text', 'developer', 'file', 'utility'].map((cat) => ({
-      url: `${BASE_URL}/${lang}/tools/${cat}`,
+      url: \`\${BASE_URL}/\${lang}/tools/\${cat}\`,
       lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
@@ -42,11 +51,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   )
 
   const toolUrls = LANGS.flatMap((lang) =>
-    TOOLS.filter((t) => IMPLEMENTED_SLUGS.has(t.slug)).map((t) => ({
-      url: `${BASE_URL}/${lang}/tools/${t.slug}`,
+    TOOLS.filter((t) => IMPLEMENTED_SLUGS.has(t.slug)).map((tool) => ({
+      url: \`\${BASE_URL}/\${lang}/tools/\${tool.slug}\`,
       lastModified: now,
       changeFrequency: 'monthly' as const,
-      priority: 0.6,
+      priority: 0.8,
     }))
   )
 
