@@ -169,6 +169,11 @@
     "chmod-calculator": "Calculate Unix file permissions using checkboxes. Shows octal, symbolic, and chmod command output.",
     "git-cheat-sheet": "Quick reference for essential Git commands, organized by category with search and click-to-copy support.",
     "json-beautifier": "Beautify and format JSON with configurable indentation and syntax highlighting. Download formatted output.",
-    "regex-library": "Curated library of useful regex patterns for email, URL, IP, date, numbers, and more. Test against your input."
+    "regex-library": "Curated library of useful regex patterns for email, URL, IP, date, numbers, and more. Test against your input.",
+    "css-flexbox-playground": "Visually experiment with CSS Flexbox properties. Adjust direction, wrap, justify, align, and gap in real-time and copy the generated CSS.",
+    "base64-url-encoder": "Encode and decode text using Base64 (standard or URL-safe) and URL encoding. Supports UTF-8 and emoji characters.",
+    "number-converter": "Convert numbers between binary, octal, decimal, and hexadecimal. Shows bit count, byte size, and formatted output.",
+    "text-rotate": "Transform text with fun effects: flip upside down, mirror, reverse words or lines, rotate characters, or add Zalgo distortion.",
+    "speech-to-text": "Convert spoken words to text using your browser's speech recognition API. Supports multiple languages with interim results."
   }
 }
