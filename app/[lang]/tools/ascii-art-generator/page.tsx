@@ -1,126 +1,105 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('ascii-art-generator')!
-
-// Bitmap font data for ASCII art (5x7 pixels per char)
-const FONT: Record<string, number[][]> = {
-  'A':[[0,1,0],[1,0,1],[1,1,1],[1,0,1],[1,0,1]],
-  'B':[[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,1,0]],
-  'C':[[0,1,1],[1,0,0],[1,0,0],[1,0,0],[0,1,1]],
-  'D':[[1,1,0],[1,0,1],[1,0,1],[1,0,1],[1,1,0]],
-  'E':[[1,1,1],[1,0,0],[1,1,0],[1,0,0],[1,1,1]],
-  'F':[[1,1,1],[1,0,0],[1,1,0],[1,0,0],[1,0,0]],
-  'G':[[0,1,1],[1,0,0],[1,0,1],[1,0,1],[0,1,1]],
-  'H':[[1,0,1],[1,0,1],[1,1,1],[1,0,1],[1,0,1]],
-  'I':[[1,1,1],[0,1,0],[0,1,0],[0,1,0],[1,1,1]],
-  'J':[[0,0,1],[0,0,1],[0,0,1],[1,0,1],[0,1,0]],
-  'K':[[1,0,1],[1,1,0],[1,0,0],[1,1,0],[1,0,1]],
-  'L':[[1,0,0],[1,0,0],[1,0,0],[1,0,0],[1,1,1]],
-  'M':[[1,0,1],[1,1,1],[1,0,1],[1,0,1],[1,0,1]],
-  'N':[[1,0,1],[1,1,1],[1,1,1],[1,0,1],[1,0,1]],
-  'O':[[0,1,0],[1,0,1],[1,0,1],[1,0,1],[0,1,0]],
-  'P':[[1,1,0],[1,0,1],[1,1,0],[1,0,0],[1,0,0]],
-  'Q':[[0,1,0],[1,0,1],[1,0,1],[1,1,1],[0,1,1]],
-  'R':[[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,1]],
-  'S':[[0,1,1],[1,0,0],[0,1,0],[0,0,1],[1,1,0]],
-  'T':[[1,1,1],[0,1,0],[0,1,0],[0,1,0],[0,1,0]],
-  'U':[[1,0,1],[1,0,1],[1,0,1],[1,0,1],[0,1,0]],
-  'V':[[1,0,1],[1,0,1],[1,0,1],[0,1,0],[0,1,0]],
-  'W':[[1,0,1],[1,0,1],[1,0,1],[1,1,1],[1,0,1]],
-  'X':[[1,0,1],[1,0,1],[0,1,0],[1,0,1],[1,0,1]],
-  'Y':[[1,0,1],[1,0,1],[0,1,0],[0,1,0],[0,1,0]],
-  'Z':[[1,1,1],[0,0,1],[0,1,0],[1,0,0],[1,1,1]],
-  '0':[[0,1,0],[1,0,1],[1,0,1],[1,0,1],[0,1,0]],
-  '1':[[0,1,0],[1,1,0],[0,1,0],[0,1,0],[1,1,1]],
-  '2':[[0,1,0],[1,0,1],[0,0,1],[0,1,0],[1,1,1]],
-  '3':[[1,1,0],[0,0,1],[0,1,0],[0,0,1],[1,1,0]],
-  '4':[[1,0,1],[1,0,1],[1,1,1],[0,0,1],[0,0,1]],
-  '5':[[1,1,1],[1,0,0],[1,1,0],[0,0,1],[1,1,0]],
-  '6':[[0,1,1],[1,0,0],[1,1,0],[1,0,1],[0,1,0]],
-  '7':[[1,1,1],[0,0,1],[0,1,0],[0,1,0],[0,1,0]],
-  '8':[[0,1,0],[1,0,1],[0,1,0],[1,0,1],[0,1,0]],
-  '9':[[0,1,0],[1,0,1],[0,1,1],[0,0,1],[0,1,0]],
-  ' ':[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]],
-  '!':[[0,1,0],[0,1,0],[0,1,0],[0,0,0],[0,1,0]],
-  '?':[[0,1,0],[1,0,1],[0,0,1],[0,1,0],[0,0,0]],
-  '.':[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,1,0]],
+const FONTS: Record<string, Record<string, string[]>> = {
+  block: {
+    A:['  ###  ',' ## ## ','##   ##','#######','##   ##'],
+    B:['###### ','##   ##','###### ','##   ##','###### '],
+    C:[' ######','##     ','##     ','##     ',' ######'],
+    D:['##### ','##  ##','##  ##','##  ##','##### '],
+    E:['######','##    ','##### ','##    ','######'],
+    F:['######','##    ','##### ','##    ','##    '],
+    G:[' #####','##    ','## ###','##  ##',' #####'],
+    H:['##  ##','##  ##','######','##  ##','##  ##'],
+    I:['######','  ##  ','  ##  ','  ##  ','######'],
+    J:['######','   ## ','   ## ','##  ## ','  ##  '],
+    K:['##  ##','## ## ','####  ','## ## ','##  ##'],
+    L:['##    ','##    ','##    ','##    ','######'],
+    M:['##   ##','###  ##','## # ##','##  ###','##   ##'],
+    N:['##   ##','###  ##','## # ##','##  ###','##   ##'],
+    O:[' ##### ','##   ##','##   ##','##   ##',' ##### '],
+    P:['###### ','##   ##','###### ','##     ','##     '],
+    Q:[' ##### ','##   ##','##  ###','##   ##',' ###### '],
+    R:['###### ','##   ##','###### ','## ##  ','##  ## '],
+    S:[' ######','##     ',' ##### ','     ##','###### '],
+    T:['######','  ##  ','  ##  ','  ##  ','  ##  '],
+    U:['##  ##','##  ##','##  ##','##  ##',' #### '],
+    V:['##   ##','##   ##','##   ##',' ## ## ','  ###  '],
+    W:['##   ##','##   ##','## # ##','###  ##','##   ##'],
+    X:['##   ##',' ## ## ','  ###  ',' ## ## ','##   ##'],
+    Y:['##   ##',' ## ## ','  ###  ','  ##  ','  ##  '],
+    Z:['######','   ## ','  ##  ',' ##   ','######'],
+    ' ':['  ','  ','  ','  ','  '],
+    '0':[' ### ','## ##','## ##','## ##',' ### '],
+    '1':['  # ',' ## ','  # ','  # ',' ### '],
+    '2':[' ### ','##  #',' ##  ','##   ','#####'],
+    '3':['####','    #','####','    #','####'],
+    '4':['## ##','## ##','#####','   ##','   ##'],
+    '5':['#####','##   ','#### ','   ##','#### '],
+    '6':[' ### ','##   ','#### ','## ##',' ### '],
+    '7':['#####','   ##','  ## ','  ## ','  ## '],
+    '8':[' ### ','## ##',' ### ','## ##',' ### '],
+    '9':[' ### ','## ##',' ####','   ##',' ### '],
+  }
 }
 
-const CHARS = ['█','#','@','*','+','=','-','.']
-
-function generateAsciiArt(text: string, fillChar: string, bgChar: string, scale: number): string {
-  const chars = text.toUpperCase().split('').filter(c => FONT[c] !== undefined)
-  if (!chars.length) return ''
-  const height = 5
-  const rows: string[][] = Array(height).fill(null).map(()=>[])
-  for (const ch of chars) {
-    const bitmap = FONT[ch] || FONT[' ']
-    for (let row=0;row<height;row++) {
-      bitmap[row].forEach(pixel=>{
-        const cell = pixel ? fillChar.repeat(scale) : bgChar.repeat(scale)
-        for (let s=0;s<scale;s++) rows[row].push(cell)
-      })
-      rows[row].push(bgChar) // letter spacing
+function generateAscii(text: string, char: string = '#'): string {
+  const font = FONTS.block
+  const upper = text.toUpperCase().slice(0, 15)
+  const rows = 5
+  const lines: string[] = Array(rows).fill('')
+  for(const ch of upper) {
+    const glyph = font[ch] || font[' ']
+    for(let r=0;r<rows;r++) {
+      lines[r] += (glyph[r] || '   ').replace(/#/g, char) + ' '
     }
   }
-  return rows.map(r=>r.join('')).join('\n')
+  return lines.join('\n')
 }
 
-export default function AsciiArtGeneratorPage({ params }: { params: { lang: string } }) {
-  const [input, setInput] = useState('HELLO')
-  const [fillChar, setFillChar] = useState('█')
-  const [bgChar, setBgChar] = useState(' ')
-  const [scale, setScale] = useState(1)
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
+const CHARS = ['#','@','*','█','▓','░','♦','✦','•','■']
 
-  function track() { if (!tracked.current) { trackToolUsed('ascii-art-generator'); tracked.current = true } }
+export default function AsciiArtGenerator() {
+  const [text,setText]=useState('HELLO')
+  const [char,setChar]=useState('#')
+  const [customChar,setCustomChar]=useState('')
+  const [copied,setCopied]=useState(false)
 
-  const output = generateAsciiArt(input, fillChar, bgChar, scale)
-
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('ascii-art-generator')
-    setCopied(true); setTimeout(()=>setCopied(false),1500)
-  }
+  const activeChar=customChar||char
+  const output=generateAscii(text,activeChar)
+  const copy=async()=>{await navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <input value={input} onChange={e=>{setInput(e.target.value);track()}} maxLength={12}
-          placeholder="Type text (A-Z, 0-9, max 12 chars)"
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-lg font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 uppercase" />
-        <div className="flex flex-wrap gap-4 items-center">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Fill char</label>
-            <div className="flex gap-1">
+    <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">ASCII Art Generator</h1>
+        <p className="text-gray-500 mb-8">Turn text into large ASCII art letters. Works great in terminals, readmes, and banners.</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 mb-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Text (max 15 characters)</label>
+          <input type="text" value={text} onChange={e=>setText(e.target.value.toUpperCase().slice(0,15))}
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-xl font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+            placeholder="HELLO"/>
+          <div className="flex gap-3 items-center flex-wrap">
+            <label className="text-sm font-semibold text-gray-700">Character:</label>
+            <div className="flex gap-2 flex-wrap">
               {CHARS.map(c=>(
-                <button key={c} onClick={()=>{setFillChar(c);track()}}
-                  className={'w-8 h-8 rounded-lg font-mono text-sm transition-colors ' + (fillChar===c?'bg-brand-600 text-white':'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
+                <button key={c} onClick={()=>{setChar(c);setCustomChar('')}}
+                  className={`w-9 h-9 rounded-lg text-lg font-mono transition-colors ${char===c&&!customChar?'bg-blue-600 text-white':'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}>
                   {c}
                 </button>
               ))}
             </div>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Scale: {scale}x</label>
-            <input type="range" min={1} max={3} value={scale} onChange={e=>{setScale(parseInt(e.target.value));track()}} className="w-24 accent-brand-600" />
+            <input type="text" maxLength={1} value={customChar} onChange={e=>setCustomChar(e.target.value)} placeholder="?" className="w-12 h-9 text-center border border-gray-300 rounded-lg font-mono text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
           </div>
         </div>
-        {output && (
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">Output</label>
-              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'✓ Copied':'Copy'}</button>
-            </div>
-            <pre className="p-4 bg-gray-900 text-green-400 text-xs rounded-xl font-mono leading-none overflow-x-auto">{output}</pre>
+        <div className="bg-gray-900 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-semibold text-gray-300">Output</span>
+            <button onClick={copy} className="text-xs bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1.5 rounded-lg font-medium">{copied?'✓ Copied!':'Copy'}</button>
           </div>
-        )}
+          <pre className="text-green-400 font-mono text-sm leading-tight overflow-x-auto whitespace-pre">{output||'Type something above...'}</pre>
+        </div>
       </div>
-    </ToolLayout>
+    </div>
   )
 }
