@@ -129,6 +129,11 @@
     "line-sort": "Sort, deduplicate, reverse, or shuffle lines of text. Supports case-insensitive and trim options.",
     "number-sequence-generator": "Generate number sequences with custom start, end, step, separator, prefix, and suffix.",
     "word-wrap": "Wrap long text at a specified column width using word, character, or break mode.",
-    "text-statistics": "Detailed text analysis: characters, words, sentences, reading ease score, and character frequency."
+    "text-statistics": "Detailed text analysis: characters, words, sentences, reading ease score, and character frequency.",
+    "color-scheme-generator": "Generate harmonious color palettes using analogous, complementary, triadic, and more schemes.",
+    "html-to-markdown": "Convert HTML to Markdown automatically. Handles headings, links, lists, code, and formatting.",
+    "text-padder": "Pad text lines to a fixed width with left, right, or center alignment using any character.",
+    "json-schema-validator": "Validate JSON data against a JSON Schema. Checks types, required fields, enums, and ranges.",
+    "css-gradient-generator": "Create linear, radial, and conic CSS gradients with multi-stop color controls."
   }
 }
