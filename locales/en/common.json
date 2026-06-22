@@ -134,6 +134,11 @@
     "html-to-markdown": "Convert HTML to Markdown automatically. Handles headings, links, lists, code, and formatting.",
     "text-padder": "Pad text lines to a fixed width with left, right, or center alignment using any character.",
     "json-schema-validator": "Validate JSON data against a JSON Schema. Checks types, required fields, enums, and ranges.",
-    "css-gradient-generator": "Create linear, radial, and conic CSS gradients with multi-stop color controls."
+    "css-gradient-generator": "Create linear, radial, and conic CSS gradients with multi-stop color controls.",
+    "xml-formatter": "Format or minify XML with configurable indentation. Instantly readable output with download support.",
+    "epoch-converter": "Convert Unix epoch timestamps to readable dates and vice versa. Supports seconds, milliseconds, and multiple timezones.",
+    "text-repeater": "Repeat any text a specified number of times with custom separators like newline, space, or comma.",
+    "column-extractor": "Extract specific columns from CSV or delimited text. Click columns to toggle selection, choose custom separators.",
+    "bracket-matcher": "Validate bracket matching in code. Highlights matched pairs by depth and pinpoints mismatched or unclosed brackets."
   }
 }
