@@ -335,15 +335,15 @@
     },
     "json-formatter": {
       "title": "JSONフォーマッター",
-      "description": "JSONデータを即座にフォーマット・検証・圧縮します。エラーも検出します"
+      "description": "JSONデータのフォーマット・検証・最小化 — インデント・キーソート・バイトサイズ表示に対応"
     },
     "email-extractor": {
       "title": "メールアドレス抽出ツール",
       "description": "テキストからメールアドレスを自動抽出します。重複削除にも対応しています"
     },
     "cron-expression-generator": {
-      "title": "Cron式生成ツール",
-      "description": "Cronスケジュール式を視覚的に作成し、日本語の説明とよく使うプリセットを提供します"
+      "title": "Cron式ジェネレーター",
+      "description": "インタラクティブなビルダーでcronスケジュールを作成し、わかりやすい説明とよく使うプリセットを活用します"
     },
     "unix-timestamp-converter": {
       "title": "Unixタイムスタンプ変換ツール",
@@ -480,6 +480,18 @@
     "url-encoder": {
       "title": "URLエンコーダー/デコーダー",
       "description": "URL文字列をエンコード・デコード — encodeURIとencodeURIComponentの2つのモードに対応"
+    },
+    "character-map": {
+      "title": "文字マップ",
+      "description": "Unicodeブロックごとに文字を検索し、コードポイント・HTMLエンティティ・CSSエスケープ値を確認できます"
+    },
+    "base64-image-encoder": {
+      "title": "Base64画像エンコーダー",
+      "description": "画像をBase64 Data URLに変換してHTML・CSS・JSONに埋め込み — ドラッグ&ドロップまたはクリックでアップロード"
+    },
+    "time-zone-converter": {
+      "title": "タイムゾーン変換ツール",
+      "description": "日時を世界17タイムゾーンに同時変換 — 表示するゾーンを選んで一覧比較できます"
     }
   }
 }
