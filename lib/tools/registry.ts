@@ -85,6 +85,8 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'markdown-preview', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['markdown','preview','render'], maxFileSizeMB: { free: 1, pro: 10 } },
   { slug: 'markdown-to-html', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['markdown','html','convert','render'], maxFileSizeMB: { free: 1, pro: 10 }
   { slug: 'word-cloud-generator', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['word','cloud','frequency','visualize'], maxFileSizeMB: { free: 0, pro: 0 }
+  { slug: 'lorem-ipsum-generator', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['lorem','ipsum','placeholder','text'], maxFileSizeMB: { free: 0, pro: 0 } },
+  { slug: 'color-palette-generator', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['color','palette','generate','css'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'morse-code-translator', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['morse','code','translate','audio'], maxFileSizeMB: { free: 0, pro: 0 } }, },
   { slug: 'html-tag-stripper', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['html','strip','text','extract'], maxFileSizeMB: { free: 1, pro: 10 } }, },
   { slug: 'markdown-editor', category: 'text', isPro: false, isNew: false, phase: 2, tags: ['markdown','editor','preview'], maxFileSizeMB: { free: 1, pro: 10 } },
@@ -156,7 +158,8 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'text-to-binary', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['text','binary','hex','octal','convert'], maxFileSizeMB: { free: 0, pro: 0 }
   { slug: 'caesar-cipher', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['caesar','cipher','encrypt','decrypt','rot13'], maxFileSizeMB: { free: 0, pro: 0 }
   { slug: 'ascii-art-generator', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['ascii','art','text','banner'], maxFileSizeMB: { free: 0, pro: 0 } },
-  { slug: 'url-analyzer', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['url','analyze','preview','security'], maxFileSizeMB: { free: 0, pro: 0 } }, }, },
+  { slug: 'url-analyzer', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['url','analyze','preview','security'], maxFileSizeMB: { free: 0, pro: 0 }
+  { slug: 'text-diff', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['text','diff','compare','lines'], maxFileSizeMB: { free: 0, pro: 0 } }, }, }, },
   { slug: 'jwt-decoder', category: 'developer', isPro: false, isNew: false, phase: 1, tags: ['jwt','token','decode'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'yaml-to-json', category: 'developer', isPro: false, isNew: false, phase: 1, tags: ['yaml','json','convert'], maxFileSizeMB: { free: 1, pro: 10 } },
   { slug: 'css-minifier', category: 'developer', isPro: false, isNew: false, phase: 1, tags: ['css','minify','compress'], maxFileSizeMB: { free: 1, pro: 10 } },
@@ -198,6 +201,8 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'color-palette-generator', category: 'utility', isPro: false, isNew: false, phase: 1, tags: ['color','palette','design'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'prime-number-checker', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['prime','number','check','math'], maxFileSizeMB: { free: 0, pro: 0 }
   { slug: 'number-palindrome', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['palindrome','number','math','reverse'], maxFileSizeMB: { free: 0, pro: 0 }
+  { slug: 'bmi-calculator', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['bmi','body','mass','index','health'], maxFileSizeMB: { free: 0, pro: 0 } },
+  { slug: 'stopwatch-timer', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['stopwatch','timer','countdown','lap'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'roman-numeral-converter', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['roman','numeral','convert','arabic'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'ip-address-info', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['ip','address','geolocation','network'], maxFileSizeMB: { free: 0, pro: 0 } }, }, },
   { slug: 'qr-reader', category: 'utility', isPro: false, isNew: false, phase: 2, tags: ['qr','scan','read','decode'], acceptedFileTypes: ['.jpg','.jpeg','.png'], maxFileSizeMB: { free: 5, pro: 20 } },
