@@ -118,7 +118,10 @@
       "title": "Aspect Ratio Calculator",
       "description": "Calculate aspect ratios, find missing dimensions and explore common presets like 16:9 and 4:3"
     },
-    "binary-text-converter": "Convert text to binary and binary back to text. Quick encoding/decoding tool.",
+    "binary-text-converter": {
+      "title": "Binary Text Converter",
+      "description": "Convert text to binary or hexadecimal encoding and decode binary/hex code back to readable text"
+    },
     "percentage-calculator": {
       "title": "Percentage Calculator",
       "description": "Calculate percentages: X% of Y, what percent is X of Y, percentage change, increase and decrease"
@@ -163,7 +166,10 @@
     },
     "json-diff": "Deep-compare two JSON objects and list every added, removed, or changed field by path.",
     "html-formatter": "Format and pretty-print HTML with configurable indentation. Download or copy the result.",
-    "stopwatch": "Precise stopwatch with lap tracking. Supports hundreds of laps with split and total times.",
+    "stopwatch": {
+      "title": "Stopwatch",
+      "description": "Online stopwatch with lap support, split times, and fastest/slowest lap highlighting"
+    },
     "sql-formatter": "Format and pretty-print SQL queries with keyword highlighting and configurable indentation.",
     "image-base64-converter": "Convert images to Base64 strings and decode Base64 back to viewable images.",
     "markdown-preview": "Live side-by-side Markdown editor with rendered preview. Supports headings, links, code blocks.",
@@ -366,6 +372,18 @@
     "calorie-calculator": {
       "title": "Calorie Calculator",
       "description": "Estimate your daily calorie needs using the Harris-Benedict equation based on your body metrics and activity level"
+    },
+    "fraction-calculator": {
+      "title": "Fraction Calculator",
+      "description": "Add, subtract, multiply, and divide fractions with automatic simplification, decimal, and mixed number output"
+    },
+    "fuel-economy-calculator": {
+      "title": "Fuel Economy Calculator",
+      "description": "Calculate fuel efficiency in L/100km, MPG, and km/L with optional trip cost estimation"
+    },
+    "zodiac-sign": {
+      "title": "Zodiac Sign Finder",
+      "description": "Find your Western zodiac sign by birthday and explore your element, ruling planet, and personality traits"
     }
   }
 }
