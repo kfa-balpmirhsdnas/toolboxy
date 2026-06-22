@@ -247,12 +247,18 @@
     },
     "html-previewer": "リアルタイムプレビュー付きのライブHTMLエディタ。HTML・CSS・JavaScriptを書いてサンドボックスiframeで即確認。",
     "html-minifier": "コメント削除・空白圧縮・インラインCSS/JS最小化でHTMLを圧縮。節約バイト数を表示。",
-    "pomodoro-timer": "作業・短休憩・長休憩の間隔を設定できるポモドーロタイマー。セッション数をビジュアルな進行リングで追跡。",
+    "pomodoro-timer": {
+      "title": "ポモドーロタイマー",
+      "description": "ポモドーロ・テクニックで集中力アップ。作業・休憩時間をカスタマイズしてセッション数を記録します"
+    },
     "stopwatch-timer": "ラップ記録付きの精密ストップウォッチとカウントダウンタイマー。",
     "typing-speed-test": "WPMと正確率でタイピング速度を測定。5つのサンプルテキストから選択し、正誤文字をリアルタイムでハイライト。",
     "random-quote-generator": "やる気・知恵・人生など20以上の厳選名言を閲覧。お気に入り保存・コピー・カテゴリフィルター対応。",
     "habit-tracker": "7日グリッドで毎日の習慣を追跡。絵文字付きカスタム習慣を追加してチェックし、連続達成日数を確認。",
-    "bmi-calculator": "BMI（体格指数）を計算し、健康への影響を確認します。",
+    "bmi-calculator": {
+      "title": "BMI計算ツール",
+      "description": "メートル法またはヤード法でBMIを計算し、体重カテゴリを確認します"
+    },
     "tip-calculator": {
       "title": "チップ計算機",
       "description": "チップ金額を計算し、複数人で割り勘します。一般的なチップ率も素早く選択できます"
@@ -348,6 +354,18 @@
     "palindrome-checker": {
       "title": "回文チェッカー",
       "description": "単語や文が前から読んでも後ろから読んでも同じ回文かどうかを確認します"
+    },
+    "scientific-calculator": {
+      "title": "関数電卓",
+      "description": "三角関数・対数・べき乗・階乗など完全な関数電卓。計算履歴も確認できます"
+    },
+    "speed-converter": {
+      "title": "速度変換ツール",
+      "description": "m/s・km/h・mph・ft/s・ノット・マッハ・光速を即座に相互変換します"
+    },
+    "calorie-calculator": {
+      "title": "カロリー計算ツール",
+      "description": "ハリス・ベネディクト式で体格と活動レベルに基づく1日の消費カロリーを推定します"
     }
   }
 }
