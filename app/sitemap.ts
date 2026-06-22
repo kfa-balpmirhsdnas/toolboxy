@@ -5,6 +5,16 @@ const BASE_URL = 'https://toolboxy.net'
 const LANGS = ['en', 'ja', 'ko']
 const now = new Date()
 
+// Slugs that have an actual page.tsx implemented
+const IMPLEMENTED_SLUGS = new Set([
+  // Phase 1
+  'base64-encoder', 'base64-decoder', 'color-converter', 'hash-generator',
+  'image-resizer', 'json-formatter', 'lorem-ipsum-generator', 'markdown-editor',
+  'password-generator', 'pdf-to-text', 'qr-generator', 'text-case-converter',
+  'url-encoder', 'url-decoder', 'uuid-generator', 'word-counter',
+  'csv-to-json', 'jwt-decoder',
+])
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const homeUrls = LANGS.map((lang) => ({
     url: `${BASE_URL}/${lang}`,
@@ -32,11 +42,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   )
 
   const toolUrls = LANGS.flatMap((lang) =>
-    TOOLS.filter((t) => t.phase === 1).map((tool) => ({
-      url: `${BASE_URL}/${lang}/tools/${tool.slug}`,
+    TOOLS.filter((t) => IMPLEMENTED_SLUGS.has(t.slug)).map((t) => ({
+      url: `${BASE_URL}/${lang}/tools/${t.slug}`,
       lastModified: now,
       changeFrequency: 'monthly' as const,
-      priority: 0.8,
+      priority: 0.6,
     }))
   )
 
