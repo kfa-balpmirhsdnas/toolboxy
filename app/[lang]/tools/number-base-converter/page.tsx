@@ -1,139 +1,81 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('number-base-converter')!
-
-type BaseKey = 'bin' | 'oct' | 'dec' | 'hex'
-
-const BASES: { key: BaseKey; label: string; base: number; prefix: string }[] = [
-  { key: 'bin', label: 'Binary (Base 2)', base: 2, prefix: '0b' },
-  { key: 'oct', label: 'Octal (Base 8)', base: 8, prefix: '0o' },
-  { key: 'dec', label: 'Decimal (Base 10)', base: 10, prefix: '' },
-  { key: 'hex', label: 'Hexadecimal (Base 16)', base: 16, prefix: '0x' },
+type Base = 2|8|10|16
+const BASES: {base:Base;label:string;prefix:string}[] = [
+  {base:2,  label:'Binary (Base 2)',      prefix:'0b'},
+  {base:8,  label:'Octal (Base 8)',        prefix:'0o'},
+  {base:10, label:'Decimal (Base 10)',     prefix:''},
+  {base:16, label:'Hexadecimal (Base 16)', prefix:'0x'},
 ]
 
-function convertFromDec(n: number): Record<BaseKey, string> {
-  const isNeg = n < 0
-  const abs = Math.abs(n)
-  const sign = isNeg ? '-' : ''
-  return {
-    bin: sign + abs.toString(2),
-    oct: sign + abs.toString(8),
-    dec: n.toString(10),
-    hex: (sign + abs.toString(16)).toUpperCase(),
-  }
+function isValidForBase(s:string,b:Base){
+  const clean=s.toUpperCase()
+  if(b===2) return /^[01]*$/.test(clean)
+  if(b===8) return /^[0-7]*$/.test(clean)
+  if(b===10) return /^[0-9]*$/.test(clean)
+  return /^[0-9A-F]*$/.test(clean)
 }
 
-const QUICK_REF = [0,1,2,4,8,10,15,16,32,64,128,255]
-
-export default function NumberBaseConverterPage({ params }: { params: { lang: string } }) {
-  const [fromBase, setFromBase] = useState<BaseKey>('dec')
+export default function NumberBaseConverterPage() {
   const [input, setInput] = useState('')
-  const [results, setResults] = useState<Record<BaseKey, string> | null>(null)
+  const [fromBase, setFromBase] = useState<Base>(10)
   const [error, setError] = useState('')
-  const [copied, setCopied] = useState<string | null>(null)
-  const tracked = useRef(false)
 
-  function convert(val: string, base: BaseKey) {
-    if (!val.trim()) { setResults(null); setError(''); return }
-    if (!tracked.current) { trackToolUsed('number-base-converter'); tracked.current = true }
-    const bDef = BASES.find(x => x.key === base)!
-    const cleaned = val.trim().replace(/^0[xXbBoO]/,'')
-    const n = parseInt(cleaned, bDef.base)
-    if (isNaN(n)) {
-      setError('Invalid number for base ' + bDef.base)
-      setResults(null)
-    } else {
-      setResults(convertFromDec(n))
-      setError('')
-    }
+  function handleInput(val:string) {
+    const clean = val.trim().toUpperCase()
+    setInput(clean)
+    if(clean&&!isValidForBase(clean,fromBase)) setError('Invalid characters for '+fromBase+'-base')
+    else setError('')
   }
 
-  function handleInput(v: string) { setInput(v); convert(v, fromBase) }
-
-  function handleBaseChange(b: BaseKey) {
-    setFromBase(b)
-    setInput('')
-    setResults(null)
-    setError('')
-  }
-
-  async function copy(val: string, key: string) {
-    await navigator.clipboard.writeText(val)
-    trackToolCopy('number-base-converter')
-    setCopied(key)
-    setTimeout(() => setCopied(null), 1500)
-  }
-
-  const validChars: Record<BaseKey, string> = {
-    bin: '0–1', oct: '0–7', dec: '0–9, −', hex: '0–9, A–F',
-  }
+  const decimal = (!error&&input) ? parseInt(input,fromBase) : NaN
+  const valid = !isNaN(decimal) && decimal >= 0
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-5">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Input Base</label>
-          <div className="flex flex-wrap gap-2">
-            {BASES.map(({ key, label }) => (
-              <button key={key} onClick={() => handleBaseChange(key)}
-                className={'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (fromBase===key ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                {label}
-              </button>
-            ))}
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Number Base Converter</h1>
+        <p className="text-gray-500 mb-8">Convert numbers between binary, octal, decimal and hexadecimal</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Input Base</label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {BASES.map(b=>(
+                <button key={b.base} onClick={()=>{setFromBase(b.base);setInput('');setError('')}}
+                  className={'px-2 py-2 rounded-lg text-sm font-medium transition-colors text-center '+(fromBase===b.base?'bg-brand-500 text-white':'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
+                  Base {b.base}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Enter {BASES.find(b=>b.base===fromBase)?.label}
+            </label>
+            <input value={input} onChange={e=>handleInput(e.target.value)}
+              placeholder={fromBase===16?'e.g. 1A3F':fromBase===2?'e.g. 1010':fromBase===8?'e.g. 755':'e.g. 255'}
+              className={'w-full border rounded-lg px-3 py-2 font-mono text-lg focus:outline-none focus:ring-2 '+(error?'border-red-400 focus:ring-red-400':'border-gray-300 focus:ring-brand-500')} />
+            {error&&<p className="text-red-500 text-xs mt-1">{error}</p>}
           </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Enter {BASES.find(b => b.key===fromBase)!.label}
-            <span className="ml-2 text-xs text-gray-400 font-normal">({validChars[fromBase]})</span>
-          </label>
-          <input value={input} onChange={e => handleInput(e.target.value)}
-            placeholder={fromBase==='hex' ? '0xFF or FF' : fromBase==='bin' ? '1010' : fromBase==='oct' ? '17' : '255'}
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
-          {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
-        </div>
-        {results && (
-          <div className="space-y-2">
-            {BASES.map(({ key, label, prefix }) => (
-              <div key={key} className={'p-3 rounded-xl border ' + (key===fromBase ? 'bg-brand-50 border-brand-200' : 'bg-gray-50 border-gray-200')}>
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-xs font-semibold text-gray-500">{label}</span>
-                  <button onClick={() => copy(results[key], key)} className="text-xs text-brand-600 hover:underline">
-                    {copied===key ? '&#x2713; Copied' : 'Copy'}
-                  </button>
+        {valid&&(
+          <div className="mt-6 space-y-3">
+            {BASES.map(b=>(
+              <div key={b.base} className={'flex items-center justify-between px-5 py-4 rounded-xl border-2 '+(b.base===fromBase?'border-brand-200 bg-brand-50':'border-gray-100 bg-white')}>
+                <div>
+                  <div className="text-xs font-medium text-gray-400 uppercase mb-1">{b.label}</div>
+                  <div className={'font-mono text-xl font-bold '+(b.base===fromBase?'text-brand-600':'text-gray-800')}>
+                    {b.prefix}{decimal.toString(b.base).toUpperCase()}
+                  </div>
                 </div>
-                <p className="text-sm font-mono font-semibold text-gray-800 break-all">
-                  <span className="text-gray-400">{prefix}</span>{results[key]}
-                </p>
+                <button onClick={()=>navigator.clipboard.writeText(decimal.toString(b.base).toUpperCase())}
+                  className="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg">Copy</button>
               </div>
             ))}
           </div>
         )}
-        <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
-          <p className="text-xs font-semibold text-gray-600 mb-2">Quick Reference</p>
-          <div className="overflow-x-auto">
-            <table className="text-xs font-mono w-full">
-              <thead><tr className="text-gray-400 text-left">
-                <th className="pr-3 pb-1">Dec</th><th className="pr-3 pb-1">Binary</th><th className="pr-3 pb-1">Octal</th><th className="pb-1">Hex</th>
-              </tr></thead>
-              <tbody>
-                {QUICK_REF.map(n => (
-                  <tr key={n} className="text-gray-600">
-                    <td className="pr-3">{n}</td>
-                    <td className="pr-3">{n.toString(2)}</td>
-                    <td className="pr-3">{n.toString(8)}</td>
-                    <td>{n.toString(16).toUpperCase()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
       </div>
-    </ToolLayout>
+    </main>
   )
 }
