@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation'
 import '../globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -60,6 +61,7 @@ export async function generateMetadata({
       languages: { en: '/en', ja: '/ja', ko: '/ko' },
     },
     robots: { index: true, follow: true },
+    verification: { google: 'bIZMj_KMLbd3nWjDe3PtE9Os2lK9PfGqB6Ds79uuXtE' },
   }
 }
 
@@ -81,6 +83,7 @@ export default async function LangLayout({
   return (
     <html lang={params.lang} className={inter.className}>
       <body className="bg-white text-gray-900 antialiased">
+        <GoogleAnalytics />
         <NextIntlClientProvider messages={messages}>
           <Header />
           <main className="min-h-screen">{children}</main>
