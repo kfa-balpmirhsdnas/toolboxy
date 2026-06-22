@@ -1,23 +1,33 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
+import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 
 const tool = getToolBySlug('url-decoder')!
 
 export default function UrlDecoderPage({ params }: { params: { lang: string } }) {
   const [input, setInput] = useState('')
   const [copied, setCopied] = useState(false)
+  const trackedRef = useRef(false)
 
   const output = (() => {
     if (!input) return ''
     try { return decodeURIComponent(input) } catch { return '⚠ Invalid URL-encoded input' }
   })()
 
+  useEffect(() => {
+    if (output && !output.startsWith('⚠') && !trackedRef.current) {
+      trackedRef.current = true
+      trackToolUsed('url-decoder', 'decode')
+    }
+  }, [output])
+
   async function copy() {
     await navigator.clipboard.writeText(output)
     setCopied(true)
+    trackToolCopy('url-decoder')
     setTimeout(() => setCopied(false), 1500)
   }
 
@@ -28,7 +38,7 @@ export default function UrlDecoderPage({ params }: { params: { lang: string } })
           <label className="block text-sm font-medium text-gray-700 mb-2">Encoded URL / Text</label>
           <textarea
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => { setInput(e.target.value); trackedRef.current = false }}
             placeholder="https%3A%2F%2Fexample.com%2Fsearch%3Fq%3Dhello%20world"
             className="w-full h-28 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
