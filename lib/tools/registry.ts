@@ -226,6 +226,15 @@ export function getAllTools(): ToolMeta[] {
 }
 
 export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; color: string }> = {
+  pdf:       { label: 'PDF',       icon: '\u{1F4C4}', color: 'red'    },
+  image:     { label: 'Image',     icon: '\u{1F5BC}', color: 'purple' },
+  video:     { label: 'Video',     icon: '\u{1F3AC}', color: 'pink'   },
+  audio:     { label: 'Audio',     icon: '\u{1F50A}', color: 'yellow' },
+  text:      { label: 'Text',      icon: '\u{1F4DD}', color: 'green'  },
+  developer: { label: 'Developer', icon: '\u{1F4BB}', color: 'blue'   },
+  file:      { label: 'File',      icon: '\u{1F4C1}', color: 'orange' },
+  utility:   { label: 'Utility',   icon: '\u{1F527}', color: 'teal'   },
+}> = {
   pdf:       { label: 'PDF',       icon: '📄', color: 'red'    },
   image:     { label: 'Image',     icon: '🖼', color: 'purple' },
   video:     { label: 'Video',     icon: '🎬', color: 'pink'   },
