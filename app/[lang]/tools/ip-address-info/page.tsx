@@ -2,122 +2,69 @@
 import { useState, useEffect } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-interface IpData {
-  ip: string
-  city?: string
-  region?: string
-  country?: string
-  country_name?: string
-  org?: string
-  timezone?: string
-  postal?: string
-  latitude?: number
-  longitude?: number
-}
-
-function parseIp(ip: string): { valid: boolean; version: 4|6|null; parts?: number[] } {
-  const v4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(ip)
-  if(v4) {
-    const parts = ip.split('.').map(Number)
-    const valid = parts.every(p=>p>=0&&p<=255)
-    return { valid, version: 4, parts }
-  }
-  const v6 = /^[0-9a-fA-F:]{2,39}$/.test(ip)
-  if(v6) return { valid: true, version: 6 }
-  return { valid: false, version: null }
-}
-
-function isPrivate(ip: string): string|null {
-  const p = ip.split('.').map(Number)
-  if(p[0]===10) return 'Private (Class A)'
-  if(p[0]===172&&p[1]>=16&&p[1]<=31) return 'Private (Class B)'
-  if(p[0]===192&&p[1]===168) return 'Private (Class C)'
-  if(p[0]===127) return 'Loopback'
-  if(p[0]===169&&p[1]===254) return 'Link-local'
-  return null
-}
-
-
 const tool = getToolBySlug('ip-address-info')!
-
-export default function IpAddressInfo() {
-  const [myIp,setMyIp]=useState<IpData|null>(null)
-  const [lookupIp,setLookupIp]=useState('')
-  const [lookupData,setLookupData]=useState<IpData|null>(null)
-  const [loading,setLoading]=useState(false)
-  const [error,setError]=useState('')
-
+function isValidIPv4(ip:string){return /^(d{1,3}.){3}d{1,3}$/.test(ip)&&ip.split('.').every(o=>parseInt(o)<=255)}
+function isValidIPv6(ip:string){return /^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/.test(ip)}
+function ipClass(ip:string){
+  const first=parseInt(ip.split('.')[0])
+  if(first<=127)return'A'
+  if(first<=191)return'B'
+  if(first<=223)return'C'
+  if(first<=239)return'D (Multicast)'
+  return'E (Reserved)'
+}
+function isPrivate(ip:string){
+  const [a,b]=ip.split('.').map(Number)
+  return a===10||a===127||(a===172&&b>=16&&b<=31)||(a===192&&b===168)
+}
+function toBinary(ip:string){return ip.split('.').map(o=>parseInt(o).toString(2).padStart(8,'0')).join('.')}
+export default function IpAddressInfoPage() {
+  const [input,setInput]=useState('')
+  const [myIp,setMyIp]=useState('Loading...')
   useEffect(()=>{
-    fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>setMyIp(d)).catch(()=>{})
+    fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>setMyIp(d.ip)).catch(()=>setMyIp('Unavailable'))
   },[])
-
-  const lookup = async () => {
-    if(!lookupIp.trim()) return
-    const parsed = parseIp(lookupIp.trim())
-    if(!parsed.valid) { setError('Invalid IP address format'); return }
-    setLoading(true); setError(''); setLookupData(null)
-    try {
-      const r = await fetch(`https://ipapi.co/${lookupIp.trim()}/json/`)
-      const d = await r.json()
-      if(d.error) throw new Error(d.reason||'Lookup failed')
-      setLookupData(d)
-    } catch(e:unknown) {
-      setError((e as Error).message||'Lookup failed')
-    } finally { setLoading(false) }
-  }
-
-  const IpCard = ({data,title}:{data:IpData,title:string}) => {
-    const parsed=parseIp(data.ip)
-    const priv=parsed.version===4?isPrivate(data.ip):null
-    return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
-        <h3 className="font-semibold text-gray-700 mb-4 text-sm">{title}</h3>
-        <div className="text-3xl font-black font-mono text-gray-900 mb-4 break-all">{data.ip}</div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {[
-            ['Version',`IPv${parsed.version||'?'}`],
-            ['Type',priv||'Public'],
-            ['Country',data.country_name||data.country||'–'],
-            ['Region',data.region||'–'],
-            ['City',data.city||'–'],
-            ['Postal',data.postal||'–'],
-            ['Timezone',data.timezone||'–'],
-            ['Organization',data.org||'–'],
-            data.latitude!=null?['Coordinates',`${data.latitude?.toFixed(4)}, ${data.longitude?.toFixed(4)}`]:['Coordinates','–'],
-          ].map(([label,value])=>(
-            <div key={label} className="bg-gray-50 rounded-xl p-3">
-              <p className="text-xs text-gray-400 mb-0.5">{label}</p>
-              <p className="text-sm font-medium text-gray-800 break-all">{value}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
+  const ip=input||myIp
+  const isV4=isValidIPv4(ip)
+  const isV6=isValidIPv6(ip)
+  const valid=isV4||isV6
+  const infos=isV4?[
+    ['Version','IPv4'],['Class',ipClass(ip)],['Type',isPrivate(ip)?'Private':'Public'],['Loopback',ip.startsWith('127.')?'Yes':'No'],['Broadcast',ip.endsWith('.255')?'Yes':'No'],['Binary',toBinary(ip)],
+  ]:isV6?[['Version','IPv6'],['Type','IPv6 address']]:[]
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">IP Address Info</h1>
-        <p className="text-gray-500 mb-8">Look up geolocation, organization, and network details for any IP address.</p>
-        {myIp&&<IpCard data={myIp} title="Your IP Address"/>}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 my-6">
-          <h3 className="font-semibold text-gray-700 mb-3 text-sm">Look Up Any IP</h3>
-          <div className="flex gap-3">
-            <input type="text" value={lookupIp} onChange={e=>setLookupIp(e.target.value)}
-              onKeyDown={e=>e.key==='Enter'&&lookup()}
-              className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g. 8.8.8.8"/>
-            <button onClick={lookup} disabled={loading||!lookupIp.trim()}
-              className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
-              {loading?'...':'Look Up'}
-            </button>
-          </div>
-          {error&&<p className="text-sm text-red-500 mt-2">{error}</p>}
+    <ToolLayout tool={tool}>
+      <div className="max-w-md mx-auto px-4 space-y-4">
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">IP Address</label>
+          <input value={input} onChange={e=>setInput(e.target.value)}
+            className={'w-full rounded-xl border px-3 py-2.5 font-mono text-sm focus:outline-none '+(input&&!valid?'border-red-300 bg-red-50':'border-gray-300 focus:border-blue-400')}
+            placeholder="Enter IP address or use your IP below"/>
+          {input&&!valid&&<p className="text-red-500 text-xs mt-1">Invalid IP address</p>}
         </div>
-        {lookupData&&<IpCard data={lookupData} title={`Results for ${lookupData.ip}`}/>}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center justify-between">
+          <div><p className="text-xs text-blue-600 font-medium">Your current IP</p>
+            <p className="font-mono font-bold text-blue-800 text-lg">{myIp}</p></div>
+          <button onClick={()=>setInput(myIp)} className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700">Use this</button>
+        </div>
+        {valid&&infos.length>0&&(
+          <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+            {infos.map(([k,v],i)=>(
+              <div key={i} className={'flex items-start justify-between px-4 py-2.5 '+(i%2===0?'bg-white':'bg-gray-50')}>
+                <span className="text-xs font-medium text-gray-500 w-24">{k}</span>
+                <span className="font-mono text-sm text-gray-800 text-right break-all">{v}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        <div><p className="text-xs font-semibold text-gray-600 mb-2">Private IP ranges</p>
+          <div className="space-y-1">
+            {[['10.0.0.0 – 10.255.255.255','Class A'],['172.16.0.0 – 172.31.255.255','Class B'],['192.168.0.0 – 192.168.255.255','Class C'],['127.0.0.1','Loopback']].map(([r,c])=>(
+              <div key={r} className="flex justify-between px-3 py-1.5 bg-gray-50 rounded-lg text-xs">
+                <span className="font-mono text-gray-700">{r}</span><span className="text-gray-500">{c}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </ToolLayout>
   )
 }

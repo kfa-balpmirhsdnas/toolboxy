@@ -3,62 +3,75 @@ import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('aspect-ratio-calculator')!
+const PRESETS=[{label:'16:9 HD',w:16,h:9},{label:'4:3 Standard',w:4,h:3},{label:'1:1 Square',w:1,h:1},{label:'21:9 Ultra',w:21,h:9},{label:'3:2 Photo',w:3,h:2},{label:'9:16 Portrait',w:9,h:16},{label:'2.35:1 Cinema',w:235,h:100},{label:'4:5 Instagram',w:4,h:5}]
 function gcd(a:number,b:number):number{return b===0?a:gcd(b,a%b)}
-function simplify(w:number,h:number):[number,number]{const g=gcd(Math.round(w),Math.round(h));return[Math.round(w/g),Math.round(h/g)]}
-const PRESETS=[{label:'16:9',w:16,h:9},{label:'4:3',w:4,h:3},{label:'1:1',w:1,h:1},{label:'21:9',w:21,h:9},{label:'3:2',w:3,h:2},{label:'9:16',w:9,h:16},{label:'2.39:1',w:239,h:100},{label:'5:4',w:5,h:4}]
 export default function AspectRatioCalculatorPage() {
-  const [ratioW,setRatioW]=useState(16)
-  const [ratioH,setRatioH]=useState(9)
+  const [mode,setMode]=useState<'ratio'|'size'>('size')
   const [width,setWidth]=useState(1920)
   const [height,setHeight]=useState(1080)
-  const [locked,setLocked]=useState<'w'|'h'>('w')
-  const ratio=ratioW/ratioH
-  const calcH=(w:number)=>Math.round(w/ratio)
-  const calcW=(h:number)=>Math.round(h*ratio)
-  const handleW=(v:number)=>{setWidth(v);if(locked==='w')setHeight(calcH(v))}
-  const handleH=(v:number)=>{setHeight(v);if(locked==='h')setWidth(calcW(v))}
-  const handleRatioW=(v:number)=>{setRatioW(v);setHeight(Math.round(width*v/ratioH))}
-  const handleRatioH=(v:number)=>{setRatioH(v);setWidth(Math.round(height*v/ratioW))}
-  const [sw,sh]=simplify(width,height)
-  const megapixels=(width*height/1000000).toFixed(1)
+  const [ratW,setRatW]=useState(16)
+  const [ratH,setRatH]=useState(9)
+  const [lockW,setLockW]=useState(1280)
+  const g=gcd(Math.round(width),Math.round(height))
+  const rW=Math.round(width)/g,rH=Math.round(height)/g
+  const ratio=width/height
+  const fromRatio=(w:number,h:number)=>{
+    const r=w/h
+    return Array.from({length:6},(_,i)=>{const bw=Math.round(lockW*(i===0?1:i===1?0.75:i===2?0.5:i===3?1.5:i===4?2:0.25));return{w:bw,h:Math.round(bw/r)}})
+  }
+  const sizes=mode==='ratio'?fromRatio(ratW,ratH):fromRatio(rW,rH)
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-md mx-auto px-4 space-y-5">
-        <div className="flex flex-wrap gap-2">
+      <div className="max-w-md mx-auto px-4 space-y-4">
+        <div className="flex rounded-lg overflow-hidden border border-gray-300">
+          <button onClick={()=>setMode('size')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='size'?'bg-blue-600 text-white':'bg-white text-gray-600 hover:bg-gray-50')}>From dimensions</button>
+          <button onClick={()=>setMode('ratio')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='ratio'?'bg-blue-600 text-white':'bg-white text-gray-600 hover:bg-gray-50')}>From ratio</button>
+        </div>
+        {mode==='size'?(
+          <div className="grid grid-cols-2 gap-3">
+            <div><label className="block text-xs text-gray-500 mb-1">Width (px)</label>
+              <input type="number" value={width} onChange={e=>setWidth(Number(e.target.value))} min="1"
+                className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-center text-lg font-bold focus:outline-none focus:border-blue-400"/></div>
+            <div><label className="block text-xs text-gray-500 mb-1">Height (px)</label>
+              <input type="number" value={height} onChange={e=>setHeight(Number(e.target.value))} min="1"
+                className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-center text-lg font-bold focus:outline-none focus:border-blue-400"/></div>
+          </div>
+        ):(
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="block text-xs text-gray-500 mb-1">Ratio W</label>
+                <input type="number" value={ratW} onChange={e=>setRatW(Number(e.target.value))} min="1"
+                  className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-center text-lg font-bold focus:outline-none focus:border-blue-400"/></div>
+              <div><label className="block text-xs text-gray-500 mb-1">Ratio H</label>
+                <input type="number" value={ratH} onChange={e=>setRatH(Number(e.target.value))} min="1"
+                  className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-center text-lg font-bold focus:outline-none focus:border-blue-400"/></div>
+            </div>
+            <div><label className="block text-xs text-gray-500 mb-1">Lock width to (px)</label>
+              <input type="number" value={lockW} onChange={e=>setLockW(Number(e.target.value))} min="1"
+                className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-center focus:outline-none focus:border-blue-400"/></div>
+          </div>
+        )}
+        <div className="flex flex-wrap gap-1.5">
           {PRESETS.map(p=>(
-            <button key={p.label} onClick={()=>{setRatioW(p.w);setRatioH(p.h);setHeight(calcH(width))}}
-              className={'px-3 py-1.5 rounded-full border text-xs font-medium transition '+(ratioW===p.w&&ratioH===p.h?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>{p.label}</button>
+            <button key={p.label} onClick={()=>{if(mode==='ratio'){setRatW(p.w);setRatH(p.h)}else{setWidth(p.w*100);setHeight(p.h*100)}}}
+              className="text-xs px-2.5 py-1 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600">{p.label}</button>
           ))}
         </div>
-        <div className="flex items-center gap-3">
-          <div className="text-center flex-1">
-            <label className="block text-xs text-gray-500 mb-1">Ratio W</label>
-            <input type="number" value={ratioW} onChange={e=>handleRatioW(Number(e.target.value))} className="w-full rounded border border-gray-300 px-2 py-2 text-xl font-mono text-center"/></div>
-          <span className="text-2xl text-gray-400">:</span>
-          <div className="text-center flex-1">
-            <label className="block text-xs text-gray-500 mb-1">Ratio H</label>
-            <input type="number" value={ratioH} onChange={e=>handleRatioH(Number(e.target.value))} className="w-full rounded border border-gray-300 px-2 py-2 text-xl font-mono text-center"/></div>
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+          <p className="text-xs text-blue-600 font-medium mb-1">Aspect ratio</p>
+          <p className="text-3xl font-bold text-blue-700">{mode==='size'?rW+':'+rH:ratW+':'+ratH}</p>
+          <p className="text-sm text-blue-500 mt-1">= {(mode==='size'?ratio:ratW/ratH).toFixed(4)}</p>
         </div>
-        <div className="flex justify-center">
-          <div className="border-2 border-blue-400 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 text-sm font-medium"
-            style={{width:'200px',height:Math.round(200/ratio)+'px',minHeight:'40px',maxHeight:'200px'}}>
-            {ratioW}:{ratioH}
+        <div>
+          <p className="text-xs font-semibold text-gray-600 mb-2">Common sizes at this ratio</p>
+          <div className="space-y-1.5">
+            {sizes.map((s,i)=>(
+              <div key={i} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-xl text-sm">
+                <span className="font-mono font-medium text-gray-800">{s.w} × {s.h}</span>
+                <span className="text-xs text-gray-400">{s.w}px wide</span>
+              </div>
+            ))}
           </div>
-        </div>
-        <div className="flex rounded overflow-hidden border border-gray-300">
-          <button onClick={()=>setLocked('w')} className={'flex-1 py-1.5 text-xs font-medium transition '+(locked==='w'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Fix Width</button>
-          <button onClick={()=>setLocked('h')} className={'flex-1 py-1.5 text-xs font-medium transition '+(locked==='h'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Fix Height</button>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-xs text-gray-500 mb-1">Width (px)</label>
-            <input type="number" value={width} onChange={e=>handleW(Number(e.target.value))} className="w-full rounded border border-gray-300 px-3 py-2 font-mono"/></div>
-          <div><label className="block text-xs text-gray-500 mb-1">Height (px)</label>
-            <input type="number" value={height} onChange={e=>handleH(Number(e.target.value))} className="w-full rounded border border-gray-300 px-3 py-2 font-mono"/></div>
-        </div>
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="bg-gray-50 rounded-xl p-3"><p className="text-xs text-gray-500">Simplified</p><p className="font-bold text-gray-800">{sw}:{sh}</p></div>
-          <div className="bg-gray-50 rounded-xl p-3"><p className="text-xs text-gray-500">Ratio</p><p className="font-bold text-gray-800">{(ratioW/ratioH).toFixed(4)}</p></div>
-          <div className="bg-gray-50 rounded-xl p-3"><p className="text-xs text-gray-500">Megapixels</p><p className="font-bold text-gray-800">{megapixels}MP</p></div>
         </div>
       </div>
     </ToolLayout>

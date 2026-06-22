@@ -557,6 +557,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'image-to-base64',category:'image',phase:1,isPro:false,isNew:true,tags:['image','base64','encode','convert','data-url'],maxFileSizeMB:{free:5,pro:10} },
   {slug:'color-shades-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['color','shades','tints','palette','design'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'calorie-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['calorie','tdee','bmr','diet','health'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'aspect-ratio-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['aspect','ratio','width','height','resize'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-case-converter',category:'text',phase:1,isPro:false,isNew:true,tags:['text','case','upper','lower','camel','snake'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'speed-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['speed','distance','time','calculate','travel'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'ip-address-info',category:'developer',phase:1,isPro:false,isNew:true,tags:['ip','address','network','subnet','lookup'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'data-storage-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['data','storage','gb','mb','kb','byte'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
