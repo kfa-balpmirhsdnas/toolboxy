@@ -1,114 +1,91 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('color-mixer')!
-
-function hexToRgb(hex: string): [number,number,number] {
-  const h = hex.replace('#','')
-  const n = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16)
-  return [(n>>16)&255,(n>>8)&255,n&255]
+function hexToRgb(hex:string):{r:number;g:number;b:number}|null{
+  const m=hex.replace('#','').match(/^([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i)
+  if(!m) return null
+  return {r:parseInt(m[1],16),g:parseInt(m[2],16),b:parseInt(m[3],16)}
 }
-function rgbToHex(r: number, g: number, b: number): string {
-  return '#' + [r,g,b].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('')
-}
-function rgbToHsl(r: number, g: number, b: number): [number,number,number] {
-  r/=255;g/=255;b/=255;
-  const max=Math.max(r,g,b),min=Math.min(r,g,b);
-  let h=0,s=0;const l=(max+min)/2;
-  if(max!==min){const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);
-    switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;default:h=((r-g)/d+4)/6;}}
+function rgbToHex(r:number,g:number,b:number){return '#'+[r,g,b].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('')}
+function rgbToHsl(r:number,g:number,b:number):[number,number,number]{
+  r/=255;g/=255;b/=255
+  const max=Math.max(r,g,b),min=Math.min(r,g,b)
+  let h=0,s=0,l=(max+min)/2
+  if(max!==min){const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;}}
   return [Math.round(h*360),Math.round(s*100),Math.round(l*100)]
 }
 
-interface Color { hex: string; weight: number }
+export default function ColorMixerPage() {
+  const [c1, setC1] = useState('#FF0000')
+  const [c2, setC2] = useState('#0000FF')
+  const [ratio, setRatio] = useState(50)
 
-export default function ColorMixerPage({ params }: { params: { lang: string } }) {
-  const [colors, setColors] = useState<Color[]>([
-    { hex: '#6366f1', weight: 50 },
-    { hex: '#ec4899', weight: 50 },
-  ])
-  const [copied, setCopied] = useState<string|null>(null)
-  const tracked = useRef(false)
+  const r1=hexToRgb(c1), r2=hexToRgb(c2)
+  const mixed = r1&&r2 ? {
+    r: r1.r*(1-ratio/100) + r2.r*(ratio/100),
+    g: r1.g*(1-ratio/100) + r2.g*(ratio/100),
+    b: r1.b*(1-ratio/100) + r2.b*(ratio/100),
+  } : null
+  const mixedHex = mixed ? rgbToHex(mixed.r,mixed.g,mixed.b) : ''
+  const mixedHsl = mixed ? rgbToHsl(mixed.r,mixed.g,mixed.b) : null
 
-  function track() {
-    if (!tracked.current) { trackToolUsed('color-mixer'); tracked.current = true }
-  }
-
-  function updateColor(i: number, field: 'hex'|'weight', val: string|number) {
-    const c = [...colors]
-    if (field === 'hex') c[i] = { ...c[i], hex: String(val) }
-    else c[i] = { ...c[i], weight: Number(val) }
-    setColors(c); track()
-  }
-
-  function addColor() {
-    if (colors.length < 5) setColors([...colors, { hex: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'), weight: 50 }])
-  }
-  function removeColor(i: number) { if (colors.length > 2) setColors(colors.filter((_,idx)=>idx!==i)) }
-
-  const totalWeight = colors.reduce((s,c) => s+c.weight, 0)
-  const mixed = colors.reduce((acc, c) => {
-    const [r,g,b] = hexToRgb(c.hex)
-    const w = totalWeight > 0 ? c.weight/totalWeight : 1/colors.length
-    return [acc[0]+r*w, acc[1]+g*w, acc[2]+b*w]
-  }, [0,0,0])
-  const mixedHex = rgbToHex(mixed[0],mixed[1],mixed[2])
-  const [r,g,b] = [Math.round(mixed[0]),Math.round(mixed[1]),Math.round(mixed[2])]
-  const [h,s,l] = rgbToHsl(r,g,b)
-  const cssRgb = 'rgb('+r+', '+g+', '+b+')'
-  const cssHsl = 'hsl('+h+', '+s+'%, '+l+'%)'
-
-  async function copy(val: string, id: string) {
-    await navigator.clipboard.writeText(val)
-    trackToolCopy('color-mixer')
-    setCopied(id)
-    setTimeout(() => setCopied(null), 1500)
-  }
+  // Generate gradient steps
+  const steps = Array.from({length:9},(_,i)=>({
+    pct:(i+1)*10,
+    hex: r1&&r2 ? rgbToHex(r1.r*(1-(i+1)/10)+r2.r*(i+1)/10,r1.g*(1-(i+1)/10)+r2.g*(i+1)/10,r1.b*(1-(i+1)/10)+r2.b*(i+1)/10) : '#000',
+  }))
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-5">
-        <div className="space-y-3">
-          {colors.map((c, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl">
-              <input type="color" value={c.hex} onChange={e => updateColor(i,'hex',e.target.value)}
-                className="w-10 h-10 rounded-lg cursor-pointer border-0 flex-shrink-0" />
-              <code className="text-xs font-mono w-20 text-gray-700">{c.hex}</code>
-              <div className="flex-1 flex items-center gap-2">
-                <input type="range" min={1} max={100} value={c.weight} onChange={e => updateColor(i,'weight',parseInt(e.target.value))}
-                  className="flex-1 accent-brand-600" />
-                <span className="text-xs font-mono text-gray-500 w-8 text-right">{c.weight}</span>
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Color Mixer</h1>
+        <p className="text-gray-500 mb-8">Mix two colors together and get the result in HEX, RGB and HSL</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-5">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Color 1</label>
+              <div className="flex gap-2">
+                <input type="color" value={c1} onChange={e=>setC1(e.target.value)} className="w-12 h-10 rounded border border-gray-300 cursor-pointer" />
+                <input type="text" value={c1} onChange={e=>setC1(e.target.value)} className="flex-1 border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
               </div>
-              {colors.length > 2 && (
-                <button onClick={() => removeColor(i)} className="text-red-400 hover:text-red-600 text-sm font-bold">\u00D7</button>
-              )}
             </div>
-          ))}
-        </div>
-        {colors.length < 5 && (
-          <button onClick={addColor} className="text-xs text-brand-600 hover:underline">+ Add color</button>
-        )}
-        <div className="p-4 rounded-2xl flex items-center gap-4" style={{ background: 'linear-gradient(135deg,' + colors.map(c=>c.hex).join(',') + ')' }}>
-          <div className="w-16 h-16 rounded-xl flex-shrink-0 border-2 border-white shadow" style={{ background: mixedHex }} />
-          <div>
-            <p className="text-xs text-white/70 mb-1">Mixed result</p>
-            <p className="text-xl font-bold text-white font-mono">{mixedHex}</p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Color 2</label>
+              <div className="flex gap-2">
+                <input type="color" value={c2} onChange={e=>setC2(e.target.value)} className="w-12 h-10 rounded border border-gray-300 cursor-pointer" />
+                <input type="text" value={c2} onChange={e=>setC2(e.target.value)} className="flex-1 border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {[[mixedHex,'HEX','hex'],[cssRgb,'RGB','rgb'],[cssHsl,'HSL','hsl']].map(([val,label,id]) => (
-            <div key={id} onClick={() => copy(val,id)}
-              className="p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:border-brand-300 transition-colors text-center">
-              <p className="text-xs text-gray-500 mb-1">{label}</p>
-              <p className="text-xs font-mono text-gray-800 break-all">{val}</p>
-              <p className="text-xs text-brand-400 mt-1">{copied===id ? '\u2713 Copied' : 'Copy'}</p>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-gray-700">Mix Ratio</label>
+              <span className="text-sm text-gray-500">{100-ratio}% Color 1 / {ratio}% Color 2</span>
             </div>
-          ))}
+            <input type="range" min={0} max={100} value={ratio} onChange={e=>setRatio(parseInt(e.target.value))} className="w-full" />
+          </div>
+          {mixedHex && (
+            <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-4">
+              <div className="w-20 h-20 rounded-xl border border-gray-200 shadow-sm shrink-0" style={{backgroundColor:mixedHex}} />
+              <div className="space-y-1">
+                <div className="font-mono font-bold text-lg text-gray-800">{mixedHex.toUpperCase()}</div>
+                {mixed&&<div className="text-sm text-gray-600">RGB({Math.round(mixed.r)}, {Math.round(mixed.g)}, {Math.round(mixed.b)})</div>}
+                {mixedHsl&&<div className="text-sm text-gray-600">HSL({mixedHsl[0]}\u00B0, {mixedHsl[1]}%, {mixedHsl[2]}%)</div>}
+              </div>
+            </div>
+          )}
         </div>
+        {r1&&r2&&(
+          <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5">
+            <h2 className="font-semibold text-gray-800 mb-3">Gradient Steps</h2>
+            <div className="flex rounded-xl overflow-hidden h-16">
+              <div className="flex-1" style={{backgroundColor:c1}} />
+              {steps.map(s=><div key={s.pct} className="flex-1" style={{backgroundColor:s.hex}} />)}
+              <div className="flex-1" style={{backgroundColor:c2}} />
+            </div>
+          </div>
+        )}
       </div>
-    </ToolLayout>
+    </main>
   )
 }
