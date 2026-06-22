@@ -2,82 +2,54 @@
 import { useState, useEffect, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-
 const tool = getToolBySlug('stopwatch')!
-
+function fmt(ms:number):string{
+  const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000),cs=Math.floor((ms%1000)/10)
+  return (h>0?String(h).padStart(2,'0')+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+String(cs).padStart(2,'0')
+}
 export default function StopwatchPage() {
-  const [elapsed, setElapsed] = useState(0)
-  const [running, setRunning] = useState(false)
-  const [laps, setLaps] = useState<number[]>([])
-  const startRef = useRef<number>(0)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  useEffect(() => {
-    if (running) {
-      startRef.current = Date.now() - elapsed
-      intervalRef.current = setInterval(() => {
-        setElapsed(Date.now() - startRef.current)
-      }, 10)
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [running])
-
-  const fmt = (ms: number) => {
-    const m = Math.floor(ms / 60000)
-    const s = Math.floor((ms % 60000) / 1000)
-    const cs = Math.floor((ms % 1000) / 10)
-    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(cs).padStart(2,'0')}`
-  }
-
-  const lap = () => setLaps(prev => [...prev, elapsed])
-  const reset = () => { setRunning(false); setElapsed(0); setLaps([]) }
-
+  const [elapsed,setElapsed]=useState(0)
+  const [running,setRunning]=useState(false)
+  const [laps,setLaps]=useState<number[]>([])
+  const startRef=useRef<number>(0)
+  const baseRef=useRef<number>(0)
+  const rafRef=useRef<number>(0)
+  const tick=()=>{setElapsed(baseRef.current+Date.now()-startRef.current);rafRef.current=requestAnimationFrame(tick)}
+  const start=()=>{startRef.current=Date.now();setRunning(true);rafRef.current=requestAnimationFrame(tick)}
+  const pause=()=>{baseRef.current+=Date.now()-startRef.current;setRunning(false);cancelAnimationFrame(rafRef.current)}
+  const reset=()=>{cancelAnimationFrame(rafRef.current);setRunning(false);setElapsed(0);baseRef.current=0;setLaps([])}
+  const lap=()=>{if(running)setLaps(l=>[elapsed,...l])}
+  useEffect(()=>()=>{cancelAnimationFrame(rafRef.current)},[])
+  const best=laps.length>1?Math.min(...laps.map((l,i,arr)=>i<arr.length-1?l-arr[i+1]:l)):null
+  const worst=laps.length>1?Math.max(...laps.map((l,i,arr)=>i<arr.length-1?l-arr[i+1]:l)):null
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">Stopwatch</h1>
-        <p className="text-gray-500 mb-8 text-center">Precise stopwatch with lap recording.</p>
-        <div className="bg-white rounded-xl shadow p-8 space-y-6">
-          <div className="text-center">
-            <div className="text-6xl font-mono font-bold text-gray-900 tabular-nums">
-              {fmt(elapsed)}
-            </div>
-          </div>
-          <div className="flex gap-3 justify-center">
-            <button onClick={() => setRunning(!running)}
-              className={`px-8 py-3 rounded-lg font-medium transition-colors ${running ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}>
-              {running ? 'Pause' : elapsed === 0 ? 'Start' : 'Resume'}
-            </button>
-            {running && (
-              <button onClick={lap} className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
-                Lap
-              </button>
-            )}
-            {!running && elapsed > 0 && (
-              <button onClick={reset} className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
-                Reset
-              </button>
-            )}
-          </div>
-          {laps.length > 0 && (
-            <div className="space-y-1 max-h-48 overflow-y-auto">
-              {[...laps].reverse().map((lap, i) => {
-                const n = laps.length - i
-                const prev = n > 1 ? laps[n-2] : 0
-                return (
-                  <div key={n} className="flex justify-between items-center text-sm py-2 border-b border-gray-100">
-                    <span className="text-gray-400">Lap {n}</span>
-                    <span className="font-mono text-gray-500">+{fmt(lap - prev)}</span>
-                    <span className="font-mono font-medium text-gray-800">{fmt(lap)}</span>
-                  </div>
-                )
-              })}
-            </div>
-          )}
+      <div className="max-w-sm mx-auto px-4 space-y-6 text-center">
+        <div className="bg-gray-900 rounded-3xl py-10 px-6">
+          <p className="text-5xl font-bold font-mono tabular-nums text-white tracking-wide">{fmt(elapsed)}</p>
+          {laps.length>0&&<p className="text-gray-400 text-sm mt-2 font-mono">Lap {laps.length}: {fmt(laps.length>1?laps[0]-laps[1]:laps[0])}</p>}
         </div>
+        <div className="flex gap-3 justify-center">
+          <button onClick={reset} className="px-6 py-3 rounded-xl border border-gray-300 font-semibold text-gray-700 hover:bg-gray-50">Reset</button>
+          <button onClick={()=>running?pause():start()} className={'px-10 py-3 rounded-xl font-bold text-lg text-white transition '+(running?'bg-orange-500 hover:bg-orange-600':'bg-green-500 hover:bg-green-600')}>{running?'Pause':'Start'}</button>
+          <button onClick={lap} disabled={!running} className="px-6 py-3 rounded-xl border border-gray-300 font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40">Lap</button>
+        </div>
+        {laps.length>0&&(
+          <div className="text-left space-y-1.5">
+            <p className="text-xs font-medium text-gray-600 mb-2">Lap history ({laps.length})</p>
+            {laps.map((l,i,arr)=>{
+              const dur=i<arr.length-1?l-arr[i+1]:l
+              const isBest=dur===best,isWorst=dur===worst
+              return(
+                <div key={i} className={'flex items-center justify-between px-3 py-2 rounded-lg text-sm '+(isBest?'bg-green-50':isWorst?'bg-red-50':'bg-gray-50')}>
+                  <span className="text-gray-500">Lap {laps.length-i}</span>
+                  <span className={'font-mono font-semibold '+(isBest?'text-green-600':isWorst?'text-red-600':'text-gray-800')}>{fmt(dur)}</span>
+                  <span className="font-mono text-gray-400 text-xs">{fmt(l)}</span>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
     </ToolLayout>
   )

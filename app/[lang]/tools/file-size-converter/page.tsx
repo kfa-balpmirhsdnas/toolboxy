@@ -3,54 +3,67 @@ import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('file-size-converter')!
-type System='decimal'|'binary'
-const DECIMAL_UNITS=['B','KB','MB','GB','TB','PB']
-const BINARY_UNITS=['B','KiB','MiB','GiB','TiB','PiB']
-const D_FACTORS=[1,1e3,1e6,1e9,1e12,1e15]
-const B_FACTORS=[1,1024,1048576,1073741824,1099511627776,1125899906842624]
+type Unit='B'|'KB'|'MB'|'GB'|'TB'|'PB'|'KiB'|'MiB'|'GiB'|'TiB'
+const UNITS:{unit:Unit;bytes:number;group:string}[]=[
+  {unit:'B',bytes:1,group:'decimal'},
+  {unit:'KB',bytes:1000,group:'decimal'},
+  {unit:'MB',bytes:1000**2,group:'decimal'},
+  {unit:'GB',bytes:1000**3,group:'decimal'},
+  {unit:'TB',bytes:1000**4,group:'decimal'},
+  {unit:'PB',bytes:1000**5,group:'decimal'},
+  {unit:'KiB',bytes:1024,group:'binary'},
+  {unit:'MiB',bytes:1024**2,group:'binary'},
+  {unit:'GiB',bytes:1024**3,group:'binary'},
+  {unit:'TiB',bytes:1024**4,group:'binary'},
+]
+function fmt(bytes:number,unit:{unit:Unit;bytes:number}):string{
+  const v=bytes/unit.bytes
+  if(v===0)return '0'
+  if(v<0.001)return v.toExponential(3)
+  if(v>=1000000)return v.toExponential(4)
+  return parseFloat(v.toPrecision(6)).toString()
+}
 export default function FileSizeConverterPage() {
-  const [value,setValue]=useState('1')
-  const [unit,setUnit]=useState('MB')
-  const [sys,setSys]=useState<System>('decimal')
-  const units=sys==='decimal'?DECIMAL_UNITS:BINARY_UNITS
-  const factors=sys==='decimal'?D_FACTORS:B_FACTORS
-  const idx=units.indexOf(unit)
-  const bytes=parseFloat(value)*(idx>=0?factors[idx]:1)
-  const fmt=(v:number)=>{
-    if(v<0.001)return v.toExponential(3)
-    if(v<1000)return parseFloat(v.toFixed(6)).toString()
-    return v.toLocaleString('en',{maximumFractionDigits:6})
-  }
+  const [val,setVal]=useState('1')
+  const [fromUnit,setFromUnit]=useState<Unit>('MB')
+  const from=UNITS.find(u=>u.unit===fromUnit)!
+  const bytes=(parseFloat(val)||0)*from.bytes
+  const REFS=[{label:'Floppy disk',bytes:1474560},{label:'CD-ROM',bytes:700e6},{label:'DVD',bytes:4.7e9},{label:'Blu-ray',bytes:25e9},{label:'Photo (JPEG)',bytes:3e6},{label:'MP3 song',bytes:5e6},{label:'4K movie',bytes:50e9}]
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto px-4 space-y-4">
-        <div className="flex rounded-lg overflow-hidden border border-gray-300">
-          <button onClick={()=>setSys('decimal')} className={'flex-1 py-2 text-sm font-medium transition '+(sys==='decimal'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Decimal (SI)</button>
-          <button onClick={()=>setSys('binary')} className={'flex-1 py-2 text-sm font-medium transition '+(sys==='binary'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Binary (IEC)</button>
-        </div>
-        <div className="flex gap-2">
-          <input type="number" value={value} onChange={e=>setValue(e.target.value)} className="flex-1 rounded border border-gray-300 px-3 py-2.5 text-xl font-mono"/>
-          <select value={unit} onChange={e=>setUnit(e.target.value)} className="rounded border border-gray-300 px-3 py-2 text-lg font-mono">
-            {units.map(u=><option key={u} value={u}>{u}</option>)}
+        <div className="flex gap-3">
+          <input type="number" value={val} onChange={e=>setVal(e.target.value)} className="flex-1 rounded-xl border border-gray-300 px-4 py-3 text-2xl font-mono text-center font-bold focus:outline-none focus:border-blue-400"/>
+          <select value={fromUnit} onChange={e=>setFromUnit(e.target.value as Unit)} className="w-28 rounded-xl border border-gray-300 px-3 py-3 font-semibold text-gray-700">
+            {UNITS.map(u=><option key={u.unit} value={u.unit}>{u.unit}</option>)}
           </select>
         </div>
-        <div className="divide-y divide-gray-100 rounded-xl border border-gray-200 overflow-hidden">
-          {units.map((u,i)=>{
-            const converted=bytes/factors[i]
-            return (
-              <div key={u} className={'flex justify-between items-center px-4 py-3 '+(unit===u?'bg-blue-50':'')}>
-                <span className={'text-sm font-mono font-semibold '+(unit===u?'text-blue-700':'text-gray-700')}>{u}</span>
-                <span className={'font-mono text-sm '+(unit===u?'text-blue-700 font-bold':'text-gray-600')}>{fmt(converted)}</span>
-              </div>
-            )
-          })}
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Decimal (SI)</p>
+          {UNITS.filter(u=>u.group==='decimal').map(u=>(
+            <div key={u.unit} className={'flex items-center justify-between px-4 py-2.5 rounded-xl '+(u.unit===fromUnit?'bg-blue-600 text-white':'bg-gray-50')}>
+              <span className={'text-sm font-medium '+(u.unit===fromUnit?'text-white':'text-gray-600')}>{u.unit}</span>
+              <span className={'font-mono font-bold '+(u.unit===fromUnit?'text-white':'text-gray-800')}>{fmt(bytes,u)}</span>
+            </div>
+          ))}
         </div>
-        {!isNaN(bytes)&&<p className="text-xs text-gray-400 text-center">{Math.round(bytes).toLocaleString()} bytes</p>}
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Binary (IEC)</p>
+          {UNITS.filter(u=>u.group==='binary').map(u=>(
+            <div key={u.unit} className={'flex items-center justify-between px-4 py-2.5 rounded-xl '+(u.unit===fromUnit?'bg-blue-600 text-white':'bg-gray-50')}>
+              <span className={'text-sm font-medium '+(u.unit===fromUnit?'text-white':'text-gray-600')}>{u.unit}</span>
+              <span className={'font-mono font-bold '+(u.unit===fromUnit?'text-white':'text-gray-800')}>{fmt(bytes,u)}</span>
+            </div>
+          ))}
+        </div>
         <div>
-          <p className="text-xs font-medium text-gray-600 mb-2">Quick references</p>
-          <div className="flex flex-wrap gap-2">
-            {[['1 KB','1','KB'],['1 MB','1','MB'],['1 GB','1','GB'],['4K video (1min)','350','MB'],['720p video (1hr)','1.5','GB'],['CD','700','MB']].map(([lbl,v,u])=>(
-              <button key={lbl} onClick={()=>{setValue(v);setUnit(u);setSys('decimal')}} className="px-2.5 py-1 rounded border border-gray-200 text-xs hover:bg-gray-50">{lbl}</button>
+          <p className="text-xs font-medium text-gray-600 mb-2">Common reference sizes</p>
+          <div className="flex flex-wrap gap-1.5">
+            {REFS.map(r=>(
+              <button key={r.label} onClick={()=>{setVal(String(r.bytes));setFromUnit('B')}}
+                className="px-2.5 py-1 rounded-full border border-gray-200 text-xs hover:bg-gray-50">
+                {r.label}
+              </button>
             ))}
           </div>
         </div>

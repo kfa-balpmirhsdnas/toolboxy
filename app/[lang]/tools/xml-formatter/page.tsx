@@ -1,110 +1,71 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
-
 const tool = getToolBySlug('xml-formatter')!
-
-function formatXml(xml: string, indent: number): string {
-  const tab = ' '.repeat(indent)
-  let result = ''
-  let level = 0
-  const tokens = xml.match(/<[^>]+>|[^<]+/g) || []
-  
-  for (const token of tokens) {
-    const trimmed = token.trim()
-    if (!trimmed) continue
-    
-    if (trimmed.startsWith('<?') || trimmed.startsWith('<!')) {
-      result += tab.repeat(level) + trimmed + '\n'
-    } else if (trimmed.startsWith('</')) {
-      level = Math.max(0, level-1)
-      result += tab.repeat(level) + trimmed + '\n'
-    } else if (trimmed.endsWith('/>')) {
-      result += tab.repeat(level) + trimmed + '\n'
-    } else if (trimmed.startsWith('<')) {
-      result += tab.repeat(level) + trimmed + '\n'
-      level++
-    } else {
-      result += tab.repeat(level) + trimmed + '\n'
+function formatXml(xml:string,indent:number):string{
+  try{
+    let formatted='',depth=0,inTag=false
+    const sp=()=>' '.repeat(depth*indent)
+    const tags=xml.match(/<[^>]+>|[^<>]+/g)||[]
+    for(let i=0;i<tags.length;i++){
+      const tag=tags[i].trim()
+      if(!tag)continue
+      if(tag.startsWith('<?')||tag.startsWith('<!')){formatted+=sp()+tag+'
+'}
+      else if(tag.startsWith('</')){depth--;formatted+=sp()+tag+'
+'}
+      else if(tag.startsWith('<')&&!tag.endsWith('/>')) {
+        const isText=tags[i+1]&&!tags[i+1].trim().startsWith('<')&&tags[i+2]&&tags[i+2].trim().startsWith('</')
+        if(isText){formatted+=sp()+tag+tags[i+1].trim()+tags[i+2].trim()+'
+';i+=2}
+        else{formatted+=sp()+tag+'
+';depth++}
+      }
+      else if(tag.startsWith('<')&&tag.endsWith('/>')) {formatted+=sp()+tag+'
+'}
+      else{formatted+=sp()+tag+'
+'}
     }
-  }
-  return result.trim()
+    return formatted.trim()
+  }catch{return xml}
 }
-
-function minifyXml(xml: string): string {
-  return xml.replace(/\s+/g,' ').replace(/> </g,'><').replace(/> /g,'>').replace(/ </g,'<').trim()
-}
-
-export default function XmlFormatterPage({ params }: { params: { lang: string } }) {
-  const [input, setInput] = useState('<?xml version="1.0" encoding="UTF-8"?><root><person id="1"><name>Alice</name><age>30</age></person><person id="2"><name>Bob</name><age>25</age></person></root>')
-  const [indent, setIndent] = useState(2)
-  const [mode, setMode] = useState<'format'|'minify'>('format')
-  const [copied, setCopied] = useState(false)
-  const [error, setError] = useState('')
-  const tracked = useRef(false)
-
-  function track() { if (!tracked.current) { trackToolUsed('xml-formatter'); tracked.current = true } }
-
-  const output = (() => {
-    if (!input.trim()) return ''
-    try {
-      setError('')
-      return mode === 'format' ? formatXml(input, indent) : minifyXml(input)
-    } catch(e: unknown) {
-      setError(e instanceof Error ? e.message : 'Error')
-      return ''
-    }
-  })()
-
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('xml-formatter')
-    setCopied(true); setTimeout(()=>setCopied(false),1500)
-  }
-  function download() {
-    const blob = new Blob([output],{type:'text/xml'})
-    const url=URL.createObjectURL(blob)
-    const a=document.createElement('a'); a.href=url; a.download='formatted.xml'; a.click(); URL.revokeObjectURL(url)
-    trackToolDownload('xml-formatter','xml')
-  }
-
+const SAMPLE='<?xml version="1.0" encoding="UTF-8"?><catalog><book id="bk101"><author>Gambardella, Matthew</author><title>XML Developer Guide</title><genre>Computer</genre><price>44.95</price><publish_date>2000-10-01</publish_date></book><book id="bk102"><author>Ralls, Kim</author><title>Midnight Rain</title><genre>Fantasy</genre><price>5.95</price></book></catalog>'
+export default function XmlFormatterPage() {
+  const [input,setInput]=useState(SAMPLE)
+  const [indent,setIndent]=useState(2)
+  const [copied,setCopied]=useState(false)
+  const formatted=formatXml(input,indent)
+  const copy=()=>{navigator.clipboard.writeText(formatted);setCopied(true);setTimeout(()=>setCopied(false),1500)}
+  const highlight=(xml:string)=>xml
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/&lt;(\/?)([\w:-]+)/g,'&lt;$1<span style="color:#60a5fa">$2</span>')
+    .replace(/([\w:-]+)=/g,'<span style="color:#f59e0b">$1</span>=')
+    .replace(/"([^"]*)"/g,'"<span style="color:#4ade80">$1</span>"')
+    .replace(/&lt;\?([^?]+)\?&gt;/g,'<span style="color:#c084fc">&lt;?$1?&gt;</span>')
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="flex gap-2 items-center flex-wrap">
-          {(['format','minify'] as const).map(m=>(
-            <button key={m} onClick={()=>{setMode(m);track()}}
-              className={'px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-colors ' + (mode===m?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {m}
-            </button>
-          ))}
-          {mode==='format' && [2,4].map(n=>(
+    <ToolLayout tool={tool}>
+      <div className="max-w-xl mx-auto px-4 space-y-3">
+        <div className="flex gap-3 items-center">
+          <label className="text-sm text-gray-600">Indent:</label>
+          {[2,4].map(n=>(
             <button key={n} onClick={()=>setIndent(n)}
-              className={'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (indent===n?'bg-gray-700 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
+              className={'px-3 py-1 rounded border text-sm transition '+(indent===n?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>
               {n} spaces
             </button>
           ))}
         </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">XML Input</label>
-          <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} rows={5}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none" />
-          {error && <p className="text-xs text-red-600 mt-0.5">{error}</p>}
-        </div>
-        {output && (
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">Output ({output.length} bytes)</label>
-              <div className="flex gap-2">
-                <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
-                <button onClick={download} className="text-xs text-brand-600 hover:underline">Download</button>
-              </div>
-            </div>
-            <pre className="p-4 bg-gray-900 text-green-400 text-xs rounded-xl font-mono overflow-x-auto max-h-64">{output}</pre>
+        <div><label className="block text-xs font-medium text-gray-600 mb-1">Input XML</label>
+          <textarea value={input} onChange={e=>setInput(e.target.value)} rows={5}
+            className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-sm resize-none focus:outline-none focus:border-blue-400"
+            placeholder="Paste XML here..."/></div>
+        <div className="bg-gray-900 rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
+            <span className="text-xs text-gray-400">Formatted XML</span>
+            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
           </div>
-        )}
+          <pre className="px-4 py-4 text-sm overflow-x-auto leading-relaxed max-h-80 overflow-y-auto" dangerouslySetInnerHTML={{__html:highlight(formatted)}}/>
+        </div>
       </div>
     </ToolLayout>
   )

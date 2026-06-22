@@ -527,6 +527,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'temperature-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['temperature','celsius','fahrenheit','kelvin','convert'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'image-resizer',category:'image',phase:1,isPro:false,isNew:true,tags:['image','resize','scale','width','height'],maxFileSizeMB:{free:5,pro:10} },
   {slug:'sql-formatter',category:'developer',phase:1,isPro:false,isNew:true,tags:['sql','format','query','database','beautify'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-grid-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','grid','layout','generator','columns'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'stopwatch',category:'utility',phase:1,isPro:false,isNew:true,tags:['stopwatch','timer','lap','clock','measure'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'html-table-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','table','generator','rows','columns'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'xml-formatter',category:'developer',phase:1,isPro:false,isNew:true,tags:['xml','format','beautify','indent','parse'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'file-size-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['file','size','bytes','kb','mb','convert'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
