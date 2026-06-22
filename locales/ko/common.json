@@ -247,12 +247,18 @@
     },
     "html-previewer": "실시간 미리 보기가 있는 라이브 HTML 에디터. HTML, CSS, JavaScript를 작성하고 샌드박스 iframe에서 즉시 결과를 확인합니다.",
     "html-minifier": "주석 제거, 공백 압축, 인라인 CSS/JS 최소화로 HTML을 압축합니다. 절약된 바이트 수를 표시합니다.",
-    "pomodoro-timer": "작업, 짧은 휴식, 긴 휴식 간격을 설정할 수 있는 포모도로 타이머. 세션 수를 시각적 진행 링으로 추적합니다.",
+    "pomodoro-timer": {
+      "title": "포모도로 타이머",
+      "description": "포모도로 기법으로 집중력을 높이세요. 집중/휴식 시간을 커스터마이즈하고 세션 수를 기록합니다"
+    },
     "stopwatch-timer": "랩 타임 기록 기능이 있는 정밀 스톱워치와 카운트다운 타이머.",
     "typing-speed-test": "WPM과 정확도로 타이핑 속도를 측정합니다. 5가지 샘플 텍스트 중 선택하고 실시간으로 맞고 틀린 문자를 확인합니다.",
     "random-quote-generator": "동기부여, 지혜, 삶 등 카테고리의 20개 이상 명언을 탐색합니다. 즐겨찾기 저장, 복사, 카테고리 필터링 기능 제공.",
     "habit-tracker": "7일 그리드로 일일 습관을 추적합니다. 이모지로 커스텀 습관을 추가하고 완료를 체크하며 연속 달성 일수를 확인하세요.",
-    "bmi-calculator": "BMI(체질량지수)를 계산하고 건강에 미치는 의미를 파악합니다.",
+    "bmi-calculator": {
+      "title": "BMI 계산기",
+      "description": "미터법 또는 야드법으로 체질량지수(BMI)를 계산하고 어떤 체중 카테고리에 속하는지 확인합니다"
+    },
     "tip-calculator": {
       "title": "팁 계산기",
       "description": "팁 금액을 계산하고 여러 명이 계산서를 나눌 수 있습니다. 일반적인 팁 비율도 빠르게 선택 가능합니다"
@@ -348,6 +354,18 @@
     "palindrome-checker": {
       "title": "회문 검사기",
       "description": "단어나 문장이 앞뒤로 동일하게 읽히는 회문인지 확인합니다. 대소문자/공백/구두점 무시 옵션 지원"
+    },
+    "scientific-calculator": {
+      "title": "공학용 계산기",
+      "description": "삼각함수, 로그, 거듭제곱, 팩토리얼 등 완전한 공학용 계산기로 계산 내역도 지원합니다"
+    },
+    "speed-converter": {
+      "title": "속도 변환기",
+      "description": "m/s, km/h, mph, ft/s, 노트, 마하, 광속을 즉시 상호 변환합니다"
+    },
+    "calorie-calculator": {
+      "title": "칼로리 계산기",
+      "description": "해리스-베네딕트 방정식으로 신체 정보와 활동량을 기반으로 하루 필요 칼로리를 추정합니다"
     }
   }
 }
