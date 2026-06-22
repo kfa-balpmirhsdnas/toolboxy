@@ -280,7 +280,7 @@
     },
     "age-calculator": {
       "title": "나이 계산기",
-      "description": "생년월일을 입력하면 년, 월, 일, 시간, 분 단위로 정확한 나이를 계산합니다"
+      "description": "생년월일로 정확한 나이(년/월/일), 전체 주수·시간, 다음 생일까지 남은 날을 계산합니다"
     },
     "loan-calculator": {
       "title": "대출 계산기",
@@ -315,7 +315,7 @@
     },
     "dice-roller": {
       "title": "주사위 굴리기",
-      "description": "d4, d6, d8, d10, d12, d20 주사위를 굴립니다. RPG 및 보드게임에 최적화되어 있습니다"
+      "description": "d4, d6, d8, d10, d12, d20, d100 RPG 주사위를 굴리고 히스토리와 통계를 확인합니다"
     },
     "hash-generator": {
       "title": "해시 생성기",
@@ -452,6 +452,18 @@
     "budget-calculator": {
       "title": "예산 계산기",
       "description": "카테고리별 수입과 지출을 추적하여 월간 예산 잔액을 시각적으로 확인합니다"
+    },
+    "coin-flip": {
+      "title": "동전 던지기",
+      "description": "가상 동전을 던지고 앞면/뒷면 통계를 추적합니다"
+    },
+    "uuid-generator": {
+      "title": "UUID 생성기",
+      "description": "암호학적으로 안전한 UUID v4 식별자를 생성 — 개수, 대소문자, 하이픈을 자유롭게 설정"
+    },
+    "passphrase-strength": {
+      "title": "패스프레이즈 강도 검사기",
+      "description": "엔트로피와 해킹 예상 시간으로 패스프레이즈 강도를 확인 — 100% 로컬 처리, 데이터 전송 없음"
     }
   }
 }
