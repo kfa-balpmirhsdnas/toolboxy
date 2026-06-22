@@ -280,7 +280,7 @@
     },
     "age-calculator": {
       "title": "Age Calculator",
-      "description": "Calculate your exact age in years, months, days, hours and minutes from your date of birth"
+      "description": "Calculate your exact age in years, months, and days — plus total weeks, hours, and days until your next birthday"
     },
     "loan-calculator": {
       "title": "Loan Calculator",
@@ -315,7 +315,7 @@
     },
     "dice-roller": {
       "title": "Dice Roller",
-      "description": "Roll d4, d6, d8, d10, d12 or d20 dice with modifiers — perfect for RPG and tabletop games"
+      "description": "Roll any RPG dice (d4, d6, d8, d10, d12, d20, d100) with roll history and statistics"
     },
     "hash-generator": {
       "title": "Hash Generator",
@@ -452,6 +452,18 @@
     "budget-calculator": {
       "title": "Budget Calculator",
       "description": "Track income and expenses by category to see your monthly budget balance with visual breakdown"
+    },
+    "coin-flip": {
+      "title": "Coin Flip",
+      "description": "Flip a virtual coin and track heads/tails statistics over multiple flips"
+    },
+    "uuid-generator": {
+      "title": "UUID Generator",
+      "description": "Generate cryptographically secure UUID v4 identifiers — customize count, case, and hyphens"
+    },
+    "passphrase-strength": {
+      "title": "Passphrase Strength",
+      "description": "Check passphrase strength with entropy calculation and crack time estimate — 100% local, no data sent anywhere"
     }
   }
 }
