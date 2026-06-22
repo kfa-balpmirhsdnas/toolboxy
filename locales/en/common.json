@@ -179,6 +179,11 @@
     "markdown-table-generator": "Create tables interactively and export as Markdown, HTML, or CSV. Set column alignment, add or remove rows and columns, and download the result.",
     "uuid-bulk-generator": "Generate up to 1000 UUIDs at once. Supports v4, no-hyphens, uppercase, nil, and short ID formats. Copy all or download as a text file.",
     "color-blindness-simulator": "Upload an image and preview it as seen by people with protanopia, deuteranopia, tritanopia, achromatopsia, and other color vision deficiencies.",
-    "font-pairing-tool": "Explore curated Google Font pairings for headings and body text. Preview with live rendering, adjust size, and copy the CSS import snippet."
+    "font-pairing-tool": "Explore curated Google Font pairings for headings and body text. Preview with live rendering, adjust size, and copy the CSS import snippet.",
+    "text-counter-advanced": "Count characters, words, sentences, paragraphs, syllables, and reading/speaking time. Shows top word frequency and average word/sentence length.",
+    "ascii-art-generator": "Convert text into block ASCII art using a pixel bitmap font. Choose fill character and scale. Supports A-Z, 0-9, and basic punctuation.",
+    "html-color-picker": "Pick colors with a visual picker, view HEX/RGB/HSL/HSV values, check contrast ratios, and browse 60+ named HTML/CSS colors.",
+    "keyboard-shortcut-tester": "Click the capture zone and press any key or shortcut to see the key name, code, and modifiers (Ctrl, Alt, Shift, Meta). Captures last 20 events.",
+    "css-box-model-visualizer": "Visualize and configure CSS box model (margin, border, padding, content). Supports content-box and border-box. Copy the generated CSS."
   }
 }
