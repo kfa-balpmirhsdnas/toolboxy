@@ -467,6 +467,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'color-contrast-checker',category:'utility',phase:1,isPro:false,isNew:true,tags:['color','contrast','wcag','accessibility','checker'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'file-size-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['file','size','convert','bytes','kb','mb','gb'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-diff-checker',category:'text',phase:1,isPro:false,isNew:true,tags:['text','diff','compare','differences'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'image-placeholder-generator',category:'image',phase:1,isPro:false,isNew:true,tags:['placeholder','image','svg','dummy','size'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'unicode-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['unicode','codepoint','escape','convert','utf'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'random-color-generator',category:'utility',phase:1,isPro:false,isNew:true,tags:['random','color','hex','rgb','generate'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'epoch-timestamp-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['epoch','timestamp','unix','convert','date'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'git-commit-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['git','commit','message','conventional','generate'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
