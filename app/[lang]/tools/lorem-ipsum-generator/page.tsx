@@ -1,37 +1,95 @@
 'use client'
-import { useState, useCallback } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-const tool = getToolBySlug('lorem-ipsum-generator')!
-const W='lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ')
-const cap=(s: string)=>s.charAt(0).toUpperCase()+s.slice(1)
-const rw=(min: number,max: number)=>{const n=min+Math.floor(Math.random()*(max-min+1));return Array.from({length:n},()=>W[Math.floor(Math.random()*W.length)])}
-const sentence=()=>{const w=rw(6,15);w[0]=cap(w[0]);return w.join(' ')+'.'}
-const paragraph=()=>Array.from({length:3+Math.floor(Math.random()*4)},sentence).join(' ')
-function gen(type: 'words'|'sentences'|'paragraphs',count: number,start: boolean): string {
-  if(type==='words'){const w=rw(count,count);if(start){w[0]='Lorem';if(w.length>1)w[1]='ipsum'}return cap(w[0])+' '+w.slice(1).join(' ')}
-  if(type==='sentences'){const s=Array.from({length:count},sentence);if(start)s[0]='Lorem ipsum dolor sit amet, consectetur adipiscing elit.';return s.join(' ')}
-  const p=Array.from({length:count},paragraph);if(start)p[0]='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';return p.join('\n\n')
+import { useState } from 'react'
+
+const WORDS = ['lorem','ipsum','dolor','sit','amet','consectetur','adipiscing','elit','sed','do','eiusmod','tempor','incididunt','ut','labore','et','dolore','magna','aliqua','enim','ad','minim','veniam','quis','nostrud','exercitation','ullamco','laboris','nisi','aliquip','ex','ea','commodo','consequat','duis','aute','irure','in','reprehenderit','voluptate','velit','esse','cillum','eu','fugiat','nulla','pariatur','excepteur','sint','occaecat','cupidatat','non','proident','sunt','culpa','qui','officia','deserunt','mollit','anim','id','est','laborum']
+
+function randomWord(exclude='') {
+  let w; do { w=WORDS[Math.floor(Math.random()*WORDS.length)] } while(w===exclude)
+  return w
 }
-export default function LoremIpsumPage({ params }: { params: { lang: string } }) {
-  const [type, setType] = useState<'words'|'sentences'|'paragraphs'>('paragraphs')
-  const [count, setCount] = useState(3)
-  const [start, setStart] = useState(true)
-  const [result, setResult] = useState('')
-  const [copied, setCopied] = useState(false)
-  const generate = useCallback(() => setResult(gen(type,count,start)), [type,count,start])
-  async function copy() { if(!result)return; await navigator.clipboard.writeText(result); setCopied(true); setTimeout(()=>setCopied(false),1500) }
+
+function generateSentence(): string {
+  const len = 6 + Math.floor(Math.random()*12)
+  const words = Array.from({length:len},(_,i)=>i===0?randomWord().charAt(0).toUpperCase()+randomWord().slice(1):randomWord())
+  return words.join(' ')+'.'
+}
+
+function generateParagraph(): string {
+  const count = 4 + Math.floor(Math.random()*4)
+  return Array.from({length:count},generateSentence).join(' ')
+}
+
+function generateClassic(): string {
+  return 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+}
+
+export default function LoremIpsumGenerator() {
+  const [type,setType]=useState<'paragraphs'|'sentences'|'words'>('paragraphs')
+  const [count,setCount]=useState(3)
+  const [startWithLorem,setStartWithLorem]=useState(true)
+  const [output,setOutput]=useState('')
+  const [copied,setCopied]=useState(false)
+
+  const generate = () => {
+    let result = ''
+    if(type==='paragraphs') {
+      const paras = Array.from({length:count},(_,i)=>i===0&&startWithLorem?generateClassic():generateParagraph())
+      result = paras.join('\n\n')
+    } else if(type==='sentences') {
+      const sents = Array.from({length:count},(_,i)=>i===0&&startWithLorem?'Lorem ipsum dolor sit amet, consectetur adipiscing elit.':generateSentence())
+      result = sents.join(' ')
+    } else {
+      const words = Array.from({length:count},(_,i)=>i===0&&startWithLorem?'Lorem':randomWord())
+      result = words.join(' ')
+    }
+    setOutput(result)
+  }
+
+  const copy = async () => { await navigator.clipboard.writeText(output); setCopied(true); setTimeout(()=>setCopied(false),2000) }
+
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="flex flex-wrap gap-3 items-center">
-          <div className="flex items-center gap-2"><label className="text-sm text-gray-600 shrink-0">Generate</label><input type="number" value={count} min={1} max={100} onChange={e=>setCount(Math.max(1,Math.min(100,Number(e.target.value))))} className="w-16 text-sm border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-400 text-center" /></div>
-          {(['words','sentences','paragraphs'] as const).map(t=>(<button key={t} onClick={()=>setType(t)} className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-colors capitalize ${type===t?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{t}</button>))}
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-600"><input type="checkbox" checked={start} onChange={e=>setStart(e.target.checked)} className="accent-brand-600" />Start with "Lorem ipsum"</label>
+    <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Lorem Ipsum Generator</h1>
+        <p className="text-gray-500 mb-8">Generate placeholder Latin text for your designs and mockups.</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Generate</label>
+              <select value={type} onChange={e=>setType(e.target.value as any)} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="paragraphs">Paragraphs</option>
+                <option value="sentences">Sentences</option>
+                <option value="words">Words</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Count</label>
+              <input type="number" value={count} onChange={e=>setCount(Math.max(1,Math.min(20,parseInt(e.target.value)||1)))} min="1" max="20" className="w-full border border-gray-300 rounded-xl px-3 py-2.5 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+            </div>
+            <div className="flex items-end">
+              <label className="flex items-center gap-2 cursor-pointer pb-2">
+                <input type="checkbox" checked={startWithLorem} onChange={e=>setStartWithLorem(e.target.checked)} className="w-4 h-4 accent-blue-600"/>
+                <span className="text-sm text-gray-700">Start with "Lorem ipsum"</span>
+              </label>
+            </div>
+          </div>
+          <button onClick={generate} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition-colors">
+            Generate
+          </button>
         </div>
-        <button onClick={generate} className="bg-brand-600 text-white px-6 py-2 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors">Generate</button>
-        {result&&(<div className="relative"><textarea readOnly value={result} rows={type==='paragraphs'?10:5} className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-gray-700 resize-none focus:outline-none" /><button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-3 py-1 rounded-lg hover:bg-brand-50 hover:border-brand-400 transition-colors">{copied?'✓ Copied':'Copy'}</button></div>)}
+        {output && (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
+            <div className="px-5 py-3 border-b border-gray-200 flex items-center justify-between">
+              <span className="text-sm font-semibold text-gray-700">Generated Text</span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-400">{output.split(' ').length} words</span>
+                <button onClick={copy} className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded-lg font-medium">{copied?'✓ Copied!':'Copy'}</button>
+              </div>
+            </div>
+            <div className="p-5 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{output}</div>
+          </div>
+        )}
       </div>
-    </ToolLayout>
+    </div>
   )
 }
