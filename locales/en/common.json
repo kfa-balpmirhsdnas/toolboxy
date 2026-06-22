@@ -86,7 +86,7 @@
     "regex-tester": "Test regular expressions against text in real time with match highlighting and group capture details.",
     "unit-converter": "Convert between units of length, weight, temperature, area, volume, speed, and data instantly.",
     "timezone-converter": "Convert date and time between any world timezone with a live world clock view.",
-    "color-palette-generator": "Generate beautiful color palettes ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ monochromatic, analogous, complementary, triadic, and more.",
+    "color-palette-generator": "Generate beautiful color palettes from any base color: monochromatic, complementary, triadic, and more.",
     "image-compress": "Compress and resize images in your browser to reduce file size without losing quality.",
     "jpg-to-png": "Convert JPG and JPEG images to lossless PNG format directly in your browser.",
     "png-to-jpg": "Convert PNG images to JPG with adjustable quality. Transparent areas filled white.",
@@ -106,7 +106,7 @@
     "text-reverser": "Reverse text by characters, words, or lines. Simple and fast text manipulation tool.",
     "color-gradient-generator": "Generate CSS gradients with custom colors, direction, and type. Includes preset themes.",
     "roman-numeral-converter": "Convert between Arabic numbers and Roman numerals (1–3999) instantly.",
-    "lorem-ipsum-generator": "Generate Lorem Ipsum placeholder text by paragraphs, sentences, or words.",
+    "lorem-ipsum-generator": "Generate placeholder Lorem Ipsum text — paragraphs, sentences, or words.",
     "css-box-shadow-generator": "Visually create CSS box shadows with sliders for offset, blur, spread, color, and opacity.",
     "string-length-counter": "Count characters, words, bytes, lines, and sentences in any text. Click any stat to copy.",
     "temperature-converter": "Convert between Celsius, Fahrenheit, Kelvin, and Rankine temperature units.",
@@ -191,11 +191,11 @@
     "html-previewer": "Live HTML editor with real-time preview. Write HTML, CSS, and JavaScript and see the result instantly in a sandboxed iframe.",
     "html-minifier": "Minify HTML by removing comments, collapsing whitespace, and optionally minifying inline CSS and JavaScript. Shows bytes saved.",
     "pomodoro-timer": "A focused Pomodoro timer with configurable work, short break, and long break intervals. Tracks session count with visual progress ring.",
-    "stopwatch-timer": "Precision stopwatch with lap recording. Shows split times and total elapsed time per lap, highlights best and worst laps.",
+    "stopwatch-timer": "Precise stopwatch with lap tracking and a countdown timer.",
     "typing-speed-test": "Measure your typing speed in WPM and accuracy. Choose from 5 sample texts. Highlights correct and incorrect characters in real time.",
     "random-quote-generator": "Browse 20+ curated quotes across categories like Motivation, Wisdom, and Life. Save favorites, copy, and filter by category.",
     "habit-tracker": "Track daily habits with a 7-day grid. Add custom habits with emojis, check off completions, and see your current streak.",
-    "bmi-calculator": "Calculate Body Mass Index (BMI) in metric or imperial units. Shows BMI category, color-coded gauge, and healthy weight range.",
+    "bmi-calculator": "Calculate your Body Mass Index (BMI) and understand what the result means for your health.",
     "tip-calculator": "Calculate restaurant tips with preset percentages or a custom rate. Split the bill among multiple people and copy the summary.",
     "age-calculator": "Calculate exact age in years, months, and days. Shows total days, weeks, months, and hours lived, plus days until next birthday.",
     "loan-calculator": "Calculate monthly mortgage or loan payments. Shows total interest, principal vs interest breakdown, and a 12-month amortization preview.",
@@ -210,6 +210,7 @@
     "number-palindrome": "Check if a number is a palindrome, find palindromes in a range, and explore reverse-addition.",
     "image-color-picker": "Upload an image and click to pick colors. Get HEX, RGB, and HSL values instantly.",
     "word-cloud-generator": "Generate a word cloud from any text. Visualize word frequency with automatic stop-word filtering.",
-    "url-analyzer": "Analyze URL structure and detect suspicious patterns before you visit a link."
+    "url-analyzer": "Analyze URL structure and detect suspicious patterns before you visit a link.",
+    "text-diff": "Compare two texts side by side and highlight line-by-line differences."
   }
 }
