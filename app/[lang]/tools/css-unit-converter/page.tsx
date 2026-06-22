@@ -1,101 +1,63 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
-
 const tool = getToolBySlug('css-unit-converter')!
-
-type UnitCat = 'length' | 'font'
-const BASE_PX = 16  // 1rem = 16px by default
-
-const UNITS = {
-  px:  (v: number, base: number) => ({ px:v, rem:v/base, em:v/base, pt:v*0.75, vw:null, vh:null, '%':null }),
-  rem: (v: number, base: number) => ({ px:v*base, rem:v, em:v, pt:v*base*0.75, vw:null, vh:null, '%':null }),
-  em:  (v: number, base: number) => ({ px:v*base, rem:v, em:v, pt:v*base*0.75, vw:null, vh:null, '%':null }),
-  pt:  (v: number, base: number) => ({ px:v/0.75, rem:v/0.75/base, em:v/0.75/base, pt:v, vw:null, vh:null, '%':null }),
-}
-
-function round(n: number | null, d=4) { return n === null ? null : +n.toFixed(d) }
-
-export default function CssUnitConverterPage({ params }: { params: { lang: string } }) {
-  const [value, setValue] = useState('16')
-  const [fromUnit, setFromUnit] = useState<keyof typeof UNITS>('px')
-  const [basePx, setBasePx] = useState(BASE_PX)
-  const [vwWidth, setVwWidth] = useState(1440)
-  const [vhHeight, setVhHeight] = useState(900)
-  const [copied, setCopied] = useState<string|null>(null)
-  const tracked = useRef(false)
-
-  function track() { if (!tracked.current) { trackToolUsed('css-unit-converter'); tracked.current = true } }
-
-  const n = parseFloat(value)
-  const conversions = !isNaN(n) ? UNITS[fromUnit](n, basePx) : null
-  
-  const allConversions = conversions ? {
-    ...conversions,
-    vw: fromUnit==='px' ? round(n/vwWidth*100) : conversions.px ? round((conversions.px)/vwWidth*100) : null,
-    vh: fromUnit==='px' ? round(n/vhHeight*100) : conversions.px ? round((conversions.px)/vhHeight*100) : null,
-    '%': null,
-  } : null
-
-  async function copy(val: string, id: string) {
-    await navigator.clipboard.writeText(val)
-    trackToolCopy('css-unit-converter')
-    setCopied(id); setTimeout(()=>setCopied(null),1500)
-  }
-
-  const unitKeys = ['px','rem','em','pt','vw','vh'] as const
-
+export default function CssUnitConverterPage() {
+  const [rootFontSize,setRootFontSize]=useState(16)
+  const [viewportW,setViewportW]=useState(1440)
+  const [viewportH,setViewportH]=useState(900)
+  const [px,setPx]=useState(16)
+  const rem=px/rootFontSize
+  const em=px/rootFontSize
+  const vw=px/viewportW*100
+  const vh=px/viewportH*100
+  const pt=px*0.75
+  const cm=px/37.7952756
+  const mm=px/3.77952756
+  const inch=px/96
+  const results=[
+    {unit:'px',val:px.toFixed(4),desc:'Pixels'},
+    {unit:'rem',val:rem.toFixed(4),desc:`Relative to root (${rootFontSize}px)`},
+    {unit:'em',val:em.toFixed(4),desc:'Relative to parent (assuming same as root)'},
+    {unit:'vw',val:vw.toFixed(4),desc:`Viewport width (${viewportW}px)`},
+    {unit:'vh',val:vh.toFixed(4),desc:`Viewport height (${viewportH}px)`},
+    {unit:'pt',val:pt.toFixed(4),desc:'Points (1pt = 1.333px)'},
+    {unit:'cm',val:cm.toFixed(4),desc:'Centimeters'},
+    {unit:'mm',val:mm.toFixed(4),desc:'Millimeters'},
+    {unit:'in',val:inch.toFixed(4),desc:'Inches (1in = 96px)'},
+  ]
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="flex gap-2 items-end flex-wrap">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Value</label>
-            <input value={value} onChange={e=>{setValue(e.target.value);track()}} type="number"
-              className="w-28 px-3 py-2 border border-gray-200 rounded-xl text-lg font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
-          </div>
-          <div className="flex gap-1 pb-0.5">
-            {Object.keys(UNITS).map(u=>(
-              <button key={u} onClick={()=>{setFromUnit(u as keyof typeof UNITS);track()}}
-                className={'px-3 py-2 rounded-xl text-sm font-mono font-medium transition-colors ' + (fromUnit===u?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                {u}
-              </button>
-            ))}
-          </div>
+    <ToolLayout tool={tool}>
+      <div className="max-w-lg mx-auto px-4 space-y-5">
+        <div className="grid grid-cols-3 gap-3 bg-gray-50 rounded-xl p-4">
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">Root font size (px)</label>
+            <input type="number" value={rootFontSize} onChange={e=>setRootFontSize(Number(e.target.value)||16)} className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"/></div>
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">Viewport width (px)</label>
+            <input type="number" value={viewportW} onChange={e=>setViewportW(Number(e.target.value)||1440)} className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"/></div>
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">Viewport height (px)</label>
+            <input type="number" value={viewportH} onChange={e=>setViewportH(Number(e.target.value)||900)} className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"/></div>
         </div>
-        <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-500">
-          <div className="flex items-center gap-2">
-            <span>Base font size:</span>
-            <input type="number" value={basePx} min={8} max={32} onChange={e=>{setBasePx(parseInt(e.target.value)||16);track()}}
-              className="w-16 px-2 py-1 border border-gray-200 rounded-lg text-xs text-center bg-white" />
-            <span>px</span>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Value in pixels</label>
+          <div className="flex gap-2">
+            <input type="number" value={px} onChange={e=>setPx(Number(e.target.value)||0)} className="flex-1 rounded border border-gray-300 px-3 py-2.5 text-lg font-mono"/>
+            <span className="flex items-center text-gray-500 font-semibold">px</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span>Viewport:</span>
-            <input type="number" value={vwWidth} onChange={e=>{setVwWidth(parseInt(e.target.value)||1440);track()}} className="w-16 px-2 py-1 border border-gray-200 rounded-lg text-xs text-center bg-white" />
-            <span>×</span>
-            <input type="number" value={vhHeight} onChange={e=>{setVhHeight(parseInt(e.target.value)||900);track()}} className="w-16 px-2 py-1 border border-gray-200 rounded-lg text-xs text-center bg-white" />
-          </div>
+          <input type="range" min="0" max="200" value={Math.min(px,200)} onChange={e=>setPx(Number(e.target.value))} className="w-full mt-2"/>
         </div>
-        {allConversions && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {unitKeys.map(u => {
-              const val = allConversions[u as keyof typeof allConversions]
-              if (val === null) return null
-              const str = String(val)+u
-              return (
-                <div key={u} onClick={()=>copy(str,u)}
-                  className={'p-3 rounded-xl border cursor-pointer hover:border-brand-300 transition-colors ' + (fromUnit===u?'bg-brand-50 border-brand-200':'bg-white border-gray-200')}>
-                  <p className="text-xs text-gray-400 mb-0.5">{u}</p>
-                  <p className="text-lg font-mono font-semibold text-gray-800">{val}</p>
-                  <p className="text-xs text-brand-400">{copied===u?'\u2713 Copied':''}</p>
-                </div>
-              )
-            })}
-          </div>
-        )}
+        <div className="divide-y divide-gray-100 rounded-xl border border-gray-200 overflow-hidden">
+          {results.map(r=>(
+            <div key={r.unit} className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 cursor-pointer" onClick={()=>navigator.clipboard.writeText(r.val+r.unit)}>
+              <div>
+                <span className="font-bold text-blue-700 w-8 inline-block">{r.unit}</span>
+                <span className="text-xs text-gray-400 ml-2">{r.desc}</span>
+              </div>
+              <span className="font-mono text-sm font-semibold text-gray-800">{parseFloat(r.val)}{r.unit}</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-gray-400 text-center">Click any row to copy</p>
       </div>
     </ToolLayout>
   )

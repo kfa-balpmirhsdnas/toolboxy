@@ -442,6 +442,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'text-to-morse-code',category:'text',phase:1,isPro:false,isNew:true,tags:['morse','code','text','convert'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'number-base-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['binary','hex','octal','decimal','base','convert'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'stopwatch-timer',category:'utility',phase:1,isPro:false,isNew:true,tags:['stopwatch','timer','laps','time'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-repeater',category:'text',phase:1,isPro:false,isNew:true,tags:['text','repeat','duplicate','string'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-unit-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','unit','px','rem','em','convert'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'http-status-codes',category:'developer',phase:1,isPro:false,isNew:true,tags:['http','status','code','reference','api'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'pixel-art-maker',category:'image',phase:1,isPro:false,isNew:true,tags:['pixel','art','draw','grid','editor'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'currency-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['currency','exchange','rate','convert','money'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
