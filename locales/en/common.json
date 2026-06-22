@@ -75,7 +75,13 @@
     "pdf-to-text": "Extract plain text from PDF files instantly in your browser. No upload to server needed.",
     "base64-decoder": "Decode Base64 encoded strings back to plain text. Supports Unicode / UTF-8.",
     "url-decoder": "Decode percent-encoded URLs back to human-readable text. Fast and private.",
-    "csv-to-json": "Convert CSV data to JSON format. Paste CSV or upload a file — first row is treated as headers.",
-    "jwt-decoder": "Decode and inspect JWT tokens client-side. See header, payload, and expiry — token never leaves your browser."
+    "csv-to-json": "Convert CSV data to JSON format. Paste CSV or upload a file â first row is treated as headers.",
+    "jwt-decoder": "Decode and inspect JWT tokens client-side. See header, payload, and expiry â token never leaves your browser.",
+    "json-validator": "Validate JSON syntax instantly. Paste your JSON and get clear error messages with line numbers.",
+    "json-to-csv": "Convert JSON arrays to CSV format. Download or copy the result for use in Excel, Google Sheets, and more.",
+    "text-compare": "Compare two texts side by side and highlight differences line by line. Perfect for spotting changes in code or documents.",
+    "yaml-to-json": "Convert YAML configuration files to JSON format. Supports nested objects, lists, and all common YAML types.",
+    "css-minifier": "Minify CSS by removing comments and whitespace. See the exact percentage saved and download the result.",
+    "cron-expression-parser": "Parse and understand cron expressions. See a plain-English description and the next scheduled run times."
   }
 }
