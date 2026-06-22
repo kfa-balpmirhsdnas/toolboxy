@@ -1,85 +1,68 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('text-to-slug')!
-
-function toSlug(text: string, separator: string, lowercase: boolean): string {
-  let s = text.trim()
-  // Normalize accents
-  s = s.normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-  if (lowercase) s = s.toLowerCase()
-  // Replace non-alphanumeric with separator
-  s = s.replace(/[^a-zA-Z0-9]+/g, separator)
-  // Remove leading/trailing separator
-  s = s.replace(new RegExp('^[' + separator + ']+|[' + separator + ']+$', 'g'), '')
-  return s
+function toSlug(text:string, sep:string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/[\s-]+/g, sep)
 }
 
-export default function TextToSlugPage({ params }: { params: { lang: string } }) {
+export default function TextToSlugPage() {
   const [input, setInput] = useState('')
-  const [separator, setSeparator] = useState('-')
-  const [lowercase, setLowercase] = useState(true)
+  const [sep, setSep] = useState('-')
   const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
 
-  function track() {
-    if (!tracked.current) { trackToolUsed('text-to-slug'); tracked.current = true }
-  }
+  const slug = toSlug(input, sep)
 
-  const output = input ? toSlug(input, separator, lowercase) : ''
+  function copy(){navigator.clipboard.writeText(slug);setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('text-to-slug')
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
+  const examples=['Hello World', 'My Blog Post Title!', 'Cafe\u00E9 au lait', 'The Quick Brown Fox & more...']
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <textarea
-          value={input}
-          onChange={e => { setInput(e.target.value); track() }}
-          placeholder="Enter title or text to convert to slug..."
-          rows={3}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
-        />
-        <div className="flex flex-wrap gap-4 items-center">
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Text to Slug</h1>
+        <p className="text-gray-500 mb-8">Convert any text to a clean, SEO-friendly URL slug</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Separator</label>
-            <div className="flex gap-1">
-              {[['-','Hyphen'],['_','Underscore'],['.','Dot']].map(([sep,label]) => (
-                <button key={sep} onClick={() => { setSeparator(sep); track() }}
-                  className={'px-3 py-1.5 rounded-lg text-sm font-mono transition-colors ' + (separator===sep ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                  {sep} <span className="text-xs font-sans opacity-70">{label}</span>
-                </button>
-              ))}
-            </div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Input Text</label>
+            <input value={input} onChange={e=>setInput(e.target.value)} placeholder="e.g. My Blog Post Title!"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
-          <label className="flex items-center gap-2 cursor-pointer select-none">
-            <input type="checkbox" checked={lowercase} onChange={e => { setLowercase(e.target.checked); track() }} className="w-4 h-4 accent-brand-600" />
-            <span className="text-sm font-medium text-gray-700">Lowercase</span>
-          </label>
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-gray-700">Separator:</span>
+            {(['-','_','.'] as const).map(s=>(
+              <button key={s} onClick={()=>setSep(s)}
+                className={'px-3 py-1 rounded-lg font-mono font-bold text-sm transition-colors '+(sep===s?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>
+                {s}
+              </button>
+            ))}
+          </div>
+          {slug&&(
+            <div className="bg-gray-900 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+              <code className="text-green-400 font-mono text-sm break-all">{slug}</code>
+              <button onClick={copy} className="text-xs px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg shrink-0">{copied?'\u2713':'Copy'}</button>
+            </div>
+          )}
         </div>
-        {output && (
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">Slug</label>
-              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied ? '\u2713 Copied' : 'Copy'}</button>
-            </div>
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl font-mono text-sm text-gray-800 break-all">
-              {output}
-            </div>
+        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5">
+          <h2 className="font-semibold text-gray-800 mb-3">Examples</h2>
+          <div className="space-y-2">
+            {examples.map(ex=>(
+              <button key={ex} onClick={()=>setInput(ex)}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 border border-gray-100 text-left">
+                <span className="text-sm text-gray-600 flex-1">{ex}</span>
+                <span className="text-gray-400">\u2192</span>
+                <code className="text-xs text-brand-600 font-mono">{toSlug(ex,sep)}</code>
+              </button>
+            ))}
           </div>
-        )}
-        <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-500">
-          <strong>Example:</strong> &quot;Hello World! This is a Test.&quot; \u2192 hello-world-this-is-a-test
         </div>
       </div>
-    </ToolLayout>
+    </main>
   )
 }
