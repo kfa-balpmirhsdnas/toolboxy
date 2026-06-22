@@ -247,6 +247,46 @@ export const TOOLS: ToolMeta[] = [
     isNew: true,
     maxFileSizeMB: { free: 0, pro: 0 },
   },
+  {
+    slug: 'flip-a-coin',
+    category: 'utility',
+    phase: 1,
+    isPro: false,
+    isNew: true,
+    maxFileSizeMB: { free: 0, pro: 0 },
+  },
+  {
+    slug: 'random-number-generator',
+    category: 'utility',
+    phase: 1,
+    isPro: false,
+    isNew: true,
+    maxFileSizeMB: { free: 0, pro: 0 },
+  },
+  {
+    slug: 'temperature-converter',
+    category: 'utility',
+    phase: 1,
+    isPro: false,
+    isNew: true,
+    maxFileSizeMB: { free: 0, pro: 0 },
+  },
+  {
+    slug: 'aspect-ratio-calculator',
+    category: 'utility',
+    phase: 1,
+    isPro: false,
+    isNew: true,
+    maxFileSizeMB: { free: 0, pro: 0 },
+  },
+  {
+    slug: 'reading-time-calculator',
+    category: 'text',
+    phase: 1,
+    isPro: false,
+    isNew: true,
+    maxFileSizeMB: { free: 0, pro: 0 },
+  },
 ]
 
 export function getToolBySlug(slug: string): ToolMeta | undefined {
