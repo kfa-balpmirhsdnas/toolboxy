@@ -1,104 +1,99 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('loan-calculator')!
+export default function LoanCalculatorPage() {
+  const [principal, setPrincipal] = useState('')
+  const [rate, setRate] = useState('')
+  const [years, setYears] = useState('')
+  const [result, setResult] = useState<{monthly:number;total:number;interest:number}|null>(null)
 
-export default function LoanCalculatorPage({ params }: { params: { lang: string } }) {
-  const [principal, setPrincipal] = useState('200000')
-  const [rate, setRate] = useState('5')
-  const [years, setYears] = useState('30')
-  const tracked = useRef(false)
-
-  function track() { if (!tracked.current) { trackToolUsed('loan-calculator'); tracked.current = true } }
-
-  const P = parseFloat(principal)||0
-  const r = parseFloat(rate)/100/12
-  const n = parseFloat(years)*12
-  let monthly = 0, totalPayment = 0, totalInterest = 0
-  if (P>0 && r>0 && n>0) {
-    monthly = P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)
-    totalPayment = monthly*n
-    totalInterest = totalPayment-P
+  function calculate() {
+    const p=parseFloat(principal), r=parseFloat(rate)/100/12, n=parseInt(years)*12
+    if(!p||!r||!n||p<=0||r<=0||n<=0){setResult(null);return}
+    const monthly = p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)
+    const total = monthly*n
+    setResult({monthly, total, interest:total-p})
   }
 
-  const fmt = (v:number) => '$'+Math.round(v).toLocaleString()
-  const interestPct = totalPayment>0?Math.round(totalInterest/totalPayment*100):0
+  const fmt=(n:number)=>n.toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2})
 
-  // Schedule preview (first 12 months)
-  const schedule: {month:number;payment:number;principal:number;interest:number;balance:number}[] = []
-  if (monthly>0) {
-    let balance = P
-    for (let m=1;m<=Math.min(12,n);m++) {
-      const iPayment = balance*r
-      const pPayment = monthly-iPayment
-      balance -= pPayment
-      schedule.push({month:m,payment:monthly,principal:pPayment,interest:iPayment,balance:Math.max(0,balance)})
+  // Amortization for chart
+  const p=parseFloat(principal)||0,r=parseFloat(rate)/100/12,n=parseInt(years)*12||0
+  const monthly = (p&&r&&n) ? p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1) : 0
+  const schedule: {year:number;balance:number;paid:number}[]=[]
+  if(monthly>0){
+    let bal=p
+    for(let m=1;m<=n;m++){
+      const int=bal*r
+      const prin=monthly-int
+      bal=Math.max(0,bal-prin)
+      if(m%12===0) schedule.push({year:m/12,balance:bal,paid:monthly*m})
     }
   }
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="grid sm:grid-cols-3 gap-3">
-          {[
-            {label:'Loan Amount ($)',value:principal,set:setPrincipal,placeholder:'200000',step:'1000'},
-            {label:'Annual Rate (%)',value:rate,set:setRate,placeholder:'5',step:'0.1'},
-            {label:'Loan Term (years)',value:years,set:setYears,placeholder:'30',step:'1'},
-          ].map(f=>(
-            <div key={f.label}>
-              <label className="block text-xs font-medium text-gray-600 mb-1">{f.label}</label>
-              <input type="number" value={f.value} onChange={e=>{f.set(e.target.value);track()}} placeholder={f.placeholder} step={f.step} min="0"
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-            </div>
-          ))}
-        </div>
-        {monthly>0 && (
-          <>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {[
-                {label:'Monthly Payment',value:fmt(monthly),highlight:true},
-                {label:'Total Payment',value:fmt(totalPayment)},
-                {label:'Total Interest',value:fmt(totalInterest)},
-                {label:'Interest %',value:interestPct+'%'},
-              ].map(row=>(
-                <div key={row.label} className={'p-3 rounded-xl border ' + (row.highlight?'bg-brand-50 border-brand-200':'bg-gray-50 border-gray-200')}>
-                  <p className="text-xs text-gray-500">{row.label}</p>
-                  <p className={'font-bold font-mono text-lg ' + (row.highlight?'text-brand-700':'text-gray-800')}>{row.value}</p>
-                </div>
-              ))}
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Loan Calculator</h1>
+        <p className="text-gray-500 mb-8">Calculate monthly payments, total interest and amortization for any loan</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Loan Amount ($)</label>
+              <input type="number" value={principal} onChange={e=>setPrincipal(e.target.value)} placeholder="e.g. 200000"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
             <div>
-              <div className="h-3 rounded-full bg-gray-100 overflow-hidden">
-                <div className="h-full bg-brand-500 rounded-full" style={{width:(100-interestPct)+'%'}} />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Annual Rate (%)</label>
+              <input type="number" step="0.01" value={rate} onChange={e=>setRate(e.target.value)} placeholder="e.g. 6.5"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Loan Term (years)</label>
+              <input type="number" value={years} onChange={e=>setYears(e.target.value)} placeholder="e.g. 30"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+          </div>
+          <button onClick={calculate} className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2.5 rounded-lg transition-colors">Calculate</button>
+        </div>
+        {result && (
+          <div className="mt-6 space-y-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-brand-50 border-2 border-brand-200 rounded-xl p-4 text-center">
+                <div className="text-2xl font-bold text-brand-600">{fmt(result.monthly)}</div>
+                <div className="text-xs text-gray-500 mt-1">Monthly Payment</div>
               </div>
-              <div className="flex text-xs text-gray-500 justify-between mt-0.5">
-                <span className="text-brand-600 font-medium">Principal {100-interestPct}%</span>
-                <span>Interest {interestPct}%</span>
+              <div className="bg-white border border-gray-200 rounded-xl p-4 text-center">
+                <div className="text-2xl font-bold text-gray-800">{fmt(result.total)}</div>
+                <div className="text-xs text-gray-500 mt-1">Total Payment</div>
+              </div>
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+                <div className="text-2xl font-bold text-red-600">{fmt(result.interest)}</div>
+                <div className="text-xs text-gray-500 mt-1">Total Interest</div>
               </div>
             </div>
-            <details>
-              <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">📋 Amortization schedule (first 12 months)</summary>
-              <div className="mt-2 border border-gray-200 rounded-xl overflow-hidden">
-                <div className="grid grid-cols-5 px-3 py-1.5 bg-gray-50 border-b border-gray-100 text-xs font-medium text-gray-500">
-                  <span>#</span><span>Payment</span><span>Principal</span><span>Interest</span><span>Balance</span>
+            {schedule.length>0&&(
+              <div className="bg-white border border-gray-200 rounded-xl p-4">
+                <h2 className="font-semibold text-gray-700 mb-3">Yearly Balance</h2>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead><tr className="border-b"><th className="text-left py-1 text-gray-500">Year</th><th className="text-right py-1 text-gray-500">Balance</th><th className="text-right py-1 text-gray-500">Paid</th></tr></thead>
+                    <tbody>
+                      {schedule.filter((_,i)=>i%Math.max(1,Math.floor(schedule.length/10))===0||i===schedule.length-1).map(s=>(
+                        <tr key={s.year} className="border-b border-gray-50 hover:bg-gray-50">
+                          <td className="py-1.5">{s.year}</td>
+                          <td className="py-1.5 text-right font-mono">{fmt(s.balance)}</td>
+                          <td className="py-1.5 text-right font-mono">{fmt(s.paid)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-                {schedule.map(s=>(
-                  <div key={s.month} className="grid grid-cols-5 px-3 py-1 text-xs font-mono border-b border-gray-50 text-gray-700">
-                    <span>{s.month}</span>
-                    <span>{fmt(s.payment)}</span>
-                    <span className="text-brand-600">{fmt(s.principal)}</span>
-                    <span className="text-red-500">{fmt(s.interest)}</span>
-                    <span>{fmt(s.balance)}</span>
-                  </div>
-                ))}
               </div>
-            </details>
-          </>
+            )}
+          </div>
         )}
       </div>
-    </ToolLayout>
+    </main>
   )
 }
