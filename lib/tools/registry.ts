@@ -28,7 +28,8 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'pdf-watermark', category: 'pdf', isPro: false, isNew: false, phase: 2, tags: ['pdf','watermark'], acceptedFileTypes: ['.pdf'], maxFileSizeMB: { free: 10, pro: 100 } },
   { slug: 'pdf-ocr', category: 'pdf', isPro: true, isNew: false, phase: 2, tags: ['pdf','ocr','text'], acceptedFileTypes: ['.pdf'], maxFileSizeMB: { free: 0, pro: 100 } },
   // IMAGE
-  { slug: 'image-resizer', category: 'image', isPro: false, isNew: true, phase: 1, tags: ['image','resize','dimension'], acceptedFileTypes: ['.jpg','.jpeg','.png','.webp','.gif'], maxFileSizeMB: { free: 10, pro: 100 } },
+  { slug: 'image-resizer', category: 'image', isPro: false, isNew: true, phase: 1, tags: ['image','resize','dimension'], acceptedFileTypes: ['.jpg','.jpeg','.png','.webp','.gif'], maxFileSizeMB: { free: 10, pro: 100 }
+  { slug: 'image-color-picker', category: 'image', isPro: false, isNew: true, phase: 1, tags: ['image','color','picker','hex','rgb'], acceptedFileTypes: ['.jpg','.jpeg','.png','.webp','.gif'], maxFileSizeMB: { free: 10, pro: 100 } }, },
   { slug: 'image-compress', category: 'image', isPro: false, isNew: true, phase: 1, tags: ['image','compress','reduce'], acceptedFileTypes: ['.jpg','.jpeg','.png','.webp'], maxFileSizeMB: { free: 10, pro: 100 } },
   { slug: 'jpg-to-png', category: 'image', isPro: false, isNew: true, phase: 1, tags: ['jpg','png','convert'], acceptedFileTypes: ['.jpg','.jpeg'], maxFileSizeMB: { free: 10, pro: 100 } },
   { slug: 'png-to-jpg', category: 'image', isPro: false, isNew: true, phase: 1, tags: ['png','jpg','convert'], acceptedFileTypes: ['.png'], maxFileSizeMB: { free: 10, pro: 100 } },
@@ -82,7 +83,9 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'diff-checker', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['diff','check','compare','text'], maxFileSizeMB: { free: 1, pro: 10 } },
   { slug: 'roman-numeral-converter', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['roman','numeral','convert'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'markdown-preview', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['markdown','preview','render'], maxFileSizeMB: { free: 1, pro: 10 } },
-  { slug: 'markdown-to-html', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['markdown','html','convert','render'], maxFileSizeMB: { free: 1, pro: 10 } },
+  { slug: 'markdown-to-html', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['markdown','html','convert','render'], maxFileSizeMB: { free: 1, pro: 10 }
+  { slug: 'word-cloud-generator', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['word','cloud','frequency','visualize'], maxFileSizeMB: { free: 0, pro: 0 } },
+  { slug: 'html-tag-stripper', category: 'text', isPro: false, isNew: true, phase: 1, tags: ['html','strip','text','extract'], maxFileSizeMB: { free: 1, pro: 10 } }, },
   { slug: 'markdown-editor', category: 'text', isPro: false, isNew: false, phase: 2, tags: ['markdown','editor','preview'], maxFileSizeMB: { free: 1, pro: 10 } },
   { slug: 'regex-tester', category: 'text', isPro: false, isNew: false, phase: 1, tags: ['regex','regexp','test'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'ai-text-summarizer', category: 'text', isPro: true, isNew: false, phase: 3, tags: ['ai','summarize','text'], maxFileSizeMB: { free: 0, pro: 10 } },
@@ -149,7 +152,8 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'pixel-ruler', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['pixel','ruler','measure','screen'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'color-contrast-checker', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['color','contrast','wcag','accessibility'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'json-to-xml', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['json','xml','convert'], maxFileSizeMB: { free: 1, pro: 10 } },
-  { slug: 'text-to-binary', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['text','binary','hex','octal','convert'], maxFileSizeMB: { free: 0, pro: 0 } },
+  { slug: 'text-to-binary', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['text','binary','hex','octal','convert'], maxFileSizeMB: { free: 0, pro: 0 }
+  { slug: 'caesar-cipher', category: 'developer', isPro: false, isNew: true, phase: 1, tags: ['caesar','cipher','encrypt','decrypt','rot13'], maxFileSizeMB: { free: 0, pro: 0 } }, },
   { slug: 'jwt-decoder', category: 'developer', isPro: false, isNew: false, phase: 1, tags: ['jwt','token','decode'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'yaml-to-json', category: 'developer', isPro: false, isNew: false, phase: 1, tags: ['yaml','json','convert'], maxFileSizeMB: { free: 1, pro: 10 } },
   { slug: 'css-minifier', category: 'developer', isPro: false, isNew: false, phase: 1, tags: ['css','minify','compress'], maxFileSizeMB: { free: 1, pro: 10 } },
@@ -189,7 +193,8 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'number-sequence-generator', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['number','sequence','generate','list'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'timezone-converter', category: 'utility', isPro: false, isNew: false, phase: 1, tags: ['timezone','convert','time'], maxFileSizeMB: { free: 0, pro: 0 } },
   { slug: 'color-palette-generator', category: 'utility', isPro: false, isNew: false, phase: 1, tags: ['color','palette','design'], maxFileSizeMB: { free: 0, pro: 0 } },
-  { slug: 'prime-number-checker', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['prime','number','check','math'], maxFileSizeMB: { free: 0, pro: 0 } },
+  { slug: 'prime-number-checker', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['prime','number','check','math'], maxFileSizeMB: { free: 0, pro: 0 }
+  { slug: 'number-palindrome', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['palindrome','number','math','reverse'], maxFileSizeMB: { free: 0, pro: 0 } }, },
   { slug: 'qr-reader', category: 'utility', isPro: false, isNew: false, phase: 2, tags: ['qr','scan','read','decode'], acceptedFileTypes: ['.jpg','.jpeg','.png'], maxFileSizeMB: { free: 5, pro: 20 } },
   { slug: 'barcode-generator', category: 'utility', isPro: false, isNew: false, phase: 2, tags: ['barcode','generate','ean'], maxFileSizeMB: { free: 0, pro: 0 } },
 ]
