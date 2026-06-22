@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { app } from '@/lib/firebase'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '@/lib/firebase/client'
 
 const ADMIN_EMAILS = ['sandshrimp.lab@gmail.com']
 
@@ -17,7 +17,7 @@ const QUICK_LINKS = [
   {
     label: 'GA4 — Pages & screens',
     desc: '어떤 툴이 많이 쓰였나',
-    href: 'https://analytics.google.com/analytics/web/#/p432085798/reports/explorer?params=_u..nav%3Dmaui',
+    href: 'https://analytics.google.com/analytics/web/#/p432085798/reports/explorer',
     icon: '📊',
     color: 'bg-blue-50 border-blue-200 hover:border-blue-400',
   },
@@ -68,23 +68,21 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
   const [statsError, setStatsError] = useState('')
 
   useEffect(() => {
-    const auth = getAuth(app)
     return onAuthStateChanged(auth, async (user) => {
       if (!user) { setAuthed('denied'); return }
       if (!ADMIN_EMAILS.includes(user.email ?? '')) { setAuthed('denied'); return }
       setAuthed('ok')
 
-      // Fetch stats
       setStatsLoading(true)
       try {
         const token = await user.getIdToken()
         const res = await fetch('/api/admin/stats', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: 'Bearer ' + token }
         })
         const data = await res.json()
         if (res.ok) setStats(data)
         else setStatsError(data.error)
-      } catch (e) {
+      } catch {
         setStatsError('Failed to load stats')
       } finally {
         setStatsLoading(false)
@@ -114,7 +112,6 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
         <p className="text-sm text-gray-500 mt-1">ToolBoxy 관리자 전용 — {stats?.today ?? ''}</p>
       </div>
 
-      {/* Quick stat cards */}
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
@@ -136,7 +133,6 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
       {statsLoading && <p className="text-sm text-gray-400">Loading stats…</p>}
       {statsError && <p className="text-sm text-red-500">{statsError}</p>}
 
-      {/* Quick Links */}
       <div>
         <h2 className="text-lg font-semibold text-gray-800 mb-4">빠른 링크</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -146,7 +142,7 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
               href={l.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex items-start gap-3 p-4 rounded-2xl border transition-colors ${l.color}`}
+              className={'flex items-start gap-3 p-4 rounded-2xl border transition-colors ' + l.color}
             >
               <span className="text-2xl">{l.icon}</span>
               <div>
@@ -158,7 +154,6 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
         </div>
       </div>
 
-      {/* Today's top tools */}
       {stats && stats.topTools.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold text-gray-800 mb-4">오늘 툴 사용량 (로그인 유저)</h2>
@@ -174,7 +169,7 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
                 {stats.topTools.map((t) => (
                   <tr key={t.slug} className="hover:bg-gray-50">
                     <td className="px-4 py-3 font-mono text-gray-700">{t.slug}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-brand-600">{t.count}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-blue-600">{t.count}</td>
                   </tr>
                 ))}
               </tbody>
@@ -183,7 +178,6 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
         </div>
       )}
 
-      {/* Recent users */}
       {stats && stats.recentUsers.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold text-gray-800 mb-4">최근 가입자 (최대 20명)</h2>
