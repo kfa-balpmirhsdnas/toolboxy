@@ -1,102 +1,79 @@
 'use client'
 import { useState } from 'react'
 
-function markdownToHtml(md: string): string {
-  let html = md
-  const codeBlocks: string[] = []
-  html = html.replace(/```[\s\S]*?```/g, (match) => {
-    const inner = match.slice(3,-3)
-    const langMatch = inner.match(/^(\w+)\n/)
-    const code = langMatch ? inner.slice(langMatch[0].length) : inner
-    const escaped = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    codeBlocks.push('<pre><code>'+escaped+'</code></pre>')
-    return '\x00CODE'+(codeBlocks.length-1)+'\x00'
-  })
-  html = html.replace(/`([^`]+)`/g,(_,c)=>'<code>'+c.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</code>')
-  html = html.replace(/^#{6}\s+(.+)$/gm,'<h6>$1</h6>')
-  html = html.replace(/^#{5}\s+(.+)$/gm,'<h5>$1</h5>')
-  html = html.replace(/^#{4}\s+(.+)$/gm,'<h4>$1</h4>')
-  html = html.replace(/^#{3}\s+(.+)$/gm,'<h3>$1</h3>')
-  html = html.replace(/^#{2}\s+(.+)$/gm,'<h2>$1</h2>')
-  html = html.replace(/^#\s+(.+)$/gm,'<h1>$1</h1>')
-  html = html.replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>')
-  html = html.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-  html = html.replace(/\*(.+?)\*/g,'<em>$1</em>')
-  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1"/>')
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2">$1</a>')
-  html = html.replace(/^>\s+(.+)$/gm,'<blockquote>$1</blockquote>')
-  html = html.replace(/^[-+*]\s+(.+)$/gm,'<li>$1</li>')
-  html = html.replace(/(<li>[\s\S]*?<\/li>\n?)+/g,m=>'<ul>'+m+'</ul>')
-  const lines = html.split('\n\n')
-  html = lines.map(line => {
-    const t = line.trim()
-    if (!t) return ''
-    if (/^<(h[1-6]|ul|ol|blockquote|pre|hr)/.test(t)) return t
-    return '<p>'+t+'</p>'
-  }).join('\n')
-  codeBlocks.forEach((b,i) => { html = html.replace('\x00CODE'+i+'\x00', b) })
-  return html
+// Minimal markdown parser
+function parseMarkdown(md:string):string{
+  return md
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    // headings
+    .replace(/^#{6}\s(.+)$/gm,'<h6 class="text-sm font-bold mt-4 mb-1">$1</h6>')
+    .replace(/^#{5}\s(.+)$/gm,'<h5 class="text-base font-bold mt-4 mb-1">$1</h5>')
+    .replace(/^#{4}\s(.+)$/gm,'<h4 class="text-lg font-bold mt-4 mb-1">$1</h4>')
+    .replace(/^#{3}\s(.+)$/gm,'<h3 class="text-xl font-bold mt-5 mb-2">$1</h3>')
+    .replace(/^#{2}\s(.+)$/gm,'<h2 class="text-2xl font-bold mt-6 mb-2">$1</h2>')
+    .replace(/^#\s(.+)$/gm,'<h1 class="text-3xl font-bold mt-6 mb-3">$1</h1>')
+    // bold / italic
+    .replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    // inline code
+    .replace(/`([^`]+)`/g,'<code class="bg-gray-100 text-red-600 px-1 rounded font-mono text-sm">$1</code>')
+    // blockquote
+    .replace(/^&gt;\s?(.+)$/gm,'<blockquote class="border-l-4 border-gray-300 pl-4 text-gray-500 italic my-2">$1</blockquote>')
+    // hr
+    .replace(/^---$/gm,'<hr class="my-4 border-gray-300" />')
+    // unordered list
+    .replace(/^[\*\-]\s(.+)$/gm,'<li class="ml-4 list-disc">$1</li>')
+    // ordered list
+    .replace(/^\d+\.\s(.+)$/gm,'<li class="ml-4 list-decimal">$1</li>')
+    // links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" class="text-brand-600 underline" target="_blank" rel="noopener">$1</a>')
+    // paragraphs
+    .replace(/\n\n/g,'</p><p class="my-2">')
+    .replace(/^(.)/,'<p class="my-2">$1')
+  +('</p>')
 }
 
-const SAMPLE = `# Hello World
+const SAMPLE='# Hello World\n\nThis is **bold** and *italic* text.\n\n## Features\n\n- Easy to use\n- Real-time preview\n- Copy HTML output\n\n> Blockquotes are supported too!\n\nInline `code` looks like this.\n\n[Link example](https://toolboxy.net)'
 
-This is **bold** and *italic* text.
+export default function MarkdownToHtmlPage() {
+  const [input,setInput]=useState(SAMPLE)
+  const [tab,setTab]=useState<'preview'|'html'>('preview')
+  const [copied,setCopied]=useState(false)
 
-## Features
+  const html=parseMarkdown(input)
+  function copy(){navigator.clipboard.writeText(html);setCopied(true);setTimeout(()=>setCopied(false),2000)}
 
-- Converts Markdown to clean HTML
-- Supports **headings**, *emphasis*, and \`code\`
-- Live preview
-
-### Code Example
-
-\`\`\`javascript
-function greet(name) {
-  return \`Hello, \${name}!\`;
-}
-\`\`\`
-
-> Blockquotes look like this.`
-
-export default function MarkdownToHtml() {
-  const [md, setMd] = useState(SAMPLE)
-  const [copied, setCopied] = useState(false)
-  const [tab, setTab] = useState<'preview'|'source'>('preview')
-  const html = markdownToHtml(md)
-  const copy = async () => { await navigator.clipboard.writeText(html); setCopied(true); setTimeout(()=>setCopied(false),2000) }
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-6xl mx-auto">
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-5xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Markdown to HTML</h1>
-        <p className="text-gray-500 mb-8">Convert Markdown to clean HTML instantly. Live preview included.</p>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col">
-            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
-              <span className="font-semibold text-gray-700 text-sm">Markdown Input</span>
-              <button onClick={()=>setMd('')} className="text-xs text-gray-400 hover:text-gray-600">Clear</button>
+        <p className="text-gray-500 mb-6">Convert Markdown to HTML with a live side-by-side preview</p>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="px-4 py-2 border-b border-gray-100 bg-gray-50">
+              <span className="text-sm font-medium text-gray-600">Markdown</span>
             </div>
-            <textarea value={md} onChange={e=>setMd(e.target.value)} className="flex-1 p-5 font-mono text-sm resize-none focus:outline-none rounded-b-2xl" rows={22} placeholder="Type Markdown here..."/>
+            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={20}
+              className="w-full p-4 font-mono text-sm focus:outline-none resize-none" />
           </div>
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col">
-            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
-              <div className="flex gap-2">
-                {(['preview','source'] as const).map(t=>(
-                  <button key={t} onClick={()=>setTab(t)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${tab===t?'bg-blue-600 text-white':'text-gray-500 hover:bg-gray-100'}`}>
-                    {t==='preview'?'👁 Preview':'</> Source'}
-                  </button>
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100 bg-gray-50">
+              <div className="flex gap-1">
+                {(['preview','html'] as const).map(t=>(
+                  <button key={t} onClick={()=>setTab(t)} className={'px-3 py-1 text-xs rounded-md capitalize '+(tab===t?'bg-white shadow text-gray-800 font-medium':'text-gray-500')}>{t}</button>
                 ))}
               </div>
-              <button onClick={copy} className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded-lg font-medium transition-colors">
-                {copied?'✓ Copied!':'Copy HTML'}
-              </button>
+              <button onClick={copy} className="text-xs px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded">{copied?'\u2713':'Copy HTML'}</button>
             </div>
-            {tab==='preview'
-              ? <div className="flex-1 p-5 overflow-auto prose max-w-none" dangerouslySetInnerHTML={{__html:html}}/>
-              : <pre className="flex-1 p-5 text-xs font-mono overflow-auto text-gray-700 whitespace-pre-wrap">{html}</pre>
-            }
+            {tab==='preview'?(
+              <div className="p-4 overflow-auto h-[500px] prose max-w-none" dangerouslySetInnerHTML={{__html:html}} />
+            ):(
+              <pre className="p-4 font-mono text-xs text-gray-700 overflow-auto h-[500px] whitespace-pre-wrap break-all">{html}</pre>
+            )}
           </div>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
