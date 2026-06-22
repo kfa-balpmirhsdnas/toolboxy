@@ -93,7 +93,10 @@
     "svg-to-png": "Render SVG files to PNG at any scale. Paste SVG code or upload a file.",
     "checksum-generator": "Compute SHA-1, SHA-256, SHA-384, and SHA-512 checksums for files or text. Verify file integrity.",
     "image-crop": "Crop images by specifying pixel coordinates. No upload required ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ runs in browser.",
-    "html-entity-encoder": "Encode special characters as HTML entities or decode HTML entities back to text.",
+    "html-entity-encoder": {
+      "title": "HTML Entity Encoder",
+      "description": "Encode special characters to HTML entities and decode HTML entities back to plain text"
+    },
     "number-base-converter": "Convert numbers between binary, octal, decimal, and hexadecimal instantly.",
     "unix-timestamp": "Convert Unix timestamps to human-readable dates and vice versa. Includes a live clock.",
     "word-frequency": "Analyze word frequency in any text. See counts, percentages, and rankings.",
@@ -101,7 +104,10 @@
     "random-number-generator": "Generate random integers or decimals in any range. Supports unique numbers and bulk generation.",
     "aspect-ratio-calculator": "Calculate aspect ratios and scale dimensions. Supports common presets like 16:9 and 4:3.",
     "binary-text-converter": "Convert text to binary and binary back to text. Quick encoding/decoding tool.",
-    "percentage-calculator": "Calculate percentages, find what percentage one number is of another, and compute percentage change.",
+    "percentage-calculator": {
+      "title": "Percentage Calculator",
+      "description": "Calculate percentages in multiple modes: X% of Y, what percent is X of Y, percentage change, increase and decrease"
+    },
     "json-minifier": "Minify JSON by removing whitespace and formatting. Shows byte savings and allows download.",
     "text-reverser": "Reverse text by characters, words, or lines. Simple and fast text manipulation tool.",
     "color-gradient-generator": "Generate CSS gradients with custom colors, direction, and type. Includes preset themes.",
@@ -137,13 +143,19 @@
     "css-gradient-generator": "Create linear, radial, and conic CSS gradients with multi-stop color controls.",
     "xml-formatter": "Format or minify XML with configurable indentation. Instantly readable output with download support.",
     "epoch-converter": "Convert Unix epoch timestamps to readable dates and vice versa. Supports seconds, milliseconds, and multiple timezones.",
-    "text-repeater": "Repeat any text a specified number of times with custom separators like newline, space, or comma.",
+    "text-repeater": {
+      "title": "Text Repeater",
+      "description": "Repeat any text multiple times with customizable separators like newline, comma, tab or pipe"
+    },
     "column-extractor": "Extract specific columns from CSV or delimited text. Click columns to toggle selection, choose custom separators.",
     "bracket-matcher": "Validate bracket matching in code. Highlights matched pairs by depth and pinpoints mismatched or unclosed brackets.",
     "reading-level-analyzer": "Analyze text readability using the Flesch Reading Ease and Flesch-Kincaid Grade Level formulas.",
     "ini-parser": "Parse INI configuration files into structured tables or JSON. Handles sections, keys, and comments.",
     "slug-to-title": "Convert URL slugs or kebab-case text into Title Case, Sentence case, camelCase, and more.",
-    "number-to-words": "Convert numbers to English words: cardinal (one, two) and ordinal (first, second) forms.",
+    "number-to-words": {
+      "title": "Number to Words",
+      "description": "Convert numbers into English words — supports integers, decimals and numbers up to trillions"
+    },
     "camel-case-converter": "Convert between all common naming conventions: camelCase, snake_case, PascalCase, kebab-case, and more.",
     "html-entity-converter": "Encode or decode HTML entities. Supports named entities, numeric, full non-ASCII encoding, and decoding.",
     "whitespace-remover": "Remove or normalize whitespace from text. Trim lines, collapse spaces, remove blank lines, and more.",
@@ -197,7 +209,10 @@
     "habit-tracker": "Track daily habits with a 7-day grid. Add custom habits with emojis, check off completions, and see your current streak.",
     "bmi-calculator": "Calculate your Body Mass Index (BMI) and understand what the result means for your health.",
     "tip-calculator": "Calculate restaurant tips with preset percentages or a custom rate. Split the bill among multiple people and copy the summary.",
-    "age-calculator": "Calculate exact age in years, months, and days. Shows total days, weeks, months, and hours lived, plus days until next birthday.",
+    "age-calculator": {
+      "title": "Age Calculator",
+      "description": "Calculate your exact age in years, months, days, hours and minutes from your date of birth"
+    },
     "loan-calculator": "Calculate monthly mortgage or loan payments. Shows total interest, principal vs interest breakdown, and a 12-month amortization preview.",
     "currency-converter": "Convert between 40+ currencies using approximate exchange rates. Quick compare panel and swap button included.",
     "color-contrast-checker": "Check WCAG 2.1 color contrast ratios for text and UI accessibility compliance.",
