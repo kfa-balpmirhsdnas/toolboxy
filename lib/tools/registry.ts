@@ -432,6 +432,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'xml-to-json',category:'developer',phase:1,isPro:false,isNew:true,tags:['xml','json','convert','parse'],maxFileSizeMB:{free:1,pro:10} },
   {slug:'pomodoro-timer',category:'utility',phase:1,isPro:false,isNew:true,tags:['pomodoro','timer','focus','productivity'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'matrix-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['matrix','math','linear','algebra'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'subnet-calculator',category:'developer',phase:1,isPro:false,isNew:true,tags:['subnet','ip','network','cidr','mask'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'age-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['age','birthday','date','years','calculator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'word-frequency-counter',category:'text',phase:1,isPro:false,isNew:true,tags:['word','frequency','count','text','analysis'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-animation-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','animation','keyframe','generator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'markdown-table-generator',category:'text',phase:1,isPro:false,isNew:true,tags:['markdown','table','generator','format'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
