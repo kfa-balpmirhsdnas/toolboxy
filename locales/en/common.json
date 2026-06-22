@@ -247,12 +247,18 @@
     },
     "html-previewer": "Live HTML editor with real-time preview. Write HTML, CSS, and JavaScript and see the result instantly in a sandboxed iframe.",
     "html-minifier": "Minify HTML by removing comments, collapsing whitespace, and optionally minifying inline CSS and JavaScript. Shows bytes saved.",
-    "pomodoro-timer": "A focused Pomodoro timer with configurable work, short break, and long break intervals. Tracks session count with visual progress ring.",
+    "pomodoro-timer": {
+      "title": "Pomodoro Timer",
+      "description": "Stay focused with the Pomodoro technique — customizable focus and break intervals with session tracking"
+    },
     "stopwatch-timer": "Precise stopwatch with lap tracking and a countdown timer.",
     "typing-speed-test": "Measure your typing speed in WPM and accuracy. Choose from 5 sample texts. Highlights correct and incorrect characters in real time.",
     "random-quote-generator": "Browse 20+ curated quotes across categories like Motivation, Wisdom, and Life. Save favorites, copy, and filter by category.",
     "habit-tracker": "Track daily habits with a 7-day grid. Add custom habits with emojis, check off completions, and see your current streak.",
-    "bmi-calculator": "Calculate your Body Mass Index (BMI) and understand what the result means for your health.",
+    "bmi-calculator": {
+      "title": "BMI Calculator",
+      "description": "Calculate your Body Mass Index in metric or imperial units and see which weight category you fall into"
+    },
     "tip-calculator": {
       "title": "Tip Calculator",
       "description": "Calculate tip amounts and split the bill between multiple people with common tip percentage presets"
@@ -348,6 +354,18 @@
     "palindrome-checker": {
       "title": "Palindrome Checker",
       "description": "Check if a word, phrase, or sentence reads the same forwards and backwards with configurable matching options"
+    },
+    "scientific-calculator": {
+      "title": "Scientific Calculator",
+      "description": "Full scientific calculator with trigonometric functions, logarithms, powers, factorial, and calculation history"
+    },
+    "speed-converter": {
+      "title": "Speed Converter",
+      "description": "Convert between m/s, km/h, mph, ft/s, knots, Mach, and the speed of light instantly"
+    },
+    "calorie-calculator": {
+      "title": "Calorie Calculator",
+      "description": "Estimate your daily calorie needs using the Harris-Benedict equation based on your body metrics and activity level"
     }
   }
 }
