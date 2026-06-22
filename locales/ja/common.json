@@ -279,8 +279,8 @@
       "description": "人数分のチップを計算して割り勘 — プリセット比率と1人あたりの金額を簡単に確認"
     },
     "age-calculator": {
-      "title": "年齢計算機",
-      "description": "生年月日から正確な年齢を年・月・日・時間・分単位で計算します"
+      "title": "年齢計算ツール",
+      "description": "生年月日から正確な年齢（年・月・日）と総週数・時間・次の誕生日までの日数を計算します"
     },
     "loan-calculator": {
       "title": "ローン計算機",
@@ -314,8 +314,8 @@
       "description": "テキストを読むのにかかる時間を1分あたりの語数をもとに推定します"
     },
     "dice-roller": {
-      "title": "サイコロローラー",
-      "description": "d4・d6・d8・d10・d12・d20のダイスを振ります。RPGやボードゲームに最適です"
+      "title": "ダイスローラー",
+      "description": "d4・d6・d8・d10・d12・d20・d100のRPGダイスを振り、履歴と統計を確認できます"
     },
     "hash-generator": {
       "title": "ハッシュ生成ツール",
@@ -452,6 +452,18 @@
     "budget-calculator": {
       "title": "予算計算ツール",
       "description": "カテゴリ別に収入と支出を管理し、月間収支をグラフで確認できます"
+    },
+    "coin-flip": {
+      "title": "コイントス",
+      "description": "バーチャルコインを投げて表・裏の統計を記録します"
+    },
+    "uuid-generator": {
+      "title": "UUIDジェネレーター",
+      "description": "暗号的に安全なUUID v4を生成 — 個数・大文字/小文字・ハイフンを自由に設定"
+    },
+    "passphrase-strength": {
+      "title": "パスフレーズ強度チェック",
+      "description": "エントロピーとクラック推定時間でパスフレーズ強度を確認 — 完全ローカル処理、データ送信なし"
     }
   }
 }
