@@ -417,6 +417,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'json-to-csv',category:'developer',phase:1,isPro:false,isNew:true,tags:['json','csv','convert','data'],maxFileSizeMB:{free:1,pro:10} },
   {slug:'css-box-shadow-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','box','shadow','generator'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'html-minifier',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','minify','compress','optimize'],maxFileSizeMB:{free:1,pro:10} },
+  {slug:'css-gradient-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','gradient','linear','radial','generate'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'sql-formatter',category:'developer',phase:1,isPro:false,isNew:true,tags:['sql','format','query','beautify'],maxFileSizeMB:{free:1,pro:10} },
+  {slug:'cron-expression-parser',category:'developer',phase:1,isPro:false,isNew:true,tags:['cron','schedule','expression','parse'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-to-binary',category:'developer',phase:1,isPro:false,isNew:true,tags:['text','binary','convert','encode'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'number-to-words',category:'utility',phase:1,isPro:false,isNew:true,tags:['number','words','spell','convert'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }

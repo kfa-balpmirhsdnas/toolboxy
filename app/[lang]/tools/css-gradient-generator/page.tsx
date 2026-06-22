@@ -2,79 +2,60 @@
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-type Stop = {color:string;pos:number}
-type GradType = 'linear'|'radial'|'conic'
-
-
 const tool = getToolBySlug('css-gradient-generator')!
-
+type Stop={color:string;pos:number}
 export default function CssGradientGeneratorPage() {
-  const [stops, setStops] = useState<Stop[]>([{color:'#FF6B6B',pos:0},{color:'#4ECDC4',pos:100}])
-  const [angle, setAngle] = useState(135)
-  const [type, setType] = useState<GradType>('linear')
-  const [copied, setCopied] = useState(false)
-
-  function addStop(){setStops(s=>[...s,{color:'#845EC2',pos:50}].sort((a,b)=>a.pos-b.pos))}
-  function removeStop(i:number){if(stops.length<=2)return;setStops(s=>s.filter((_,j)=>j!==i))}
-  function updateStop(i:number,key:keyof Stop,val:string|number){setStops(s=>s.map((st,j)=>j===i?{...st,[key]:val}:st).sort((a,b)=>a.pos-b.pos))}
-
-  const stopsStr = stops.map(s=>s.color+' '+s.pos+'%').join(', ')
-  let css: string
-  if(type==='linear') css='linear-gradient('+angle+'deg, '+stopsStr+')'
-  else if(type==='radial') css='radial-gradient(circle, '+stopsStr+')'
-  else css='conic-gradient(from '+angle+'deg, '+stopsStr+')'
-  const cssRule = 'background: '+css+';'
-
-  function copy(){navigator.clipboard.writeText(cssRule);setCopied(true);setTimeout(()=>setCopied(false),2000)}
-
+  const [type,setType]=useState<'linear'|'radial'>('linear')
+  const [angle,setAngle]=useState(135)
+  const [stops,setStops]=useState<Stop[]>([{color:'#6366f1',pos:0},{color:'#ec4899',pos:100}])
+  const [copied,setCopied]=useState(false)
+  const sortedStops=[...stops].sort((a,b)=>a.pos-b.pos)
+  const stopStr=sortedStops.map(s=>s.color+' '+s.pos+'%').join(', ')
+  const css=type==='linear'?'linear-gradient('+angle+'deg, '+stopStr+')':'radial-gradient(circle, '+stopStr+')'
+  const cssRule='background: '+css+';'
+  const addStop=()=>setStops([...stops,{color:'#ffffff',pos:50}])
+  const removeStop=(i:number)=>{if(stops.length>2)setStops(stops.filter((_,j)=>j!==i))}
+  const updateStop=(i:number,k:keyof Stop,v:string|number)=>setStops(stops.map((s,j)=>j===i?{...s,[k]:v}:s))
+  const copy=()=>{navigator.clipboard.writeText(cssRule);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">CSS Gradient Generator</h1>
-        <p className="text-gray-500 mb-8">Build beautiful CSS gradients visually and copy the ready-to-use code</p>
-        <div className="w-full h-48 rounded-2xl mb-6 shadow-md" style={{background:css}} />
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-5">
-          <div className="flex gap-2">
-            {(['linear','radial','conic'] as GradType[]).map(t=>(
-              <button key={t} onClick={()=>setType(t)}
-                className={'px-4 py-2 rounded-lg capitalize font-medium transition-colors '+(type===t?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>
-                {t}
-              </button>
-            ))}
-          </div>
-          {(type==='linear'||type==='conic')&&(
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-sm font-medium text-gray-700">{type==='linear'?'Angle':'Start Angle'}</label>
-                <span className="text-brand-600 font-semibold">{angle}\u00B0</span>
-              </div>
-              <input type="range" min={0} max={360} value={angle} onChange={e=>setAngle(parseInt(e.target.value))} className="w-full" />
-            </div>
-          )}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-gray-700">Color Stops</label>
-              <button onClick={addStop} className="text-xs px-3 py-1 bg-brand-50 text-brand-600 hover:bg-brand-100 rounded-lg">+ Add Stop</button>
-            </div>
-            <div className="space-y-2">
-              {stops.map((s,i)=>(
-                <div key={i} className="flex items-center gap-3">
-                  <input type="color" value={s.color} onChange={e=>updateStop(i,'color',e.target.value)} className="w-10 h-10 rounded border border-gray-300 cursor-pointer" />
-                  <input type="text" value={s.color} onChange={e=>updateStop(i,'color',e.target.value)} className="w-24 border border-gray-300 rounded-lg px-2 py-1.5 font-mono text-sm" />
-                  <input type="range" min={0} max={100} value={s.pos} onChange={e=>updateStop(i,'pos',parseInt(e.target.value))} className="flex-1" />
-                  <span className="text-xs text-gray-500 w-8">{s.pos}%</span>
-                  <button onClick={()=>removeStop(i)} className={'text-gray-400 hover:text-red-500 '+(stops.length<=2?'invisible':'')}>\u00D7</button>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="bg-gray-900 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
-            <code className="text-green-400 font-mono text-xs break-all">{cssRule}</code>
-            <button onClick={copy} className="text-xs px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg shrink-0">
-              {copied?'\u2713 Copied':'Copy CSS'}
+      <div className="max-w-xl mx-auto px-4 space-y-5">
+        <div className="h-32 rounded-xl border border-gray-200 transition-all" style={{background:css}}/>
+        <div className="flex gap-2">
+          {(['linear','radial'] as const).map(t=>(
+            <button key={t} onClick={()=>setType(t)}
+              className={`flex-1 py-2 rounded-lg text-sm font-medium border transition ${type===t?'bg-blue-600 text-white border-blue-600':'bg-white text-gray-700 border-gray-300'}`}>
+              {t.charAt(0).toUpperCase()+t.slice(1)}
             </button>
+          ))}
+        </div>
+        {type==='linear'&&(
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <label className="font-medium text-gray-700">Angle</label>
+              <span className="font-mono text-blue-700">{angle}°</span>
+            </div>
+            <input type="range" min="0" max="360" value={angle} onChange={e=>setAngle(Number(e.target.value))} className="w-full"/>
           </div>
+        )}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-gray-700">Color Stops</p>
+            <button onClick={addStop} className="text-xs text-blue-600 hover:underline">+ Add stop</button>
+          </div>
+          {stops.map((s,i)=>(
+            <div key={i} className="flex items-center gap-2">
+              <input type="color" value={s.color} onChange={e=>updateStop(i,'color',e.target.value)} className="w-10 h-8 rounded border border-gray-300 cursor-pointer p-0.5"/>
+              <input value={s.color} onChange={e=>updateStop(i,'color',e.target.value)} className="w-24 rounded border border-gray-300 px-2 py-1 font-mono text-xs"/>
+              <input type="range" min="0" max="100" value={s.pos} onChange={e=>updateStop(i,'pos',Number(e.target.value))} className="flex-1"/>
+              <span className="w-10 text-xs font-mono text-center text-gray-600">{s.pos}%</span>
+              {stops.length>2&&<button onClick={()=>removeStop(i)} className="text-red-400 hover:text-red-600 text-xs">✕</button>}
+            </div>
+          ))}
+        </div>
+        <div className="bg-gray-900 rounded-lg p-4 flex items-center justify-between gap-3">
+          <code className="text-green-400 text-xs font-mono break-all flex-1">{cssRule}</code>
+          <button onClick={copy} className="flex-shrink-0 bg-blue-600 text-white px-3 py-1.5 rounded text-xs hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
         </div>
       </div>
     </ToolLayout>

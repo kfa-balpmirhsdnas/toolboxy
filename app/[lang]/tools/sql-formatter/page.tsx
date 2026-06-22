@@ -2,78 +2,61 @@
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-const KEYWORDS = ['SELECT','FROM','WHERE','JOIN','LEFT','RIGHT','INNER','OUTER','ON',
-  'AND','OR','NOT','IN','IS','NULL','AS','GROUP','BY','ORDER','HAVING','LIMIT','OFFSET',
-  'INSERT','INTO','VALUES','UPDATE','SET','DELETE','CREATE','TABLE','DROP','ALTER','ADD',
-  'COLUMN','INDEX','PRIMARY','KEY','FOREIGN','REFERENCES','DISTINCT','COUNT','SUM','AVG',
-  'MIN','MAX','UNION','ALL','EXISTS','BETWEEN','LIKE','CASE','WHEN','THEN','ELSE','END',
-  'WITH','RETURNING','TRUNCATE','CONSTRAINT','DEFAULT','NOT NULL']
-
-function formatSQL(sql: string): string {
-  let s = sql.replace(/\s+/g, ' ').trim()
-  // Uppercase keywords
-  KEYWORDS.forEach(k => {
-    s = s.replace(new RegExp('\\b' + k + '\\b', 'gi'), k)
-  })
-  // Add newlines before major clauses
-  const clauses = ['SELECT','FROM','WHERE','JOIN','LEFT JOIN','RIGHT JOIN','INNER JOIN',
-    'GROUP BY','ORDER BY','HAVING','LIMIT','UNION','INSERT INTO','UPDATE','SET','DELETE FROM']
-  clauses.forEach(c => {
-    s = s.replace(new RegExp('\\b' + c + '\\b', 'g'), '\n' + c)
-  })
-  // Indent columns in SELECT
-  s = s.replace(/SELECT\n?/, 'SELECT\n  ')
-  s = s.replace(/,(?=\S)/g, ',\n  ')
-  return s.trim()
-}
-
-
 const tool = getToolBySlug('sql-formatter')!
-
-export default function SQLFormatterPage() {
-  const [input, setInput] = useState('')
-  const [output, setOutput] = useState('')
-
-  const format = () => setOutput(formatSQL(input))
-  const copy = () => navigator.clipboard.writeText(output)
-  const clear = () => { setInput(''); setOutput('') }
-
+const KEYWORDS=['SELECT','FROM','WHERE','JOIN','LEFT','RIGHT','INNER','OUTER','FULL','ON','AND','OR','NOT','IN','IS','NULL','AS','ORDER','BY','GROUP','HAVING','LIMIT','OFFSET','INSERT','INTO','VALUES','UPDATE','SET','DELETE','CREATE','TABLE','ALTER','ADD','DROP','INDEX','PRIMARY','KEY','FOREIGN','REFERENCES','DISTINCT','COUNT','SUM','AVG','MAX','MIN','CASE','WHEN','THEN','ELSE','END','UNION','ALL','EXISTS','BETWEEN','LIKE','WITH','CTE']
+function formatSql(sql:string,indent:string):string{
+  let result=sql.trim()
+  const re=new RegExp('\\b('+KEYWORDS.join('|')+')\\b','gi')
+  result=result.replace(re,(_,kw)=>kw.toUpperCase())
+  result=result.replace(/\s*,\s*/g,',\n'+indent)
+  result=result.replace(/\bSELECT\b/gi,'SELECT\n'+indent)
+  result=result.replace(/\bFROM\b/gi,'\nFROM')
+  result=result.replace(/\b(LEFT|RIGHT|INNER|OUTER|FULL)?\s*JOIN\b/gi,'\n$1 JOIN')
+  result=result.replace(/\bON\b/gi,'\n  ON')
+  result=result.replace(/\bWHERE\b/gi,'\nWHERE')
+  result=result.replace(/\bAND\b/gi,'\n  AND')
+  result=result.replace(/\bOR\b/gi,'\n  OR')
+  result=result.replace(/\bORDER\s+BY\b/gi,'\nORDER BY')
+  result=result.replace(/\bGROUP\s+BY\b/gi,'\nGROUP BY')
+  result=result.replace(/\bHAVING\b/gi,'\nHAVING')
+  result=result.replace(/\bLIMIT\b/gi,'\nLIMIT')
+  result=result.replace(/\n\s*\n/g,'\n')
+  return result.trim()
+}
+export default function SqlFormatterPage() {
+  const [input,setInput]=useState('select u.id, u.name, count(o.id) as order_count from users u left join orders o on u.id = o.user_id where u.active = 1 and u.created_at > "2024-01-01" group by u.id, u.name having count(o.id) > 5 order by order_count desc limit 20')
+  const [indent,setIndent]=useState('  ')
+  const [copied,setCopied]=useState(false)
+  const output=input?formatSql(input,indent):''
+  const copy=()=>{navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">SQL Formatter</h1>
-        <p className="text-gray-500 mb-8">Format and beautify SQL queries for better readability.</p>
-        <div className="bg-white rounded-xl shadow p-6 space-y-4">
+      <div className="max-w-2xl mx-auto px-4 space-y-4">
+        <div className="flex items-center gap-4">
+          <label className="text-sm font-medium text-gray-700">Indent:</label>
+          {[['2 spaces','  '],['4 spaces','    '],['tab','\t']].map(([label,val])=>(
+            <label key={label} className="flex items-center gap-1.5 cursor-pointer">
+              <input type="radio" name="indent" checked={indent===val} onChange={()=>setIndent(val)}/>
+              <span className="text-sm text-gray-600">{label}</span>
+            </label>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">SQL Input</label>
-            <textarea
-              className="w-full border border-gray-300 rounded-lg p-3 text-sm font-mono h-40 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="SELECT * FROM users WHERE id = 1 AND status = 'active'"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-            />
-          </div>
-          <div className="flex gap-2">
-            <button onClick={format} disabled={!input.trim()} className="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 transition-colors">
-              Format SQL
-            </button>
-            <button onClick={clear} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-              Clear
-            </button>
-          </div>
-          {output && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Formatted SQL</label>
-              <textarea
-                className="w-full border border-gray-200 rounded-lg p-3 bg-gray-50 text-sm font-mono h-56 resize-none"
-                readOnly value={output}
-              />
-              <button onClick={copy} className="mt-2 w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                Copy SQL
-              </button>
+            <div className="flex justify-between mb-1">
+              <label className="text-sm font-medium text-gray-700">Input SQL</label>
             </div>
-          )}
+            <textarea value={input} onChange={e=>setInput(e.target.value)} rows={12}
+              className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-sm resize-none" spellCheck={false}/>
+          </div>
+          <div>
+            <div className="flex justify-between mb-1">
+              <label className="text-sm font-medium text-gray-700">Formatted SQL</label>
+              <button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?'Copied!':'Copy'}</button>
+            </div>
+            <textarea readOnly value={output} rows={12}
+              className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-sm resize-none"/>
+          </div>
         </div>
       </div>
     </ToolLayout>
