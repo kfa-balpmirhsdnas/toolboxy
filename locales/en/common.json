@@ -139,6 +139,11 @@
     "epoch-converter": "Convert Unix epoch timestamps to readable dates and vice versa. Supports seconds, milliseconds, and multiple timezones.",
     "text-repeater": "Repeat any text a specified number of times with custom separators like newline, space, or comma.",
     "column-extractor": "Extract specific columns from CSV or delimited text. Click columns to toggle selection, choose custom separators.",
-    "bracket-matcher": "Validate bracket matching in code. Highlights matched pairs by depth and pinpoints mismatched or unclosed brackets."
+    "bracket-matcher": "Validate bracket matching in code. Highlights matched pairs by depth and pinpoints mismatched or unclosed brackets.",
+    "reading-level-analyzer": "Analyze text readability using the Flesch Reading Ease and Flesch-Kincaid Grade Level formulas.",
+    "ini-parser": "Parse INI configuration files into structured tables or JSON. Handles sections, keys, and comments.",
+    "slug-to-title": "Convert URL slugs or kebab-case text into Title Case, Sentence case, camelCase, and more.",
+    "number-to-words": "Convert numbers to English words: cardinal (one, two) and ordinal (first, second) forms.",
+    "camel-case-converter": "Convert between all common naming conventions: camelCase, snake_case, PascalCase, kebab-case, and more."
   }
 }
