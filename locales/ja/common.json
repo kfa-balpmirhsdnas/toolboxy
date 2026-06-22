@@ -184,6 +184,11 @@
     "ascii-art-generator": "ピクセルビットマップフォントでテキストをブロックASCIIアートに変換。塗りつぶし文字とスケールを選択可能。",
     "html-color-picker": "ビジュアルピッカーで色を選び、HEX/RGB/HSL/HSV値を確認してコントラスト比をチェック。60以上のHTML命名色も閲覧。",
     "keyboard-shortcut-tester": "キャプチャゾーンをクリックしてキーやショートカットを押すと、キー名・コード・修飾キーを表示。直近20件を記録。",
-    "css-box-model-visualizer": "CSSボックスモデル（マージン・ボーダー・パディング・コンテンツ）をビジュアルで設定。content-box/border-box対応。"
+    "css-box-model-visualizer": "CSSボックスモデル（マージン・ボーダー・パディング・コンテンツ）をビジュアルで設定。content-box/border-box対応。",
+    "open-graph-preview": "Facebook・Twitter・LinkedInでシェアした際のページ表示をプレビュー。Open GraphとTwitterのメタタグを生成。",
+    "json-to-yaml": "JSONをYAML形式に変換。ネストオブジェクト・配列・特殊文字を含む文字列・boolean/null値を正確に処理。",
+    "morse-code-translator": "テキストをモールス信号に変換し逆変換も可能。信号の音声再生と参照チャートつき。",
+    "html-previewer": "リアルタイムプレビュー付きのライブHTMLエディタ。HTML・CSS・JavaScriptを書いてサンドボックスiframeで即確認。",
+    "html-minifier": "コメント削除・空白圧縮・インラインCSS/JS最小化でHTMLを圧縮。節約バイト数を表示。"
   }
 }
