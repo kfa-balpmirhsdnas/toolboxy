@@ -1,91 +1,73 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('percentage-calculator')!
+type Mode = 'of'|'what'|'change'|'inc'|'dec'
+const modes: {id:Mode; label:string; aLabel:string; bLabel:string}[] = [
+  {id:'of',   label:'X% of Y',         aLabel:'Percentage (%)', bLabel:'Value (Y)'},
+  {id:'what', label:'X is ?% of Y',    aLabel:'Value (X)',      bLabel:'Total (Y)'},
+  {id:'change',label:'% Change',       aLabel:'From (X)',       bLabel:'To (Y)'},
+  {id:'inc',  label:'Increase by %',   aLabel:'Original Value', bLabel:'Increase (%)'},
+  {id:'dec',  label:'Decrease by %',   aLabel:'Original Value', bLabel:'Decrease (%)'},
+]
 
-interface Calc { label: string; formula: string; result: string }
-
-export default function PercentageCalculatorPage({ params }: { params: { lang: string } }) {
+export default function PercentageCalculatorPage() {
+  const [mode, setMode] = useState<Mode>('of')
   const [a, setA] = useState('')
   const [b, setB] = useState('')
-  const [c, setC] = useState('')
-  const [d, setD] = useState('')
-  const [copied, setCopied] = useState<string|null>(null)
-  const tracked = useRef(false)
+  const [result, setResult] = useState<string|null>(null)
 
-  function track() {
-    if (!tracked.current) { trackToolUsed('percentage-calculator'); tracked.current = true }
+  function calculate() {
+    const x=parseFloat(a), y=parseFloat(b)
+    if (isNaN(x)||isNaN(y)) return
+    let r: number
+    if (mode==='of') r=(x/100)*y
+    else if (mode==='what') r=(x/y)*100
+    else if (mode==='change') r=((y-x)/Math.abs(x))*100
+    else if (mode==='inc') r=x*(1+y/100)
+    else r=x*(1-y/100)
+    const fmt = (n:number) => (Number.isInteger(n)?n:parseFloat(n.toFixed(6))).toLocaleString()
+    const suffix = (mode==='what'||mode==='change') ? '%' : ''
+    const prefix = (mode==='change' && r>0) ? '+' : ''
+    setResult(prefix + fmt(r) + suffix)
   }
 
-  const av = parseFloat(a), bv = parseFloat(b), cv = parseFloat(c), dv = parseFloat(d)
-
-  const results: Calc[] = [
-    {
-      label: 'X% of Y',
-      formula: (isNaN(av)||isNaN(bv)) ? '' : av + '% of ' + bv,
-      result: (isNaN(av)||isNaN(bv)) ? '' : ((av / 100) * bv).toFixed(4).replace(/\.?0+$/, ''),
-    },
-    {
-      label: 'X is what % of Y',
-      formula: (isNaN(cv)||isNaN(dv)||dv===0) ? '' : cv + ' is what % of ' + dv,
-      result: (isNaN(cv)||isNaN(dv)||dv===0) ? '' : ((cv / dv) * 100).toFixed(4).replace(/\.?0+$/, '') + '%',
-    },
-    {
-      label: '% change from X to Y',
-      formula: (isNaN(cv)||isNaN(dv)||cv===0) ? '' : cv + ' \u2192 ' + dv,
-      result: (isNaN(cv)||isNaN(dv)||cv===0) ? '' :
-        (((dv - cv) / Math.abs(cv)) * 100).toFixed(2) + '% ' + (dv >= cv ? '\u2191' : '\u2193'),
-    },
-  ]
-
-  async function copy(val: string, id: string) {
-    await navigator.clipboard.writeText(val)
-    trackToolCopy('percentage-calculator')
-    setCopied(id)
-    setTimeout(() => setCopied(null), 1500)
-  }
+  const m = modes.find(x=>x.id===mode)!
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-6">
-        <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
-          <h3 className="text-sm font-semibold text-gray-700">X% of Y</h3>
-          <div className="flex items-center gap-2 flex-wrap">
-            <input type="number" value={a} onChange={e=>{setA(e.target.value);track()}} placeholder="X" className="w-24 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-            <span className="text-sm text-gray-500">% of</span>
-            <input type="number" value={b} onChange={e=>{setB(e.target.value);track()}} placeholder="Y" className="w-32 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-            <span className="text-sm text-gray-500">=</span>
-            <span className="text-lg font-bold text-brand-700 min-w-[4rem]">{results[0].result || '?'}</span>
-            {results[0].result && (
-              <button onClick={() => copy(results[0].result, 'r0')} className="text-xs text-brand-600 hover:underline">{copied==='r0'?'\u2713':'Copy'}</button>
-            )}
-          </div>
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Percentage Calculator</h1>
+        <p className="text-gray-500 mb-6">Calculate percentages in five different modes</p>
+        <div className="flex flex-wrap gap-2 mb-6">
+          {modes.map(md => (
+            <button key={md.id} onClick={()=>{setMode(md.id);setResult(null)}}
+              className={'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors '+(mode===md.id?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50')}>
+              {md.label}
+            </button>
+          ))}
         </div>
-        <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
-          <h3 className="text-sm font-semibold text-gray-700">X is what % of Y / % change from X to Y</h3>
-          <div className="flex items-center gap-2 flex-wrap">
-            <input type="number" value={c} onChange={e=>{setC(e.target.value);track()}} placeholder="X" className="w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-            <span className="text-sm text-gray-500">and</span>
-            <input type="number" value={d} onChange={e=>{setD(e.target.value);track()}} placeholder="Y" className="w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{m.aLabel}</label>
+              <input type="number" value={a} onChange={e=>setA(e.target.value)} placeholder="0"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{m.bLabel}</label>
+              <input type="number" value={b} onChange={e=>setB(e.target.value)} placeholder="0"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
           </div>
-          {results[1].result && (
-            <div className="grid grid-cols-2 gap-3">
-              {results.slice(1).map((r, i) => (
-                <div key={i} className="p-3 bg-white border border-gray-200 rounded-xl">
-                  <p className="text-xs text-gray-500 mb-1">{r.label}</p>
-                  <div className="flex items-center gap-2">
-                    <p className="text-lg font-bold text-brand-700">{r.result}</p>
-                    <button onClick={() => copy(r.result, 'r'+(i+1))} className="text-xs text-brand-600 hover:underline">{copied==='r'+(i+1)?'\u2713':'Copy'}</button>
-                  </div>
-                </div>
-              ))}
+          <button onClick={calculate} className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2.5 rounded-lg transition-colors">Calculate</button>
+          {result !== null && (
+            <div className="bg-brand-50 border border-brand-200 rounded-xl p-5 text-center">
+              <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Result</div>
+              <div className="text-4xl font-bold text-brand-600">{result}</div>
             </div>
           )}
         </div>
       </div>
-    </ToolLayout>
+    </main>
   )
 }
