@@ -402,6 +402,26 @@
     "random-name-generator": {
       "title": "랜덤 이름 생성기",
       "description": "현실적인 이름, 판타지 캐릭터 이름, 비즈니스 이름을 대량으로 생성합니다"
+    },
+    "investment-calculator": {
+      "title": "투자 수익 계산기",
+      "description": "정기 월 납입금을 포함한 복리 성장을 계산하고 연도별 잔액 표를 확인합니다"
+    },
+    "discount-calculator": {
+      "title": "할인 계산기",
+      "description": "할인율로 판매 가격과 절약 금액을 계산하거나, 두 가격 사이의 할인율을 찾습니다"
+    },
+    "electricity-cost-calculator": {
+      "title": "전기 요금 계산기",
+      "description": "가전제품의 소비 전력과 일일 사용 시간을 입력해 전기 요금을 계산합니다"
+    },
+    "grade-calculator": {
+      "title": "성적 계산기",
+      "description": "여러 과제 점수로 최종 성적을 단순 평균 또는 가중 평균으로 계산합니다"
+    },
+    "water-intake-calculator": {
+      "title": "하루 수분 섭취량 계산기",
+      "description": "체중, 활동량, 기후를 기반으로 하루 권장 수분 섭취량을 계산합니다"
     }
   }
 }
