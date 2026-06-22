@@ -1,118 +1,107 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('aspect-ratio-calculator')!
+function gcd(a:number,b:number):number{return b===0?a:gcd(b,a%b)}
 
-function gcd(a: number, b: number): number { return b === 0 ? a : gcd(b, a % b) }
-
-function simplifyRatio(w: number, h: number): string {
-  if (!w || !h) return ''
-  const d = gcd(Math.round(w), Math.round(h))
-  return Math.round(w/d) + ':' + Math.round(h/d)
-}
-
-const PRESETS = [
-  ['16:9', 16, 9], ['4:3', 4, 3], ['1:1', 1, 1],
-  ['21:9', 21, 9], ['3:2', 3, 2], ['9:16', 9, 16],
+const PRESETS=[
+  {label:'16:9',w:16,h:9},{label:'4:3',w:4,h:3},{label:'1:1',w:1,h:1},
+  {label:'21:9',w:21,h:9},{label:'3:2',w:3,h:2},{label:'4:5',w:4,h:5},
+  {label:'9:16',w:9,h:16},{label:'2:1',w:2,h:1},
 ]
 
-export default function AspectRatioCalculatorPage({ params }: { params: { lang: string } }) {
-  const [w, setW] = useState('')
-  const [h, setH] = useState('')
-  const [targetW, setTargetW] = useState('')
-  const [targetH, setTargetH] = useState('')
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
+export default function AspectRatioCalculatorPage() {
+  const [mode, setMode] = useState<'ratio'|'dims'>('ratio')
+  const [rW, setRW] = useState('16')
+  const [rH, setRH] = useState('9')
+  const [dimW, setDimW] = useState('')
+  const [dimH, setDimH] = useState('')
+  const [fixW, setFixW] = useState('')
+  const [fixH, setFixH] = useState('')
 
-  function track() {
-    if (!tracked.current) { trackToolUsed('aspect-ratio-calculator'); tracked.current = true }
-  }
+  // From dimensions: compute ratio
+  const dw=parseInt(dimW), dh=parseInt(dimH)
+  const dimValid = !isNaN(dw)&&!isNaN(dh)&&dw>0&&dh>0
+  const dimGcd = dimValid ? gcd(dw,dh) : 1
+  const dimRatio = dimValid ? (dw/dimGcd)+':'+(dh/dimGcd) : ''
+  const dimDec = dimValid ? (dw/dh).toFixed(4) : ''
 
-  const ratio = simplifyRatio(parseFloat(w), parseFloat(h))
-  const decimal = (w && h) ? (parseFloat(w) / parseFloat(h)).toFixed(4) : ''
+  // From ratio: compute missing dimension
+  const rwN=parseInt(rW), rhN=parseInt(rH)
+  const ratioValid = !isNaN(rwN)&&!isNaN(rhN)&&rwN>0&&rhN>0
+  const fwN=parseFloat(fixW), fhN=parseFloat(fixH)
+  const calcH = ratioValid&&!isNaN(fwN)&&fwN>0 ? (fwN*rhN/rwN).toFixed(2) : ''
+  const calcW = ratioValid&&!isNaN(fhN)&&fhN>0 ? (fhN*rwN/rhN).toFixed(2) : ''
 
-  function calcTargetH() {
-    if (!w || !h || !targetW) return ''
-    return ((parseFloat(targetW) * parseFloat(h)) / parseFloat(w)).toFixed(0)
-  }
-  function calcTargetW() {
-    if (!w || !h || !targetH) return ''
-    return ((parseFloat(targetH) * parseFloat(w)) / parseFloat(h)).toFixed(0)
-  }
-
-  function applyPreset(pw: number, ph: number) {
-    setW(String(pw))
-    setH(String(ph))
-    setTargetW('')
-    setTargetH('')
-    track()
-  }
-
-  async function copy() {
-    await navigator.clipboard.writeText(ratio)
-    trackToolCopy('aspect-ratio-calculator')
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
+  function applyPreset(w:number,h:number){setRW(String(w));setRH(String(h))}
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-5">
-        <div className="flex flex-wrap gap-2">
-          {PRESETS.map(([label, pw, ph]) => (
-            <button key={label as string} onClick={() => applyPreset(pw as number, ph as number)}
-              className={'px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ' + (w===String(pw) && h===String(ph) ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-400')}>
-              {label}
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Aspect Ratio Calculator</h1>
+        <p className="text-gray-500 mb-6">Calculate aspect ratios, find missing dimensions and explore common presets</p>
+        <div className="flex gap-2 mb-6">
+          {([['ratio','From Ratio'],['dims','From Dimensions']] as const).map(([m,l])=>(
+            <button key={m} onClick={()=>setMode(m)}
+              className={'px-4 py-2 rounded-lg font-medium transition-colors '+(mode===m?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>
+              {l}
             </button>
           ))}
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Width</label>
-            <input type="number" value={w} onChange={e => { setW(e.target.value); track() }} placeholder="1920"
-              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Height</label>
-            <input type="number" value={h} onChange={e => { setH(e.target.value); track() }} placeholder="1080"
-              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-          </div>
-        </div>
-        {ratio && (
-          <div className="p-4 bg-brand-50 border border-brand-200 rounded-xl flex items-center justify-between">
+        {mode==='ratio' ? (
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
             <div>
-              <p className="text-xs text-brand-600 font-medium mb-0.5">Aspect Ratio</p>
-              <p className="text-3xl font-bold text-brand-800">{ratio}</p>
-              <p className="text-xs text-brand-500 mt-0.5">Decimal: {decimal}</p>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Aspect Ratio</label>
+              <div className="flex items-center gap-3">
+                <input type="number" value={rW} onChange={e=>setRW(e.target.value)} className="w-24 border border-gray-300 rounded-lg px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-brand-500" />
+                <span className="text-2xl font-bold text-gray-400">:</span>
+                <input type="number" value={rH} onChange={e=>setRH(e.target.value)} className="w-24 border border-gray-300 rounded-lg px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              </div>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {PRESETS.map(p=>(<button key={p.label} onClick={()=>applyPreset(p.w,p.h)} className="px-2.5 py-1 text-xs bg-gray-100 hover:bg-brand-50 hover:text-brand-600 rounded-lg">{p.label}</button>))}
+              </div>
             </div>
-            <button onClick={copy} className="px-3 py-1.5 bg-brand-600 text-white text-xs rounded-lg hover:bg-brand-700">
-              {copied ? '\u2713 Copied' : 'Copy'}
-            </button>
+            {ratioValid && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Known Width</label>
+                  <input type="number" value={fixW} onChange={e=>setFixW(e.target.value)} placeholder="e.g. 1920" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+                  {calcH && <p className="text-brand-600 font-semibold mt-2">\u2192 Height: {calcH}px</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Known Height</label>
+                  <input type="number" value={fixH} onChange={e=>setFixH(e.target.value)} placeholder="e.g. 1080" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+                  {calcW && <p className="text-brand-600 font-semibold mt-2">\u2192 Width: {calcW}px</p>}
+                </div>
+              </div>
+            )}
           </div>
-        )}
-        {w && h && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-700">Scale to new size</h3>
+        ) : (
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">New Width &#x2192; Height</label>
-                <input type="number" value={targetW} onChange={e => { setTargetH(''); setTargetW(e.target.value) }} placeholder="Enter width"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-                {targetW && <p className="mt-1 text-sm text-gray-600">Height: <strong>{calcTargetH()}px</strong></p>}
+                <label className="block text-sm font-medium text-gray-700 mb-1">Width (px)</label>
+                <input type="number" value={dimW} onChange={e=>setDimW(e.target.value)} placeholder="e.g. 1920" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">New Height &#x2192; Width</label>
-                <input type="number" value={targetH} onChange={e => { setTargetW(''); setTargetH(e.target.value) }} placeholder="Enter height"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-                {targetH && <p className="mt-1 text-sm text-gray-600">Width: <strong>{calcTargetW()}px</strong></p>}
+                <label className="block text-sm font-medium text-gray-700 mb-1">Height (px)</label>
+                <input type="number" value={dimH} onChange={e=>setDimH(e.target.value)} placeholder="e.g. 1080" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
               </div>
             </div>
+            {dimValid && (
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                <div className="bg-brand-50 border border-brand-200 rounded-xl p-4 text-center">
+                  <div className="text-3xl font-bold text-brand-600">{dimRatio}</div>
+                  <div className="text-sm text-gray-500 mt-1">Simplified Ratio</div>
+                </div>
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
+                  <div className="text-3xl font-bold text-gray-700">{dimDec}</div>
+                  <div className="text-sm text-gray-500 mt-1">Decimal Ratio</div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
-    </ToolLayout>
+    </main>
   )
 }
