@@ -477,6 +477,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'html-entities-encoder',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','entities','encode','decode','escape'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'string-padding-tool',category:'text',phase:1,isPro:false,isNew:true,tags:['string','pad','align','format','text'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'tax-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['tax','vat','gst','sales','calculator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'jwt-encoder',category:'developer',phase:1,isPro:false,isNew:true,tags:['jwt','token','encode','header','payload'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-box-shadow-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','box-shadow','shadow','generator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'color-palette-generator',category:'utility',phase:1,isPro:false,isNew:true,tags:['color','palette','shades','tints','complementary'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'cron-expression-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['cron','schedule','expression','unix','job'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'morse-code-translator',category:'utility',phase:1,isPro:false,isNew:true,tags:['morse','code','translate','audio','signal'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }

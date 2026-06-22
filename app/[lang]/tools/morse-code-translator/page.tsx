@@ -1,70 +1,93 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-const M:Record<string,string>={
-  A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',
-  '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.',
-  '.':'.-.-.-',',':'--..--','?':'..--..','!':'-.-.--','/':'-..-.',"'":'.----.','-':'-....-','(':'-.--.',')':'-.----','@':'.--.-.'}
-const RM=Object.fromEntries(Object.entries(M).map(([k,v])=>[v,k]))
-
-function encode(text:string):string{
-  return text.toUpperCase().split('').map(c=>c===' '?'/':(M[c]||'?')).join(' ')
-}
-function decode(code:string):string{
-  return code.split('/ ').map(w=>w.trim().split(' ').map(s=>RM[s]||'?').join('')).join(' ')
-}
-
-
 const tool = getToolBySlug('morse-code-translator')!
-
+const MORSE:Record<string,string>={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',1:'.----',2:'..---',3:'...--',4:'....-',5:'.....',6:'-....',7:'--...',8:'---..',9:'----.',0:'-----','.':'.-.-.-',',':'--..--','?':'..--..','/':'-..-.','-':'-....-','(':'-.--.',')':"-.--.-",' ':'/'}
+const R_MORSE:Record<string,string>=Object.fromEntries(Object.entries(MORSE).map(([k,v])=>[v,k]))
+function toMorse(t:string):string{return t.toUpperCase().split('').map(c=>MORSE[c]||'?').join(' ')}
+function fromMorse(m:string):string{
+  return m.split(' / ').map(w=>w.split(' ').map(c=>R_MORSE[c]||'?').join('')).join(' ')
+}
 export default function MorseCodeTranslatorPage() {
-  const [mode,setMode]=useState<'to'|'from'>('to')
-  const [text,setText]=useState('HELLO WORLD')
-  const [morseIn,setMorseIn]=useState('.... . .-.. .-.. --- / .-- --- .-. .-.. -..')
+  const [mode,setMode]=useState<'encode'|'decode'>('encode')
+  const [input,setInput]=useState('Hello World')
+  const [isPlaying,setIsPlaying]=useState(false)
+  const acRef=useRef<AudioContext|null>(null)
+  const output=mode==='encode'?toMorse(input):fromMorse(input)
   const [copied,setCopied]=useState(false)
-
-  const output=mode==='to'?encode(text):decode(morseIn)
-  function copy(){navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),2000)}
-
+  const copy=()=>{navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
+  const playMorse=async()=>{
+    if(isPlaying)return
+    const morseStr=mode==='encode'?toMorse(input):input
+    if(!acRef.current)acRef.current=new AudioContext()
+    const ac=acRef.current
+    setIsPlaying(true)
+    const dot=0.06,dash=dot*3,sym=dot,char=dot*3,word=dot*7
+    let t=ac.currentTime+0.1
+    for(const ch of morseStr){
+      if(ch==='.'||ch==='-'){
+        const osc=ac.createOscillator(),gain=ac.createGain()
+        osc.frequency.value=600;osc.connect(gain);gain.connect(ac.destination)
+        const dur=ch==='.'?dot:dash
+        gain.gain.setValueAtTime(0.3,t);osc.start(t);osc.stop(t+dur)
+        t+=dur+sym
+      }else if(ch===' '){t+=char-sym
+      }else if(ch==='/'){t+=word-sym}
+    }
+    setTimeout(()=>setIsPlaying(false),(t-ac.currentTime)*1000+100)
+  }
+  const morseForDisplay=mode==='encode'?output:input
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Morse Code Translator</h1>
-        <p className="text-gray-500 mb-8">Translate text to Morse code and Morse code back to text</p>
-        <div className="flex gap-2 mb-4">
-          <button onClick={()=>setMode('to')} className={'flex-1 py-2 rounded-lg font-medium transition-colors '+(mode==='to'?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>
-            Text \u2192 Morse
-          </button>
-          <button onClick={()=>setMode('from')} className={'flex-1 py-2 rounded-lg font-medium transition-colors '+(mode==='from'?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>
-            Morse \u2192 Text
-          </button>
+      <div className="max-w-lg mx-auto px-4 space-y-4">
+        <div className="flex rounded-lg overflow-hidden border border-gray-300">
+          <button onClick={()=>setMode('encode')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='encode'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Text to Morse</button>
+          <button onClick={()=>setMode('decode')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='decode'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Morse to Text</button>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-          {mode==='to'?(
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Text (letters, numbers, punctuation)</label>
-              <textarea value={text} onChange={e=>setText(e.target.value)} rows={4}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none uppercase" />
-            </div>
-          ):(
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Morse Code (use space between letters, ' / ' between words)</label>
-              <textarea value={morseIn} onChange={e=>setMorseIn(e.target.value)} rows={4}
-                placeholder=".... . .-.. .-.. --- / .-- --- .-. .-.. -.."
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
-            </div>
-          )}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-sm font-medium text-gray-700">Result</label>
-              <button onClick={copy} className="text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg">{copied?'\u2713 Copied':'Copy'}</button>
-            </div>
-            <div className="bg-gray-900 rounded-xl px-4 py-3 font-mono text-green-400 text-sm break-all min-h-[60px]">
-              {output}
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">Input</label>
+          <textarea value={input} onChange={e=>setInput(e.target.value)} rows={3}
+            placeholder={mode==='encode'?'Type text...':'... --- ... (use space between chars, / between words)'}
+            className="w-full rounded border border-gray-300 px-3 py-2 font-mono resize-none"/></div>
+        <div>
+          <div className="flex justify-between mb-1">
+            <label className="text-sm font-medium text-gray-700">Output</label>
+            <div className="flex gap-2">
+              <button onClick={playMorse} disabled={isPlaying} className={'px-3 py-1 rounded text-xs font-medium border transition '+(isPlaying?'bg-gray-100 text-gray-400':'border-green-300 text-green-700 hover:bg-green-50')}>
+                {isPlaying?'Playing...':'Play Audio'}
+              </button>
+              <button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?'Copied!':'Copy'}</button>
             </div>
           </div>
+          <textarea readOnly value={output} rows={3} className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono resize-none text-sm"/>
+        </div>
+        {morseForDisplay&&(
+          <div className="bg-gray-900 rounded-xl px-4 py-3">
+            <p className="text-xs text-gray-400 mb-2">Visual representation</p>
+            <div className="flex flex-wrap gap-1.5 items-center">
+              {morseForDisplay.split(' ').map((sym,i)=>
+                sym==='/'?(
+                  <span key={i} className="text-gray-500 text-xs mx-1">[space]</span>
+                ):(
+                  <div key={i} className="flex gap-0.5">
+                    {sym.split('').map((c,j)=>
+                      c==='.'?<div key={j} className="w-2 h-2 bg-yellow-400 rounded-full"/>
+                       :c==='-'?<div key={j} className="w-6 h-2 bg-yellow-400 rounded"/>
+                       :null
+                    )}
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        )}
+        <div className="grid grid-cols-4 gap-1.5 text-xs">
+          {Object.entries(MORSE).slice(0,26).map(([k,v])=>(
+            <div key={k} className="flex items-center gap-1.5 bg-gray-50 rounded px-1.5 py-1">
+              <span className="font-bold text-gray-700 w-4">{k}</span>
+              <span className="font-mono text-gray-500">{v}</span>
+            </div>
+          ))}
         </div>
       </div>
     </ToolLayout>
