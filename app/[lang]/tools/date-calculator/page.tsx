@@ -1,168 +1,93 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('date-calculator')!
+function daysBetween(a:Date,b:Date):number{return Math.abs(Math.floor((b.getTime()-a.getTime())/86400000))}
+function addDays(d:Date,n:number):Date{const r=new Date(d);r.setDate(r.getDate()+n);return r}
+function fmtDate(d:Date):string{return d.toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'long',day:'numeric'})}
 
-function daysBetween(a: Date, b: Date): number {
-  return Math.round((b.getTime()-a.getTime())/(1000*60*60*24))
-}
+export default function DateCalculatorPage() {
+  const [mode,setMode]=useState<'diff'|'add'>('diff')
+  const [d1,setD1]=useState('')
+  const [d2,setD2]=useState('')
+  const [days,setDays]=useState('')
+  const [sign,setSign]=useState<1|-1>(1)
 
-function addDuration(date: Date, years: number, months: number, days: number): Date {
-  const d = new Date(date)
-  d.setFullYear(d.getFullYear()+years, d.getMonth()+months, d.getDate()+days)
-  return d
-}
+  const date1=d1?new Date(d1):null
+  const date2=d2?new Date(d2):null
+  const diffDays=date1&&date2?daysBetween(date1,date2):null
+  const diffWeeks=diffDays!==null?Math.floor(diffDays/7):null
+  const diffMonths=date1&&date2?Math.abs((date2.getFullYear()-date1.getFullYear())*12+(date2.getMonth()-date1.getMonth())):null
+  const diffYears=date1&&date2?Math.abs(date2.getFullYear()-date1.getFullYear()):null
 
-function getAge(birth: Date, now: Date): { years:number; months:number; days:number } {
-  let years = now.getFullYear()-birth.getFullYear()
-  let months = now.getMonth()-birth.getMonth()
-  let days = now.getDate()-birth.getDate()
-  if (days < 0) { months--; const prevMonth=new Date(now.getFullYear(),now.getMonth(),0); days+=prevMonth.getDate() }
-  if (months < 0) { years--; months+=12 }
-  return { years, months, days }
-}
-
-function formatDate(d: Date): string {
-  return d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
-}
-
-export default function DateCalculatorPage({ params }: { params: { lang: string } }) {
-  const todayStr = new Date().toISOString().slice(0,10)
-  const [tab, setTab] = useState<'diff'|'add'|'age'>('diff')
-  const [date1, setDate1] = useState(todayStr)
-  const [date2, setDate2] = useState(() => { const d=new Date(); d.setDate(d.getDate()+30); return d.toISOString().slice(0,10) })
-  const [addDate, setAddDate] = useState(todayStr)
-  const [addY, setAddY] = useState(0)
-  const [addM, setAddM] = useState(3)
-  const [addD, setAddD] = useState(0)
-  const [birthDate, setBirthDate] = useState('1990-01-01')
-  const [copied, setCopied] = useState<string|null>(null)
-  const tracked = useRef(false)
-
-  function track() { if (!tracked.current) { trackToolUsed('date-calculator'); tracked.current = true } }
-
-  async function copy(val:string,id:string) {
-    await navigator.clipboard.writeText(val)
-    trackToolCopy('date-calculator')
-    setCopied(id); setTimeout(()=>setCopied(null),1500)
-  }
-
-  const d1 = new Date(date1), d2 = new Date(date2)
-  const diffDays = !isNaN(d1.getTime())&&!isNaN(d2.getTime()) ? daysBetween(d1,d2) : 0
-  const diffAbs = Math.abs(diffDays)
-  
-  const addResult = !isNaN(new Date(addDate).getTime()) ? addDuration(new Date(addDate),addY,addM,addD) : null
-  
-  const birthD = new Date(birthDate)
-  const age = !isNaN(birthD.getTime()) ? getAge(birthD,new Date()) : null
-  const nextBirthday = age ? (() => {
-    const nb=new Date(new Date().getFullYear(),birthD.getMonth(),birthD.getDate())
-    if (nb<=new Date()) nb.setFullYear(nb.getFullYear()+1)
-    return nb
-  })() : null
+  const baseDate=d1?new Date(d1):null
+  const daysNum=parseInt(days)
+  const resultDate=baseDate&&!isNaN(daysNum)?addDays(baseDate,daysNum*sign):null
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="flex gap-2">
-          {([['diff','Date Difference'],['add','Add / Subtract'],['age','Age Calculator']] as const).map(([t,label])=>(
-            <button key={t} onClick={()=>{setTab(t);track()}}
-              className={'px-3 py-1.5 rounded-lg text-sm transition-colors ' + (tab===t?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {label}
-            </button>
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Date Calculator</h1>
+        <p className="text-gray-500 mb-8">Calculate days between two dates or add/subtract days from a date</p>
+        <div className="flex gap-2 mb-6">
+          {([['diff','Date Difference'],['add','Add/Subtract Days']] as const).map(([m,l])=>(
+            <button key={m} onClick={()=>setMode(m)} className={'px-4 py-2 rounded-lg font-medium transition-colors '+(mode===m?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>{l}</button>
           ))}
         </div>
-
-        {tab==='diff' && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              {[['Start date',date1,setDate1],['End date',date2,setDate2]].map(([label,val,set])=>(
-                <div key={label as string}>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">{label as string}</label>
-                  <input type="date" value={val as string} onChange={e=>{(set as (v:string)=>void)(e.target.value);track()}}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-                </div>
-              ))}
+        {mode==='diff'?(
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                <input type="date" value={d1} onChange={e=>setD1(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <input type="date" value={d2} onChange={e=>setD2(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              </div>
             </div>
-            {!isNaN(d1.getTime())&&!isNaN(d2.getTime()) && (
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { label:'Days', val:String(diffAbs) },
-                  { label:'Weeks', val:(diffAbs/7).toFixed(2) },
-                  { label:'Months (approx)', val:(diffAbs/30.44).toFixed(2) },
-                  { label:'Years (approx)', val:(diffAbs/365.25).toFixed(2) },
-                  { label:'Hours', val:(diffAbs*24).toLocaleString() },
-                  { label:'Direction', val:diffDays>=0?'Future':'Past' },
-                ].map(row=>(
-                  <div key={row.label} onClick={()=>copy(row.val,row.label)}
-                    className="p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:border-brand-300 transition-colors">
-                    <p className="text-xs text-gray-500">{row.label}</p>
-                    <p className="text-base font-semibold text-gray-800">{row.val}</p>
-                    {copied===row.label && <p className="text-xs text-brand-400">\u2713</p>}
+            {diffDays!==null&&(
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                {([['Days',diffDays],['Weeks',diffWeeks!],['Months',diffMonths!],['Years',diffYears!]] as [string,number][]).map(([l,v])=>(
+                  <div key={l} className="bg-brand-50 border border-brand-100 rounded-xl p-3 text-center">
+                    <div className="text-2xl font-bold text-brand-600">{v.toLocaleString()}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{l}</div>
                   </div>
                 ))}
               </div>
             )}
           </div>
-        )}
-
-        {tab==='add' && (
-          <div className="space-y-3">
+        ):(
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Base date</label>
-              <input type="date" value={addDate} onChange={e=>{setAddDate(e.target.value);track()}}
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Base Date</label>
+              <input type="date" value={d1} onChange={e=>setD1(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
-            <div className="grid grid-cols-3 gap-3">
-              {[['Years',addY,setAddY],['Months',addM,setAddM],['Days',addD,setAddD]].map(([label,val,set])=>(
-                <div key={label as string}>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">{label as string}</label>
-                  <input type="number" value={val as number} onChange={e=>{(set as (v:number)=>void)(parseInt(e.target.value)||0);track()}}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            <div className="flex gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Operation</label>
+                <div className="flex gap-1">
+                  {([1,'-1'] as any[]).map((v,i)=>(
+                    <button key={i} onClick={()=>setSign(v===1?1:-1)}
+                      className={'px-4 py-2 rounded-lg font-bold text-lg transition-colors '+(sign===(v===1?1:-1)?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>
+                      {v===1?'+':'\u2212'}
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </div>
-            {addResult && (
-              <div onClick={()=>copy(formatDate(addResult),'addResult')}
-                className="p-4 bg-brand-50 border border-brand-200 rounded-xl cursor-pointer hover:border-brand-400 transition-colors">
-                <p className="text-xs text-gray-500 mb-1">Result</p>
-                <p className="text-lg font-semibold text-brand-700">{formatDate(addResult)}</p>
-                <p className="text-xs text-gray-400">{addResult.toISOString().slice(0,10)}</p>
-                {copied==='addResult' && <p className="text-xs text-brand-400">\u2713 Copied</p>}
               </div>
-            )}
-          </div>
-        )}
-
-        {tab==='age' && (
-          <div className="space-y-3">
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Date of birth</label>
-              <input type="date" value={birthDate} onChange={e=>{setBirthDate(e.target.value);track()}}
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Number of Days</label>
+                <input type="number" value={days} onChange={e=>setDays(e.target.value)} placeholder="e.g. 30" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              </div>
             </div>
-            {age && (
-              <div className="space-y-2">
-                <div className="p-4 bg-brand-50 border border-brand-200 rounded-xl text-center">
-                  <p className="text-3xl font-bold text-brand-700">{age.years}</p>
-                  <p className="text-xs text-gray-500">years old</p>
-                  <p className="text-sm text-gray-600 mt-1">{age.months} months, {age.days} days</p>
-                </div>
-                {nextBirthday && (
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm">
-                    <span className="text-gray-500">Next birthday: </span>
-                    <span className="font-medium">{formatDate(nextBirthday)}</span>
-                    <span className="text-gray-400 ml-2">({daysBetween(new Date(),nextBirthday)} days)</span>
-                  </div>
-                )}
+            {resultDate&&(
+              <div className="bg-brand-50 border border-brand-200 rounded-xl p-4 text-center">
+                <div className="text-sm text-gray-500 mb-1">{sign>0?'After':'Before'} {days} day{days!=='1'?'s':''}</div>
+                <div className="text-xl font-bold text-brand-700">{fmtDate(resultDate)}</div>
               </div>
             )}
           </div>
         )}
       </div>
-    </ToolLayout>
+    </main>
   )
 }
