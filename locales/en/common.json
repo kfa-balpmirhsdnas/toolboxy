@@ -91,7 +91,7 @@
     "cron-expression-parser": "Parse and understand cron expressions. See a plain-English description and the next scheduled run times.",
     "regex-tester": {
       "title": "Regex Tester",
-      "description": "Test and debug regular expressions in real time with match highlighting and group details"
+      "description": "Test regular expressions with real-time match highlighting — includes common patterns for email, URL, phone, and IPv4"
     },
     "unit-converter": {
       "title": "Unit Converter",
@@ -113,7 +113,7 @@
     "image-crop": "Crop images by specifying pixel coordinates. No upload required ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ runs in browser.",
     "html-entity-encoder": {
       "title": "HTML Entity Encoder",
-      "description": "Encode special characters to HTML entities and decode HTML entities back to plain text"
+      "description": "Encode or decode HTML entities and special characters — includes a reference table of common entities"
     },
     "number-base-converter": {
       "title": "Number Base Converter",
@@ -153,7 +153,7 @@
     "string-length-counter": "Count characters, words, bytes, lines, and sentences in any text. Click any stat to copy.",
     "temperature-converter": {
       "title": "Temperature Converter",
-      "description": "Convert between Celsius, Fahrenheit and Kelvin with a quick-reference table"
+      "description": "Convert between Celsius, Fahrenheit, Kelvin, and Rankine with reference points for common temperatures"
     },
     "morse-code-converter": "Convert text to Morse code and Morse code back to text. Includes quick reference chart.",
     "countdown-timer": {
@@ -293,7 +293,7 @@
     },
     "loan-calculator": {
       "title": "Loan Calculator",
-      "description": "Calculate monthly loan payments, total interest and amortization schedule for any loan or mortgage"
+      "description": "Calculate monthly payments, total interest, and view a full year-by-year amortization schedule for any loan"
     },
     "currency-converter": "Convert between 40+ currencies using approximate exchange rates. Quick compare panel and swap button included.",
     "color-contrast-checker": "Check WCAG 2.1 color contrast ratios for text and UI accessibility compliance.",
@@ -476,6 +476,10 @@
     "passphrase-strength": {
       "title": "Passphrase Strength",
       "description": "Check passphrase strength with entropy calculation and crack time estimate — 100% local, no data sent anywhere"
+    },
+    "url-encoder": {
+      "title": "URL Encoder / Decoder",
+      "description": "Encode or decode URL strings — supports both encodeURI and encodeURIComponent modes with common encoding reference"
     }
   }
 }
