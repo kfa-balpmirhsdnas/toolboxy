@@ -126,7 +126,10 @@
     "json-minifier": "Minify JSON by removing whitespace and formatting. Shows byte savings and allows download.",
     "text-reverser": "Reverse text by characters, words, or lines. Simple and fast text manipulation tool.",
     "color-gradient-generator": "Generate CSS gradients with custom colors, direction, and type. Includes preset themes.",
-    "roman-numeral-converter": "Convert between Arabic numbers and Roman numerals (1–3999) instantly.",
+    "roman-numeral-converter": {
+      "title": "Roman Numeral Converter",
+      "description": "Convert numbers to Roman numerals and Roman numerals back to numbers for values from 1 to 3999"
+    },
     "lorem-ipsum-generator": "Generate placeholder Lorem Ipsum text — paragraphs, sentences, or words.",
     "css-box-shadow-generator": "Visually create CSS box shadows with sliders for offset, blur, spread, color, and opacity.",
     "string-length-counter": "Count characters, words, bytes, lines, and sentences in any text. Click any stat to copy.",
@@ -235,7 +238,10 @@
     "css-box-model-visualizer": "Visualize and configure CSS box model (margin, border, padding, content). Supports content-box and border-box. Copy the generated CSS.",
     "open-graph-preview": "Preview how your page looks on Facebook, Twitter, and LinkedIn when shared. Generate the Open Graph and Twitter meta tags.",
     "json-to-yaml": "Convert JSON to YAML format. Handles nested objects, arrays, strings with special characters, and boolean/null values correctly.",
-    "morse-code-translator": "Translate text to Morse code and back — with real-time audio playback.",
+    "morse-code-translator": {
+      "title": "Morse Code Translator",
+      "description": "Translate text to Morse code and decode Morse code back to readable text instantly"
+    },
     "html-previewer": "Live HTML editor with real-time preview. Write HTML, CSS, and JavaScript and see the result instantly in a sandboxed iframe.",
     "html-minifier": "Minify HTML by removing comments, collapsing whitespace, and optionally minifying inline CSS and JavaScript. Shows bytes saved.",
     "pomodoro-timer": "A focused Pomodoro timer with configurable work, short break, and long break intervals. Tracks session count with visual progress ring.",
@@ -312,6 +318,18 @@
     "duplicate-line-remover": {
       "title": "Duplicate Line Remover",
       "description": "Remove duplicate lines from text instantly with case-sensitive or case-insensitive matching"
+    },
+    "pixel-to-rem-converter": {
+      "title": "Pixel to REM Converter",
+      "description": "Convert between px, rem, and em CSS units with a configurable base font size and a common values reference table"
+    },
+    "case-converter": {
+      "title": "Case Converter",
+      "description": "Convert text between camelCase, PascalCase, snake_case, kebab-case, SCREAMING_SNAKE, Title Case, and more"
+    },
+    "nato-alphabet": {
+      "title": "NATO Phonetic Alphabet",
+      "description": "Convert any text to NATO phonetic alphabet spelling — Alpha, Bravo, Charlie — with a visual character-by-character breakdown"
     }
   }
 }
