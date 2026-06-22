@@ -1,3 +1,4 @@
+// Build: 2026-06-22T16:27:16.327Z
 import createNextIntlPlugin from 'next-intl/plugin'
 
 const withNextIntl = createNextIntlPlugin('./lib/utils/i18n.ts')
