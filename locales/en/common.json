@@ -154,6 +154,11 @@
     "text-line-numberer": "Add line numbers to text with configurable start, step, separator, zero-padding, and empty-line handling.",
     "css-unit-converter": "Convert between CSS units: px, rem, em, pt, vw, vh. Configurable base font size and viewport dimensions.",
     "text-diff-inline": "Compare two texts and highlight inline differences by word or character, with addition and deletion counts.",
-    "color-palette-extractor": "Upload any image and extract its dominant color palette using k-means clustering. Click to copy hex codes."
+    "color-palette-extractor": "Upload any image and extract its dominant color palette using k-means clustering. Click to copy hex codes.",
+    "json-to-typescript": "Generate TypeScript interfaces from JSON automatically. Supports nested objects, arrays, and optional fields.",
+    "mime-type-checker": "Look up MIME types by file extension or type string. Covers images, video, audio, documents, fonts, and more.",
+    "text-encryptor": "Apply classical ciphers to text: ROT13, Caesar (any shift), Atbash, and Vigenère with a custom key.",
+    "svg-viewer": "Preview SVG files with configurable backgrounds. Minify SVG to remove comments and whitespace, with download.",
+    "json-path-tester": "Test JSONPath expressions against JSON data. Supports dot notation, array slicing, wildcards, and recursive descent."
   }
 }
