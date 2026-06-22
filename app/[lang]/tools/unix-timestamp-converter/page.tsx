@@ -2,71 +2,79 @@
 import { useState, useEffect } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-
 const tool = getToolBySlug('unix-timestamp-converter')!
-
+const FORMATS=['local','utc','iso','date-only','time-only']
+function fmtDate(d:Date,fmt:string):string{
+  if(fmt==='local')return d.toLocaleString()
+  if(fmt==='utc')return d.toUTCString()
+  if(fmt==='iso')return d.toISOString()
+  if(fmt==='date-only')return d.toLocaleDateString()
+  if(fmt==='time-only')return d.toLocaleTimeString()
+  return d.toString()
+}
 export default function UnixTimestampConverterPage() {
-  const [ts, setTs] = useState('')
-  const [dateInput, setDateInput] = useState('')
-  const [now, setNow] = useState(Date.now())
-
-  useEffect(()=>{
-    const id=setInterval(()=>setNow(Date.now()),1000)
-    return ()=>clearInterval(id)
-  },[])
-
-  const tsNum = parseInt(ts)
-  const tsValid = !isNaN(tsNum) && tsNum >= 0
-  // Auto-detect ms vs s
-  const tsMs = tsValid ? (tsNum > 1e10 ? tsNum : tsNum*1000) : 0
-  const tsDate = tsValid ? new Date(tsMs) : null
-
-  const dateNum = dateInput ? new Date(dateInput).getTime() : NaN
-  const dateValid = !isNaN(dateNum)
-  const dateTs = dateValid ? Math.floor(dateNum/1000) : null
-
-  function useNow(){setTs(String(Math.floor(Date.now()/1000)))}
-
+  const [ts,setTs]=useState(()=>Math.floor(Date.now()/1000).toString())
+  const [unit,setUnit]=useState<'s'|'ms'>('s')
+  const [now,setNow]=useState(Math.floor(Date.now()/1000))
+  const [dateInput,setDateInput]=useState('')
+  const [copied,setCopied]=useState('')
+  useEffect(()=>{const id=setInterval(()=>setNow(Math.floor(Date.now()/1000)),1000);return()=>clearInterval(id)},[])
+  const tsNum=parseFloat(ts)||0
+  const ms=unit==='s'?tsNum*1000:tsNum
+  const date=new Date(ms)
+  const valid=!isNaN(date.getTime())&&ts!==''
+  const copy=(v:string)=>{navigator.clipboard.writeText(v);setCopied(v);setTimeout(()=>setCopied(''),1200)}
+  const dateToTs=()=>{if(!dateInput)return;const d=new Date(dateInput);if(!isNaN(d.getTime())){setTs(unit==='s'?Math.floor(d.getTime()/1000).toString():d.getTime().toString())}}
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Unix Timestamp Converter</h1>
-        <p className="text-gray-500 mb-8">Convert Unix timestamps to human-readable dates and vice versa</p>
-
-        <div className="bg-brand-50 border border-brand-200 rounded-xl px-4 py-3 mb-6 flex items-center justify-between">
-          <div>
-            <div className="text-xs text-brand-600 font-medium">Current Unix Timestamp</div>
-            <div className="font-mono text-xl font-bold text-brand-700">{Math.floor(now/1000)}</div>
-          </div>
-          <button onClick={useNow} className="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-sm font-medium">Use This</button>
+      <div className="max-w-md mx-auto px-4 space-y-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center justify-between">
+          <div><p className="text-xs text-blue-600 font-medium">Current Unix timestamp</p>
+            <p className="font-mono font-bold text-blue-800 text-xl">{now}</p></div>
+          <button onClick={()=>setTs(now.toString())} className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700">Use now</button>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-3">
-            <h2 className="font-semibold text-gray-800">Timestamp \u2192 Date</h2>
-            <input type="text" value={ts} onChange={e=>setTs(e.target.value)} placeholder="e.g. 1700000000"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            {tsDate&&(
-              <div className="space-y-1.5 text-sm">
-                <div className="flex justify-between"><span className="text-gray-500">Local</span><span className="font-medium">{tsDate.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">UTC</span><span className="font-medium">{tsDate.toUTCString()}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">ISO 8601</span><span className="font-medium font-mono text-xs">{tsDate.toISOString()}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Milliseconds</span><span className="font-mono">{tsMs}</span></div>
-              </div>
-            )}
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">Timestamp</label>
+          <div className="flex gap-2">
+            <input value={ts} onChange={e=>setTs(e.target.value)}
+              className={'flex-1 rounded-xl border px-3 py-2.5 font-mono text-lg font-bold focus:outline-none '+(valid?'border-gray-300 focus:border-blue-400':'border-red-300 bg-red-50')}
+              placeholder="Unix timestamp"/>
+            <div className="flex rounded-xl overflow-hidden border border-gray-300">
+              {(['s','ms'] as const).map(u=>(
+                <button key={u} onClick={()=>setUnit(u)}
+                  className={'px-3 text-sm font-medium transition '+(unit===u?'bg-blue-600 text-white':'bg-white text-gray-600 hover:bg-gray-50')}>{u}</button>
+              ))}
+            </div>
           </div>
-          <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-3">
-            <h2 className="font-semibold text-gray-800">Date \u2192 Timestamp</h2>
+        </div>
+        {valid&&(
+          <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+            {FORMATS.map((f,i)=>{
+              const v=fmtDate(date,f)
+              return(
+                <div key={f} className={'flex items-center justify-between px-4 py-2.5 '+(i%2===0?'bg-white':'bg-gray-50')}>
+                  <span className="text-xs font-medium text-gray-500 w-20 capitalize">{f.replace('-',' ')}</span>
+                  <span className="flex-1 font-mono text-xs text-gray-800 mx-2">{v}</span>
+                  <button onClick={()=>copy(v)} className="text-xs text-blue-500 hover:text-blue-700">{copied===v?'✓':'Copy'}</button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Date/time to timestamp</label>
+          <div className="flex gap-2">
             <input type="datetime-local" value={dateInput} onChange={e=>setDateInput(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            {dateValid&&(
-              <div className="space-y-1.5 text-sm">
-                <div className="flex justify-between"><span className="text-gray-500">Unix (seconds)</span><span className="font-mono font-bold text-brand-600">{dateTs}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Milliseconds</span><span className="font-mono">{dateNum}</span></div>
-              </div>
-            )}
+              className="flex-1 rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-blue-400"/>
+            <button onClick={dateToTs} className="px-3 py-2 rounded-xl bg-blue-600 text-white text-sm hover:bg-blue-700">Convert</button>
           </div>
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-gray-600 mb-2">Notable timestamps</p>
+          {[[0,'Unix epoch: Jan 1, 1970'],[1000000000,'Sept 9, 2001 01:46:40'],[1234567890,'Feb 13, 2009'],[2147483647,'Y2K38: Jan 19, 2038']].map(([t,l])=>(
+            <button key={t} onClick={()=>setTs(t.toString())} className="w-full text-left flex justify-between px-3 py-1.5 rounded-lg hover:bg-gray-100 text-xs text-gray-600 mb-0.5">
+              <span className="font-mono">{t}</span><span>{l}</span>
+            </button>
+          ))}
         </div>
       </div>
     </ToolLayout>

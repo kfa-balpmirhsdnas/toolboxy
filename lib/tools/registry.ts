@@ -562,6 +562,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'speed-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['speed','distance','time','calculate','travel'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'ip-address-info',category:'developer',phase:1,isPro:false,isNew:true,tags:['ip','address','network','subnet','lookup'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'data-storage-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['data','storage','gb','mb','kb','byte'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'coin-flip',category:'utility',phase:1,isPro:false,isNew:true,tags:['coin','flip','random','heads','tails'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'cron-expression-parser',category:'developer',phase:1,isPro:false,isNew:true,tags:['cron','expression','schedule','parse','job'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'unix-timestamp-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['unix','timestamp','epoch','time','convert'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'number-to-words',category:'text',phase:1,isPro:false,isNew:true,tags:['number','words','english','convert','spell'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'html-entity-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['html','entity','encode','decode','escape'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
