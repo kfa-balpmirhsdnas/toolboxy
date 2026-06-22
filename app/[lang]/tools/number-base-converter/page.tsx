@@ -2,73 +2,59 @@
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-const BASES = [
-  { label: 'Binary', base: 2, prefix: '0b' },
-  { label: 'Octal', base: 8, prefix: '0o' },
-  { label: 'Decimal', base: 10, prefix: '' },
-  { label: 'Hexadecimal', base: 16, prefix: '0x' },
-]
-
-
 const tool = getToolBySlug('number-base-converter')!
-
+type Base={label:string;base:number;prefix:string;pattern:RegExp}
+const BASES:Base[]=[
+  {label:'Binary',base:2,prefix:'0b',pattern:/^[01]*$/},
+  {label:'Octal',base:8,prefix:'0o',pattern:/^[0-7]*$/},
+  {label:'Decimal',base:10,prefix:'',pattern:/^[0-9]*$/},
+  {label:'Hexadecimal',base:16,prefix:'0x',pattern:/^[0-9a-fA-F]*$/},
+]
 export default function NumberBaseConverterPage() {
-  const [input, setInput] = useState('')
-  const [fromBase, setFromBase] = useState(10)
-
-  let decimal: number | null = null
-  let error = ''
-  try {
-    if (input.trim()) {
-      decimal = parseInt(input.trim().replace(/^0[bBoOxX]/, ''), fromBase)
-      if (isNaN(decimal)) error = 'Invalid number for selected base'
-    }
-  } catch { error = 'Invalid input' }
-
+  const [values,setValues]=useState<Record<number,string>>({2:'',8:'',10:'',16:''})
+  const [activeBase,setActiveBase]=useState(10)
+  const update=(base:number,val:string)=>{
+    if(!BASES.find(b=>b.base===base)?.pattern.test(val))return
+    setActiveBase(base)
+    const dec=val?parseInt(val,base):NaN
+    const newVals:Record<number,string>={}
+    BASES.forEach(b=>{newVals[b.base]=val&&!isNaN(dec)?dec.toString(b.base).toUpperCase():b.base===base?val:''})
+    setValues(newVals)
+  }
+  const dec=parseInt(values[10]||'0',10)
+  const PRESETS=[0,1,7,8,9,10,15,16,31,32,63,64,127,128,255,256,1024,65535]
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Number Base Converter</h1>
-        <p className="text-gray-500 mb-8">Convert numbers between binary, octal, decimal, and hexadecimal.</p>
-        <div className="bg-white rounded-xl shadow p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Input Base</label>
-            <div className="flex gap-2 flex-wrap">
-              {BASES.map(b => (
-                <button key={b.base} onClick={() => setFromBase(b.base)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${fromBase===b.base ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
-                  {b.label}
-                </button>
-              ))}
+      <div className="max-w-md mx-auto px-4 space-y-4">
+        {BASES.map(b=>(
+          <div key={b.base}>
+            <div className="flex justify-between mb-1">
+              <label className="text-sm font-medium text-gray-700">{b.label} (base {b.base})</label>
+              <span className="text-xs text-gray-400 font-mono">{b.prefix}</span>
             </div>
+            <input value={values[b.base]} onChange={e=>update(b.base,e.target.value)}
+              placeholder={`Enter ${b.label.toLowerCase()} number...`}
+              className={`w-full rounded border px-3 py-2.5 font-mono text-sm transition ${activeBase===b.base?'border-blue-500 bg-blue-50':'border-gray-300'}`}
+              spellCheck={false}/>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Input ({BASES.find(b => b.base === fromBase)?.label})
-            </label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 rounded-lg p-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder={fromBase === 2 ? '1010' : fromBase === 8 ? '17' : fromBase === 16 ? 'FF' : '42'}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-            />
-            {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+        ))}
+        {!isNaN(dec)&&dec>=0&&<div className="grid grid-cols-2 gap-2 text-sm">
+          <div className="bg-gray-50 rounded-lg p-2.5 text-center">
+            <p className="text-xs text-gray-500">Bits needed</p>
+            <p className="font-bold text-gray-800 mt-0.5">{dec?Math.floor(Math.log2(dec))+1:1}</p>
           </div>
-          {decimal !== null && !error && (
-            <div className="space-y-2">
-              {BASES.filter(b => b.base !== fromBase).map(b => (
-                <div key={b.base} className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
-                  <span className="text-sm text-gray-500 w-28">{b.label}</span>
-                  <span className="font-mono text-sm text-gray-900 flex-1">{b.prefix}{decimal!.toString(b.base).toUpperCase()}</span>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(decimal!.toString(b.base).toUpperCase())}
-                    className="text-xs text-blue-600 hover:text-blue-800">Copy</button>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="bg-gray-50 rounded-lg p-2.5 text-center">
+            <p className="text-xs text-gray-500">Is power of 2</p>
+            <p className="font-bold mt-0.5">{dec>0&&(dec&(dec-1))===0?'✅ Yes':'❌ No'}</p>
+          </div>
+        </div>}
+        <div>
+          <p className="text-xs text-gray-500 mb-2">Quick values</p>
+          <div className="flex flex-wrap gap-1.5">
+            {PRESETS.map(n=>(
+              <button key={n} onClick={()=>update(10,String(n))} className="px-2 py-1 rounded border border-gray-200 text-xs hover:bg-gray-50">{n}</button>
+            ))}
+          </div>
         </div>
       </div>
     </ToolLayout>

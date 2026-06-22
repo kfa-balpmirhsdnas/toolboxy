@@ -437,6 +437,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'word-frequency-counter',category:'text',phase:1,isPro:false,isNew:true,tags:['word','frequency','count','text','analysis'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'css-animation-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','animation','keyframe','generator'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'markdown-table-generator',category:'text',phase:1,isPro:false,isNew:true,tags:['markdown','table','generator','format'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'password-strength-checker',category:'utility',phase:1,isPro:false,isNew:true,tags:['password','strength','security','checker'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'roman-numeral-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['roman','numeral','convert','number'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-to-morse-code',category:'text',phase:1,isPro:false,isNew:true,tags:['morse','code','text','convert'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'number-base-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['binary','hex','octal','decimal','base','convert'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'stopwatch-timer',category:'utility',phase:1,isPro:false,isNew:true,tags:['stopwatch','timer','laps','time'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
