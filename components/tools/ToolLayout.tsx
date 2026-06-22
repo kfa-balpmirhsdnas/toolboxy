@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { CATEGORY_META, type ToolMeta } from '@/lib/tools/registry'
 import ToolTracker from '@/components/tools/ToolTracker'
+import UsageGate from '@/components/tools/UsageGate'
 
 function slugToName(slug: string): string {
   return slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
@@ -48,6 +49,9 @@ export default function ToolLayout({ tool, lang, children }: ToolLayoutProps) {
           {tool.tags.slice(0, 5).join(' · ')}
         </p>
       </div>
+
+      {/* Usage limit banner (logged-in users only, near/at limit) */}
+      <UsageGate slug={tool.slug} lang={lang} />
 
       {/* Tool Content */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
