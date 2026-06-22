@@ -164,6 +164,11 @@
     "date-calculator": "Calculate the difference between two dates, add or subtract durations, and compute age from a birth date.",
     "hex-dump-viewer": "View hex dump of any text or hex input. Shows offset, hex bytes, and ASCII representation in classic dump format.",
     "text-sort-by-length": "Sort lines of text by character or word count, alphabetically, descending, or randomly. Optionally show lengths.",
-    "pixel-ruler": "On-screen ruler for measuring distances in pixels, centimeters, or inches. Auto-detects screen DPI."
+    "pixel-ruler": "On-screen ruler for measuring distances in pixels, centimeters, or inches. Auto-detects screen DPI.",
+    "curl-builder": "Build cURL commands visually. Set method, URL, query params, headers, body, and flags, then copy the generated command.",
+    "chmod-calculator": "Calculate Unix file permissions using checkboxes. Shows octal, symbolic, and chmod command output.",
+    "git-cheat-sheet": "Quick reference for essential Git commands, organized by category with search and click-to-copy support.",
+    "json-beautifier": "Beautify and format JSON with configurable indentation and syntax highlighting. Download formatted output.",
+    "regex-library": "Curated library of useful regex patterns for email, URL, IP, date, numbers, and more. Test against your input."
   }
 }
