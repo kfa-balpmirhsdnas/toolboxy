@@ -2,100 +2,74 @@
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-
-
 const tool = getToolBySlug('scientific-calculator')!
-
 export default function ScientificCalculatorPage() {
-  const [display, setDisplay] = useState('0')
-  const [expr, setExpr] = useState('')
-  const [history, setHistory] = useState<string[]>([])
-  const [isError, setIsError] = useState(false)
-  const [isDeg, setIsDeg] = useState(true)
-
-  function toRad(x:number):number{ return isDeg?x*(Math.PI/180):x }
-
-  function press(val:string){
-    setIsError(false)
-    if(val==='C'){setDisplay('0');setExpr('');return}
-    if(val==='\u232B'){setDisplay(d=>d.length>1?d.slice(0,-1):'0');return}
-    if(val==='='){
-      try{
-        const e=expr+display
-        const r=Function('x',`'use strict';const M=Math;return ${e}`)('x')
-        const rs=String(parseFloat(r.toFixed(10)))
-        setHistory(h=>[e+' = '+rs,...h].slice(0,10))
-        setExpr('')
-        setDisplay(rs)
-      }catch{setIsError(true);setDisplay('Error')}
-      return
-    }
-    if(['+','-','*','/','^'].includes(val)){setExpr(e=>e+display+val);setDisplay('0');return}
-    // scientific fns
-    const d=parseFloat(display)
-    const fns:Record<string,number>={
-      sin:Math.sin(toRad(d)),cos:Math.cos(toRad(d)),tan:Math.tan(toRad(d)),
-      asin:isDeg?Math.asin(d)*(180/Math.PI):Math.asin(d),
-      acos:isDeg?Math.acos(d)*(180/Math.PI):Math.acos(d),
-      atan:isDeg?Math.atan(d)*(180/Math.PI):Math.atan(d),
-      sqrt:Math.sqrt(d),'x\u00B2':d*d,'x\u00B3':d*d*d,
-      log:Math.log10(d),ln:Math.log(d),'e^x':Math.exp(d),'10^x':Math.pow(10,d),
-      '1/x':1/d,'|x|':Math.abs(d),'\u03C0':Math.PI,'e':Math.E,'n!':factorial(d),
-    }
-    if(val in fns){setDisplay(String(parseFloat(fns[val].toFixed(10))));return}
-    // digits
-    if(val==='.'){setDisplay(d=>d.includes('.')?d:d+'.'); return}
-    setDisplay(d=>d==='0'?val:d+val)
+  const [expr,setExpr]=useState('')
+  const [result,setResult]=useState('')
+  const [history,setHistory]=useState<{expr:string;result:string}[]>([])
+  const [deg,setDeg]=useState(true)
+  const toRad=(v:number)=>deg?v*Math.PI/180:v
+  const calc=()=>{
+    try{
+      let e=expr.replace(/sin(/g,'Math.sin(toRad(').replace(/cos(/g,'Math.cos(toRad(').replace(/tan(/g,'Math.tan(toRad(')
+      e=e.replace(/√(/g,'Math.sqrt(').replace(/log(/g,'Math.log10(').replace(/ln(/g,'Math.log(')
+      e=e.replace(/π/g,'Math.PI').replace(/e(?![a-zA-Z])/g,'Math.E').replace(/^/g,'**')
+      let opens=(e.match(/toRad(/g)||[]).length
+      e+=')'.repeat(opens)
+      const r=Function('toRad','"use strict"; return ('+e+')')(toRad)
+      const rs=typeof r==='number'?parseFloat(r.toFixed(10)).toString():'Error'
+      setResult(rs)
+      setHistory(h=>[{expr,result:rs},...h].slice(0,10))
+    }catch{setResult('Error')}
   }
-
-  function factorial(n:number):number{ if(n<=1)return 1;return n*factorial(n-1) }
-
-  const ROW1=['sin','cos','tan','\u03C0']
-  const ROW2=['asin','acos','atan','e']
-  const ROW3=['sqrt','x\u00B2','log','ln']
-  const ROW4=['n!','1/x','|x|','e^x']
-  const NUM=[['7','8','9','\u232B'],['4','5','6','*'],['1','2','3','-'],['0','.','=','+']]
-
-  const btnBase='h-12 rounded-xl font-medium transition-colors text-sm active:scale-95'
-
+  const append=(v:string)=>setExpr(e=>e+v)
+  const BTN_ROWS=[
+    [{l:'7',v:'7'},{l:'8',v:'8'},{l:'9',v:'9'},{l:'÷',v:'/'},{l:'sin(',v:'sin('},{l:'cos(',v:'cos('}],
+    [{l:'4',v:'4'},{l:'5',v:'5'},{l:'6',v:'6'},{l:'×',v:'*'},{l:'tan(',v:'tan('},{l:'√(',v:'√('}],
+    [{l:'1',v:'1'},{l:'2',v:'2'},{l:'3',v:'3'},{l:'-',v:'-'},{l:'log(',v:'log('},{l:'ln(',v:'ln('}],
+    [{l:'0',v:'0'},{l:'.',v:'.'},{l:'(',v:'('},{l:')',v:')'},{l:'+',v:'+'},{l:'^',v:'^'}],
+    [{l:'π',v:'π'},{l:'e',v:'e'},{l:'±',v:''},{l:'C',v:''},{l:'⌫',v:''},{l:'=',v:'='}],
+  ]
+  const handleBtn=(l:string,v:string)=>{
+    if(l==='='){calc();return}
+    if(l==='C'){setExpr('');setResult('');return}
+    if(l==='⌫'){setExpr(e=>e.slice(0,-1));return}
+    if(l==='±'){setExpr(e=>e.startsWith('-')?e.slice(1):'-'+e);return}
+    append(v)
+  }
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-md mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Scientific Calculator</h1>
-        <p className="text-gray-500 mb-6">Full scientific calculator with trig functions, logarithms, and history</p>
-        <div className="bg-gray-900 rounded-2xl p-4 shadow-xl">
-          <div className="bg-gray-800 rounded-xl p-3 mb-3 text-right min-h-[70px]">
-            {expr&&<div className="text-gray-400 text-sm font-mono mb-1 truncate">{expr}</div>}
-            <div className={'text-3xl font-mono font-bold '+(isError?'text-red-400':'text-white')}>{display}</div>
+      <div className="max-w-sm mx-auto px-4">
+        <div className="bg-gray-900 rounded-2xl p-4 space-y-3">
+          <div className="flex justify-end gap-2 mb-2">
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" checked={deg} onChange={e=>setDeg(e.target.checked)} className="rounded"/>
+              <span className="text-xs text-gray-400">{deg?'DEG':'RAD'}</span>
+            </label>
           </div>
-          <div className="flex items-center justify-between mb-2 px-1">
-            <button onClick={()=>setIsDeg(d=>!d)} className="text-xs px-3 py-1 rounded-lg bg-gray-700 text-gray-300">
-              {isDeg?'DEG':'RAD'}
-            </button>
-            <button onClick={()=>press('C')} className="text-xs px-3 py-1 rounded-lg bg-red-700 text-white">AC</button>
+          <div className="bg-gray-800 rounded-xl px-4 py-3 text-right min-h-16">
+            <p className="text-gray-400 text-sm font-mono truncate">{expr||'0'}</p>
+            <p className="text-white text-2xl font-bold font-mono">{result}</p>
           </div>
-          <div className="grid grid-cols-4 gap-1.5 mb-1.5">
-            {[...ROW1,...ROW2,...ROW3,...ROW4].map(k=>(
-              <button key={k} onClick={()=>press(k)} className={btnBase+' bg-indigo-700 hover:bg-indigo-600 text-indigo-100'}>{k}</button>
-            ))}
-          </div>
-          <div className="grid grid-cols-4 gap-1.5">
-            {NUM.flat().map(k=>(
-              <button key={k+Math.random()} onClick={()=>press(k)}
-                className={btnBase+' '+(k==='='?'bg-brand-500 hover:bg-brand-400 text-white':k==='+' ||k==='-'||k==='*'||k==='/'?'bg-gray-600 hover:bg-gray-500 text-white':k==='\u232B'?'bg-red-800 hover:bg-red-700 text-white':'bg-gray-700 hover:bg-gray-600 text-white')}>
-                {k}
+          <div className="grid grid-cols-6 gap-1.5">
+            {BTN_ROWS.flat().map((btn,i)=>(
+              <button key={i} onClick={()=>handleBtn(btn.l,btn.v)}
+                className={`py-3 rounded-xl text-sm font-medium transition ${btn.l==='='?'bg-blue-600 text-white col-span-1 hover:bg-blue-500':btn.l==='C'?'bg-red-500 text-white hover:bg-red-400':['÷','×','-','+','^'].includes(btn.l)?'bg-amber-500 text-white hover:bg-amber-400':['sin(','cos(','tan(','√(','log(','ln(','π','e'].includes(btn.l)?'bg-gray-600 text-gray-100 hover:bg-gray-500 text-xs':'bg-gray-700 text-gray-100 hover:bg-gray-600'}`}>
+                {btn.l}
               </button>
             ))}
           </div>
         </div>
         {history.length>0&&(
-          <div className="mt-4 bg-white rounded-2xl border border-gray-200 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">History</span>
-              <button onClick={()=>setHistory([])} className="text-xs text-gray-400 hover:text-red-500">Clear</button>
-            </div>
-            <div className="space-y-1">
-              {history.map((h,i)=>(<div key={i} className="font-mono text-sm text-gray-600">{h}</div>))}
+          <div className="mt-4">
+            <p className="text-xs text-gray-500 mb-2">History</p>
+            <div className="space-y-1 max-h-40 overflow-y-auto">
+              {history.map((h,i)=>(
+                <div key={i} className="flex justify-between text-xs px-3 py-1.5 bg-gray-50 rounded cursor-pointer hover:bg-gray-100" onClick={()=>setExpr(h.result)}>
+                  <span className="text-gray-500 font-mono">{h.expr}</span>
+                  <span className="text-gray-800 font-semibold font-mono">{h.result}</span>
+                </div>
+              ))}
             </div>
           </div>
         )}

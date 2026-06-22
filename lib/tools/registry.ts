@@ -427,6 +427,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'discount-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['discount','sale','price','percent'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'calorie-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['calorie','diet','nutrition','tdee'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'color-name-finder',category:'developer',phase:1,isPro:false,isNew:true,tags:['color','name','hex','rgb','palette'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'scientific-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['calculator','scientific','math','sin','cos'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'css-flexbox-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','flexbox','layout','generate'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'xml-to-json',category:'developer',phase:1,isPro:false,isNew:true,tags:['xml','json','convert','parse'],maxFileSizeMB:{free:1,pro:10} },
+  {slug:'pomodoro-timer',category:'utility',phase:1,isPro:false,isNew:true,tags:['pomodoro','timer','focus','productivity'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'matrix-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['matrix','math','linear','algebra'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
