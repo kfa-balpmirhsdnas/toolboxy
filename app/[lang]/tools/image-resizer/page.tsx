@@ -3,55 +3,94 @@ import { useState, useRef, useCallback } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('image-resizer')!
-export default function ImageResizerPage({ params }: { params: { lang: string } }) {
-  const [file, setFile] = useState<File|null>(null)
-  const [preview, setPreview] = useState<string|null>(null)
-  const [origSize, setOrigSize] = useState<{w:number;h:number}|null>(null)
-  const [width, setWidth] = useState('')
-  const [height, setHeight] = useState('')
-  const [keepRatio, setKeepRatio] = useState(true)
-  const [quality, setQuality] = useState(90)
-  const [format, setFormat] = useState<'image/jpeg'|'image/png'|'image/webp'>('image/jpeg')
-  const [output, setOutput] = useState<string|null>(null)
-  const [outputSize, setOutputSize] = useState<{w:number;h:number}|null>(null)
-  const [outputBytes, setOutputBytes] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const handleFile=useCallback((f: File)=>{
-    setFile(f);setOutput(null)
-    const url=URL.createObjectURL(f);setPreview(url)
-    const img=new Image();img.onload=()=>{setOrigSize({w:img.naturalWidth,h:img.naturalHeight});setWidth(String(img.naturalWidth));setHeight(String(img.naturalHeight))};img.src=url
-  },[])
-  const onDrop=useCallback((e: React.DragEvent)=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f?.type.startsWith('image/'))handleFile(f)},[handleFile])
-  function handleW(v: string){setWidth(v);if(keepRatio&&origSize&&v)setHeight(String(Math.round(Number(v)*origSize.h/origSize.w)))}
-  function handleH(v: string){setHeight(v);if(keepRatio&&origSize&&v)setWidth(String(Math.round(Number(v)*origSize.w/origSize.h)))}
-  async function resize(){
-    if(!file||!origSize)return;setLoading(true)
-    const w=Math.max(1,parseInt(width)||origSize.w),h=Math.max(1,parseInt(height)||origSize.h)
-    const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h
-    const ctx=canvas.getContext('2d')!;const im=new Image();im.src=preview!
-    await new Promise(r=>{im.onload=r});ctx.drawImage(im,0,0,w,h)
-    const url=canvas.toDataURL(format,quality/100);setOutput(url);setOutputSize({w,h})
-    setOutputBytes(Math.round((url.length-url.indexOf(',')-1)*0.75));setLoading(false)
+export default function ImageResizerPage() {
+  const [src,setSrc]=useState<string|null>(null)
+  const [origW,setOrigW]=useState(0)
+  const [origH,setOrigH]=useState(0)
+  const [w,setW]=useState(0)
+  const [h,setH]=useState(0)
+  const [lock,setLock]=useState(true)
+  const [quality,setQuality]=useState(0.9)
+  const [format,setFormat]=useState('image/jpeg')
+  const [resized,setResized]=useState<string|null>(null)
+  const [resizedSize,setResizedSize]=useState(0)
+  const fileRef=useRef<HTMLInputElement>(null)
+  const loadImg=(file:File)=>{
+    if(!file.type.startsWith('image/'))return
+    const url=URL.createObjectURL(file)
+    const img=new Image()
+    img.onload=()=>{setOrigW(img.width);setOrigH(img.height);setW(img.width);setH(img.height);setSrc(url);setResized(null)}
+    img.src=url
   }
-  function download(){if(!output)return;const a=document.createElement('a');a.href=output;a.download=`resized-${Date.now()}.${format.split('/')[1]}`;a.click()}
-  const fmt=(b: number)=>b<1024?`${b} B`:b<1048576?`${(b/1024).toFixed(1)} KB`:`${(b/1048576).toFixed(1)} MB`
+  const onDrop=useCallback((e:React.DragEvent)=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f)loadImg(f)},[])
+  const setWidth=(nw:number)=>{setW(nw);if(lock&&origW>0)setH(Math.round(nw*origH/origW))}
+  const setHeight=(nh:number)=>{setH(nh);if(lock&&origH>0)setW(Math.round(nh*origW/origH))}
+  const resize=()=>{
+    if(!src)return
+    const img=new Image();img.src=src
+    img.onload=()=>{
+      const c=document.createElement('canvas')
+      c.width=w;c.height=h
+      const ctx=c.getContext('2d')!
+      ctx.drawImage(img,0,0,w,h)
+      const dataUrl=c.toDataURL(format,quality)
+      setResized(dataUrl)
+      const base64=dataUrl.split(',')[1]
+      setResizedSize(Math.round(base64.length*0.75/1024))
+    }
+  }
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-5">
-        {!file?(<div onDrop={onDrop} onDragOver={e=>e.preventDefault()} onClick={()=>document.getElementById('img-input')?.click()} className="border-2 border-dashed border-gray-200 rounded-2xl p-12 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors"><p className="text-4xl mb-3">🖼</p><p className="text-sm font-medium text-gray-600">Drop an image here or click to browse</p><p className="text-xs text-gray-400 mt-1">Supports JPG, PNG, WebP, GIF</p><input id="img-input" type="file" accept="image/*" className="hidden" onChange={e=>{const f=e.target.files?.[0];if(f)handleFile(f)}} /></div>):(
-        <>
-          <div className="flex gap-4 items-start flex-wrap">
-            <div className="shrink-0"><img src={preview!} alt="Preview" className="max-w-[200px] max-h-[150px] rounded-xl border border-gray-200 object-contain" />{origSize&&<p className="text-xs text-gray-400 mt-1 text-center">{origSize.w}×{origSize.h} · {fmt(file.size)}</p>}</div>
-            <div className="flex-1 space-y-4 min-w-[240px]">
-              <div><div className="flex items-center gap-2 mb-2"><p className="text-sm font-medium text-gray-700">Dimensions</p><label className="flex items-center gap-1.5 cursor-pointer text-xs text-gray-500 ml-auto"><input type="checkbox" checked={keepRatio} onChange={e=>setKeepRatio(e.target.checked)} className="accent-brand-600" />Lock ratio</label></div>
-              <div className="flex items-center gap-2"><input type="number" value={width} onChange={e=>handleW(e.target.value)} min={1} placeholder="Width" className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400 text-center" /><span className="text-gray-400 text-sm">×</span><input type="number" value={height} onChange={e=>handleH(e.target.value)} min={1} placeholder="Height" className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400 text-center" /><span className="text-xs text-gray-400">px</span></div></div>
-              <div className="flex flex-wrap gap-3"><div><label className="text-xs text-gray-500 block mb-1">Format</label><select value={format} onChange={e=>setFormat(e.target.value as typeof format)} className="text-sm border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-400"><option value="image/jpeg">JPEG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></div>{format!=='image/png'&&(<div><label className="text-xs text-gray-500 block mb-1">Quality: {quality}%</label><input type="range" min={10} max={100} value={quality} onChange={e=>setQuality(Number(e.target.value))} className="w-32 accent-brand-600" /></div>)}</div>
-              <div className="flex gap-2 flex-wrap"><button onClick={resize} disabled={loading} className="bg-brand-600 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-brand-700 disabled:opacity-50 transition-colors">{loading?'Resizing…':'Resize Image'}</button><button onClick={()=>{setFile(null);setPreview(null);setOutput(null)}} className="text-sm text-gray-400 hover:text-gray-600 px-3 py-2 transition-colors">New image</button></div>
+    <ToolLayout tool={tool}>
+      <div className="max-w-lg mx-auto px-4 space-y-4">
+        <div className={'border-2 border-dashed rounded-xl p-6 text-center cursor-pointer '+(src?'border-gray-200':'border-blue-300 hover:border-blue-400')}
+          onDrop={onDrop} onDragOver={e=>e.preventDefault()} onClick={()=>fileRef.current?.click()}>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={e=>e.target.files&&loadImg(e.target.files[0])}/>
+          {src?(
+            <div className="flex items-center gap-4">
+              <img src={src} className="max-h-28 rounded-lg object-contain" alt="source"/>
+              <div className="text-left text-sm text-gray-600">
+                <p className="font-semibold">{origW} x {origH}px</p>
+                <p className="text-xs text-gray-400">Click to change</p>
+              </div>
             </div>
-          </div>
-          {output&&(<div className="border-t border-gray-100 pt-5"><div className="flex gap-4 items-start flex-wrap"><div><img src={output} alt="Resized" className="max-w-[200px] max-h-[150px] rounded-xl border border-gray-200 object-contain" />{outputSize&&<p className="text-xs text-gray-400 mt-1 text-center">{outputSize.w}×{outputSize.h} · {fmt(outputBytes)}</p>}</div><button onClick={download} className="bg-green-600 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-green-700 transition-colors mt-2">↓ Download</button></div></div>)}
-        </>)}
-        <p className="text-xs text-gray-400">Processing is done locally. Your images are never uploaded.</p>
+          ):(
+            <div><p className="text-3xl mb-2">🖼️</p><p className="text-gray-600 font-medium">Drop image or click</p></div>
+          )}
+        </div>
+        {src&&(
+          <>
+            <div className="flex gap-3 items-end">
+              <div className="flex-1"><label className="block text-xs text-gray-500 mb-1">Width (px)</label>
+                <input type="number" value={w} onChange={e=>setWidth(Number(e.target.value))} min="1" className="w-full rounded border border-gray-300 px-3 py-2.5 text-lg font-mono text-center"/></div>
+              <button onClick={()=>setLock(l=>!l)} className={'px-3 py-2.5 rounded border text-sm transition '+(lock?'bg-blue-600 text-white border-blue-600':'border-gray-300 text-gray-600 hover:bg-gray-50')}>{lock?'Lock':'Free'}</button>
+              <div className="flex-1"><label className="block text-xs text-gray-500 mb-1">Height (px)</label>
+                <input type="number" value={h} onChange={e=>setHeight(Number(e.target.value))} min="1" className="w-full rounded border border-gray-300 px-3 py-2.5 text-lg font-mono text-center"/></div>
+            </div>
+            <div className="flex gap-3 flex-wrap">
+              <div className="flex-1"><label className="block text-xs text-gray-500 mb-1">Format</label>
+                <select value={format} onChange={e=>setFormat(e.target.value)} className="w-full rounded border border-gray-300 px-2 py-2 text-sm">
+                  <option value="image/jpeg">JPEG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></div>
+              {format!=='image/png'&&<div className="flex-1"><label className="block text-xs text-gray-500 mb-1">Quality: {Math.round(quality*100)}%</label>
+                <input type="range" min="0.1" max="1" step="0.05" value={quality} onChange={e=>setQuality(Number(e.target.value))} className="w-full mt-2"/></div>}
+              <div className="flex gap-1.5 flex-wrap self-end pb-0.5">
+                {[['25%',0.25],['50%',0.5],['75%',0.75],['100%',1]].map(([l,s])=>(
+                  <button key={l} onClick={()=>{setW(Math.round(origW*Number(s)));setH(Math.round(origH*Number(s)))}}
+                    className="px-2 py-1.5 rounded border border-gray-200 text-xs hover:bg-gray-50">{l}</button>
+                ))}
+              </div>
+            </div>
+            <button onClick={resize} className="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">Resize Image</button>
+            {resized&&(
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-gray-600">Result: <span className="font-semibold">{w}x{h}px</span> — ~{resizedSize}KB</p>
+                  <a href={resized} download={'resized.'+format.split('/')[1]} className="text-sm text-blue-600 hover:underline">Download</a>
+                </div>
+                <img src={resized} className="max-w-full rounded-xl border border-gray-200" alt="resized"/>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </ToolLayout>
   )

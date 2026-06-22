@@ -1,65 +1,62 @@
 'use client'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('text-diff-checker')!
-type Chunk={type:'same'|'added'|'removed';text:string}
-function lcs(a:string[],b:string[]):number[][]{
-  const m=a.length,n=b.length
-  const dp=Array.from({length:m+1},()=>Array(n+1).fill(0))
-  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1])
-  return dp
-}
-function diff(a:string,b:string):Chunk[]{
-  const aL=a.split('
-'),bL=b.split('
+type DiffLine={type:'equal'|'add'|'remove';text:string;lineA?:number;lineB?:number}
+function computeDiff(a:string,b:string):DiffLine[]{
+  const linesA=a.split('
+'),linesB=b.split('
 ')
-  const dp=lcs(aL,bL)
-  const chunks:Chunk[]=[]
-  let i=aL.length,j=bL.length
-  const result:{type:'same'|'added'|'removed';text:string}[]=[]
+  const m=linesA.length,n=linesB.length
+  const dp:number[][]=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?0:j===0?0:0))
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=linesA[i-1]===linesB[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1])
+  const result:DiffLine[]=[];let i=m,j=n
   while(i>0||j>0){
-    if(i>0&&j>0&&aL[i-1]===bL[j-1]){result.unshift({type:'same',text:aL[i-1]});i--;j--}
-    else if(j>0&&(i===0||dp[i][j-1]>=dp[i-1][j])){result.unshift({type:'added',text:bL[j-1]});j--}
-    else{result.unshift({type:'removed',text:aL[i-1]});i--}
+    if(i>0&&j>0&&linesA[i-1]===linesB[j-1]){result.unshift({type:'equal',text:linesA[i-1],lineA:i,lineB:j});i--;j--}
+    else if(j>0&&(i===0||dp[i][j-1]>=dp[i-1][j])){result.unshift({type:'add',text:linesB[j-1],lineB:j});j--}
+    else{result.unshift({type:'remove',text:linesA[i-1],lineA:i});i--}
   }
   return result
 }
+const TEXT_A='The quick brown fox jumps over the lazy dog.
+Pack my box with five dozen liquor jugs.
+How vexingly quick daft zebras jump!'
+const TEXT_B='The quick brown fox leaps over the sleepy dog.
+Pack my box with five dozen liquor jugs.
+How vexingly quick daft zebras jump!
+New line added at the end.'
 export default function TextDiffCheckerPage() {
-  const [left,setLeft]=useState('The quick brown fox\njumps over the lazy dog\nHello World\nLine four')
-  const [right,setRight]=useState('The quick brown fox\nleaps over the lazy cat\nHello World\nLine five\nNew line added')
-  const [result,setResult]=useState<Chunk[]|null>(null)
-  const check=()=>setResult(diff(left,right))
-  const added=result?.filter(c=>c.type==='added').length||0
-  const removed=result?.filter(c=>c.type==='removed').length||0
-  const COL={same:'bg-white text-gray-800',added:'bg-green-50 text-green-800 border-l-4 border-green-400',removed:'bg-red-50 text-red-800 border-l-4 border-red-400 line-through opacity-70'}
-  const PREFIX={same:'  ',added:'+ ',removed:'- '}
+  const [a,setA]=useState(TEXT_A)
+  const [b,setB]=useState(TEXT_B)
+  const diff=useMemo(()=>computeDiff(a,b),[a,b])
+  const added=diff.filter(d=>d.type==='add').length
+  const removed=diff.filter(d=>d.type==='remove').length
+  const equal=diff.filter(d=>d.type==='equal').length
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4 space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Original text</label>
-            <textarea value={left} onChange={e=>setLeft(e.target.value)} rows={8} className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-sm resize-none" spellCheck={false}/></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Modified text</label>
-            <textarea value={right} onChange={e=>setRight(e.target.value)} rows={8} className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-sm resize-none" spellCheck={false}/></div>
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">Original text</label>
+            <textarea value={a} onChange={e=>setA(e.target.value)} rows={6} className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:border-blue-400"/></div>
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">Modified text</label>
+            <textarea value={b} onChange={e=>setB(e.target.value)} rows={6} className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:border-blue-400"/></div>
         </div>
-        <button onClick={check} className="w-full bg-blue-600 text-white rounded-lg py-2.5 font-semibold hover:bg-blue-700">Compare Text</button>
-        {result&&(
-          <div>
-            <div className="flex gap-3 text-sm mb-2">
-              <span className="text-green-600 font-medium">+{added} added</span>
-              <span className="text-red-600 font-medium">-{removed} removed</span>
-              <span className="text-gray-500">{result.filter(c=>c.type==='same').length} unchanged</span>
+        <div className="flex gap-3 text-sm">
+          <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-green-200 inline-block"/>Added: <strong>{added}</strong></div>
+          <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-red-200 inline-block"/>Removed: <strong>{removed}</strong></div>
+          <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gray-100 inline-block"/>Equal: <strong>{equal}</strong></div>
+        </div>
+        <div className="rounded-xl border border-gray-200 overflow-hidden font-mono text-xs">
+          {diff.map((line,i)=>(
+            <div key={i} className={'flex items-start gap-2 px-3 py-1 '+(line.type==='add'?'bg-green-50':line.type==='remove'?'bg-red-50':'bg-white')}>
+              <span className="flex-shrink-0 w-8 text-right text-gray-300">{line.lineA||''}</span>
+              <span className="flex-shrink-0 w-8 text-right text-gray-300">{line.lineB||''}</span>
+              <span className={'flex-shrink-0 w-4 font-bold '+(line.type==='add'?'text-green-600':line.type==='remove'?'text-red-600':'text-gray-300')}>{line.type==='add'?'+':line.type==='remove'?'-':' '}</span>
+              <span className={'whitespace-pre-wrap break-all '+(line.type==='add'?'text-green-800':line.type==='remove'?'text-red-800':'text-gray-700')}>{line.text}</span>
             </div>
-            <div className="rounded-xl border border-gray-200 overflow-hidden font-mono text-sm">
-              {result.map((c,i)=>(
-                <div key={i} className={'px-4 py-1.5 '+COL[c.type]}>
-                  <span className="select-none text-gray-400 mr-2">{PREFIX[c.type]}</span>{c.text||' '}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+          ))}
+        </div>
       </div>
     </ToolLayout>
   )

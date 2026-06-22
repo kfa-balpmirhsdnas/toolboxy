@@ -522,6 +522,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'text-to-slug',category:'text',phase:1,isPro:false,isNew:true,tags:['slug','url','text','convert','seo'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'number-base-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['binary','hex','octal','decimal','convert'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'gradient-text-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['gradient','text','css','color','webkit'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'text-diff-checker',category:'text',phase:1,isPro:false,isNew:true,tags:['diff','compare','text','difference','changes'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'pomodoro-timer',category:'utility',phase:1,isPro:false,isNew:true,tags:['pomodoro','timer','focus','work','productivity'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'temperature-converter',category:'utility',phase:1,isPro:false,isNew:true,tags:['temperature','celsius','fahrenheit','kelvin','convert'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'image-resizer',category:'image',phase:1,isPro:false,isNew:true,tags:['image','resize','scale','width','height'],maxFileSizeMB:{free:5,pro:10} },
+  {slug:'sql-formatter',category:'developer',phase:1,isPro:false,isNew:true,tags:['sql','format','query','database','beautify'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
