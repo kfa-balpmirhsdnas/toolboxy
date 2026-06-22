@@ -78,7 +78,10 @@
     "csv-to-json": "Convert CSV data to JSON format. Paste CSV or upload a file ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ first row is treated as headers.",
     "jwt-decoder": "Decode and inspect JWT tokens client-side. See header, payload, and expiry ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ token never leaves your browser.",
     "json-validator": "Validate JSON syntax instantly. Paste your JSON and get clear error messages with line numbers.",
-    "json-to-csv": "Convert JSON arrays to CSV format. Download or copy the result for use in Excel, Google Sheets, and more.",
+    "json-to-csv": {
+      "title": "JSON to CSV",
+      "description": "Convert JSON arrays to CSV format instantly — paste your JSON and download or copy the result"
+    },
     "text-compare": "Compare two texts side by side and highlight differences line by line. Perfect for spotting changes in code or documents.",
     "yaml-to-json": "Convert YAML configuration files to JSON format. Supports nested objects, lists, and all common YAML types.",
     "css-minifier": "Minify CSS by removing comments and whitespace. See the exact percentage saved and download the result.",
@@ -119,7 +122,7 @@
     },
     "aspect-ratio-calculator": {
       "title": "Aspect Ratio Calculator",
-      "description": "Calculate aspect ratios, find missing dimensions and explore common presets like 16:9 and 4:3"
+      "description": "Calculate and convert image or video aspect ratios — find the ratio, scale to new sizes, and preview common formats"
     },
     "binary-text-converter": {
       "title": "Binary Text Converter",
@@ -273,7 +276,7 @@
     },
     "tip-calculator": {
       "title": "Tip Calculator",
-      "description": "Calculate tip amounts and split the bill between multiple people with common tip percentage presets"
+      "description": "Calculate tip and split the bill for any number of people — with preset percentages and per-person totals"
     },
     "age-calculator": {
       "title": "Age Calculator",
@@ -441,6 +444,14 @@
     "tax-bracket-calculator": {
       "title": "Tax Bracket Calculator",
       "description": "2024 US Federal income tax breakdown by bracket — see effective rate, marginal rate, and tax per bracket"
+    },
+    "gpa-calculator": {
+      "title": "GPA Calculator",
+      "description": "Calculate your GPA with credit-weighted averages on 4.0, 5.0, 10.0, or 100-point scales"
+    },
+    "budget-calculator": {
+      "title": "Budget Calculator",
+      "description": "Track income and expenses by category to see your monthly budget balance with visual breakdown"
     }
   }
 }
