@@ -307,6 +307,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'duplicate-line-remover',category:'text',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
   {slug:'number-formatter',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
   {slug:'countdown-timer',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'roman-numeral-converter',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'morse-code-translator',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'pixel-to-rem-converter',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'case-converter',category:'text',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
+  {slug:'nato-alphabet',category:'utility',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0}},
 ]
 
 export function getToolBySlug(slug: string): ToolMeta | undefined {
