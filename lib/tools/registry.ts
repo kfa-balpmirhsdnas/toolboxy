@@ -552,6 +552,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'css-unit-converter',category:'developer',phase:1,isPro:false,isNew:true,tags:['css','unit','px','em','rem','convert'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'markdown-table-generator',category:'text',phase:1,isPro:false,isNew:true,tags:['markdown','table','generate','md','format'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'regex-tester',category:'developer',phase:1,isPro:false,isNew:true,tags:['regex','regexp','test','pattern','match'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'url-parser',category:'developer',phase:1,isPro:false,isNew:true,tags:['url','parse','query','path','decode'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'javascript-minifier',category:'developer',phase:1,isPro:false,isNew:true,tags:['javascript','minify','compress','js','optimize'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'image-to-base64',category:'image',phase:1,isPro:false,isNew:true,tags:['image','base64','encode','convert','data-url'],maxFileSizeMB:{free:5,pro:10} },
+  {slug:'color-shades-generator',category:'developer',phase:1,isPro:false,isNew:true,tags:['color','shades','tints','palette','design'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'calorie-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['calorie','tdee','bmr','diet','health'],maxFileSizeMB:{free:0,pro:0} },
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }

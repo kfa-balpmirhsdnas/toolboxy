@@ -3,63 +3,73 @@ import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('url-parser')!
+const SAMPLES=['https://www.example.com/path/to/page?name=Alice&age=30&city=New+York#section-2','https://api.github.com/repos/owner/repo/issues?state=open&labels=bug,help+wanted&per_page=30','ftp://user:password@files.example.net:21/downloads/file.zip?v=2#chunk1']
 export default function UrlParserPage() {
-  const [url,setUrl]=useState('https://example.com:8080/path/page?foo=bar&baz=qux#section')
+  const [url,setUrl]=useState(SAMPLES[0])
   const [copied,setCopied]=useState('')
-  let parsed:{[k:string]:string}={}
-  let params:{[k:string]:string}={}
-  let parseErr=false
-  try {
-    const u=new URL(url)
-    parsed={
-      'Protocol':u.protocol,
-      'Hostname':u.hostname,
-      'Port':u.port||'(default)',
-      'Pathname':u.pathname,
-      'Search':u.search||'(none)',
-      'Hash':u.hash||'(none)',
-      'Origin':u.origin,
-      'Host':u.host,
-    }
-    u.searchParams.forEach((v,k)=>{params[k]=v})
-  } catch {parseErr=true}
-  const copy=(val:string,k:string)=>{navigator.clipboard.writeText(val);setCopied(k);setTimeout(()=>setCopied(''),1500)}
+  const parse=(u:string)=>{
+    try{
+      const p=new URL(u)
+      const params:Array<[string,string]>=[...p.searchParams.entries()]
+      return{
+        protocol:p.protocol.slice(0,-1),username:p.username,password:p.password,
+        host:p.host,hostname:p.hostname,port:p.port,
+        pathname:p.pathname,search:p.search,hash:p.hash,
+        params,origin:p.origin,href:p.href,error:''
+      }
+    }catch(e){return{protocol:'',username:'',password:'',host:'',hostname:'',port:'',pathname:'',search:'',hash:'',params:[],origin:'',href:u,error:String(e)}}
+  }
+  const p=parse(url)
+  const copy=(v:string)=>{if(v){navigator.clipboard.writeText(v);setCopied(v);setTimeout(()=>setCopied(''),1200)}}
+  const Row=({label,value}:{label:string;value:string})=>value?(
+    <div className="flex items-start gap-2 py-2 border-b border-gray-100 last:border-0">
+      <span className="w-24 flex-shrink-0 text-xs font-medium text-gray-500 mt-0.5">{label}</span>
+      <code className="flex-1 text-xs font-mono text-gray-800 break-all">{value}</code>
+      <button onClick={()=>copy(value)} className="flex-shrink-0 text-xs text-blue-500 hover:text-blue-700">{copied===value?'✓':'Copy'}</button>
+    </div>
+  ):null
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-xl mx-auto px-4 space-y-5">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">URL to parse</label>
-          <input value={url} onChange={e=>setUrl(e.target.value)}
-            className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-sm" placeholder="https://..."/>
+      <div className="max-w-lg mx-auto px-4 space-y-4">
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">URL</label>
+          <input value={url} onChange={e=>setUrl(e.target.value)} type="url"
+            className={'w-full rounded-xl border px-3 py-2.5 font-mono text-sm focus:outline-none '+(p.error?'border-red-300 bg-red-50':'border-gray-300 focus:border-blue-400')}
+            placeholder="https://example.com/path?query=value#hash"/>
+          {p.error&&<p className="text-red-500 text-xs mt-1">{p.error}</p>}
         </div>
-        {parseErr&&url&&<p className="text-red-500 text-sm">Invalid URL — include http:// or https://</p>}
-        {!parseErr&&url&&(
-          <>
-            <div className="divide-y divide-gray-100 rounded-xl border border-gray-200 overflow-hidden">
-              {Object.entries(parsed).map(([k,v])=>(
-                <div key={k} className="flex items-center justify-between px-4 py-2.5">
-                  <span className="text-xs font-medium text-gray-500 w-24 flex-shrink-0">{k}</span>
-                  <span className="font-mono text-sm text-gray-800 flex-1 truncate mx-2">{v}</span>
-                  <button onClick={()=>copy(v,k)} className="text-xs text-blue-500 hover:underline flex-shrink-0">
-                    {copied===k?'✓':'Copy'}
-                  </button>
-                </div>
-              ))}
-            </div>
-            {Object.keys(params).length>0&&(
-              <div>
-                <p className="text-sm font-medium text-gray-700 mb-2">Query Parameters</p>
-                <div className="divide-y divide-gray-100 rounded-xl border border-gray-200 overflow-hidden">
-                  {Object.entries(params).map(([k,v])=>(
-                    <div key={k} className="flex items-center px-4 py-2.5 gap-3">
-                      <span className="font-mono text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">{k}</span>
-                      <span className="font-mono text-sm text-gray-700">{v}</span>
+        <div className="flex flex-wrap gap-1.5">
+          {SAMPLES.map((s,i)=>(
+            <button key={i} onClick={()=>setUrl(s)} className="text-xs px-2.5 py-1 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600">Sample {i+1}</button>
+          ))}
+        </div>
+        {!p.error&&(
+          <div className="bg-gray-50 rounded-xl p-4 divide-y divide-gray-100">
+            <Row label="Protocol" value={p.protocol}/>
+            <Row label="Username" value={p.username}/>
+            <Row label="Password" value={p.password}/>
+            <Row label="Host" value={p.host}/>
+            <Row label="Hostname" value={p.hostname}/>
+            <Row label="Port" value={p.port}/>
+            <Row label="Pathname" value={p.pathname}/>
+            <Row label="Search" value={p.search}/>
+            <Row label="Hash" value={p.hash}/>
+            <Row label="Origin" value={p.origin}/>
+            {p.params.length>0&&(
+              <div className="pt-2">
+                <p className="text-xs font-medium text-gray-600 mb-2">Query parameters ({p.params.length})</p>
+                <div className="space-y-1">
+                  {p.params.map(([k,v],i)=>(
+                    <div key={i} className="flex items-center gap-2 text-xs bg-white rounded-lg px-3 py-1.5 border border-gray-200">
+                      <span className="font-medium text-blue-600 w-24 truncate">{k}</span>
+                      <span className="text-gray-400">=</span>
+                      <span className="font-mono text-gray-700 flex-1 truncate">{decodeURIComponent(v)}</span>
+                      <button onClick={()=>copy(v)} className="text-blue-400 hover:text-blue-600">{copied===v?'✓':'Copy'}</button>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
     </ToolLayout>
