@@ -135,17 +135,26 @@
       "description": "Convert between Celsius, Fahrenheit and Kelvin with a quick-reference table"
     },
     "morse-code-converter": "Convert text to Morse code and Morse code back to text. Includes quick reference chart.",
-    "countdown-timer": "Simple countdown timer with presets. Pause, resume, and reset with a visual progress bar.",
+    "countdown-timer": {
+      "title": "Countdown Timer",
+      "description": "Count down to any future date and time with a live display showing days, hours, minutes, and seconds"
+    },
     "character-counter": "Count characters, words, bytes, lines, sentences and more. Includes reading time estimate.",
     "color-mixer": {
       "title": "Color Mixer",
       "description": "Mix two colors together and get the blended result in HEX, RGB and HSL with gradient preview"
     },
-    "text-to-slug": "Convert any text into a URL-friendly slug with custom separator and case options.",
+    "text-to-slug": {
+      "title": "Text to Slug",
+      "description": "Convert any text to a clean, SEO-friendly URL slug with customizable separators"
+    },
     "csv-viewer": "View and search CSV files in a table. Drag & drop files or paste CSV text directly.",
     "color-codes-converter": "Convert colors between HEX, RGB, and HSL formats. Visual color picker included.",
     "diff-checker": "Compare two texts side by side and highlight line-by-line differences. Shows added and removed lines.",
-    "number-formatter": "Format numbers as currency, percent, scientific notation, or compact form across 7 locales.",
+    "number-formatter": {
+      "title": "Number Formatter",
+      "description": "Format numbers with locale-specific separators, currency symbols, and percentage across multiple locales"
+    },
     "json-diff": "Deep-compare two JSON objects and list every added, removed, or changed field by path.",
     "html-formatter": "Format and pretty-print HTML with configurable indentation. Download or copy the result.",
     "stopwatch": "Precise stopwatch with lap tracking. Supports hundreds of laps with split and total times.",
@@ -295,6 +304,14 @@
     "fibonacci-generator": {
       "title": "Fibonacci Generator",
       "description": "Generate Fibonacci sequences up to 100 terms and check if a number is a Fibonacci number"
+    },
+    "list-sorter": {
+      "title": "List Sorter",
+      "description": "Sort lists alphabetically, numerically, by length, or randomly and remove duplicates in one click"
+    },
+    "duplicate-line-remover": {
+      "title": "Duplicate Line Remover",
+      "description": "Remove duplicate lines from text instantly with case-sensitive or case-insensitive matching"
     }
   }
 }
