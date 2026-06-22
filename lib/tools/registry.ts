@@ -207,6 +207,46 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'ip-address-info', category: 'utility', isPro: false, isNew: true, phase: 1, tags: ['ip','address','geolocation','network'], maxFileSizeMB: { free: 0, pro: 0 } }, }, },
   { slug: 'qr-reader', category: 'utility', isPro: false, isNew: false, phase: 2, tags: ['qr','scan','read','decode'], acceptedFileTypes: ['.jpg','.jpeg','.png'], maxFileSizeMB: { free: 5, pro: 20 } },
   { slug: 'barcode-generator', category: 'utility', isPro: false, isNew: false, phase: 2, tags: ['barcode','generate','ean'], maxFileSizeMB: { free: 0, pro: 0 } },
+  {
+    slug: 'age-calculator',
+    category: 'utility',
+    phase: 1,
+    isPro: false,
+    isNew: true,
+    maxFileSizeMB: { free: 0, pro: 0 },
+  },
+  {
+    slug: 'percentage-calculator',
+    category: 'utility',
+    phase: 1,
+    isPro: false,
+    isNew: true,
+    maxFileSizeMB: { free: 0, pro: 0 },
+  },
+  {
+    slug: 'text-repeater',
+    category: 'text',
+    phase: 1,
+    isPro: false,
+    isNew: true,
+    maxFileSizeMB: { free: 0, pro: 0 },
+  },
+  {
+    slug: 'html-entity-encoder',
+    category: 'developer',
+    phase: 1,
+    isPro: false,
+    isNew: true,
+    maxFileSizeMB: { free: 0, pro: 0 },
+  },
+  {
+    slug: 'number-to-words',
+    category: 'utility',
+    phase: 1,
+    isPro: false,
+    isNew: true,
+    maxFileSizeMB: { free: 0, pro: 0 },
+  },
 ]
 
 export function getToolBySlug(slug: string): ToolMeta | undefined {
