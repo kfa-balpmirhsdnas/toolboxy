@@ -1,85 +1,96 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('temperature-converter')!
+type Unit = 'C'|'F'|'K'
+const UNITS: Unit[] = ['C','F','K']
+const LABELS: Record<Unit,string> = {C:'Celsius',F:'Fahrenheit',K:'Kelvin'}
+const SYMBOLS: Record<Unit,string> = {C:'\u00B0C',F:'\u00B0F',K:'K'}
 
-type Unit = 'C'|'F'|'K'|'R'
-
-function toC(v: number, from: Unit): number {
-  if (from === 'C') return v
-  if (from === 'F') return (v - 32) * 5 / 9
-  if (from === 'K') return v - 273.15
-  return (v - 491.67) * 5 / 9
-}
-function fromC(c: number, to: Unit): number {
-  if (to === 'C') return c
-  if (to === 'F') return c * 9 / 5 + 32
-  if (to === 'K') return c + 273.15
-  return (c + 273.15) * 9 / 5
+function convert(val: number, from: Unit, to: Unit): number {
+  if (from === to) return val
+  let celsius: number
+  if (from==='C') celsius=val
+  else if (from==='F') celsius=(val-32)*5/9
+  else celsius=val-273.15
+  if (to==='C') return celsius
+  if (to==='F') return celsius*9/5+32
+  return celsius+273.15
 }
 
-const UNITS: { key: Unit; label: string; sym: string }[] = [
-  { key: 'C', label: 'Celsius', sym: '\u00B0C' },
-  { key: 'F', label: 'Fahrenheit', sym: '\u00B0F' },
-  { key: 'K', label: 'Kelvin', sym: 'K' },
-  { key: 'R', label: 'Rankine', sym: '\u00B0R' },
+const REFS = [
+  {label:'Absolute Zero', C:-273.15},
+  {label:'Water Freezing', C:0},
+  {label:'Room Temp', C:22},
+  {label:'Body Temp', C:37},
+  {label:'Water Boiling', C:100},
 ]
 
-const fmt = (n: number) => Number.isNaN(n) ? '—' : n.toFixed(4).replace(/\.?0+$/, '')
-
-export default function TemperatureConverterPage({ params }: { params: { lang: string } }) {
+export default function TemperatureConverterPage() {
+  const [val, setVal] = useState('')
   const [from, setFrom] = useState<Unit>('C')
-  const [input, setInput] = useState('')
-  const [copied, setCopied] = useState<string|null>(null)
-  const tracked = useRef(false)
 
-  function track() {
-    if (!tracked.current) { trackToolUsed('temperature-converter'); tracked.current = true }
-  }
-
-  const val = parseFloat(input)
-  const cVal = toC(val, from)
-
-  async function copy(text: string, id: string) {
-    await navigator.clipboard.writeText(text)
-    trackToolCopy('temperature-converter')
-    setCopied(id)
-    setTimeout(() => setCopied(null), 1500)
-  }
+  const n = parseFloat(val)
+  const valid = !isNaN(n)
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-5">
-        <div className="flex gap-2 flex-wrap">
-          {UNITS.map(u => (
-            <button key={u.key} onClick={() => setFrom(u.key)}
-              className={'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (from===u.key ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {u.sym} {u.label}
-            </button>
-          ))}
-        </div>
-        <input type="number" value={input} onChange={e => { setInput(e.target.value); track() }}
-          placeholder={'Enter temperature in ' + UNITS.find(u=>u.key===from)?.label}
-          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-        {input && !isNaN(val) && (
-          <div className="grid grid-cols-2 gap-3">
-            {UNITS.map(u => {
-              const result = fmt(fromC(cVal, u.key))
-              return (
-                <div key={u.key} onClick={() => copy(result, u.key)}
-                  className={'p-4 border rounded-xl cursor-pointer hover:border-brand-300 transition-colors ' + (u.key===from ? 'bg-brand-50 border-brand-200' : 'bg-gray-50 border-gray-200')}>
-                  <p className="text-xs text-gray-500 mb-1">{u.sym} {u.label}</p>
-                  <p className={'text-xl font-bold ' + (u.key===from ? 'text-brand-700' : 'text-gray-800')}>{result}</p>
-                  <p className="text-xs text-brand-400 mt-1">{copied===u.key ? '\u2713 Copied' : 'Click to copy'}</p>
-                </div>
-              )
-            })}
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-2xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Temperature Converter</h1>
+        <p className="text-gray-500 mb-8">Convert between Celsius, Fahrenheit and Kelvin</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <div className="flex gap-2 mb-2">
+            {UNITS.map(u=>(
+              <button key={u} onClick={()=>setFrom(u)}
+                className={'px-4 py-2 rounded-lg font-medium transition-colors '+(from===u?'bg-brand-500 text-white':'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
+                {LABELS[u]}
+              </button>
+            ))}
           </div>
-        )}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Temperature in {LABELS[from]}</label>
+            <input type="number" value={val} onChange={e=>setVal(e.target.value)} placeholder="Enter temperature"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          {valid && (
+            <div className="grid grid-cols-3 gap-4 pt-2">
+              {UNITS.map(u=>(
+                <div key={u} className={'rounded-xl p-4 text-center '+(u===from?'bg-brand-50 border-2 border-brand-200':'bg-gray-50 border border-gray-100')}>
+                  <div className={'text-2xl font-bold '+(u===from?'text-brand-600':'text-gray-800')}>
+                    {convert(n,from,u).toFixed(2)}
+                  </div>
+                  <div className="text-sm text-gray-500 mt-1">{SYMBOLS[u]}</div>
+                  <div className="text-xs text-gray-400">{LABELS[u]}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-6">
+          <h2 className="font-semibold text-gray-800 mb-3">Reference Points</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left py-2 text-gray-500 font-medium">Reference</th>
+                  <th className="text-right py-2 text-gray-500 font-medium">{SYMBOLS.C}</th>
+                  <th className="text-right py-2 text-gray-500 font-medium">{SYMBOLS.F}</th>
+                  <th className="text-right py-2 text-gray-500 font-medium">{SYMBOLS.K}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {REFS.map(ref=>(
+                  <tr key={ref.label} className="border-b border-gray-50 hover:bg-gray-50">
+                    <td className="py-2 text-gray-700">{ref.label}</td>
+                    <td className="py-2 text-right font-mono text-gray-600">{ref.C.toFixed(2)}</td>
+                    <td className="py-2 text-right font-mono text-gray-600">{convert(ref.C,'C','F').toFixed(2)}</td>
+                    <td className="py-2 text-right font-mono text-gray-600">{convert(ref.C,'C','K').toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-    </ToolLayout>
+    </main>
   )
 }
