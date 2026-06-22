@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
+import { trackToolUsed } from '@/lib/gtag'
 
 const tool = getToolBySlug('jwt-decoder')!
 
@@ -26,9 +27,15 @@ function decodeJwt(token: string) {
 
 export default function JwtDecoderPage({ params }: { params: { lang: string } }) {
   const [input, setInput] = useState('')
+  const [tracked, setTracked] = useState(false)
 
   const decoded = input.trim() ? decodeJwt(input) : null
   const isExpired = decoded?.payload?.exp ? decoded.payload.exp * 1000 < Date.now() : null
+
+  if (decoded && !tracked) {
+    setTracked(true)
+    trackToolUsed('jwt-decoder', 'decode')
+  }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -37,7 +44,7 @@ export default function JwtDecoderPage({ params }: { params: { lang: string } })
           <label className="block text-sm font-medium text-gray-700 mb-2">JWT Token</label>
           <textarea
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => { setInput(e.target.value); setTracked(false) }}
             placeholder="Paste your JWT here…"
             className="w-full h-28 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
