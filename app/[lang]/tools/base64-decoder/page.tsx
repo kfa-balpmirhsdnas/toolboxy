@@ -1,23 +1,33 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
+import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 
 const tool = getToolBySlug('base64-decoder')!
 
 export default function Base64DecoderPage({ params }: { params: { lang: string } }) {
   const [input, setInput] = useState('')
   const [copied, setCopied] = useState(false)
+  const trackedRef = useRef(false)
 
   const output = (() => {
     if (!input.trim()) return ''
     try { return decodeURIComponent(escape(atob(input.trim()))) } catch { return '⚠ Invalid Base64 input' }
   })()
 
+  useEffect(() => {
+    if (output && !output.startsWith('⚠') && !trackedRef.current) {
+      trackedRef.current = true
+      trackToolUsed('base64-decoder', 'decode')
+    }
+  }, [output])
+
   async function copy() {
     await navigator.clipboard.writeText(output)
     setCopied(true)
+    trackToolCopy('base64-decoder')
     setTimeout(() => setCopied(false), 1500)
   }
 
@@ -28,7 +38,7 @@ export default function Base64DecoderPage({ params }: { params: { lang: string }
           <label className="block text-sm font-medium text-gray-700 mb-2">Base64 Input</label>
           <textarea
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => { setInput(e.target.value); trackedRef.current = false }}
             placeholder="Paste Base64 encoded string here…"
             className="w-full h-36 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
