@@ -1,129 +1,81 @@
 'use client'
-import { useState, useRef } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
+import { useState } from 'react'
 
-const tool = getToolBySlug('css-minifier')!
-
-function minifyCss(css: string): string {
+function minifyCSS(css: string): string {
   return css
-    // Remove comments
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    // Remove whitespace around selectors, properties
-    .replace(/\s*([{}:;,>~+])\s*/g, '$1')
-    // Remove trailing semicolons before }
-    .replace(/;}/g, '}')
-    // Collapse whitespace
-    .replace(/\s+/g, ' ')
-    // Remove leading/trailing spaces inside rules
-    .replace(/{ /g, '{').replace(/ }/g, '}')
-    // Remove spaces after colons in values (careful)
-    .replace(/: /g, ':')
+    .replace(/\/\*[\s\S]*?\*\//g, '')   // remove comments
+    .replace(/\s+/g, ' ')                   // collapse whitespace
+    .replace(/\s*({|}|:|;|,)\s*/g, '$1')  // remove space around symbols
+    .replace(/;}/g, '}')                    // remove last semicolon before }
     .trim()
 }
 
-const PLACEHOLDER = `.container {
-  display: flex;
-  align-items: center;
-  /* Center the items */
-  justify-content: space-between;
-  padding: 16px 24px;
-  margin: 0 auto;
+function beautifyCSS(css: string): string {
+  const min = minifyCSS(css)
+  let depth = 0
+  let out = ''
+  for (let i = 0; i < min.length; i++) {
+    const c = min[i]
+    if (c === '{') { out += ' {\n'; depth++; out += '  '.repeat(depth) }
+    else if (c === '}') { depth--; out += '\n' + '  '.repeat(depth) + '}\n' }
+    else if (c === ';') { out += ';\n' + '  '.repeat(depth) }
+    else out += c
+  }
+  return out.trim()
 }
 
-.button {
-  background-color: #3b82f6;
-  color: white;
-  border-radius: 8px;
-  padding: 8px 16px;
-}`
-
-export default function CssMinifierPage({ params }: { params: { lang: string } }) {
+export default function CSSMinifierPage() {
   const [input, setInput] = useState('')
-  const [output, setOutput] = useState('')
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
+  const [mode, setMode] = useState<'minify'|'beautify'>('minify')
 
-  function minify() {
-    if (!input.trim()) return
-    if (!tracked.current) { trackToolUsed('css-minifier'); tracked.current = true }
-    setOutput(minifyCss(input))
-  }
-
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('css-minifier')
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
-
-  function download() {
-    trackToolDownload('css-minifier', 'css')
-    const blob = new Blob([output], { type: 'text/css' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url; a.download = 'style.min.css'; a.click()
-    URL.revokeObjectURL(url)
-  }
-
-  const savings = input.length > 0 && output.length > 0
-    ? Math.round((1 - output.length / input.length) * 100)
-    : null
+  const output = input ? (mode === 'minify' ? minifyCSS(input) : beautifyCSS(input)) : ''
+  const saved = input.length > 0 ? Math.round((1 - output.length / input.length) * 100) : 0
+  const copy = () => navigator.clipboard.writeText(output)
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">CSS Input</label>
-          <textarea
-            value={input}
-            onChange={e => { setInput(e.target.value); setOutput('') }}
-            placeholder={PLACEHOLDER}
-            className="w-full h-48 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
-          />
+    <main className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">CSS Minifier / Beautifier</h1>
+        <p className="text-gray-500 mb-8">Minify CSS to reduce file size, or beautify minified CSS for readability.</p>
+        <div className="bg-white rounded-xl shadow p-6 space-y-4">
+          <div className="flex gap-2">
+            {(['minify','beautify'] as const).map(m => (
+              <button key={m} onClick={() => setMode(m)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${mode===m ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                {m.charAt(0).toUpperCase() + m.slice(1)}
+              </button>
+            ))}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">CSS Input</label>
+            <textarea
+              className="w-full border border-gray-300 rounded-lg p-3 text-sm font-mono h-48 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Paste your CSS here..."
+              value={input}
+              onChange={e => setInput(e.target.value)}
+            />
+          </div>
+          {output && (
+            <>
+              {mode === 'minify' && (
+                <div className="text-sm text-green-600 font-medium">
+                  Size reduced by {saved}% ({input.length} -> {output.length} bytes)
+                </div>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Output</label>
+                <textarea
+                  className="w-full border border-gray-200 rounded-lg p-3 bg-gray-50 text-sm font-mono h-48 resize-none"
+                  readOnly value={output}
+                />
+              </div>
+              <button onClick={copy} className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                Copy Output
+              </button>
+            </>
+          )}
         </div>
-        <button
-          onClick={minify}
-          disabled={!input.trim()}
-          className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors"
-        >
-          Minify CSS
-        </button>
-        {output && (
-          <>
-            {savings !== null && (
-              <div className="flex items-center gap-3 text-sm">
-                <span className="text-gray-500">{input.length} → {output.length} bytes</span>
-                <span className="bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded-full text-xs">
-                  {savings}% smaller
-                </span>
-              </div>
-            )}
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400 font-medium px-2">MINIFIED OUTPUT</span>
-              <div className="flex-1 h-px bg-gray-200" />
-            </div>
-            <div className="relative">
-              <textarea
-                value={output}
-                readOnly
-                className="w-full h-32 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-600 bg-gray-50 focus:outline-none"
-              />
-              <div className="absolute top-2 right-2 flex gap-1">
-                <button onClick={copy} className="text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50">
-                  {copied ? '✓ Copied' : 'Copy'}
-                </button>
-                <button onClick={download} className="text-xs bg-brand-600 text-white px-2 py-1 rounded-lg hover:bg-brand-700">
-                  Download
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-        <p className="text-xs text-gray-400">Removes comments, whitespace, and unnecessary characters · No external dependencies</p>
       </div>
-    </ToolLayout>
+    </main>
   )
 }
