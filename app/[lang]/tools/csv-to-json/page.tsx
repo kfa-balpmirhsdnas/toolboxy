@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
+import { useUsageLimit } from '@/lib/hooks/useUsageLimit'
 
 const tool = getToolBySlug('csv-to-json')!
 
@@ -20,8 +21,10 @@ function csvParse(text: string): object[] | string {
 export default function CsvToJsonPage({ params }: { params: { lang: string } }) {
   const [csv, setCsv] = useState('')
   const [copied, setCopied] = useState(false)
+  const [limitMsg, setLimitMsg] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
   const trackedRef = useRef(false)
+  const { increment } = useUsageLimit('csv-to-json')
 
   const result = csv.trim() ? csvParse(csv) : null
   const output = result ? (typeof result === 'string' ? result : JSON.stringify(result, null, 2)) : ''
@@ -32,6 +35,11 @@ export default function CsvToJsonPage({ params }: { params: { lang: string } }) 
   }
 
   async function copy() {
+    const allowed = await increment()
+    if (!allowed) {
+      setLimitMsg('Daily limit reached. Upgrade to Pro for unlimited access.')
+      return
+    }
     await navigator.clipboard.writeText(output)
     setCopied(true)
     trackToolCopy('csv-to-json')
@@ -46,7 +54,12 @@ export default function CsvToJsonPage({ params }: { params: { lang: string } }) 
     reader.readAsText(f)
   }
 
-  function downloadJson() {
+  async function downloadJson() {
+    const allowed = await increment()
+    if (!allowed) {
+      setLimitMsg('Daily limit reached. Upgrade to Pro for unlimited access.')
+      return
+    }
     const blob = new Blob([output], { type: 'application/json' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
@@ -68,11 +81,14 @@ export default function CsvToJsonPage({ params }: { params: { lang: string } }) 
           <label className="block text-sm font-medium text-gray-700 mb-2">CSV Input</label>
           <textarea
             value={csv}
-            onChange={(e) => { setCsv(e.target.value); trackedRef.current = false }}
+            onChange={(e) => { setCsv(e.target.value); trackedRef.current = false; setLimitMsg('') }}
             placeholder={"name,age,city\nAlice,30,Seoul\nBob,25,Tokyo"}
             className="w-full h-36 p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400"
           />
         </div>
+        {limitMsg && (
+          <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">{limitMsg}</p>
+        )}
         {output && (
           <>
             <div className="flex items-center gap-2">
