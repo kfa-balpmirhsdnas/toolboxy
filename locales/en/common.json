@@ -77,13 +77,13 @@
     "url-decoder": "Decode percent-encoded URLs back to human-readable text. Fast and private.",
     "csv-to-json": {
       "title": "CSV to JSON",
-      "description": "Convert CSV data to JSON format with automatic number detection â supports comma, tab, semicolon, and pipe delimiters"
+      "description": "Convert CSV data to JSON format with automatic number detection Ã¢ÂÂ supports comma, tab, semicolon, and pipe delimiters"
     },
-    "jwt-decoder": "Decode and inspect JWT tokens client-side. See header, payload, and expiry ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ token never leaves your browser.",
+    "jwt-decoder": "Decode and inspect JWT tokens client-side. See header, payload, and expiry ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ token never leaves your browser.",
     "json-validator": "Validate JSON syntax instantly. Paste your JSON and get clear error messages with line numbers.",
     "json-to-csv": {
       "title": "JSON to CSV",
-      "description": "Convert JSON arrays to CSV format instantly â paste your JSON and download or copy the result"
+      "description": "Convert JSON arrays to CSV format instantly Ã¢ÂÂ paste your JSON and download or copy the result"
     },
     "text-compare": "Compare two texts side by side and highlight differences line by line. Perfect for spotting changes in code or documents.",
     "yaml-to-json": "Convert YAML configuration files to JSON format. Supports nested objects, lists, and all common YAML types.",
@@ -94,11 +94,11 @@
     "cron-expression-parser": "Parse and understand cron expressions. See a plain-English description and the next scheduled run times.",
     "regex-tester": {
       "title": "Regex Tester",
-      "description": "Test regular expressions with real-time match highlighting â includes common patterns for email, URL, phone, and IPv4"
+      "description": "Test and debug regular expressions with real-time match highlighting and flag control."
     },
     "unit-converter": {
       "title": "Unit Converter",
-      "description": "Convert length, weight, volume, and area units all in one place â from millimeters to light years"
+      "description": "Convert length, weight, volume, and area units all in one place Ã¢ÂÂ from millimeters to light years"
     },
     "timezone-converter": {
       "title": "Time Zone Converter",
@@ -106,21 +106,21 @@
     },
     "color-palette-generator": {
       "title": "Color Palette Generator",
-      "description": "Generate harmonious color palettes â analogous, complementary, triadic, tetradic, monochromatic, and split-complementary schemes"
+      "description": "Generate harmonious color palettes Ã¢ÂÂ analogous, complementary, triadic, tetradic, monochromatic, and split-complementary schemes"
     },
     "image-compress": "Compress and resize images in your browser to reduce file size without losing quality.",
     "jpg-to-png": "Convert JPG and JPEG images to lossless PNG format directly in your browser.",
     "png-to-jpg": "Convert PNG images to JPG with adjustable quality. Transparent areas filled white.",
     "svg-to-png": "Render SVG files to PNG at any scale. Paste SVG code or upload a file.",
     "checksum-generator": "Compute SHA-1, SHA-256, SHA-384, and SHA-512 checksums for files or text. Verify file integrity.",
-    "image-crop": "Crop images by specifying pixel coordinates. No upload required ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ runs in browser.",
+    "image-crop": "Crop images by specifying pixel coordinates. No upload required ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ runs in browser.",
     "html-entity-encoder": {
       "title": "HTML Entity Encoder",
-      "description": "Encode or decode HTML entities and special characters â includes a reference table of common entities"
+      "description": "Encode or decode HTML entities and special characters Ã¢ÂÂ includes a reference table of common entities"
     },
     "number-base-converter": {
       "title": "Number Base Converter",
-      "description": "Convert numbers between binary (base 2), octal (base 8), decimal (base 10) and hexadecimal (base 16)"
+      "description": "Convert numbers between binary, octal, decimal, and hexadecimal instantly."
     },
     "unix-timestamp": "Convert Unix timestamps to human-readable dates and vice versa. Includes a live clock.",
     "word-frequency": "Analyze word frequency in any text. See counts, percentages, and rankings.",
@@ -131,7 +131,7 @@
     },
     "aspect-ratio-calculator": {
       "title": "Aspect Ratio Calculator",
-      "description": "Calculate and convert image or video aspect ratios â find the ratio, scale to new sizes, and preview common formats"
+      "description": "Calculate and convert image or video aspect ratios Ã¢ÂÂ find the ratio, scale to new sizes, and preview common formats"
     },
     "binary-text-converter": {
       "title": "Binary Text Converter",
@@ -154,7 +154,7 @@
     },
     "css-box-shadow-generator": {
       "title": "Box Shadow Generator",
-      "description": "Build multi-layer CSS box shadows visually â control X, Y, blur, spread, color, opacity, and inset with live preview"
+      "description": "Build multi-layer CSS box shadows visually Ã¢ÂÂ control X, Y, blur, spread, color, opacity, and inset with live preview"
     },
     "string-length-counter": "Count characters, words, bytes, lines, and sentences in any text. Click any stat to copy.",
     "temperature-converter": {
@@ -196,12 +196,15 @@
     "markdown-preview": "Live side-by-side Markdown editor with rendered preview. Supports headings, links, code blocks.",
     "yaml-validator": {
       "title": "YAML Validator",
-      "description": "Validate YAML syntax in real time â detects tab indentation errors, unclosed quotes, and reports key count"
+      "description": "Validate YAML syntax in real time Ã¢ÂÂ detects tab indentation errors, unclosed quotes, and reports key count"
     },
     "line-sort": "Sort, deduplicate, reverse, or shuffle lines of text. Supports case-insensitive and trim options.",
     "number-sequence-generator": "Generate number sequences with custom start, end, step, separator, prefix, and suffix.",
     "word-wrap": "Wrap long text at a specified column width using word, character, or break mode.",
-    "text-statistics": "Detailed text analysis: characters, words, sentences, reading ease score, and character frequency.",
+    "text-statistics": {
+      "title": "Text Statistics",
+      "description": "Analyze your text — word count, reading time, sentence count, and character stats."
+    },
     "color-scheme-generator": "Generate harmonious color palettes using analogous, complementary, triadic, and more schemes.",
     "html-to-markdown": "Convert HTML to Markdown automatically. Handles headings, links, lists, code, and formatting.",
     "text-padder": "Pad text lines to a fixed width with left, right, or center alignment using any character.",
@@ -214,7 +217,7 @@
     "epoch-converter": "Convert Unix epoch timestamps to readable dates and vice versa. Supports seconds, milliseconds, and multiple timezones.",
     "text-repeater": {
       "title": "Text Repeater",
-      "description": "Repeat any text a specified number of times with custom separators, prefix, suffix, and optional line numbering"
+      "description": "Repeat any text a specified number of times with customizable separators."
     },
     "column-extractor": "Extract specific columns from CSV or delimited text. Click columns to toggle selection, choose custom separators.",
     "bracket-matcher": "Validate bracket matching in code. Highlights matched pairs by depth and pinpoints mismatched or unclosed brackets.",
@@ -226,7 +229,7 @@
     "slug-to-title": "Convert URL slugs or kebab-case text into Title Case, Sentence case, camelCase, and more.",
     "number-to-words": {
       "title": "Number to Words",
-      "description": "Convert numbers to English words â including ordinals, Roman numerals, and scientific notation up to trillions"
+      "description": "Convert numbers to English words Ã¢ÂÂ including ordinals, Roman numerals, and scientific notation up to trillions"
     },
     "camel-case-converter": "Convert between all common naming conventions: camelCase, snake_case, PascalCase, kebab-case, and more.",
     "html-entity-converter": "Encode or decode HTML entities. Supports named entities, numeric, full non-ASCII encoding, and decoding.",
@@ -241,7 +244,7 @@
     "color-palette-extractor": "Upload any image and extract its dominant color palette using k-means clustering. Click to copy hex codes.",
     "json-to-typescript": "Generate TypeScript interfaces from JSON automatically. Supports nested objects, arrays, and optional fields.",
     "mime-type-checker": "Look up MIME types by file extension or type string. Covers images, video, audio, documents, fonts, and more.",
-    "text-encryptor": "Apply classical ciphers to text: ROT13, Caesar (any shift), Atbash, and VigenÃ¨re with a custom key.",
+    "text-encryptor": "Apply classical ciphers to text: ROT13, Caesar (any shift), Atbash, and VigenÃÂ¨re with a custom key.",
     "svg-viewer": "Preview SVG files with configurable backgrounds. Minify SVG to remove comments and whitespace, with download.",
     "json-path-tester": "Test JSONPath expressions against JSON data. Supports dot notation, array slicing, wildcards, and recursive descent.",
     "table-generator": "Create tables in Markdown, HTML, CSV, or TSV format with custom alignment. Add/remove rows and columns interactively.",
@@ -264,7 +267,7 @@
     "speech-to-text": "Convert spoken words to text using your browser's speech recognition API. Supports multiple languages with interim results.",
     "css-animation-generator": {
       "title": "CSS Animation Generator",
-      "description": "Build CSS keyframe animations with live preview â control duration, easing, delay, iteration, direction, and fill mode"
+      "description": "Build CSS keyframe animations with live preview Ã¢ÂÂ control duration, easing, delay, iteration, direction, and fill mode"
     },
     "markdown-table-generator": "Create tables interactively and export as Markdown, HTML, or CSV. Set column alignment, add or remove rows and columns, and download the result.",
     "uuid-bulk-generator": "Generate up to 1000 UUIDs at once. Supports v4, no-hyphens, uppercase, nil, and short ID formats. Copy all or download as a text file.",
@@ -285,7 +288,7 @@
     "html-minifier": "Minify HTML by removing comments, collapsing whitespace, and optionally minifying inline CSS and JavaScript. Shows bytes saved.",
     "pomodoro-timer": {
       "title": "Pomodoro Timer",
-      "description": "Stay focused with the Pomodoro technique â customizable focus and break intervals with session tracking"
+      "description": "Stay focused with the Pomodoro technique Ã¢ÂÂ customizable focus and break intervals with session tracking"
     },
     "stopwatch-timer": "Precise stopwatch with lap tracking and a countdown timer.",
     "typing-speed-test": "Measure your typing speed in WPM and accuracy. Choose from 5 sample texts. Highlights correct and incorrect characters in real time.",
@@ -300,11 +303,11 @@
     },
     "tip-calculator": {
       "title": "Tip Calculator",
-      "description": "Calculate tip and split the bill for any number of people â with preset percentages and per-person totals"
+      "description": "Calculate tip and split the bill for any number of people Ã¢ÂÂ with preset percentages and per-person totals"
     },
     "age-calculator": {
       "title": "Age Calculator",
-      "description": "Calculate your exact age in years, months, and days â plus total weeks, hours, and days until your next birthday"
+      "description": "Calculate your exact age in years, months, and days Ã¢ÂÂ plus total weeks, hours, and days until your next birthday"
     },
     "loan-calculator": {
       "title": "Loan Calculator",
@@ -317,7 +320,7 @@
       "description": "Convert Markdown to HTML with a live side-by-side preview, supporting headings, bold, lists, links, and code"
     },
     "json-to-xml": "Convert JSON data to well-formed XML with customizable root element.",
-    "text-to-binary": "Convert text to Binary, Hexadecimal, Octal, or Decimal â and back.",
+    "text-to-binary": "Convert text to Binary, Hexadecimal, Octal, or Decimal Ã¢ÂÂ and back.",
     "prime-number-checker": {
       "title": "Prime Number Checker",
       "description": "Check if any number is prime, find its prime factors, and list all prime numbers up to 1000"
@@ -334,7 +337,7 @@
     },
     "flip-a-coin": {
       "title": "Flip a Coin",
-      "description": "Flip a virtual coin and get heads or tails â tracks your flip history and statistics"
+      "description": "Flip a virtual coin and get heads or tails Ã¢ÂÂ tracks your flip history and statistics"
     },
     "reading-time-calculator": {
       "title": "Reading Time Calculator",
@@ -346,11 +349,11 @@
     },
     "hash-generator": {
       "title": "Hash Generator",
-      "description": "Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes instantly â computed locally in your browser using the Web Crypto API"
+      "description": "Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes instantly Ã¢ÂÂ computed locally in your browser using the Web Crypto API"
     },
     "json-formatter": {
       "title": "JSON Formatter",
-      "description": "Format, validate, and minify JSON data â with configurable indentation, key sorting, and byte size display"
+      "description": "Format, validate, and minify JSON data Ã¢ÂÂ with configurable indentation, key sorting, and byte size display"
     },
     "email-extractor": {
       "title": "Email Extractor",
@@ -386,7 +389,7 @@
     },
     "nato-alphabet": {
       "title": "NATO Phonetic Alphabet",
-      "description": "Convert any text to the NATO phonetic alphabet — Alpha, Bravo, Charlie and beyond."
+      "description": "Convert any text to the NATO phonetic alphabet â Alpha, Bravo, Charlie and beyond."
     },
     "word-counter": {
       "title": "Word Counter",
@@ -462,7 +465,7 @@
     },
     "pace-calculator": {
       "title": "Pace Calculator",
-      "description": "Calculate running pace, finish time, or distance â plus automatic race time predictions for 5K, 10K, half and full marathon"
+      "description": "Calculate running pace, finish time, or distance Ã¢ÂÂ plus automatic race time predictions for 5K, 10K, half and full marathon"
     },
     "circle-calculator": {
       "title": "Circle Calculator",
@@ -470,7 +473,7 @@
     },
     "tax-bracket-calculator": {
       "title": "Tax Bracket Calculator",
-      "description": "2024 US Federal income tax breakdown by bracket â see effective rate, marginal rate, and tax per bracket"
+      "description": "2024 US Federal income tax breakdown by bracket Ã¢ÂÂ see effective rate, marginal rate, and tax per bracket"
     },
     "gpa-calculator": {
       "title": "GPA Calculator",
@@ -486,15 +489,15 @@
     },
     "uuid-generator": {
       "title": "UUID Generator",
-      "description": "Generate cryptographically secure UUID v4 identifiers â customize count, case, and hyphens"
+      "description": "Generate cryptographically secure UUID v4 identifiers Ã¢ÂÂ customize count, case, and hyphens"
     },
     "passphrase-strength": {
       "title": "Passphrase Strength",
-      "description": "Check passphrase strength with entropy calculation and crack time estimate â 100% local, no data sent anywhere"
+      "description": "Check passphrase strength with entropy calculation and crack time estimate Ã¢ÂÂ 100% local, no data sent anywhere"
     },
     "url-encoder": {
       "title": "URL Encoder / Decoder",
-      "description": "Encode or decode URL strings â supports both encodeURI and encodeURIComponent modes with common encoding reference"
+      "description": "Encode or decode URL strings Ã¢ÂÂ supports both encodeURI and encodeURIComponent modes with common encoding reference"
     },
     "character-map": {
       "title": "Character Map",
@@ -502,11 +505,11 @@
     },
     "base64-image-encoder": {
       "title": "Base64 Image Encoder",
-      "description": "Convert images to Base64 Data URLs for embedding in HTML, CSS, or JSON â drag & drop or click to upload"
+      "description": "Convert images to Base64 Data URLs for embedding in HTML, CSS, or JSON Ã¢ÂÂ drag & drop or click to upload"
     },
     "time-zone-converter": {
       "title": "Time Zone Converter",
-      "description": "Convert a date and time across 17 global time zones simultaneously â select which zones to display"
+      "description": "Convert a date and time across 17 global time zones simultaneously Ã¢ÂÂ select which zones to display"
     },
     "character-frequency": {
       "title": "Character Frequency",
@@ -514,15 +517,15 @@
     },
     "border-radius-generator": {
       "title": "Border Radius Generator",
-      "description": "Create custom CSS border radius shapes â link or unlink corners, choose presets, and get the CSS output instantly"
+      "description": "Create custom CSS border radius shapes Ã¢ÂÂ link or unlink corners, choose presets, and get the CSS output instantly"
     },
     "css-flexbox-generator": {
       "title": "Flexbox Generator",
-      "description": "Generate CSS flexbox layouts visually â control direction, wrap, justify, align, and gap with a live item preview"
+      "description": "Generate CSS flexbox layouts visually Ã¢ÂÂ control direction, wrap, justify, align, and gap with a live item preview"
     },
     "css-grid-generator": {
       "title": "CSS Grid Generator",
-      "description": "Build CSS grid layouts visually â set column/row counts, gaps, and template values with live grid preview"
+      "description": "Build CSS grid layouts visually Ã¢ÂÂ set column/row counts, gaps, and template values with live grid preview"
     },
     "pixel-converter": {
       "title": "Pixel Converter",
@@ -530,7 +533,7 @@
     },
     "gradient-generator": {
       "title": "CSS Gradient Generator",
-      "description": "Create beautiful CSS gradients with a live visual editor — linear, radial, and conic."
+      "description": "Create beautiful CSS gradients with a live visual editor â linear, radial, and conic."
     },
     "flip-text": {
       "title": "Flip Text Upside Down",
@@ -539,6 +542,10 @@
     "cron-parser": {
       "title": "Cron Expression Parser",
       "description": "Parse and understand cron expressions with human-readable field descriptions and next run times."
+    },
+    "emoji-picker": {
+      "title": "Emoji Picker",
+      "description": "Browse, search, and copy emojis. Build emoji combinations and copy them all at once."
     }
   }
 }
