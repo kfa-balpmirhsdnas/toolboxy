@@ -3,52 +3,24 @@ import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('text-case-converter')!
-function toCase(t:string,mode:string):string{
-  const words=t.split(/[s_-]+/)
-  switch(mode){
-    case 'upper':return t.toUpperCase()
-    case 'lower':return t.toLowerCase()
-    case 'title':return t.toLowerCase().replace(/(?:^|[s-_])(S)/g,c=>c.toUpperCase())
-    case 'sentence':return t.toLowerCase().replace(/(^s*[a-z])|([.!?]s+[a-z])/g,c=>c.toUpperCase())
-    case 'camel':return words.map((w,i)=>i===0?w.toLowerCase():w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join('')
-    case 'pascal':return words.map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join('')
-    case 'snake':return words.map(w=>w.toLowerCase()).join('_')
-    case 'kebab':return words.map(w=>w.toLowerCase()).join('-')
-    case 'constant':return words.map(w=>w.toUpperCase()).join('_')
-    case 'dot':return words.map(w=>w.toLowerCase()).join('.')
-    case 'path':return words.map(w=>w.toLowerCase()).join('/')
-    case 'alternate':return t.split('').map((c,i)=>i%2===0?c.toLowerCase():c.toUpperCase()).join('')
-    case 'inverse':return t.split('').map(c=>c===c.toUpperCase()?c.toLowerCase():c.toUpperCase()).join('')
-    default:return t
-  }
+function toCase(t,mode){
+  const w=t.split(/[\s_-]+/)
+  if(mode==='upper')return t.toUpperCase()
+  if(mode==='lower')return t.toLowerCase()
+  if(mode==='title')return t.toLowerCase().replace(/(?:^|\s)\S/g,c=>c.toUpperCase())
+  if(mode==='sentence')return t.toLowerCase().replace(/(^\s*[a-z])|([.!?]\s+[a-z])/g,c=>c.toUpperCase())
+  if(mode==='camel')return w.map((v,i)=>i===0?v.toLowerCase():v.charAt(0).toUpperCase()+v.slice(1).toLowerCase()).join('')
+  if(mode==='pascal')return w.map(v=>v.charAt(0).toUpperCase()+v.slice(1).toLowerCase()).join('')
+  if(mode==='snake')return w.map(v=>v.toLowerCase()).join('_')
+  if(mode==='kebab')return w.map(v=>v.toLowerCase()).join('-')
+  return t
 }
-const MODES=[{v:'upper',l:'UPPERCASE'},{v:'lower',l:'lowercase'},{v:'title',l:'Title Case'},{v:'sentence',l:'Sentence case'},{v:'camel',l:'camelCase'},{v:'pascal',l:'PascalCase'},{v:'snake',l:'snake_case'},{v:'kebab',l:'kebab-case'},{v:'constant',l:'CONSTANT_CASE'},{v:'dot',l:'dot.case'},{v:'path',l:'path/case'},{v:'alternate',l:'aLtErNaTe'},{v:'inverse',l:'iNVERSE'}]
 export default function TextCaseConverterPage() {
-  const [input,setInput]=useState('the quick brown fox jumps over the lazy dog')
-  const [copied,setCopied]=useState('')
-  const copy=(v:string,k:string)=>{navigator.clipboard.writeText(v);setCopied(k);setTimeout(()=>setCopied(''),1200)}
-  return (
-    <ToolLayout tool={tool}>
-      <div className="max-w-lg mx-auto px-4 space-y-4">
-        <div><label className="block text-sm font-medium text-gray-700 mb-1">Input text</label>
-          <textarea value={input} onChange={e=>setInput(e.target.value)} rows={3}
-            className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm resize-none focus:outline-none focus:border-blue-400"
-            placeholder="Enter your text here..."/></div>
-        <div className="grid grid-cols-1 gap-2">
-          {MODES.map(m=>{
-            const out=toCase(input,m.v)
-            return(
-              <div key={m.v} className="flex items-center gap-3 px-3 py-2.5 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition">
-                <span className="w-28 text-xs font-medium text-gray-500 flex-shrink-0">{m.l}</span>
-                <span className="flex-1 text-sm font-mono text-gray-800 truncate">{out}</span>
-                <button onClick={()=>copy(out,m.v)} className="flex-shrink-0 text-xs text-blue-500 hover:text-blue-700 px-2">
-                  {copied===m.v?'✓':'Copy'}
-                </button>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    </ToolLayout>
-  )
+  const [input,setInput]=useState('Hello World Example Text')
+  const [mode,setMode]=useState('upper')
+  const [ok,setOk]=useState(false)
+  const modes=[{v:'upper',l:'UPPER CASE'},{v:'lower',l:'lower case'},{v:'title',l:'Title Case'},{v:'sentence',l:'Sentence case'},{v:'camel',l:'camelCase'},{v:'pascal',l:'PascalCase'},{v:'snake',l:'snake_case'},{v:'kebab',l:'kebab-case'}]
+  const out=toCase(input,mode)
+  const copy=()=>{navigator.clipboard.writeText(out);setOk(true);setTimeout(()=>setOk(false),2000)}
+  return (<ToolLayout tool={tool}><div className="max-w-2xl mx-auto px-4 space-y-4"><textarea value={input} onChange={e=>setInput(e.target.value)} rows={4} className="w-full p-3 border rounded-lg font-mono text-sm resize-y" placeholder="Enter text..."/><div className="flex flex-wrap gap-2">{modes.map(m=>(<button key={m.v} onClick={()=>setMode(m.v)} className={`px-3 py-1.5 rounded-lg text-sm font-medium border ${mode===m.v?'bg-blue-600 text-white':'bg-white text-gray-700 border-gray-300'}`}>{m.l}</button>))}</div><div className="relative bg-gray-50 border rounded-lg p-4"><pre className="font-mono text-sm whitespace-pre-wrap">{out}</pre><button onClick={copy} className="absolute top-3 right-3 text-xs bg-blue-600 text-white px-3 py-1 rounded">{ok?'Copied!':'Copy'}</button></div></div></ToolLayout>)
 }
