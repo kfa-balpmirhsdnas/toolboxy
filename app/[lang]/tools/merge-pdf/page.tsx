@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -74,7 +73,6 @@ export default function MergePdfPage({ params }: { params: { lang: string } }) {
         <p className="text-xs text-gray-400">Merged in your browser in the order shown — files are never uploaded.</p>
       </div>
 
-      <ToolFaq slug="merge-pdf" />
     </ToolLayout>
   )
 }

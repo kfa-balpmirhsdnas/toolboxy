@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('target-heart-rate-calculator')!
@@ -60,7 +59,6 @@ export default function TargetHeartRatePage({ params }: { params: { lang: string
         )}
       </div>
 
-      <ToolFaq slug="target-heart-rate-calculator" />
     </ToolLayout>
   )
 }

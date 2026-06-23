@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('due-date-calculator')!
@@ -53,7 +52,6 @@ export default function DueDatePage({ params }: { params: { lang: string } }) {
         <p className="text-xs text-gray-400">Naegele&apos;s rule (280 days) · estimate only, not medical advice.</p>
       </div>
 
-      <ToolFaq slug="due-date-calculator" />
     </ToolLayout>
   )
 }

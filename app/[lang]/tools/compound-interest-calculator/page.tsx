@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('compound-interest-calculator')!
@@ -69,7 +68,6 @@ export default function CompoundInterestPage({ params }: { params: { lang: strin
         )}
       </div>
 
-      <ToolFaq slug="compound-interest-calculator" />
     </ToolLayout>
   )
 }

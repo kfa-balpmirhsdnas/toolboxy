@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolCopy } from '@/lib/gtag'
 
@@ -64,7 +63,6 @@ export default function RobotsTxtPage({ params }: { params: { lang: string } }) 
         </div>
       </div>
 
-      <ToolFaq slug="robots-txt-generator" />
     </ToolLayout>
   )
 }

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 
@@ -82,7 +81,6 @@ export default function RandomStringPage({ params }: { params: { lang: string } 
         <p className="text-xs text-gray-400">Generated with crypto.getRandomValues — cryptographically secure, never leaves your browser.</p>
       </div>
 
-      <ToolFaq slug="random-string-generator" />
     </ToolLayout>
   )
 }

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolCopy } from '@/lib/gtag'
 
@@ -50,7 +49,6 @@ export default function SitemapGeneratorPage({ params }: { params: { lang: strin
         </div>
       </div>
 
-      <ToolFaq slug="sitemap-generator" />
     </ToolLayout>
   )
 }

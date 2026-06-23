@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 
@@ -81,7 +80,6 @@ export default function FullwidthHalfwidthPage({ params }: { params: { lang: str
         </p>
       </div>
 
-      <ToolFaq slug="fullwidth-halfwidth-converter" />
     </ToolLayout>
   )
 }

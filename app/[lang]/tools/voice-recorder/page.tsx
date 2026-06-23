@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -74,7 +73,6 @@ export default function VoiceRecorderPage({ params }: { params: { lang: string }
         <p className="text-xs text-gray-400">Records from your microphone to an audio file in your browser. Nothing is uploaded.</p>
       </div>
 
-      <ToolFaq slug="voice-recorder" />
     </ToolLayout>
   )
 }

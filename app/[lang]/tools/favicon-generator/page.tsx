@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -87,7 +86,6 @@ export default function FaviconGeneratorPage({ params }: { params: { lang: strin
         <p className="text-xs text-gray-400">PNG favicons in all common sizes · processed entirely in your browser.</p>
       </div>
 
-      <ToolFaq slug="favicon-generator" />
     </ToolLayout>
   )
 }

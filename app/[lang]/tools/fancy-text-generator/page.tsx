@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolCopy } from '@/lib/gtag'
 
@@ -60,7 +59,6 @@ export default function FancyTextPage({ params }: { params: { lang: string } }) 
         <p className="text-xs text-gray-400">Unicode &ldquo;fonts&rdquo; you can paste into Instagram, TikTok, bios and more.</p>
       </div>
 
-      <ToolFaq slug="fancy-text-generator" />
     </ToolLayout>
   )
 }

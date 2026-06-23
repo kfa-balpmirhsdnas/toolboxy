@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('savings-goal-calculator')!
@@ -62,7 +61,6 @@ export default function SavingsGoalPage({ params }: { params: { lang: string } }
         )}
       </div>
 
-      <ToolFaq slug="savings-goal-calculator" />
     </ToolLayout>
   )
 }

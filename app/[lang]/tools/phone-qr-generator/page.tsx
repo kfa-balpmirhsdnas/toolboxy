@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import QrOutput from '@/components/tools/QrOutput'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -48,7 +47,6 @@ export default function PhoneQrPage({ params }: { params: { lang: string } }) {
         {!clean && <p className="text-xs text-gray-400 text-center">Enter a phone number to generate the QR code.</p>}
       </div>
 
-      <ToolFaq slug="phone-qr-generator" />
     </ToolLayout>
   )
 }

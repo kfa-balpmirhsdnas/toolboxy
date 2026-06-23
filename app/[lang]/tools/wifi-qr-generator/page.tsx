@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import QrOutput from '@/components/tools/QrOutput'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -54,7 +53,6 @@ export default function WifiQrPage({ params }: { params: { lang: string } }) {
         {!ssid && <p className="text-xs text-gray-400 text-center">Enter your network name to generate the QR code.</p>}
       </div>
 
-      <ToolFaq slug="wifi-qr-generator" />
     </ToolLayout>
   )
 }

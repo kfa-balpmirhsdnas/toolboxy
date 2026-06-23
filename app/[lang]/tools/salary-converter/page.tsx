@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('salary-converter')!
@@ -77,7 +76,6 @@ export default function SalaryConverterPage({ params }: { params: { lang: string
         <p className="text-xs text-gray-400">Gross pay conversion (before tax) · based on {hpw || 40}h/week, 52 weeks/year.</p>
       </div>
 
-      <ToolFaq slug="salary-converter" />
     </ToolLayout>
   )
 }

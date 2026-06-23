@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('ovulation-calculator')!
@@ -56,7 +55,6 @@ export default function OvulationPage({ params }: { params: { lang: string } }) 
         <p className="text-xs text-gray-400">Calendar estimate · not a contraceptive method, not medical advice.</p>
       </div>
 
-      <ToolFaq slug="ovulation-calculator" />
     </ToolLayout>
   )
 }

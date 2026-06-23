@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
@@ -87,7 +86,6 @@ export default function ToneGeneratorPage({ params }: { params: { lang: string }
         <p className="text-xs text-gray-400">⚠ Start at a low volume. High frequencies and volumes can damage hearing and speakers.</p>
       </div>
 
-      <ToolFaq slug="tone-generator" />
     </ToolLayout>
   )
 }

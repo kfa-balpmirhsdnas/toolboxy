@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import QrOutput from '@/components/tools/QrOutput'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -48,7 +47,6 @@ export default function VcardQrPage({ params }: { params: { lang: string } }) {
         {!payload && <p className="text-xs text-gray-400 text-center">Fill in a name, phone or email to generate the contact QR.</p>}
       </div>
 
-      <ToolFaq slug="vcard-qr-generator" />
     </ToolLayout>
   )
 }

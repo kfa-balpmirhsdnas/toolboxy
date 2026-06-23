@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 
@@ -158,7 +157,6 @@ export default function RomajiKanaPage({ params }: { params: { lang: string } })
         </p>
       </div>
 
-      <ToolFaq slug="romaji-kana-converter" />
     </ToolLayout>
   )
 }

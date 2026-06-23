@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('inflation-calculator')!
@@ -50,7 +49,6 @@ export default function InflationCalculatorPage({ params }: { params: { lang: st
         <p className="text-xs text-gray-400">Estimate only, not financial advice.</p>
       </div>
 
-      <ToolFaq slug="inflation-calculator" />
     </ToolLayout>
   )
 }

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('body-fat-calculator')!
@@ -76,7 +75,6 @@ export default function BodyFatPage({ params }: { params: { lang: string } }) {
         <p className="text-xs text-gray-400">US Navy circumference method · estimate only, not medical advice.</p>
       </div>
 
-      <ToolFaq slug="body-fat-calculator" />
     </ToolLayout>
   )
 }

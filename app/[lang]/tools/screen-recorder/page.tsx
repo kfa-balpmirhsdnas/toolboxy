@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -18,6 +17,10 @@ export default function ScreenRecorderPage({ params }: { params: { lang: string 
 
   async function start() {
     setError(''); setUrl('')
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getDisplayMedia) {
+      setError('Screen recording isn’t supported on this browser. Use Chrome or Edge on a desktop computer (it doesn’t work on phones).')
+      return
+    }
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
       streamRef.current = stream
@@ -72,7 +75,6 @@ export default function ScreenRecorderPage({ params }: { params: { lang: string 
         <p className="text-xs text-gray-400">Records your screen (and system/mic audio if allowed) to a WebM file, entirely in your browser. Nothing is uploaded.</p>
       </div>
 
-      <ToolFaq slug="screen-recorder" />
     </ToolLayout>
   )
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { CATEGORY_META, isToolNew, type ToolMeta } from '@/lib/tools/registry'
 import ToolTracker from '@/components/tools/ToolTracker'
+import ToolFaq from '@/components/tools/ToolFaq'
 import UsageGate from '@/components/tools/UsageGate'
 
 function slugToName(slug: string): string {
@@ -70,6 +71,9 @@ export default function ToolLayout({ tool, lang, children }: ToolLayoutProps) {
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         {children}
       </div>
+
+      {/* FAQ (per-tool if available, otherwise a common free-to-use answer) */}
+      <ToolFaq slug={tool.slug} />
     </div>
   )
 }

@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
@@ -66,7 +65,6 @@ export default function WebcamTestPage({ params }: { params: { lang: string } })
         <p className="text-xs text-gray-400">The preview stays on your device — nothing is recorded or uploaded.</p>
       </div>
 
-      <ToolFaq slug="webcam-test" />
     </ToolLayout>
   )
 }

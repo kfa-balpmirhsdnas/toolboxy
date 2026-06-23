@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import QrOutput from '@/components/tools/QrOutput'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -42,7 +41,6 @@ export default function EmailQrPage({ params }: { params: { lang: string } }) {
         {!to && <p className="text-xs text-gray-400 text-center">Enter an email address to generate the QR code.</p>}
       </div>
 
-      <ToolFaq slug="email-qr-generator" />
     </ToolLayout>
   )
 }

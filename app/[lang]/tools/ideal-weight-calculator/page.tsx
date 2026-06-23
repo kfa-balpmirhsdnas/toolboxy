@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('ideal-weight-calculator')!
@@ -60,7 +59,6 @@ export default function IdealWeightPage({ params }: { params: { lang: string } }
         <p className="text-xs text-gray-400">Estimates from common clinical formulas · not medical advice.</p>
       </div>
 
-      <ToolFaq slug="ideal-weight-calculator" />
     </ToolLayout>
   )
 }

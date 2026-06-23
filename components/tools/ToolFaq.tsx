@@ -12,13 +12,14 @@ interface FaqData {
 }
 
 /**
- * Localized intro + FAQ block rendered at the bottom of a tool page for SEO.
- * Content lives in the `langTools.<slug>` message namespace (per locale), so
- * each language version targets its own search keywords. Renders nothing if
- * the slug has no entry.
+ * FAQ block at the bottom of every tool page (rendered by ToolLayout).
+ * If the tool has a localized `langTools.<slug>` entry, that is shown (those
+ * already include an "is it free?" item). Otherwise a localized common FAQ
+ * (`faqCommon`) is shown so every tool has at least the free-to-use answer.
  */
 export default function ToolFaq({ slug }: { slug: string }) {
   const t = useTranslations('langTools')
+  const c = useTranslations('faqCommon')
 
   let data: FaqData | undefined
   try {
@@ -27,21 +28,24 @@ export default function ToolFaq({ slug }: { slug: string }) {
   } catch {
     data = undefined
   }
-  if (!data || (!data.intro && !data.faq?.length)) return null
+
+  const hasCustom = !!data && (!!data.intro || !!(data.faq && data.faq.length))
+  const items: FaqItem[] = hasCustom ? data!.faq ?? [] : [{ q: c('q'), a: c('a') }]
+  const intro = hasCustom ? data!.intro : undefined
+
+  if (!intro && items.length === 0) return null
 
   return (
     <section className="max-w-4xl mx-auto px-4 mt-10 text-gray-600">
-      {data.intro && <p className="text-sm leading-relaxed mb-6">{data.intro}</p>}
-      {data.faq?.length ? (
-        <div className="space-y-4">
-          {data.faq.map((item, i) => (
-            <div key={i} className="border-t border-gray-100 pt-4">
-              <h3 className="font-semibold text-gray-800 text-sm mb-1">{item.q}</h3>
-              <p className="text-sm leading-relaxed">{item.a}</p>
-            </div>
-          ))}
-        </div>
-      ) : null}
+      {intro && <p className="text-sm leading-relaxed mb-6">{intro}</p>}
+      <div className="space-y-4">
+        {items.map((item, i) => (
+          <div key={i} className="border-t border-gray-100 pt-4">
+            <h3 className="font-semibold text-gray-800 text-sm mb-1">{item.q}</h3>
+            <p className="text-sm leading-relaxed">{item.a}</p>
+          </div>
+        ))}
+      </div>
     </section>
   )
 }

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('vat-calculator')!
@@ -58,7 +57,6 @@ export default function VatCalculatorPage({ params }: { params: { lang: string }
         )}
       </div>
 
-      <ToolFaq slug="vat-calculator" />
     </ToolLayout>
   )
 }

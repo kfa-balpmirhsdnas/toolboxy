@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import ToolFaq from '@/components/tools/ToolFaq'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 
@@ -75,7 +74,6 @@ export default function HiraganaKatakanaPage({ params }: { params: { lang: strin
         <p className="text-xs text-gray-400">{input.length} chars · Instant, in-browser conversion.</p>
       </div>
 
-      <ToolFaq slug="hiragana-katakana-converter" />
     </ToolLayout>
   )
 }
