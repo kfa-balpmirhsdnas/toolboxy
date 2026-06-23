@@ -1,6 +1,6 @@
 'use client'
 import {useState,useRef,useEffect} from 'react'
-import ToolLayout from '@/components/ToolLayout'
+import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 export default function Page(){
   const [text,setText]=useState('Hello, World!\nThis is handwriting.')

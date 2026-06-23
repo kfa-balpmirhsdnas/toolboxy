@@ -1,6 +1,6 @@
 'use client'
 import {useState,useMemo} from 'react'
-import ToolLayout from '@/components/ToolLayout'
+import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 export default function Page(){
   const [rows,setRows]=useState(3)

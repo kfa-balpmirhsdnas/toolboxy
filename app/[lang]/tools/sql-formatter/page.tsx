@@ -1,6 +1,6 @@
 'use client'
 import {useState} from 'react'
-import ToolLayout from '@/components/ToolLayout'
+import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 function fmt(sql){
   let s=sql.replace(/\s+/g,' ').trim()

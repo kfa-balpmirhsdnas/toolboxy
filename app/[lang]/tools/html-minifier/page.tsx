@@ -1,6 +1,6 @@
 'use client'
 import {useState} from 'react'
-import ToolLayout from '@/components/ToolLayout'
+import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 function minify(h){
   return h.replace(/<!--[\s\S]*?-->/g,'').replace(/\s+/g,' ').replace(/>\s+</g,'><').replace(/\s+>/g,'>').replace(/<\s+/g,'<').trim()

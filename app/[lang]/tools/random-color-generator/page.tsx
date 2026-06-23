@@ -1,6 +1,6 @@
 'use client'
 import {useState} from 'react'
-import ToolLayout from '@/components/ToolLayout'
+import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 function hex(r,g,b){return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('')}
 function hsl(r,g,b){
