@@ -1,18 +1,9 @@
-import type { Metadata } from 'next'
+import { buildToolMetadata } from '@/lib/tools/metadata'
 
-export const metadata: Metadata = {
-  title: 'Password Generator – Strong Random Passwords | ToolBoxy',
-  description: 'Generate secure random passwords with custom length and character sets. Uses crypto.getRandomValues() for true randomness.',
-  openGraph: {
-    title: 'Password Generator – Strong Random Passwords | ToolBoxy',
-    description: 'Generate secure random passwords with custom length and character sets. Uses crypto.getRandomValues() for true randomness.',
-    url: 'https://toolboxy.net',
-    siteName: 'ToolBoxy',
-    type: 'website',
-  },
-  twitter: { card: 'summary', title: 'Password Generator – Strong Random Passwords | ToolBoxy', description: 'Generate secure random passwords with custom length and character sets. Uses crypto.getRandomValues() for true randomness.' },
+export function generateMetadata({ params }: { params: { lang: string } }) {
+  return buildToolMetadata('password-generator', params.lang)
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return children
 }

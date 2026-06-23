@@ -1,18 +1,9 @@
-import type { Metadata } from 'next'
+import { buildToolMetadata } from '@/lib/tools/metadata'
 
-export const metadata: Metadata = {
-  title: 'UUID Generator – Free Online UUID v4 Generator | ToolBoxy',
-  description: 'Generate UUID v4 identifiers instantly. Cryptographically secure using crypto.getRandomValues(). Bulk generation supported.',
-  openGraph: {
-    title: 'UUID Generator – Free Online UUID v4 Generator | ToolBoxy',
-    description: 'Generate UUID v4 identifiers instantly. Cryptographically secure using crypto.getRandomValues(). Bulk generation supported.',
-    url: 'https://toolboxy.net',
-    siteName: 'ToolBoxy',
-    type: 'website',
-  },
-  twitter: { card: 'summary', title: 'UUID Generator – Free Online UUID v4 Generator | ToolBoxy', description: 'Generate UUID v4 identifiers instantly. Cryptographically secure using crypto.getRandomValues(). Bulk generation supported.' },
+export function generateMetadata({ params }: { params: { lang: string } }) {
+  return buildToolMetadata('uuid-generator', params.lang)
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return children
 }

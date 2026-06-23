@@ -1,18 +1,9 @@
-import type { Metadata } from 'next'
+import { buildToolMetadata } from '@/lib/tools/metadata'
 
-export const metadata: Metadata = {
-  title: 'URL Encoder & Decoder – Free Online Tool | ToolBoxy',
-  description: 'Encode and decode URLs instantly using encodeURIComponent. Handles special characters and percent-encoding.',
-  openGraph: {
-    title: 'URL Encoder & Decoder – Free Online Tool | ToolBoxy',
-    description: 'Encode and decode URLs instantly using encodeURIComponent. Handles special characters and percent-encoding.',
-    url: 'https://toolboxy.net',
-    siteName: 'ToolBoxy',
-    type: 'website',
-  },
-  twitter: { card: 'summary', title: 'URL Encoder & Decoder – Free Online Tool | ToolBoxy', description: 'Encode and decode URLs instantly using encodeURIComponent. Handles special characters and percent-encoding.' },
+export function generateMetadata({ params }: { params: { lang: string } }) {
+  return buildToolMetadata('url-encoder', params.lang)
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return children
 }

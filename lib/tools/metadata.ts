@@ -1,0 +1,68 @@
+import type { Metadata } from 'next'
+
+const BASE = 'https://www.toolboxy.net'
+const LANGS = ['en', 'ja', 'ko'] as const
+
+// Localized "Free Online Tool" suffix for the <title>.
+const SUFFIX: Record<string, string> = {
+  en: 'Free Online Tool',
+  ja: '無料オンラインツール',
+  ko: '무료 온라인 도구',
+}
+
+// Localized description fallback for tools without a toolDescriptions entry.
+const FALLBACK: Record<string, (name: string) => string> = {
+  en: (n) => `${n} — free online tool. Fast and private, runs entirely in your browser. No sign-up, no installation.`,
+  ja: (n) => `${n} — 無料のオンラインツール。ブラウザ上で高速かつ安全に動作。登録・インストール不要。`,
+  ko: (n) => `${n} — 무료 온라인 도구. 브라우저에서 빠르고 안전하게 처리. 가입·설치 불필요.`,
+}
+
+// Acronyms that should render fully uppercase in tool names/titles.
+const ACRONYMS = new Set([
+  'pdf', 'qr', 'url', 'jwt', 'json', 'csv', 'html', 'css', 'api', 'uuid',
+  'ascii', 'rgb', 'hex', 'svg', 'xml', 'yaml', 'sql', 'md5', 'sha', 'utf',
+  'bmi', 'gif', 'png', 'jpg', 'ip', 'dns', 'seo', 'id',
+])
+
+function slugToName(slug: string): string {
+  return slug
+    .split('-')
+    .map((w) => (ACRONYMS.has(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)))
+    .join(' ')
+}
+
+async function getDescription(slug: string, lang: string): Promise<string | undefined> {
+  try {
+    const messages = (await import(`../../locales/${lang}/common.json`)).default as {
+      toolDescriptions?: Record<string, string>
+    }
+    return messages.toolDescriptions?.[slug]
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * Build per-tool, per-language SEO metadata: a unique title + description
+ * (localized via toolDescriptions, with a localized fallback), canonical URL,
+ * and hreflang alternates for en/ja/ko. Used by each tool folder's layout.tsx.
+ */
+export async function buildToolMetadata(slug: string, lang: string): Promise<Metadata> {
+  const safeLang = (LANGS as readonly string[]).includes(lang) ? lang : 'en'
+  const name = slugToName(slug)
+  const description = (await getDescription(slug, safeLang)) ?? FALLBACK[safeLang](name)
+  const title = `${name} – ${SUFFIX[safeLang]} | ToolBoxy`
+  const url = `${BASE}/${safeLang}/tools/${slug}`
+
+  const languages: Record<string, string> = {}
+  for (const l of LANGS) languages[l] = `${BASE}/${l}/tools/${slug}`
+  languages['x-default'] = `${BASE}/en/tools/${slug}`
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url, languages },
+    openGraph: { title, description, url, siteName: 'ToolBoxy', type: 'website', locale: safeLang },
+    twitter: { card: 'summary', title, description },
+  }
+}

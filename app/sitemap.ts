@@ -1,56 +1,49 @@
 import type { MetadataRoute } from 'next'
-import { TOOLS } from '@/lib/tools/registry'
+import { TOOLS, CATEGORY_META, type ToolCategory } from '@/lib/tools/registry'
 
-const BASE_URL = 'https://toolboxy.net'
+const BASE_URL = 'https://www.toolboxy.net'
 const LANGS = ['en', 'ja', 'ko']
 const now = new Date()
 
-const IMPLEMENTED_SLUGS = new Set([
-  'base64-encoder', 'base64-decoder', 'color-converter', 'hash-generator',
-  'json-formatter', 'json-validator', 'url-encoder', 'url-decoder',
-  'uuid-generator', 'jwt-decoder', 'yaml-to-json', 'css-minifier',
-  'cron-expression-parser',
-  'lorem-ipsum-generator', 'markdown-editor', 'text-case-converter',
-  'word-counter', 'text-compare',
-  'csv-to-json', 'json-to-csv',
-  'image-resizer',
-  'password-generator', 'qr-generator',
-  'pdf-to-text',
-])
+// Only categories that actually have tools (avoid thin/empty pages).
+const NONEMPTY_CATEGORIES = (Object.keys(CATEGORY_META) as ToolCategory[]).filter(
+  (cat) => TOOLS.some((t) => t.category === cat),
+)
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const homeUrls = LANGS.map((lang) => ({
-    url: BASE_URL + '/' + lang,
+    url: `${BASE_URL}/${lang}`,
     lastModified: now,
     changeFrequency: 'daily' as const,
     priority: 1.0,
   }))
 
   const staticUrls = LANGS.flatMap((lang) =>
-    ['/tools', '/pricing'].map((path) => ({
-      url: BASE_URL + '/' + lang + path,
+    ['/tools'].map((path) => ({
+      url: `${BASE_URL}/${lang}${path}`,
       lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.9,
-    }))
+    })),
   )
 
   const categoryUrls = LANGS.flatMap((lang) =>
-    ['pdf', 'image', 'video', 'text', 'developer', 'file', 'utility'].map((cat) => ({
-      url: BASE_URL + '/' + lang + '/tools/' + cat,
+    NONEMPTY_CATEGORIES.map((cat) => ({
+      url: `${BASE_URL}/${lang}/tools/${cat}`,
       lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
-    }))
+    })),
   )
 
+  // Every tool, every language.
   const toolUrls = LANGS.flatMap((lang) =>
-    TOOLS.filter((t) => IMPLEMENTED_SLUGS.has(t.slug)).map((tool) => ({
-      url: BASE_URL + '/' + lang + '/tools/' + tool.slug,
+    TOOLS.map((tool) => ({
+      url: `${BASE_URL}/${lang}/tools/${tool.slug}`,
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.8,
-    }))
+    })),
   )
 
   return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls]

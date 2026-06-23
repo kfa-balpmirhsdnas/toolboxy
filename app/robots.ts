@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/*/dashboard', '/api/'],
       },
     ],
-    sitemap: 'https://toolboxy.net/sitemap.xml',
-    host: 'https://toolboxy.net',
+    sitemap: 'https://www.toolboxy.net/sitemap.xml',
+    host: 'https://www.toolboxy.net',
   }
 }
