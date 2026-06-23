@@ -1,38 +1,48 @@
 'use client'
-import { useState } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-const tool = getToolBySlug('meta-tag-generator')!
-export default function MetaTagGeneratorPage() {
-  const [title,setTitle]=useState('My Awesome Website')
-  const [desc,setDesc]=useState('A comprehensive website with useful tools and resources for everyone.')
-  const [keywords,setKeywords]=useState('tools, utilities, online, free')
-  const [author,setAuthor]=useState('')
+import {useState} from 'react'
+import ToolLayout from '@/components/ToolLayout'
+import {TOOLS} from '@/lib/tools/registry'
+export default function Page(){
+  const [title,setTitle]=useState('My Page')
+  const [desc,setDesc]=useState('A description for search engines.')
   const [url,setUrl]=useState('https://example.com')
-  const [image,setImage]=useState('https://example.com/og-image.png')
-  const [siteName,setSiteName]=useState('My Website')
-  const [twitter,setTwitter]=useState('@mywebsite')
-  const [copied,setCopied]=useState(false)
-  const tags=[
-    '<!-- Primary Meta Tags -->',
-    '<meta name="title" content="'+title+'">',
-    '<meta name="description" content="'+desc+'">',
-    keywords?'<meta name="keywords" content="'+keywords+'">':'',
-    author?'<meta name="author" content="'+author+'">':'',
-    '',
-    '<!-- Open Graph / Facebook -->',
-    '<meta property="og:type" content="website">',
-    url?'<meta property="og:url" content="'+url+'">':'',
-    '<meta property="og:title" content="'+title+'">',
-    '<meta property="og:description" content="'+desc+'">',
-    image?'<meta property="og:image" content="'+image+'">':'',
-    siteName?'<meta property="og:site_name" content="'+siteName+'">':'',
-    '',
-    '<!-- Twitter -->',
-    '<meta property="twitter:card" content="summary_large_image">',
-    url?'<meta property="twitter:url" content="'+url+'">':'',
-    '<meta property="twitter:title" content="'+title+'">',
-    '<meta property="twitter:description" content="'+desc+'">',
-    image?'<meta property="twitter:image" content="'+image+'">':'',
-    twitter?'<meta property="twitter:creator" content="'+twitter+'">':'',
-  ].filter(l=>l!==undefined&&l!==null).join('\n')\n  const copy=()=>{navigator.clipboard.writeText(tags);setCopied(true);setTimeout(()=>setCopied(false),1500)}\n  const Field=({label,value,onChange,placeholder}:{label:string;value:string;onChange:(v:string)=>void;placeholder?:string})=>(\n    <div><label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>\n      <input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}\n        className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-blue-400"/></div>\n  )\n  return (\n    <ToolLayout tool={tool}>\n      <div className="max-w-xl mx-auto px-4 space-y-3">\n        <div className="space-y-2">\n          <div><label className="block text-xs font-medium text-gray-600 mb-1">Title <span className={'text-xs ml-1 '+(title.length>60?'text-red-500':'text-gray-400')}>{title.length}/60</span></label>\n            <input value={title} onChange={e=>setTitle(e.target.value)}\n              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-blue-400"/></div>\n          <div><label className="block text-xs font-medium text-gray-600 mb-1">Description <span className={'text-xs ml-1 '+(desc.length>160?'text-red-500':'text-gray-400')}>{desc.length}/160</span></label>\n            <textarea value={desc} onChange={e=>setDesc(e.target.value)} rows={2}\n              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm resize-none focus:outline-none focus:border-blue-400"/></div>\n          <Field label="Keywords (comma separated)" value={keywords} onChange={setKeywords}/>\n          <Field label="Author" value={author} onChange={setAuthor} placeholder="John Doe"/>\n          <Field label="Page URL" value={url} onChange={setUrl} placeholder="https://example.com"/>\n          <Field label="OG Image URL" value={image} onChange={setImage} placeholder="https://example.com/image.png"/>\n          <Field label="Site Name" value={siteName} onChange={setSiteName}/>\n          <Field label="Twitter Handle" value={twitter} onChange={setTwitter} placeholder="@username"/>\n        </div>\n        <div className="bg-gray-900 rounded-xl overflow-hidden">\n          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">\n            <span className="text-xs text-gray-400">Generated meta tags</span>\n            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'Copied!':'Copy all'}</button>\n          </div>\n          <pre className="px-4 py-3 text-green-400 font-mono text-xs overflow-x-auto max-h-64 whitespace-pre">{tags}</pre>\n        </div>\n      </div>\n    </ToolLayout>\n  )\n}
+  const [img,setImg]=useState('https://example.com/og.png')
+  const [kw,setKw]=useState('keyword1, keyword2')
+  const [author,setAuthor]=useState('')
+  const nl='\n'
+  const tags='<!-- Primary Meta Tags -->'+nl
+    +'<title>'+title+'</title>'+nl
+    +'<meta name="title" content="'+title+'">'+nl
+    +'<meta name="description" content="'+desc+'">'+nl
+    +(kw?'<meta name="keywords" content="'+kw+'">'+nl:'')
+    +(author?'<meta name="author" content="'+author+'">'+nl:'')
+    +nl+'<!-- Open Graph -->'+nl
+    +'<meta property="og:type" content="website">'+nl
+    +'<meta property="og:url" content="'+url+'">'+nl
+    +'<meta property="og:title" content="'+title+'">'+nl
+    +'<meta property="og:description" content="'+desc+'">'+nl
+    +(img?'<meta property="og:image" content="'+img+'">'+nl:'')
+    +nl+'<!-- Twitter Card -->'+nl
+    +'<meta name="twitter:card" content="summary_large_image">'+nl
+    +'<meta name="twitter:url" content="'+url+'">'+nl
+    +'<meta name="twitter:title" content="'+title+'">'+nl
+    +'<meta name="twitter:description" content="'+desc+'">'+nl
+    +(img?'<meta name="twitter:image" content="'+img+'">':'')
+  const FIELDS=[['Title',title,setTitle],['Description',desc,setDesc],['URL',url,setUrl],['OG Image',img,setImg],['Keywords',kw,setKw],['Author',author,setAuthor]]
+  const tool=TOOLS.find(t=>t.slug==='meta-tag-generator')
+  return (
+    <ToolLayout tool={tool}>
+      <div className="max-w-2xl mx-auto px-4 space-y-4">
+        <div className="grid grid-cols-1 gap-3">
+          {FIELDS.map(([lbl,val,set])=>(
+            <div key={lbl}><label className="block text-xs font-medium text-gray-600 mb-0.5">{lbl}</label>
+              <input value={val} onChange={e=>set(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-1.5 text-sm"/></div>
+          ))}
+        </div>
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">Generated Tags</label>
+          <textarea value={tags} readOnly rows={16} className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-xs resize-none"/></div>
+        <button onClick={()=>navigator.clipboard?.writeText(tags)} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">Copy</button>
+      </div>
+    </ToolLayout>
+  )
+}

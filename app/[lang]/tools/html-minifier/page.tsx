@@ -1,16 +1,26 @@
 'use client'
-import { useState } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-const tool = getToolBySlug('html-minifier')!
-function minifyHtml(html:string,opts:{comments:boolean;whitespace:boolean;attrs:boolean}):string{
-  let s=html
-  if(opts.comments)s=s.replace(/<!--[\s\S]*?-->/g,'')
-  if(opts.whitespace){
-    s=s.replace(/\s*\n\s*/g,' ')
-    s=s.replace(/>\s+</g,'><')
-    s=s.replace(/\s{2,}/g,' ')
-    s=s.trim()
-  }
-  if(opts.attrs){
-    s=s.replace(/ (class|id|style|data-[\w-]+)="([^"]*)"/g,(m,attr,val)=>val?' '+attr+'="'+val+'"':'')\n    s=s.replace(/="([^"]*)"(?=[\s>])/g,(m,v)=>v===''?'':m)\n  }\n  return s\n}\nconst SAMPLE='<!DOCTYPE html>\n<html lang="en">\n  <head>\n    <!-- Meta tags -->\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>My Page</title>\n  </head>\n  <body>\n    <!-- Main content -->\n    <div class="container">\n      <h1>Hello World</h1>\n      <p>This is a paragraph with some   extra   spaces.</p>\n    </div>\n  </body>\n</html>'\nexport default function HtmlMinifierPage() {\n  const [input,setInput]=useState(SAMPLE)\n  const [comments,setComments]=useState(true)\n  const [whitespace,setWhitespace]=useState(true)\n  const [attrs,setAttrs]=useState(false)\n  const [copied,setCopied]=useState(false)\n  const minified=minifyHtml(input,{comments,whitespace,attrs})\n  const origBytes=new Blob([input]).size\n  const minBytes=new Blob([minified]).size\n  const savings=origBytes>0?Math.round((1-minBytes/origBytes)*100):0\n  const copy=()=>{navigator.clipboard.writeText(minified);setCopied(true);setTimeout(()=>setCopied(false),1500)}\n  return (\n    <ToolLayout tool={tool}>\n      <div className="max-w-xl mx-auto px-4 space-y-3">\n        <div className="flex flex-wrap gap-3">\n          {[['Remove comments',comments,setComments],['Collapse whitespace',whitespace,setWhitespace],['Optimize attributes',attrs,setAttrs]].map(([l,v,s])=>(\n            <label key={l as string} className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-600">\n              <input type="checkbox" checked={v as boolean} onChange={e=>(s as Function)(e.target.checked)} className="rounded"/>{l as string}\n            </label>\n          ))}\n        </div>\n        <div><label className="block text-xs font-medium text-gray-600 mb-1">Input HTML</label>\n          <textarea value={input} onChange={e=>setInput(e.target.value)} rows={7}\n            className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-sm resize-none focus:outline-none focus:border-blue-400"\n            placeholder="Paste HTML..."/></div>\n        <div className="flex gap-3 text-sm">\n          <div className="flex-1 bg-gray-50 rounded-xl px-3 py-2 text-center">\n            <p className="text-lg font-bold text-gray-800">{origBytes}</p><p className="text-xs text-gray-500">Original (bytes)</p>\n          </div>\n          <div className="flex-1 bg-green-50 rounded-xl px-3 py-2 text-center">\n            <p className="text-lg font-bold text-green-700">{minBytes}</p><p className="text-xs text-green-600">Minified (bytes)</p>\n          </div>\n          <div className="flex-1 bg-blue-50 rounded-xl px-3 py-2 text-center">\n            <p className="text-lg font-bold text-blue-700">{savings}%</p><p className="text-xs text-blue-600">Savings</p>\n          </div>\n        </div>\n        <div className="bg-gray-900 rounded-xl overflow-hidden">\n          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">\n            <span className="text-xs text-gray-400">Minified output</span>\n            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>\n          </div>\n          <pre className="px-4 py-3 text-green-400 font-mono text-xs overflow-x-auto whitespace-pre-wrap max-h-40">{minified}</pre>\n        </div>\n      </div>\n    </ToolLayout>\n  )\n}
+import {useState} from 'react'
+import ToolLayout from '@/components/ToolLayout'
+import {TOOLS} from '@/lib/tools/registry'
+function minify(h){
+  return h.replace(/<!--[\s\S]*?-->/g,'').replace(/\s+/g,' ').replace(/>\s+</g,'><').replace(/\s+>/g,'>').replace(/<\s+/g,'<').trim()
+}
+export default function Page(){
+  const [input,setInput]=useState('<html>\n  <head>\n    <title>Page</title>\n  </head>\n  <body>\n    <!-- comment -->\n    <p>Hello  World</p>\n  </body>\n</html>')
+  const output=minify(input)
+  const pct=input.length>0?Math.round((1-output.length/input.length)*100):0
+  const tool=TOOLS.find(t=>t.slug==='html-minifier')
+  return (
+    <ToolLayout tool={tool}>
+      <div className="max-w-2xl mx-auto px-4 space-y-4">
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">HTML Input</label>
+          <textarea value={input} onChange={e=>setInput(e.target.value)} rows={8} className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-sm resize-none"/></div>
+        <div className="flex justify-between text-xs text-gray-500 bg-gray-50 rounded px-3 py-2">
+          <span>{input.length} → {output.length} chars</span><span className="text-green-600 font-semibold">{pct}% saved</span></div>
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">Minified</label>
+          <textarea value={output} readOnly rows={4} className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-sm resize-none"/></div>
+        <button onClick={()=>navigator.clipboard?.writeText(output)} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">Copy</button>
+      </div>
+    </ToolLayout>
+  )
+}

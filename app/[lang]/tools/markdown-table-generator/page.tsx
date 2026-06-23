@@ -1,19 +1,45 @@
 'use client'
-import { useState } from 'react'
-import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-const tool = getToolBySlug('markdown-table-generator')!
-type Align='left'|'center'|'right'
-export default function MarkdownTableGeneratorPage() {
+import {useState,useMemo} from 'react'
+import ToolLayout from '@/components/ToolLayout'
+import {TOOLS} from '@/lib/tools/registry'
+export default function Page(){
   const [rows,setRows]=useState(3)
   const [cols,setCols]=useState(3)
-  const [headers,setHeaders]=useState(['Name','Age','City'])
-  const [data,setData]=useState([['Alice','30','New York'],['Bob','25','London'],['Carol','35','Tokyo']])
-  const [aligns,setAligns]=useState<Align[]>(['left','left','left'])
-  const [copied,setCopied]=useState(false)
-  const setRows2=(n:number)=>{const nr=Math.max(1,Math.min(20,n));setRows(nr);setData(d=>{const nd=[...d];while(nd.length<nr)nd.push(Array(cols).fill(''));while(nd.length>nr)nd.pop();return nd})}
-  const setCols2=(n:number)=>{const nc=Math.max(1,Math.min(8,n));setCols(nc);setHeaders(h=>{const nh=[...h];while(nh.length<nc)nh.push('Col '+(nh.length+1));while(nh.length>nc)nh.pop();return nh});setAligns(a=>{const na=[...a];while(na.length<nc)na.push('left');while(na.length>nc)na.pop();return na});setData(d=>d.map(r=>{const nr=[...r];while(nr.length<nc)nr.push('');while(nr.length>nc)nr.pop();return nr}))}
-  const pad=(s:string,w:number)=>s+' '.repeat(Math.max(0,w-s.length))
-  const colWidths=Array.from({length:cols},(_,i)=>Math.max(3,headers[i]?.length||3,...data.map(r=>r[i]?.length||0)))
-  const sepChar=(a:Align,i:number)=>a==='left'?':'+'-'.repeat(colWidths[i]-1):a==='right'?'-'.repeat(colWidths[i]-1)+':':':'+'-'.repeat(colWidths[i]-2)+':'
-  const md=['| '+headers.map((h,i)=>pad(h,colWidths[i])).join(' | ')+' |','| '+aligns.map((a,i)=>sepChar(a,i)).join(' | ')+' |',...data.map(r=>'| '+r.map((c,i)=>pad(c,colWidths[i])).join(' | ')+' |')].join('\n')\n  const copy=()=>{navigator.clipboard.writeText(md);setCopied(true);setTimeout(()=>setCopied(false),1500)}\n  return (\n    <ToolLayout tool={tool}>\n      <div className="max-w-xl mx-auto px-4 space-y-4">\n        <div className="flex gap-4 items-center flex-wrap">\n          <div className="flex items-center gap-2"><label className="text-sm text-gray-600">Rows:</label>\n            <input type="number" value={rows} onChange={e=>setRows2(Number(e.target.value))} min="1" max="20" className="w-16 rounded border border-gray-300 px-2 py-1.5 text-sm text-center"/></div>\n          <div className="flex items-center gap-2"><label className="text-sm text-gray-600">Cols:</label>\n            <input type="number" value={cols} onChange={e=>setCols2(Number(e.target.value))} min="1" max="8" className="w-16 rounded border border-gray-300 px-2 py-1.5 text-sm text-center"/></div>\n        </div>\n        <div className="overflow-auto">\n          <table className="text-sm border-collapse w-full">\n            <thead>\n              <tr>\n                {headers.map((h,i)=>(\n                  <th key={i} className="border border-gray-300 bg-gray-50 p-0 min-w-24">\n                    <input value={h} onChange={e=>{const nh=[...headers];nh[i]=e.target.value;setHeaders(nh)}} className="w-full px-2 py-1.5 font-semibold bg-transparent text-center text-xs focus:outline-none focus:bg-blue-50"/>\n                    <select value={aligns[i]} onChange={e=>{const na=[...aligns];na[i]=e.target.value as Align;setAligns(na)}} className="w-full border-t border-gray-300 bg-gray-50 text-xs text-center py-0.5">\n                      <option value="left">Left</option><option value="center">Center</option><option value="right">Right</option>\n                    </select>\n                  </th>\n                ))}\n              </tr>\n            </thead>\n            <tbody>\n              {data.map((row,ri)=>(\n                <tr key={ri} className={ri%2===1?'bg-gray-50':''}>\n                  {row.map((c,ci)=>(\n                    <td key={ci} className="border border-gray-300 p-0">\n                      <input value={c} onChange={e=>{const nd=data.map((r,rr)=>rr===ri?r.map((cc,cc2)=>cc2===ci?e.target.value:cc):r);setData(nd)}} className="w-full px-2 py-1.5 bg-transparent text-xs focus:outline-none focus:bg-blue-50"/>\n                    </td>\n                  ))}\n                </tr>\n              ))}\n            </tbody>\n          </table>\n        </div>\n        <div className="bg-gray-900 rounded-xl overflow-hidden">\n          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">\n            <span className="text-xs text-gray-400">Markdown table</span>\n            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>\n          </div>\n          <pre className="px-4 py-3 text-green-400 font-mono text-xs overflow-x-auto">{md}</pre>\n        </div>\n      </div>\n    </ToolLayout>\n  )\n}
+  const [cells,setCells]=useState([['Header 1','Header 2','Header 3'],['Cell 1','Cell 2','Cell 3'],['Cell 4','Cell 5','Cell 6']])
+  const resize=(r,c)=>{ setRows(r);setCols(c);setCells(Array.from({length:r},(_,ri)=>Array.from({length:c},(_,ci)=>(cells[ri]||[])[ci]||''))) }
+  const setCell=(r,c,v)=>{ const n=cells.map(row=>[...row]);n[r][c]=v;setCells(n) }
+  const md=useMemo(()=>{
+    if(!cells.length)return ''
+    const widths=Array.from({length:cols},(_,c)=>Math.max(3,...cells.map(r=>(r[c]||'').length)))
+    const pad=(s,n)=>s+' '.repeat(Math.max(0,n-s.length))
+    const rowStr=r=>'| '+r.map((c,i)=>pad(c||'',widths[i])).join(' | ')+' |'
+    const sep='| '+widths.map(w=>'-'.repeat(w)).join(' | ')+' |'
+    return [rowStr(cells[0]||[]),sep,...cells.slice(1).map(r=>rowStr(r))].join('\n')
+  },[cells,cols])
+  const tool=TOOLS.find(t=>t.slug==='markdown-table-generator')
+  return (
+    <ToolLayout tool={tool}>
+      <div className="max-w-2xl mx-auto px-4 space-y-4">
+        <div className="flex gap-4">
+          <label className="flex items-center gap-2 text-sm text-gray-700">Rows
+            <input type="number" min={1} max={20} value={rows} onChange={e=>resize(+e.target.value,cols)} className="w-16 rounded border border-gray-300 px-2 py-1 text-sm"/></label>
+          <label className="flex items-center gap-2 text-sm text-gray-700">Cols
+            <input type="number" min={1} max={10} value={cols} onChange={e=>resize(rows,+e.target.value)} className="w-16 rounded border border-gray-300 px-2 py-1 text-sm"/></label>
+        </div>
+        <div className="overflow-x-auto border border-gray-200 rounded-lg">
+          <table className="border-collapse w-full">
+            <tbody>{cells.map((row,r)=>(
+              <tr key={r} className={r===0?'bg-gray-50':''}>
+                {row.map((c,ci)=><td key={ci} className="border border-gray-200 p-0">
+                  <input value={c} onChange={e=>setCell(r,ci,e.target.value)} className={'w-full text-sm px-2 py-1.5 bg-transparent outline-none'+(r===0?' font-semibold':'')} placeholder={r===0?'Header':'Cell'}/>
+                </td>)}
+              </tr>
+            ))}</tbody>
+          </table></div>
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">Markdown</label>
+          <textarea value={md} readOnly rows={rows+2} className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-xs resize-none"/></div>
+        <button onClick={()=>navigator.clipboard?.writeText(md)} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">Copy</button>
+      </div>
+    </ToolLayout>
+  )
+}
