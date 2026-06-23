@@ -23,7 +23,13 @@
     "file": "File",
     "utility": "Utility",
     "funny": "Funny",
-    "game": "Game"
+    "game": "Game",
+    "qr": "QR & Barcode",
+    "security": "Security",
+    "finance": "Finance",
+    "health": "Health",
+    "design": "Color & Design",
+    "seo": "SEO"
   },
   "home": {
     "hero_title": "Free Online Tools",

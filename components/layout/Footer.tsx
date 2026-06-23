@@ -16,8 +16,8 @@ export default function Footer() {
   const tc = useTranslations('categories')
   const year = new Date().getFullYear()
 
-  const cats1 = ['pdf', 'image', 'video', 'audio', 'text'] as const
-  const cats2 = ['developer', 'file', 'utility', 'funny', 'game'] as const
+  const cats1 = ['developer', 'design', 'text', 'finance', 'security'] as const
+  const cats2 = ['health', 'qr', 'seo', 'image', 'utility'] as const
 
   return (
     <footer className="bg-gray-900 text-gray-400 mt-16">

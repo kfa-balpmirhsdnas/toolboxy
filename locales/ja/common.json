@@ -23,7 +23,13 @@
     "file": "ファイル",
     "utility": "ユーティリティ",
     "funny": "おもしろ",
-    "game": "ゲーム"
+    "game": "ゲーム",
+    "qr": "QR・バーコード",
+    "security": "セキュリティ",
+    "finance": "ファイナンス",
+    "health": "健康",
+    "design": "カラー・デザイン",
+    "seo": "SEO"
   },
   "home": {
     "hero_title": "無料オンラインツール",

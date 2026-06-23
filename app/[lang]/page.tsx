@@ -14,7 +14,10 @@ export default function HomePage({ params }: { params: { lang: string } }) {
   const t = useTranslations('home')
   const tc = useTranslations('categories')
   const tg = useTranslations('gate')
-  const categories = Object.keys(CATEGORY_META) as ToolCategory[]
+  // Only show categories that actually have tools (skip empty ones).
+  const categories = (Object.keys(CATEGORY_META) as ToolCategory[]).filter((cat) =>
+    TOOLS.some((t) => t.category === cat),
+  )
 
   return (
     <div>
