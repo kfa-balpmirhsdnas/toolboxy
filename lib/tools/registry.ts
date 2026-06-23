@@ -1,4 +1,4 @@
-export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo'
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language'
 export type Phase = 1 | 2 | 3
 
 export interface ToolMeta {
@@ -22,6 +22,10 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'romaji-kana-converter',category:'language',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['romaji','hiragana','katakana','kana','japanese','ローマ字','変換'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'fullwidth-halfwidth-converter',category:'language',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['fullwidth','halfwidth','全角','半角','変換','zenkaku','hankaku'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'hiragana-katakana-converter',category:'language',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['hiragana','katakana','ひらがな','カタカナ','変換','japanese'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'hangul-romaja-converter',category:'language',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['hangul','romaja','한글','로마자','korean','romanization'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'dice-roller',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['dice','roller','random','d6','rpg'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'tip-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['tip','restaurant','split','bill'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'loan-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['loan','mortgage','payment','interest','amortization'],maxFileSizeMB:{free:0,pro:0} },
@@ -321,4 +325,5 @@ export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; 
   health:    { label: 'Health',       icon: String.fromCodePoint(0x1FA7A), color: 'lime'    },
   design:    { label: 'Color & Design', icon: String.fromCodePoint(0x1F3A8), color: 'fuchsia' },
   seo:       { label: 'SEO',          icon: String.fromCodePoint(0x1F50D), color: 'sky'     },
+  language:  { label: 'Language',     icon: String.fromCodePoint(0x1F310), color: 'cyan'    },
 };

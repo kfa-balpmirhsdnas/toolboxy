@@ -29,7 +29,8 @@
     "finance": "Finance",
     "health": "Health",
     "design": "Color & Design",
-    "seo": "SEO"
+    "seo": "SEO",
+    "language": "Language"
   },
   "home": {
     "hero_title": "Free Online Tools",
@@ -642,7 +643,11 @@
     "speed-calculator": "Calculate speed from distance and time instantly.",
     "data-storage-converter": "Convert between data storage units quickly.",
     "password-generator": "Generate strong, random passwords instantly.",
-    "qr-generator": "Create QR codes from text or URLs and download them."
+    "qr-generator": "Create QR codes from text or URLs and download them.",
+    "romaji-kana-converter": "Convert romaji to hiragana and katakana — or kana back to romaji — in real time. Free online Japanese romaji converter, no sign-up.",
+    "fullwidth-halfwidth-converter": "Convert full-width (zenkaku) characters to half-width (hankaku) and back — letters, digits, symbols and spaces. Free online converter.",
+    "hiragana-katakana-converter": "Convert hiragana to katakana and back instantly. Free online kana converter for Japanese learners.",
+    "hangul-romaja-converter": "Convert Korean Hangul to romanization (Revised Romanization). Free online Hangul-to-romaja converter for names and places."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -650,5 +655,59 @@
     "create": "Create free account",
     "signin": "Already have an account? Sign in",
     "continue": "Continue without signing up"
+  },
+  "langTools": {
+    "romaji-kana-converter": {
+      "intro": "Type romaji (Latin letters) and instantly get hiragana or katakana, or paste kana to get romaji back. Everything runs in your browser.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free with no account or installation required."
+        },
+        {
+          "q": "Does it handle long words and small tsu?",
+          "a": "Yes. Double consonants become っ (sokuon) and youon like kya/sha are supported."
+        }
+      ]
+    },
+    "fullwidth-halfwidth-converter": {
+      "intro": "Paste text to convert between full-width (全角) and half-width (半角) ASCII letters, digits, symbols and spaces.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and runs entirely in your browser."
+        },
+        {
+          "q": "What gets converted?",
+          "a": "ASCII letters, numbers, punctuation and spaces. Kanji and kana are left unchanged."
+        }
+      ]
+    },
+    "hiragana-katakana-converter": {
+      "intro": "Convert hiragana to katakana or katakana to hiragana instantly. Useful for Japanese study and proofreading.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes, free with no sign-up."
+        },
+        {
+          "q": "Is conversion accurate?",
+          "a": "Kana mapping is one-to-one, so conversion is exact."
+        }
+      ]
+    },
+    "hangul-romaja-converter": {
+      "intro": "Convert Korean Hangul into Latin romanization using the Revised Romanization system. Great for names, places and study.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and browser-based."
+        },
+        {
+          "q": "Are names always exact?",
+          "a": "It converts each syllable directly. Pronunciation changes between syllables are not applied, so some names may differ from official spellings."
+        }
+      ]
+    }
   }
 }
