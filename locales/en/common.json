@@ -678,7 +678,11 @@
     "screen-recorder": "Record your screen to a video file right in your browser — no install. Free online screen recorder.",
     "webcam-test": "Test your webcam online and check its resolution — no software needed. Free webcam test.",
     "voice-recorder": "Record audio from your microphone and download it. Free online voice recorder, no sign-up.",
-    "tone-generator": "Play any frequency from 20 Hz to 20 kHz with selectable waveforms. Free online tone generator."
+    "tone-generator": "Play any frequency from 20 Hz to 20 kHz with selectable waveforms. Free online tone generator.",
+    "mortgage-calculator": "Calculate your monthly mortgage payment, total interest and full cost. Free online mortgage calculator.",
+    "auto-loan-calculator": "Calculate your monthly car payment and total interest. Free online auto loan calculator.",
+    "retirement-calculator": "Project how much you will have saved by retirement. Free retirement savings calculator.",
+    "inflation-calculator": "See how inflation changes the value of money over time. Free inflation calculator."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1096,6 +1100,46 @@
         {
           "q": "Is it free?",
           "a": "Yes — completely free, no account needed."
+        }
+      ]
+    },
+    "mortgage-calculator": {
+      "intro": "Enter the loan amount, interest rate and term to see your monthly payment, total interest and full cost.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no sign-up."
+        },
+        {
+          "q": "How is the monthly payment calculated?",
+          "a": "With the standard amortization formula using your rate and term."
+        }
+      ]
+    },
+    "auto-loan-calculator": {
+      "intro": "Enter the car price, interest rate and term to see your monthly payment and total interest.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no sign-up."
+        }
+      ]
+    },
+    "retirement-calculator": {
+      "intro": "Enter your age, savings and contributions to project your retirement nest egg.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no sign-up."
+        }
+      ]
+    },
+    "inflation-calculator": {
+      "intro": "Enter an amount, number of years and inflation rate to see its future value and purchasing power.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no sign-up."
         }
       ]
     }

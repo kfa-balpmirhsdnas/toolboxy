@@ -22,6 +22,10 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'mortgage-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['mortgage','home loan','calculator','住宅ローン','주택담보대출'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'auto-loan-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['auto loan','car loan','calculator','自動車ローン','자동차 대출'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'retirement-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['retirement','savings','nest egg','老後資金','은퇴 자금'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'inflation-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['inflation','purchasing power','calculator','インフレ','인플레이션'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'screen-recorder',category:'video',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['screen recorder','record','capture','webm','画面録画','화면 녹화'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'webcam-test',category:'video',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['webcam','camera','test','check','ウェブカメラ','웹캠'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'voice-recorder',category:'audio',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['voice recorder','audio','microphone','record','ボイスレコーダー','음성 녹음'],maxFileSizeMB:{free:0,pro:0} },
