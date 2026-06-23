@@ -7,6 +7,7 @@ import {
   type ToolCategory,
 } from '@/lib/tools/registry'
 import ToolCard from '@/components/tools/ToolCard'
+import { buildCategoryMetadata } from '@/lib/tools/metadata'
 
 const CATEGORIES = Object.keys(CATEGORY_META) as ToolCategory[]
 
@@ -16,6 +17,10 @@ function isCategory(value: string): value is ToolCategory {
 
 export function generateStaticParams() {
   return CATEGORIES.map((category) => ({ category }))
+}
+
+export function generateMetadata({ params }: { params: { lang: string; category: string } }) {
+  return buildCategoryMetadata(params.category, params.lang)
 }
 
 export default async function CategoryPage({

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { TOOLS } from './registry'
 
 const BASE = 'https://www.toolboxy.net'
 const LANGS = ['en', 'ja', 'ko'] as const
@@ -64,5 +65,47 @@ export async function buildToolMetadata(slug: string, lang: string): Promise<Met
     alternates: { canonical: url, languages },
     openGraph: { title, description, url, siteName: 'ToolBoxy', type: 'website', locale: safeLang },
     twitter: { card: 'summary', title, description },
+  }
+}
+
+const CAT_DESC: Record<string, (cat: string, n: number) => string> = {
+  en: (c, n) => `${n} free online ${c} tools. Fast, private, and browser-based — no installation or sign-up.`,
+  ja: (c, n) => `無料の${c}ツール${n}種。ブラウザ完結で高速・安全。インストール・登録不要。`,
+  ko: (c, n) => `무료 ${c} 도구 ${n}종. 브라우저에서 빠르고 안전하게. 설치·가입 불필요.`,
+}
+
+/**
+ * Metadata for a category listing page. Localized title/description from the
+ * `categories`/`nav` namespaces; empty categories are noindexed (thin content).
+ */
+export async function buildCategoryMetadata(category: string, lang: string): Promise<Metadata> {
+  const safeLang = (LANGS as readonly string[]).includes(lang) ? lang : 'en'
+  let catName = category
+  let toolsWord = 'Tools'
+  try {
+    const messages = (await import(`../../locales/${safeLang}/common.json`)).default as {
+      categories?: Record<string, string>
+      nav?: Record<string, string>
+    }
+    catName = messages.categories?.[category] ?? category
+    toolsWord = messages.nav?.tools ?? 'Tools'
+  } catch { /* fall back to defaults */ }
+
+  const count = TOOLS.filter((t) => t.category === category).length
+  const title = `${catName} ${toolsWord} | ToolBoxy`
+  const description = (CAT_DESC[safeLang] ?? CAT_DESC.en)(catName, count)
+  const url = `${BASE}/${safeLang}/tools/${category}`
+
+  const languages: Record<string, string> = {}
+  for (const l of LANGS) languages[l] = `${BASE}/${l}/tools/${category}`
+  languages['x-default'] = `${BASE}/en/tools/${category}`
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url, languages },
+    openGraph: { title, description, url, siteName: 'ToolBoxy', type: 'website', locale: safeLang },
+    // Empty categories have no content to rank — keep them out of the index.
+    robots: count === 0 ? { index: false, follow: true } : undefined,
   }
 }
