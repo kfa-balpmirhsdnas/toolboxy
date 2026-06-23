@@ -26,11 +26,8 @@ export default function GitCommitGeneratorPage() {
   const selType=TYPES.find(t=>t.type===type)!
   const commit=[
     (emoji?selType.icon+' ':'')+type+(scope?'('+scope+')':'')+(breaking?'!':'')+': '+desc,
-    body?'
-'+body:'',
-    footer?'
-BREAKING CHANGE: '+footer:'',
-  ].filter(Boolean).join('')
+    body?'\n'+body:'',\n    footer?'
+BREAKING CHANGE: '+footer:'',\n  ].filter(Boolean).join('')
   const [copied,setCopied]=useState(false)
   const copy=()=>{navigator.clipboard.writeText(commit);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   return (

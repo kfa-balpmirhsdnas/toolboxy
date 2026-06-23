@@ -5,26 +5,15 @@ import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('string-padding-tool')!
 const PAD_CHARS=[{label:'Space',val:' '},{label:'Zero',val:'0'},{label:'Dot',val:'.'},{label:'Dash',val:'-'},{label:'Star',val:'*'},{label:'Hash',val:'#'}]
 export default function StringPaddingToolPage() {
-  const [lines,setLines]=useState('Hello
-Hi
+  const [lines,setLines]=useState('Hello\nHi
 Goodbye
-World')
-  const [mode,setMode]=useState<'start'|'end'|'both'>('end')
+World')\n  const [mode,setMode]=useState<'start'|'end'|'both'>('end')
   const [padChar,setPadChar]=useState(' ')
   const [targetLen,setTargetLen]=useState(10)
   const [copied,setCopied]=useState(false)
   const pc=padChar.charAt(0)||' '
-  const processedLines=lines.split('
-').map(l=>{
-    const n=Math.max(0,targetLen-l.length)
-    if(mode==='start')return pc.repeat(n)+l
-    if(mode==='end')return l+pc.repeat(n)
-    const half=Math.floor(n/2)
-    return pc.repeat(half)+l+pc.repeat(n-half)
-  })
-  const output=processedLines.join('
-')
-  const copy=()=>{navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
+  const processedLines=lines.split('\n').map(l=>{\n    const n=Math.max(0,targetLen-l.length)\n    if(mode==='start')return pc.repeat(n)+l\n    if(mode==='end')return l+pc.repeat(n)\n    const half=Math.floor(n/2)\n    return pc.repeat(half)+l+pc.repeat(n-half)\n  })\n  const output=processedLines.join('
+')\n  const copy=()=>{navigator.clipboard.writeText(output);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4 space-y-4">

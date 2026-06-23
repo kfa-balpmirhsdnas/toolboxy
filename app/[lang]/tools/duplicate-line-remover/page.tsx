@@ -4,54 +4,21 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('duplicate-line-remover')!
 export default function DuplicateLineRemoverPage() {
-  const [input,setInput]=useState('apple
-banana
+  const [input,setInput]=useState('apple\nbanana
 apple
 cherry
 banana
 date
 apple
-elderbery')
-  const [caseI,setCaseI]=useState(true)
+elderbery')\n  const [caseI,setCaseI]=useState(true)
   const [trim,setTrim]=useState(true)
   const [removeEmpty,setRemoveEmpty]=useState(false)
   const [keepFirst,setKeepFirst]=useState(true)
   const [copied,setCopied]=useState(false)
   const [mode,setMode]=useState<'unique'|'dups'>('unique')
   const result=useMemo(()=>{
-    const lines=input.split('
-')
-    const seen=new Set<string>()
-    const dups=new Set<string>()
-    for(const l of lines){
-      const key=(trim?l.trim():l)+(caseI?'_lower':'')
-      const k=caseI?key.toLowerCase():key
-      if(seen.has(k))dups.add(k)
-      seen.add(k)
-    }
-    if(mode==='dups'){
-      const dupSeen=new Set<string>()
-      return lines.filter(l=>{
-        const key=(trim?l.trim():l)
-        const k=caseI?key.toLowerCase():key
-        if(!dups.has(k))return false
-        if(keepFirst&&!dupSeen.has(k)){dupSeen.add(k);return false}
-        return true
-      })
-    }
-    const uniqSeen=new Set<string>()
-    return lines.filter(l=>{
-      const key=(trim?l.trim():l)
-      const k=caseI?key.toLowerCase():key
-      if(removeEmpty&&!key)return false
-      if(uniqSeen.has(k))return false
-      uniqSeen.add(k);return true
-    })
-  },[input,caseI,trim,removeEmpty,keepFirst,mode])
-  const copy=()=>{navigator.clipboard.writeText(result.join('
-'));setCopied(true);setTimeout(()=>setCopied(false),1500)}
-  const totalLines=input.split('
-').length
+    const lines=input.split('\n')\n    const seen=new Set<string>()\n    const dups=new Set<string>()\n    for(const l of lines){\n      const key=(trim?l.trim():l)+(caseI?'_lower':'')\n      const k=caseI?key.toLowerCase():key\n      if(seen.has(k))dups.add(k)\n      seen.add(k)\n    }\n    if(mode==='dups'){\n      const dupSeen=new Set<string>()\n      return lines.filter(l=>{\n        const key=(trim?l.trim():l)\n        const k=caseI?key.toLowerCase():key\n        if(!dups.has(k))return false\n        if(keepFirst&&!dupSeen.has(k)){dupSeen.add(k);return false}\n        return true\n      })\n    }\n    const uniqSeen=new Set<string>()\n    return lines.filter(l=>{\n      const key=(trim?l.trim():l)\n      const k=caseI?key.toLowerCase():key\n      if(removeEmpty&&!key)return false\n      if(uniqSeen.has(k))return false\n      uniqSeen.add(k);return true\n    })\n  },[input,caseI,trim,removeEmpty,keepFirst,mode])\n  const copy=()=>{navigator.clipboard.writeText(result.join('
+'));setCopied(true);setTimeout(()=>setCopied(false),1500)}\n  const totalLines=input.split('\n').length
   const removed=totalLines-result.length
   return (
     <ToolLayout tool={tool}>

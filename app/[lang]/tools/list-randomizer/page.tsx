@@ -4,8 +4,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('list-randomizer')!
 function shuffle<T>(arr:T[]):T[]{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]};return a}
-const SAMPLES=['Alice
-Bob
+const SAMPLES=['Alice\nBob
 Carol
 Dave
 Eve','Red
@@ -16,28 +15,16 @@ Purple','Apple
 Banana
 Cherry
 Date
-Elderbery']
-export default function ListRandomizerPage() {
-  const [input,setInput]=useState('Alice
-Bob
+Elderbery']\nexport default function ListRandomizerPage() {
+  const [input,setInput]=useState('Alice\nBob
 Carol
 Dave
-Eve')
-  const [result,setResult]=useState<string[]>([])
+Eve')\n  const [result,setResult]=useState<string[]>([])
   const [numPick,setNumPick]=useState(0)
   const [copied,setCopied]=useState(false)
   const [highlight,setHighlight]=useState(-1)
-  const lines=input.split('
-').map(s=>s.trim()).filter(Boolean)
-  const go=()=>{
-    const s=shuffle(lines)
-    const out=numPick>0&&numPick<=s.length?s.slice(0,numPick):s
-    setResult(out);setHighlight(0)
-    setTimeout(()=>setHighlight(-1),800)
-  }
-  const copy=()=>{navigator.clipboard.writeText(result.join('
-'));setCopied(true);setTimeout(()=>setCopied(false),1500)}
-  return (
+  const lines=input.split('\n').map(s=>s.trim()).filter(Boolean)\n  const go=()=>{\n    const s=shuffle(lines)\n    const out=numPick>0&&numPick<=s.length?s.slice(0,numPick):s\n    setResult(out);setHighlight(0)\n    setTimeout(()=>setHighlight(-1),800)\n  }\n  const copy=()=>{navigator.clipboard.writeText(result.join('
+'));setCopied(true);setTimeout(()=>setCopied(false),1500)}\n  return (
     <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto px-4 space-y-4">
         <div className="grid grid-cols-2 gap-3">

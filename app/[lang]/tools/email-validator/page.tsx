@@ -17,8 +17,7 @@ function validateEmail(email:string):CheckResult[]{
   checks.push({label:'Domain has dot',pass:hasDot,detail:hasDot?'Domain TLD found':'No dot in domain'})
   const tld=domain.split('.').pop()||''
   checks.push({label:'TLD length valid',pass:tld.length>=2&&tld.length<=6,detail:tld?'TLD: .'+tld:'No TLD'})
-  const localOk=/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)
-  checks.push({label:'Local part characters',pass:localOk,detail:localOk?'Valid characters':'Invalid characters in local part'})
+  const localOk=/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)\n  checks.push({label:'Local part characters',pass:localOk,detail:localOk?'Valid characters':'Invalid characters in local part'})
   const domainOk=/^[a-zA-Z0-9][a-zA-Z0-9.-]*[a-zA-Z0-9]$/.test(domain)
   checks.push({label:'Domain format',pass:domainOk,detail:domainOk?'Valid domain format':'Invalid domain format'})
   const lenOk=email.length<=254

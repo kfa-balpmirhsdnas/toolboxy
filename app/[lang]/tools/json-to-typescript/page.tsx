@@ -20,11 +20,9 @@ function generateInterface(obj:Record<string,unknown>,indent=0):string{
     const safeKey=/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(k)?k:`'${k}'`
     return `${isp}${safeKey}: ${jsonTypeOf(v)};`
   })
-  return '{
-'+lines.join('
+  return '{\n'+lines.join('
 ')+'
-'+sp+'}'
-}
+'+sp+'}'\n}
 function convert(json:string,name:string):string{
   const obj=JSON.parse(json)
   if(Array.isArray(obj)){

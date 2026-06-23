@@ -10,8 +10,7 @@ export default function WordFrequencyCounterPage() {
   const [minLen,setMinLen]=useState(1)
   const [topN,setTopN]=useState(20)
   const result=useMemo(()=>{
-    const words=text.toLowerCase().replace(/[^a-z0-9s'-]/g,' ').split(/s+/).filter(w=>w.length>=minLen&&(!excludeStop||!STOP_WORDS.has(w)))
-    const freq:Record<string,number>={}
+    const words=text.toLowerCase().replace(/[^a-z0-9s'-]/g,' ').split(/s+/).filter(w=>w.length>=minLen&&(!excludeStop||!STOP_WORDS.has(w)))\n    const freq:Record<string,number>={}
     for(const w of words)if(w)freq[w]=(freq[w]||0)+1
     return Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,topN)
   },[text,excludeStop,minLen,topN])

@@ -13,8 +13,7 @@ export default function UnicodeConverterPage() {
       if(cp<128&&escapeType!=='html')return ch
       if(escapeType==='js')return '\u'+cp.toString(16).toUpperCase().padStart(4,'0')
       if(escapeType==='html')return cp<128?ch:'&#'+cp+';'
-      if(escapeType==='css')return '\\'+cp.toString(16).toUpperCase()+' '
-      return '%'+cp.toString(16).toUpperCase().padStart(2,'0')
+      if(escapeType==='css')return '\\'+cp.toString(16).toUpperCase()+' '\n      return '%'+cp.toString(16).toUpperCase().padStart(2,'0')
     }).join('')
   }
   const decode=(text:string):string=>{

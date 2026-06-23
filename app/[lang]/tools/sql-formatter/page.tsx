@@ -6,44 +6,20 @@ const tool = getToolBySlug('sql-formatter')!
 const KEYWORDS=['SELECT','FROM','WHERE','AND','OR','NOT','IN','IS','NULL','JOIN','LEFT','RIGHT','INNER','OUTER','FULL','CROSS','ON','GROUP','BY','ORDER','HAVING','LIMIT','OFFSET','INSERT','INTO','VALUES','UPDATE','SET','DELETE','CREATE','TABLE','DROP','ALTER','ADD','COLUMN','INDEX','UNIQUE','PRIMARY','KEY','FOREIGN','REFERENCES','AS','DISTINCT','COUNT','SUM','AVG','MIN','MAX','CASE','WHEN','THEN','ELSE','END','EXISTS','BETWEEN','LIKE','UNION','ALL','INTERSECT','EXCEPT','WITH','RECURSIVE']
 function formatSQL(raw:string):string{
   let s=raw.replace(/s+/g,' ').trim()
-  s=s.replace(/,s*/g,',
-  ')
-  const kw=KEYWORDS.join('|')
-  const re=new RegExp('\\b('+kw+')\\b','gi')
-  s=s.replace(re,m=>m.toUpperCase())
-  s=s.replace(/SELECT/g,'SELECT')
-  s=s.replace(/FROM/g,'
-FROM')
-  s=s.replace(/(LEFT|RIGHT|INNER|OUTER|FULL|CROSS)?s*JOIN/g,'
-$1 JOIN')
-  s=s.replace(/WHERE/g,'
-WHERE')
-  s=s.replace(/AND/g,'
-  AND')
-  s=s.replace(/OR/g,'
-  OR')
-  s=s.replace(/GROUP BY/g,'
-GROUP BY')
-  s=s.replace(/ORDER BY/g,'
-ORDER BY')
-  s=s.replace(/HAVING/g,'
-HAVING')
-  s=s.replace(/LIMIT/g,'
-LIMIT')
-  s=s.replace(/OFFSET/g,'
-OFFSET')
-  s=s.replace(/UNION( ALL)?/g,'
-UNION$1
-')
-  return s.split('
-').map(l=>l.trim()).filter(Boolean).join('
-')
-}
+  s=s.replace(/,s*/g,',\n  ')\n  const kw=KEYWORDS.join('|')\n  const re=new RegExp('\\b('+kw+')\\b','gi')\n  s=s.replace(re,m=>m.toUpperCase())\n  s=s.replace(/SELECT/g,'SELECT')\n  s=s.replace(/FROM/g,'
+FROM')\n  s=s.replace(/(LEFT|RIGHT|INNER|OUTER|FULL|CROSS)?s*JOIN/g,'\n$1 JOIN')
+  s=s.replace(/WHERE/g,'\nWHERE')\n  s=s.replace(/AND/g,'
+  AND')\n  s=s.replace(/OR/g,'\n  OR')
+  s=s.replace(/GROUP BY/g,'\nGROUP BY')\n  s=s.replace(/ORDER BY/g,'
+ORDER BY')\n  s=s.replace(/HAVING/g,'\nHAVING')
+  s=s.replace(/LIMIT/g,'\nLIMIT')\n  s=s.replace(/OFFSET/g,'
+OFFSET')\n  s=s.replace(/UNION( ALL)?/g,'\nUNION$1\n')
+  return s.split('\n').map(l=>l.trim()).filter(Boolean).join('
+')\n}
 function highlight(sql:string):string{
   const kw=KEYWORDS.join('|')
   let h=sql.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-  h=h.replace(/'[^']*'/g,'<span style="color:#22c55e">$&</span>')
-  h=h.replace(/(d+.?d*)/g,'<span style="color:#f59e0b">$1</span>')
+  h=h.replace(/'[^']*'/g,'<span style="color:#22c55e">$&</span>')\n  h=h.replace(/(d+.?d*)/g,'<span style="color:#f59e0b">$1</span>')
   h=h.replace(new RegExp('\\b('+kw+')\\b','g'),'<span style="color:#60a5fa;font-weight:600">$1</span>')
   return h
 }

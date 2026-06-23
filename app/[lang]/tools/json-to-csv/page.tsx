@@ -11,31 +11,10 @@ function jsonToCsv(jsonStr:string,delimiter:string):string{
     const headers=Array.from(new Set(data.flatMap((row:any)=>Object.keys(row))))
     const escape=(v:any)=>{
       const s=v===null||v===undefined?'':typeof v==='object'?JSON.stringify(v):String(v)
-      return s.includes(delimiter)||s.includes('"')||s.includes('
-')?'"'+s.replace(/"/g,'""')+'"':s
-    }
+      return s.includes(delimiter)||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s\n    }
     const rows=[headers.join(delimiter),...data.map((row:any)=>headers.map((h:string)=>escape(row[h])).join(delimiter))]
-    return rows.join('
-')
-  }catch(e){return 'Error: '+String(e)}
-}
-const SAMPLE=JSON.stringify([{name:'Alice',age:30,city:'New York',email:'alice@example.com'},{name:'Bob',age:25,city:'London',email:'bob@example.com'},{name:'Carol',age:35,city:'Tokyo',email:'carol@example.com'}],null,2)
-export default function JsonToCsvPage() {
-  const [input,setInput]=useState(SAMPLE)
-  const [delimiter,setDelimiter]=useState(',')
-  const [copied,setCopied]=useState(false)
-  const csv=jsonToCsv(input,delimiter)
-  const isError=csv.startsWith('Error:')
-  const download=()=>{
-    const blob=new Blob([csv],{type:'text/csv'})
-    const url=URL.createObjectURL(blob)
-    const a=document.createElement('a');a.href=url;a.download='data.csv';a.click()
-    URL.revokeObjectURL(url)
-  }
-  const copy=()=>{navigator.clipboard.writeText(csv);setCopied(true);setTimeout(()=>setCopied(false),1500)}
-  const lineCount=csv.split('
-').filter(Boolean).length
-  return (
+    return rows.join('\n')\n  }catch(e){return 'Error: '+String(e)}\n}\nconst SAMPLE=JSON.stringify([{name:'Alice',age:30,city:'New York',email:'alice@example.com'},{name:'Bob',age:25,city:'London',email:'bob@example.com'},{name:'Carol',age:35,city:'Tokyo',email:'carol@example.com'}],null,2)\nexport default function JsonToCsvPage() {\n  const [input,setInput]=useState(SAMPLE)\n  const [delimiter,setDelimiter]=useState(',')\n  const [copied,setCopied]=useState(false)\n  const csv=jsonToCsv(input,delimiter)\n  const isError=csv.startsWith('Error:')\n  const download=()=>{\n    const blob=new Blob([csv],{type:'text/csv'})\n    const url=URL.createObjectURL(blob)\n    const a=document.createElement('a');a.href=url;a.download='data.csv';a.click()\n    URL.revokeObjectURL(url)\n  }\n  const copy=()=>{navigator.clipboard.writeText(csv);setCopied(true);setTimeout(()=>setCopied(false),1500)}\n  const lineCount=csv.split('
+').filter(Boolean).length\n  return (
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4 space-y-3">
         <div className="flex gap-3 items-center flex-wrap">

@@ -5,11 +5,8 @@ import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('invoice-generator')!
 type Item={desc:string;qty:number;rate:number}
 export default function InvoiceGeneratorPage() {
-  const [from,setFrom]=useState('Your Company
-your@email.com')
-  const [to,setTo]=useState('Client Name
-client@email.com')
-  const [invNum,setInvNum]=useState('INV-001')
+  const [from,setFrom]=useState('Your Company\nyour@email.com')\n  const [to,setTo]=useState('Client Name
+client@email.com')\n  const [invNum,setInvNum]=useState('INV-001')
   const [date,setDate]=useState(new Date().toISOString().slice(0,10))
   const [due,setDue]=useState(()=>{const d=new Date();d.setDate(d.getDate()+30);return d.toISOString().slice(0,10)})
   const [items,setItems]=useState<Item[]>([{desc:'Service',qty:1,rate:100},{desc:'',qty:0,rate:0}])

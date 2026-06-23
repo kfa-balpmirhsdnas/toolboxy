@@ -11,22 +11,13 @@ function formatXml(xml:string,indent:number):string{
     for(let i=0;i<tags.length;i++){
       const tag=tags[i].trim()
       if(!tag)continue
-      if(tag.startsWith('<?')||tag.startsWith('<!')){formatted+=sp()+tag+'
-'}
-      else if(tag.startsWith('</')){depth--;formatted+=sp()+tag+'
-'}
-      else if(tag.startsWith('<')&&!tag.endsWith('/>')) {
+      if(tag.startsWith('<?')||tag.startsWith('<!')){formatted+=sp()+tag+'\n'}\n      else if(tag.startsWith('</')){depth--;formatted+=sp()+tag+'
+'}\n      else if(tag.startsWith('<')&&!tag.endsWith('/>')) {
         const isText=tags[i+1]&&!tags[i+1].trim().startsWith('<')&&tags[i+2]&&tags[i+2].trim().startsWith('</')
-        if(isText){formatted+=sp()+tag+tags[i+1].trim()+tags[i+2].trim()+'
-';i+=2}
-        else{formatted+=sp()+tag+'
-';depth++}
-      }
-      else if(tag.startsWith('<')&&tag.endsWith('/>')) {formatted+=sp()+tag+'
-'}
-      else{formatted+=sp()+tag+'
-'}
-    }
+        if(isText){formatted+=sp()+tag+tags[i+1].trim()+tags[i+2].trim()+'\n';i+=2}\n        else{formatted+=sp()+tag+'
+';depth++}\n      }
+      else if(tag.startsWith('<')&&tag.endsWith('/>')) {formatted+=sp()+tag+'\n'}\n      else{formatted+=sp()+tag+'
+'}\n    }
     return formatted.trim()
   }catch{return xml}
 }
@@ -41,8 +32,7 @@ export default function XmlFormatterPage() {
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/&lt;(\/?)([\w:-]+)/g,'&lt;$1<span style="color:#60a5fa">$2</span>')
     .replace(/([\w:-]+)=/g,'<span style="color:#f59e0b">$1</span>=')
-    .replace(/"([^"]*)"/g,'"<span style="color:#4ade80">$1</span>"')
-    .replace(/&lt;\?([^?]+)\?&gt;/g,'<span style="color:#c084fc">&lt;?$1?&gt;</span>')
+    .replace(/"([^"]*)"/g,'"<span style="color:#4ade80">$1</span>"')\n    .replace(/&lt;\?([^?]+)\?&gt;/g,'<span style="color:#c084fc">&lt;?$1?&gt;</span>')
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4 space-y-3">

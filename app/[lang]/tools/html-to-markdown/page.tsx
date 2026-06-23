@@ -6,17 +6,14 @@ const tool = getToolBySlug('html-to-markdown')!
 const BT = '`'
 function htmlToMd(html:string):string{
   let s=html
-  s=s.replace(/<h([1-6])[^>]*>(.*?)<\/h[1-6]>/gi,(_,l,t)=>'#'.repeat(parseInt(l))+' '+t.replace(/<[^>]+>/g,'')+'
-
-')
-  s=s.replace(/<strong[^>]*>(.*?)<\/strong>/gi,'**$1**')
+  s=s.replace(/<h([1-6])[^>]*>(.*?)<\/h[1-6]>/gi,(_,l,t)=>'#'.repeat(parseInt(l))+' '+t.replace(/<[^>]+>/g,'')+'\n
+')\n  s=s.replace(/<strong[^>]*>(.*?)<\/strong>/gi,'**$1**')
   s=s.replace(/<b[^>]*>(.*?)<\/b>/gi,'**$1**')
   s=s.replace(/<em[^>]*>(.*?)<\/em>/gi,'_$1_')
   s=s.replace(/<i[^>]*>(.*?)<\/i>/gi,'_$1_')
   s=s.replace(/<pre[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/gi,BT+BT+BT+'\n$1\n'+BT+BT+BT+'\n\n')
   s=s.replace(/<code[^>]*>(.*?)<\/code>/gi,BT+'$1'+BT)
-  s=s.replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi,'[$2]($1)')
-  s=s.replace(/<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/gi,'![$2]($1)')
+  s=s.replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi,'[$2]($1)')\n  s=s.replace(/<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/gi,'![$2]($1)')
   s=s.replace(/<li[^>]*>(.*?)<\/li>/gi,'- $1\n')
   s=s.replace(/<ul[^>]*>|<\/ul>/gi,'')
   s=s.replace(/<ol[^>]*>|<\/ol>/gi,'')

@@ -15,10 +15,8 @@ function decodeEntities(s:string):string{
 }
 const COMMON=[{label:'<',entity:'&lt;'},{label:'>',entity:'&gt;'},{label:'&',entity:'&amp;'},{label:'"',entity:'&quot;'},{label:'©',entity:'&copy;'},{label:'®',entity:'&reg;'},{label:'™',entity:'&trade;'},{label:'€',entity:'&euro;'},{label:'°',entity:'&deg;'},{label:'…',entity:'&hellip;'},{label:'—',entity:'&mdash;'},{label:'→',entity:'&rarr;'}]
 export default function HtmlEntityConverterPage() {
-  const [input,setInput]=useState('<h1>Hello "World" & More</h1>
-© 2024 — All rights reserved™
-Price: €99.99')
-  const [mode,setMode]=useState<'encode'|'decode'>('encode')
+  const [input,setInput]=useState('<h1>Hello "World" & More</h1>\n© 2024 — All rights reserved™
+Price: €99.99')\n  const [mode,setMode]=useState<'encode'|'decode'>('encode')
   const [encMode,setEncMode]=useState<'named'|'numeric'|'all'>('named')
   const [copied,setCopied]=useState(false)
   const result=mode==='encode'?encodeEntities(input,encMode):decodeEntities(input)

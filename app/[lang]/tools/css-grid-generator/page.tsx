@@ -15,14 +15,12 @@ export default function CssGridGeneratorPage() {
   const [selected,setSelected]=useState<number[]>([])
   const effectiveCols=autoMode?'repeat('+cols+', 1fr)':colTpl
   const effectiveRows=autoMode?'repeat('+rows+', auto)':rowTpl
-  const css='.container {
-  display: grid;
+  const css='.container {\n  display: grid;
   grid-template-columns: '+effectiveCols+';
   grid-template-rows: '+effectiveRows+';
   column-gap: '+colGap+'px;
   row-gap: '+rowGap+'px;
-}'
-  const copy=()=>{navigator.clipboard.writeText(css);setCopied(true);setTimeout(()=>setCopied(false),1500)}
+}'\n  const copy=()=>{navigator.clipboard.writeText(css);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   const totalCells=cols*rows
   const toggleCell=(i:number)=>setSelected(s=>s.includes(i)?s.filter(x=>x!==i):[...s,i])
   const COLORS=['#6366f1','#ec4899','#f59e0b','#10b981','#3b82f6','#8b5cf6','#ef4444','#14b8a6','#f97316']

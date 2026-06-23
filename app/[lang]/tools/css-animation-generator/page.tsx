@@ -20,8 +20,7 @@ export default function CssAnimationGeneratorPage() {
   const [copied,setCopied]=useState(false)
   const anim=PRESETS[sel]
   const animName=anim.name.toLowerCase().replace(/s+/g,'-')
-  const css='@keyframes '+animName+' {
-  '+anim.keyframes.replace(/\n/g,'
+  const css='@keyframes '+animName+' {\n  '+anim.keyframes.replace(/\n/g,'
   ')+'
 }
 
@@ -29,16 +28,13 @@ export default function CssAnimationGeneratorPage() {
 '+Object.entries(anim.props).map(([k,v])=>'  '+k+': '+v+';').join('
 ')+'
   animation-name: '+animName+';
-}'
-  const copy=()=>{navigator.clipboard.writeText(css);setCopied(true);setTimeout(()=>setCopied(false),1500)}
+}'\n  const copy=()=>{navigator.clipboard.writeText(css);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   const style={animationName:running?animName:'none',...Object.fromEntries(Object.entries(anim.props).map(([k,v])=>[k.replace(/-([a-z])/g,(_:any,c:string)=>c.toUpperCase()),v]))}
   return (
     <ToolLayout tool={tool}>
-      <style dangerouslySetInnerHTML={{__html:running?'@keyframes '+animName+' {
-  '+anim.keyframes.replace(/\n/g,'
+      <style dangerouslySetInnerHTML={{__html:running?'@keyframes '+animName+' {\n  '+anim.keyframes.replace(/\n/g,'
   ')+'
-}':''}}/>
-      <div className="max-w-lg mx-auto px-4 space-y-4">
+}':''}}/>\n      <div className="max-w-lg mx-auto px-4 space-y-4">
         <div className="grid grid-cols-4 gap-2">
           {PRESETS.map((p,i)=>(
             <button key={i} onClick={()=>{setSel(i);setRunning(true)}}

@@ -10,11 +10,8 @@ export default function NumberSorterPage() {
   const [unique,setUnique]=useState(false)
   const [remove0,setRemove0]=useState(false)
   const [copied,setCopied]=useState(false)
-  const sepChar=sep==='comma'?',':sep==='newline'?'
-':' '
-  const parsed=(sep==='comma'?input.split(','):sep==='newline'?input.split('
-'):input.split(/s+/)).map(s=>s.trim()).filter(Boolean).map(Number).filter(n=>!isNaN(n))
-  let nums=[...parsed]
+  const sepChar=sep==='comma'?',':sep==='newline'?'\n':' '\n  const parsed=(sep==='comma'?input.split(','):sep==='newline'?input.split('
+'):input.split(/s+/)).map(s=>s.trim()).filter(Boolean).map(Number).filter(n=>!isNaN(n))\n  let nums=[...parsed]
   if(remove0)nums=nums.filter(n=>n!==0)
   if(unique)nums=[...new Set(nums)]
   nums.sort((a,b)=>order==='asc'?a-b:b-a)

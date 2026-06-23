@@ -48,8 +48,7 @@ export default function BarcodeGeneratorPage() {
     <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto px-4 space-y-4">
         <div><label className="block text-sm font-medium text-gray-700 mb-1">Text / Number</label>
-          <input value={text} onChange={e=>setText(e.target.value.toUpperCase().replace(/[^A-Z0-9 !#$%&'()*+,./:-]/g,''))} className="w-full rounded border border-gray-300 px-3 py-2.5 font-mono text-lg" maxLength={30}/></div>
-        <div className="grid grid-cols-3 gap-3">
+          <input value={text} onChange={e=>setText(e.target.value.toUpperCase().replace(/[^A-Z0-9 !#$%&'()*+,./:-]/g,''))} className="w-full rounded border border-gray-300 px-3 py-2.5 font-mono text-lg" maxLength={30}/></div>\n        <div className="grid grid-cols-3 gap-3">
           <div><label className="block text-xs text-gray-500 mb-1">Scale: {scale}x</label>
             <input type="range" min="1" max="4" value={scale} onChange={e=>setScale(Number(e.target.value))} className="w-full"/></div>
           <div><label className="block text-xs text-gray-500 mb-1">Height: {height}px</label>

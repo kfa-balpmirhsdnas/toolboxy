@@ -18,12 +18,10 @@ function getTriangleCss(dir:Dir,w:number,h:number,color:string):{element:string;
    'bottom-left':{border:w+'px solid '+t+'; border-bottom:'+h+'px solid '+color+'; border-right:0; border-left:0; border-top:0'},
    'bottom-right':{border:w+'px solid '+t+'; border-bottom:'+h+'px solid '+color+'; border-left:0; border-right:0; border-top:0'}}
   const b=maps[dir].border
-  const css='.triangle {
-  width: 0;
+  const css='.triangle {\n  width: 0;
   height: 0;
   border: '+b+';
-}'
-  const style='width:0;height:0;border:'+b
+}'\n  const style='width:0;height:0;border:'+b
   return{element:style,css}
 }
 export default function CssTriangleGeneratorPage() {

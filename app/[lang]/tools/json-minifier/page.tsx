@@ -4,12 +4,10 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('json-minifier')!
 export default function JsonMinifierPage() {
-  const [input,setInput]=useState('{
-  "name": "Alice",
+  const [input,setInput]=useState('{\n  "name": "Alice",
   "age": 30,
   "city": "New York"
-}')
-  const [indent,setIndent]=useState(2)
+}')\n  const [indent,setIndent]=useState(2)
   const [mode,setMode]=useState<'minify'|'pretty'>('minify')
   const [sortKeys,setSortKeys]=useState(false)
   const [copied,setCopied]=useState(false)

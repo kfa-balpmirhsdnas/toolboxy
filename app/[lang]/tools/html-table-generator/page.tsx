@@ -26,8 +26,7 @@ export default function HtmlTableGeneratorPage() {
   const updateHeader=(i:number,v:string)=>setHeaders(h=>h.map((x,idx)=>idx===i?v:x))
   const updateCell=(r:number,c:number,v:string)=>setCells(cs=>cs.map((row,ri)=>ri===r?row.map((cell,ci)=>ci===c?v:cell):row))
   const borderStyle=bordered?'border:1px solid #d1d5db;':''
-  const html='<table style="border-collapse:collapse;width:100%">
-  <thead>
+  const html='<table style="border-collapse:collapse;width:100%">\n  <thead>
     <tr>
 '+headers.map(h=>'      <th style="'+borderStyle+'padding:8px 12px;background:#f9fafb;font-weight:600;text-align:left">'+h+'</th>').join('
 ')+'
@@ -40,8 +39,7 @@ export default function HtmlTableGeneratorPage() {
     </tr>').join('
 ')+'
   </tbody>
-</table>'
-  const copy=()=>{navigator.clipboard.writeText(html);setCopied(true);setTimeout(()=>setCopied(false),1500)}
+</table>'\n  const copy=()=>{navigator.clipboard.writeText(html);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4 space-y-4">

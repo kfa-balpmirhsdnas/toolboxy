@@ -35,48 +35,4 @@ export default function RandomColorGeneratorPage() {
   }
   const toggleLock=(i:number)=>setLocked(l=>{const n=[...l];n[i]=!n[i];return n})
   const copy=(h:string)=>{navigator.clipboard.writeText(h);setCopied(h);setTimeout(()=>setCopied(''),1500)}
-  const copyAll=()=>{navigator.clipboard.writeText(colors.join('
-'));setCopied('all');setTimeout(()=>setCopied(''),1500)}
-  return (
-    <ToolLayout tool={tool}>
-      <div className="max-w-2xl mx-auto px-4 space-y-4">
-        <div className="flex gap-3 items-center flex-wrap">
-          <button onClick={generate} className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">Generate Colors</button>
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-600">Count:</span>
-            {[4,6,8,10,12].map(n=>(
-              <button key={n} onClick={()=>resize(n)}
-                className={'w-9 h-9 rounded-lg border font-medium transition '+(count===n?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>{n}</button>
-            ))}
-          </div>
-          <button onClick={copyAll} className="px-3 py-2 rounded-lg border border-gray-300 text-sm hover:bg-gray-50">{copied==='all'?'Copied!':'Copy All'}</button>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {colors.slice(0,count).map((c,i)=>{
-            const [r,g,b]=hexToRgb(c)
-            const [h,s,l]=rgbToHsl(r,g,b)
-            const light=isLight(c)
-            return (
-              <div key={i} className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-                <div className="h-24 flex items-center justify-center relative" style={{background:c}}>
-                  <button onClick={()=>toggleLock(i)}
-                    className={'absolute top-2 right-2 text-base transition '+(locked[i]?'opacity-100':'opacity-40 hover:opacity-80')}
-                    title={locked[i]?'Unlock':'Lock'} style={{color:light?'#374151':'#f9fafb'}}>
-                    {locked[i]?'🔒':'🔓'}
-                  </button>
-                </div>
-                <div className="p-2 bg-white">
-                  <p className="font-mono text-xs font-bold text-gray-800 text-center">{c.toUpperCase()}</p>
-                  <p className="text-xs text-gray-500 text-center">rgb({r},{g},{b})</p>
-                  <p className="text-xs text-gray-400 text-center">hsl({h},{s}%,{l}%)</p>
-                  <button onClick={()=>copy(c)} className="w-full mt-1.5 text-xs py-1 bg-gray-50 rounded hover:bg-gray-100">{copied===c?'Copied!':'Copy hex'}</button>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-        <p className="text-xs text-gray-400 text-center">Click the lock icon to keep a color while regenerating</p>
-      </div>
-    </ToolLayout>
-  )
-}
+  const copyAll=()=>{navigator.clipboard.writeText(colors.join('\n'));setCopied('all');setTimeout(()=>setCopied(''),1500)}\n  return (\n    <ToolLayout tool={tool}>\n      <div className="max-w-2xl mx-auto px-4 space-y-4">\n        <div className="flex gap-3 items-center flex-wrap">\n          <button onClick={generate} className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">Generate Colors</button>\n          <div className="flex items-center gap-2 text-sm">\n            <span className="text-gray-600">Count:</span>\n            {[4,6,8,10,12].map(n=>(\n              <button key={n} onClick={()=>resize(n)}\n                className={'w-9 h-9 rounded-lg border font-medium transition '+(count===n?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>{n}</button>\n            ))}\n          </div>\n          <button onClick={copyAll} className="px-3 py-2 rounded-lg border border-gray-300 text-sm hover:bg-gray-50">{copied==='all'?'Copied!':'Copy All'}</button>\n        </div>\n        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">\n          {colors.slice(0,count).map((c,i)=>{\n            const [r,g,b]=hexToRgb(c)\n            const [h,s,l]=rgbToHsl(r,g,b)\n            const light=isLight(c)\n            return (\n              <div key={i} className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">\n                <div className="h-24 flex items-center justify-center relative" style={{background:c}}>\n                  <button onClick={()=>toggleLock(i)}\n                    className={'absolute top-2 right-2 text-base transition '+(locked[i]?'opacity-100':'opacity-40 hover:opacity-80')}\n                    title={locked[i]?'Unlock':'Lock'} style={{color:light?'#374151':'#f9fafb'}}>\n                    {locked[i]?'🔒':'🔓'}\n                  </button>\n                </div>\n                <div className="p-2 bg-white">\n                  <p className="font-mono text-xs font-bold text-gray-800 text-center">{c.toUpperCase()}</p>\n                  <p className="text-xs text-gray-500 text-center">rgb({r},{g},{b})</p>\n                  <p className="text-xs text-gray-400 text-center">hsl({h},{s}%,{l}%)</p>\n                  <button onClick={()=>copy(c)} className="w-full mt-1.5 text-xs py-1 bg-gray-50 rounded hover:bg-gray-100">{copied===c?'Copied!':'Copy hex'}</button>\n                </div>\n              </div>\n            )\n          })}\n        </div>\n        <p className="text-xs text-gray-400 text-center">Click the lock icon to keep a color while regenerating</p>\n      </div>\n    </ToolLayout>\n  )\n}

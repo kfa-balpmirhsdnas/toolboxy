@@ -24,10 +24,8 @@ export default function LoremIpsumGeneratorPage() {
     if(type==='paragraphs'){
       const paras=Array.from({length:count},()=>paragraph(rnd(3,6)))
       if(startLorem)paras[0]='Lorem ipsum dolor sit amet, consectetur adipiscing elit. '+paras[0]
-      result=paras.join('
-
-')
-    }else if(type==='sentences'){
+      result=paras.join('\n
+')\n    }else if(type==='sentences'){
       const sents=Array.from({length:count},sentence)
       if(startLorem)sents[0]='Lorem ipsum dolor sit amet.'
       result=sents.join(' ')

@@ -5,34 +5,19 @@ import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('whitespace-remover')!
 type Mode='all'|'leading'|'trailing'|'both'|'extra'|'lines'
 export default function WhitespaceRemoverPage() {
-  const [input,setInput]=useState('  Hello   World  
-
+  const [input,setInput]=useState('  Hello   World  \n
   This is   a test.  
 
 
-Line with   multiple   spaces.  ')
-  const [mode,setMode]=useState<Mode>('both')
+Line with   multiple   spaces.  ')\n  const [mode,setMode]=useState<Mode>('both')
   const [newlines,setNewlines]=useState(false)
   const [copied,setCopied]=useState(false)
   const process=(t:string):string=>{
     let s=t
-    const lines=s.split('
-')
-    const processed=lines.map(l=>{
-      if(mode==='all')return l.replace(/s/g,'')
-      if(mode==='leading')return l.trimStart()
-      if(mode==='trailing')return l.trimEnd()
-      if(mode==='both')return l.trim()
-      if(mode==='extra')return l.trim().replace(/s{2,}/g,' ')
-      return l
-    })
-    s=processed.join('
-')
-    if(mode==='lines'||newlines)s=s.replace(/
-{3,}/g,'
-
-').replace(/^
-+|
+    const lines=s.split('\n')\n    const processed=lines.map(l=>{\n      if(mode==='all')return l.replace(/s/g,'')\n      if(mode==='leading')return l.trimStart()\n      if(mode==='trailing')return l.trimEnd()\n      if(mode==='both')return l.trim()\n      if(mode==='extra')return l.trim().replace(/s{2,}/g,' ')\n      return l\n    })\n    s=processed.join('
+')\n    if(mode==='lines'||newlines)s=s.replace(/
+{3,}/g,'\n
+').replace(/^\n+|
 +$/g,'')
     return s
   }

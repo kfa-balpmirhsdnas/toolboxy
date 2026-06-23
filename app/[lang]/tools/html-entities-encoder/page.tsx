@@ -5,9 +5,7 @@ import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('html-entities-encoder')!
 const NAMED:Record<string,string>={'\u00A9':'&copy;','\u00AE':'&reg;','\u2122':'&trade;','\u20AC':'&euro;','\u00A3':'&pound;','\u00A5':'&yen;','\u00B0':'&deg;','\u00B1':'&plusmn;','\u00D7':'&times;','\u00F7':'&divide;','\u00B5':'&micro;','\u00B6':'&para;','\u00A7':'&sect;','\u2026':'&hellip;','\u2014':'&mdash;','\u2013':'&ndash;','\u00A0':'&nbsp;','\u2022':'&bull;'}
 function encodeHtml(t:string,mode:string):string{
-  let s=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')
-  if(mode==='named'||mode==='all'){Object.entries(NAMED).forEach(([ch,ent])=>{s=s.split(ch).join(ent)})}
-  if(mode==='all'){s=[...s].map(ch=>{const cp=ch.codePointAt(0)!;return cp>127?'&#'+cp+';':ch}).join('')}
+  let s=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')\n  if(mode==='named'||mode==='all'){Object.entries(NAMED).forEach(([ch,ent])=>{s=s.split(ch).join(ent)})}\n  if(mode==='all'){s=[...s].map(ch=>{const cp=ch.codePointAt(0)!;return cp>127?'&#'+cp+';':ch}).join('')}
   return s
 }
 function decodeHtml(t:string):string{

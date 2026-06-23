@@ -21,13 +21,11 @@ export default function GradientTextGeneratorPage() {
   const [stops,setStops]=useState(['#f97316','#ec4899','#8b5cf6'])
   const [copied,setCopied]=useState(false)
   const gradient='linear-gradient('+angle+'deg, '+stops.join(', ')+')'
-  const css='.gradient-text {
-  background: '+gradient+';
+  const css='.gradient-text {\n  background: '+gradient+';
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}'
-  const copy=()=>{navigator.clipboard.writeText(css);setCopied(true);setTimeout(()=>setCopied(false),1500)}
+}'\n  const copy=()=>{navigator.clipboard.writeText(css);setCopied(true);setTimeout(()=>setCopied(false),1500)}
   const addStop=()=>{if(stops.length<6)setStops(s=>[...s,'#ffffff'])}
   const removeStop=(i:number)=>{if(stops.length>2)setStops(s=>s.filter((_,idx)=>idx!==i))}
   const updateStop=(i:number,v:string)=>setStops(s=>s.map((c,idx)=>idx===i?v:c))

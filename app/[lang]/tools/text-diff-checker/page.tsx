@@ -5,10 +5,8 @@ import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('text-diff-checker')!
 type DiffLine={type:'equal'|'add'|'remove';text:string;lineA?:number;lineB?:number}
 function computeDiff(a:string,b:string):DiffLine[]{
-  const linesA=a.split('
-'),linesB=b.split('
-')
-  const m=linesA.length,n=linesB.length
+  const linesA=a.split('\n'),linesB=b.split('
+')\n  const m=linesA.length,n=linesB.length
   const dp:number[][]=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?0:j===0?0:0))
   for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=linesA[i-1]===linesB[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1])
   const result:DiffLine[]=[];let i=m,j=n
@@ -19,13 +17,8 @@ function computeDiff(a:string,b:string):DiffLine[]{
   }
   return result
 }
-const TEXT_A='The quick brown fox jumps over the lazy dog.
-Pack my box with five dozen liquor jugs.
-How vexingly quick daft zebras jump!'
-const TEXT_B='The quick brown fox leaps over the sleepy dog.
-Pack my box with five dozen liquor jugs.
-How vexingly quick daft zebras jump!
-New line added at the end.'
+const TEXT_A='The quick brown fox jumps over the lazy dog.\nPack my box with five dozen liquor jugs.
+How vexingly quick daft zebras jump!'\nconst TEXT_B='The quick brown fox leaps over the sleepy dog.\nPack my box with five dozen liquor jugs.\nHow vexingly quick daft zebras jump!\nNew line added at the end.'
 export default function TextDiffCheckerPage() {
   const [a,setA]=useState(TEXT_A)
   const [b,setB]=useState(TEXT_B)

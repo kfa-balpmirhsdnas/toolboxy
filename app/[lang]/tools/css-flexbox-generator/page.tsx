@@ -12,18 +12,12 @@ export default function CssFlexboxGeneratorPage() {
   const [alignContent,setAlignContent]=useState('normal')
   const [gap,setGap]=useState(8)
   const [copied,setCopied]=useState(false)
-  const css='display: flex;
-flex-direction: '+direction+';
+  const css='display: flex;\nflex-direction: '+direction+';
 flex-wrap: '+wrap+';
 justify-content: '+justify+';
 align-items: '+align+';
 align-content: '+alignContent+';
-gap: '+gap+'px;'
-  const copy=()=>{navigator.clipboard.writeText('.container {
-  '+css.split('
-').join('
-  ')+'
-}');setCopied(true);setTimeout(()=>setCopied(false),1500)}
+gap: '+gap+'px;'\n  const copy=()=>{navigator.clipboard.writeText('.container {\n  '+css.split('\n').join('\n  ')+'\n}');setCopied(true);setTimeout(()=>setCopied(false),1500)}
   const Sel=({label,val,set,opts}:{label:string;val:string;set:(v:string)=>void;opts:string[]})=>(
     <div><label className="block text-xs text-gray-500 mb-1">{label}</label>
       <select value={val} onChange={e=>set(e.target.value)} className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm">{opts.map(o=><option key={o}>{o}</option>)}</select></div>
@@ -48,12 +42,10 @@ gap: '+gap+'px;'
           ))}
         </div>
         <div className="bg-gray-900 rounded-xl p-4 flex justify-between gap-3">
-          <pre className="text-green-400 font-mono text-xs whitespace-pre-wrap">{'.container {
-  '+css.split('
+          <pre className="text-green-400 font-mono text-xs whitespace-pre-wrap">{'.container {\n  '+css.split('
 ').join('
   ')+'
-}'}</pre>
-          <button onClick={copy} className="flex-shrink-0 bg-blue-600 text-white px-3 py-1.5 rounded text-xs h-fit hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
+}'}</pre>\n          <button onClick={copy} className="flex-shrink-0 bg-blue-600 text-white px-3 py-1.5 rounded text-xs h-fit hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
         </div>
       </div>
     </ToolLayout>
