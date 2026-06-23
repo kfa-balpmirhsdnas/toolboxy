@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -11,9 +11,14 @@ export default function ScreenRecorderPage({ params }: { params: { lang: string 
   const [recording, setRecording] = useState(false)
   const [url, setUrl] = useState('')
   const [error, setError] = useState('')
+  const [supported, setSupported] = useState<boolean | null>(null)
   const recRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const streamRef = useRef<MediaStream | null>(null)
+
+  useEffect(() => {
+    setSupported(typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getDisplayMedia)
+  }, [])
 
   async function start() {
     setError(''); setUrl('')
@@ -55,26 +60,36 @@ export default function ScreenRecorderPage({ params }: { params: { lang: string 
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="flex gap-3">
-          {!recording ? (
-            <button onClick={start} className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors">● Start recording</button>
-          ) : (
-            <button onClick={stop} className="px-6 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-xl hover:bg-red-700 transition-colors animate-pulse">■ Stop recording</button>
-          )}
+      {supported === false ? (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-center">
+          <div className="text-3xl mb-2">🖥️</div>
+          <p className="text-sm font-medium text-amber-800">Screen recording works on desktop only</p>
+          <p className="text-sm text-amber-700 mt-1">
+            Your browser can’t capture the screen. Open this page in Chrome, Edge or Firefox on a
+            desktop computer — phones and most in-app browsers don’t support it.
+          </p>
         </div>
-
-        {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl p-3">{error}</p>}
-
-        {url && (
-          <div className="space-y-3">
-            <video src={url} controls className="w-full rounded-xl border border-gray-200 bg-black" />
-            <button onClick={download} className="px-5 py-2 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors">⬇ Download .webm</button>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex gap-3">
+            {!recording ? (
+              <button onClick={start} disabled={supported === null} className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 transition-colors">● Start recording</button>
+            ) : (
+              <button onClick={stop} className="px-6 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-xl hover:bg-red-700 transition-colors animate-pulse">■ Stop recording</button>
+            )}
           </div>
-        )}
-        <p className="text-xs text-gray-400">Records your screen (and system/mic audio if allowed) to a WebM file, entirely in your browser. Nothing is uploaded.</p>
-      </div>
 
+          {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl p-3">{error}</p>}
+
+          {url && (
+            <div className="space-y-3">
+              <video src={url} controls className="w-full rounded-xl border border-gray-200 bg-black" />
+              <button onClick={download} className="px-5 py-2 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors">⬇ Download .webm</button>
+            </div>
+          )}
+          <p className="text-xs text-gray-400">Records your screen (and system/mic audio if allowed) to a WebM file, entirely in your browser. Nothing is uploaded.</p>
+        </div>
+      )}
     </ToolLayout>
   )
 }
