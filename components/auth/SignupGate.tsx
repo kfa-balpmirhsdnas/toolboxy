@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useCallback, useEffect, useRef, useState } from 'react'
+import { createContext, useContext, useCallback, useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { onAuthStateChanged, type User } from 'firebase/auth'
@@ -18,8 +18,6 @@ import { auth } from '@/lib/firebase/client'
  *  - Guests, first internal -> sign-up modal with a "continue anyway" escape.
  *  - Guests, after "continue" once in a session -> navigate freely (no nag).
  */
-
-const DISMISS_KEY = 'tb_gate_dismissed'
 
 interface GateCtx {
   /** Returns true if navigation may proceed; false if the gate was shown. */
@@ -45,19 +43,15 @@ export default function SignupGateProvider({ children }: { children: React.React
 
   const [user, setUser] = useState<User | null | 'loading'>('loading')
   const [pendingHref, setPendingHref] = useState<string | null>(null)
-  const dismissedRef = useRef(false)
 
   useEffect(() => onAuthStateChanged(auth, (u) => setUser(u)), [])
 
-  useEffect(() => {
-    dismissedRef.current = sessionStorage.getItem(DISMISS_KEY) === '1'
-  }, [])
-
   const guard = useCallback(
     (href: string): boolean => {
-      // Allow while auth state is still resolving (avoid false gate / flicker),
-      // for logged-in users, and once the visitor opted to continue this session.
-      if (user === 'loading' || user || dismissedRef.current) return true
+      // Allow while auth state is still resolving (avoid false gate / flicker)
+      // and for logged-in users. Guests are prompted on every internal tool
+      // navigation (the "continue anyway" escape is not remembered).
+      if (user === 'loading' || user) return true
       setPendingHref(href)
       return false
     },
@@ -67,8 +61,6 @@ export default function SignupGateProvider({ children }: { children: React.React
   const close = () => setPendingHref(null)
 
   const continueAnyway = () => {
-    dismissedRef.current = true
-    try { sessionStorage.setItem(DISMISS_KEY, '1') } catch { /* ignore */ }
     const href = pendingHref
     setPendingHref(null)
     if (href) router.push(href)

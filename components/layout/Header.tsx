@@ -38,6 +38,7 @@ export default function Header() {
   const router = useRouter()
   const lang = getCurrentLang(pathname)
   const t = useTranslations('nav')
+  const th = useTranslations('home')
   const [user, setUser] = useState<User | null | 'loading'>('loading')
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -56,9 +57,8 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-6">
         <Link href={`/${lang}`} className="font-bold text-xl text-brand-600">Tool<span className="text-gray-900">Boxy</span></Link>
-        <nav className="flex items-center gap-5 text-sm font-medium text-gray-600 flex-1">
-          <Link href={`/${lang}/tools`} className="hover:text-brand-600 transition-colors">{t('tools')}</Link>
-          {/* PRICING_HIDDEN <Link href={`/${lang}/pricing`} className="hover:text-brand-600 transition-colors">Pricing</Link> PRICING_HIDDEN */}
+        <nav className="flex items-center gap-5 text-sm font-medium text-gray-400 flex-1">
+          <span className="hidden sm:inline">{th('hero_title')}</span>
         </nav>
         <div className="flex items-center gap-1">
           {LANGS.map((l) => (
