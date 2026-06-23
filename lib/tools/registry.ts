@@ -1,4 +1,19 @@
-export type ToolCategory = 'pd  {slug:'dice-roller',category:'utility',phase:1,isPro:false,isNew:true,tags:['dice','roller','random','d6','rpg'],maxFileSizeMB:{free:0,pro:0} },
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility'
+export type Phase = 1 | 2 | 3
+
+export interface ToolMeta {
+  slug: string
+  category: ToolCategory
+  isPro: boolean
+  isNew: boolean
+  phase: Phase
+  tags: string[]
+  acceptedFileTypes?: string[]
+  maxFileSizeMB: { free: number; pro: number }
+}
+
+export const TOOLS: ToolMeta[] = [
+  {slug:'dice-roller',category:'utility',phase:1,isPro:false,isNew:true,tags:['dice','roller','random','d6','rpg'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'tip-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['tip','restaurant','split','bill'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'loan-calculator',category:'utility',phase:1,isPro:false,isNew:true,tags:['loan','mortgage','payment','interest','amortization'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'hash-generator',category:'developer',phase:1,isPro:false,isNew:true,maxFileSizeMB:{free:0,pro:0} },
@@ -262,7 +277,6 @@ export type ToolCategory = 'pd  {slug:'dice-roller',category:'utility',phase:1,i
   {slug:'jpg-to-png',category:'image',phase:1,isPro:false,isNew:true,tags:['jpg','png','convert'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'png-to-jpg',category:'image',phase:1,isPro:false,isNew:true,tags:['png','jpg','convert'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'svg-to-png',category:'image',phase:1,isPro:false,isNew:true,tags:['svg','png','convert'],maxFileSizeMB:{free:0,pro:0} },
-
 ]
 
 export function getToolBySlug(slug: string): ToolMeta | undefined {
