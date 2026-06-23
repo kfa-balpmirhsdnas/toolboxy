@@ -13,11 +13,11 @@ export default function Footer() {
   const pathname = usePathname()
   const lang = getLang(pathname)
   const t = useTranslations('footer')
-  const tn = useTranslations('nav')
   const tc = useTranslations('categories')
   const year = new Date().getFullYear()
 
-  const cats = ['pdf', 'image', 'video', 'developer'] as const
+  const cats1 = ['pdf', 'image', 'video', 'audio', 'text'] as const
+  const cats2 = ['developer', 'file', 'utility', 'funny', 'game'] as const
 
   return (
     <footer className="bg-gray-900 text-gray-400 mt-16">
@@ -32,7 +32,7 @@ export default function Footer() {
         <div>
           <h4 className="text-white font-semibold mb-3 text-sm">{t('tools')}</h4>
           <ul className="space-y-2 text-sm">
-            {cats.map((cat) => (
+            {cats1.map((cat) => (
               <li key={cat}>
                 <Link href={`/${lang}/tools/${cat}`} className="hover:text-white transition-colors">
                   {tc(cat)}
@@ -43,17 +43,12 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="text-white font-semibold mb-3 text-sm">{t('company')}</h4>
+          <h4 className="text-white font-semibold mb-3 text-sm">{t('categories')}</h4>
           <ul className="space-y-2 text-sm">
-            {[
-              { label: t('about'), href: `/${lang}/about` },
-              { label: tn('blog'), href: `/${lang}/blog` },
-              { label: tn('pricing'), href: `/${lang}/pricing` },
-              { label: t('contact'), href: `/${lang}/contact` },
-            ].map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="hover:text-white transition-colors">
-                  {item.label}
+            {cats2.map((cat) => (
+              <li key={cat}>
+                <Link href={`/${lang}/tools/${cat}`} className="hover:text-white transition-colors">
+                  {tc(cat)}
                 </Link>
               </li>
             ))}

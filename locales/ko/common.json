@@ -72,7 +72,8 @@
     "terms": "이용약관",
     "contact": "문의",
     "rights": "All rights reserved.",
-    "legal": "법적 고지"
+    "legal": "법적 고지",
+    "categories": "카테고리"
   },
   "errors": {
     "file_too_large": "파일이 너무 큽니다. 최대 {size}MB까지 가능합니다.",

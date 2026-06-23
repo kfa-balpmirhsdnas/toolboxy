@@ -72,7 +72,8 @@
     "terms": "利用規約",
     "contact": "お問い合わせ",
     "rights": "All rights reserved.",
-    "legal": "法的事項"
+    "legal": "法的事項",
+    "categories": "カテゴリー"
   },
   "errors": {
     "file_too_large": "ファイルが大きすぎます。最大{size}MBまでです。",

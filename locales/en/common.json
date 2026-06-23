@@ -72,7 +72,8 @@
     "terms": "Terms of Service",
     "contact": "Contact",
     "rights": "All rights reserved.",
-    "legal": "Legal"
+    "legal": "Legal",
+    "categories": "Categories"
   },
   "errors": {
     "file_too_large": "File is too large. Max size is {size}MB.",
