@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import { notFound } from 'next/navigation'
-import { setRequestLocale } from 'next-intl/server'
+import { NextIntlClientProvider } from 'next-intl'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
 
+const inter = Inter({ subsets: ['latin'] })
 const SUPPORTED_LOCALES = ['en', 'ja', 'ko']
 
 export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
@@ -27,15 +29,26 @@ export default async function LangLayout({
   children: React.ReactNode
   params: { lang: string }
 }) {
+  const lang = SUPPORTED_LOCALES.includes(params.lang) ? params.lang : 'en'
   if (!SUPPORTED_LOCALES.includes(params.lang)) notFound()
-  setRequestLocale(params.lang)
+
+  let messages = {}
+  try {
+    messages = (await import(`../../locales/${lang}/common.json`)).default
+  } catch {
+    messages = {}
+  }
 
   return (
-    <>
-      <GoogleAnalytics />
-      <Header />
-      <main className="min-h-screen">{children}</main>
-      <Footer />
-    </>
+    <html lang={lang} className={inter.className}>
+      <body className="bg-white text-gray-900 antialiased">
+        <GoogleAnalytics />
+        <NextIntlClientProvider locale={lang} messages={messages}>
+          <Header />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+        </NextIntlClientProvider>
+      </body>
+    </html>
   )
 }
