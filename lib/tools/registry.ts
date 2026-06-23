@@ -263,6 +263,8 @@ export type ToolCategory = 'pd  {slug:'dice-roller',category:'utility',phase:1,i
   {slug:'png-to-jpg',category:'image',phase:1,isPro:false,isNew:true,tags:['png','jpg','convert'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'svg-to-png',category:'image',phase:1,isPro:false,isNew:true,tags:['svg','png','convert'],maxFileSizeMB:{free:0,pro:0} },
 
+]
+
 export function getToolBySlug(slug: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.slug === slug)
 }
