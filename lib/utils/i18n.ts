@@ -1,13 +1,20 @@
 import { getRequestConfig } from 'next-intl/server'
-import { notFound } from 'next/navigation'
 
 const SUPPORTED_LOCALES = ['en', 'ja', 'ko']
 
 export default getRequestConfig(async ({ requestLocale }) => {
-  const locale = await requestLocale
-  if (!locale || !SUPPORTED_LOCALES.includes(locale)) notFound()
+  const locale = (await requestLocale) ?? 'en'
+  const safeLocale = SUPPORTED_LOCALES.includes(locale) ? locale : 'en'
+
+  let messages = {}
+  try {
+    messages = (await import(`../../locales/${safeLocale}/common.json`)).default
+  } catch {
+    messages = {}
+  }
+
   return {
-    locale,
-    messages: (await import(`../../locales/${locale}/common.json`)).default,
+    locale: safeLocale,
+    messages,
   }
 })
