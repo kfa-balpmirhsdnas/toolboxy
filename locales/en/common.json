@@ -669,7 +669,12 @@
     "salary-converter": "Convert pay between hourly, daily, weekly, monthly and yearly. Free salary / wage converter.",
     "vat-calculator": "Add or remove VAT (sales tax) at any rate, with net, tax and gross amounts. Free VAT calculator.",
     "savings-goal-calculator": "See how long it takes to reach a savings goal with monthly deposits and returns. Free savings goal calculator.",
-    "random-string-generator": "Generate secure random strings with custom length and character sets. Free random string / token generator."
+    "random-string-generator": "Generate secure random strings with custom length and character sets. Free random string / token generator.",
+    "merge-pdf": "Combine multiple PDF files into one, in any order. Free online PDF merger, no upload.",
+    "split-pdf": "Extract specific pages or ranges from a PDF into a new file. Free PDF splitter.",
+    "rotate-pdf": "Rotate all pages of a PDF by 90, 180 or 270 degrees and download. Free PDF rotator.",
+    "remove-pdf-pages": "Delete unwanted pages from a PDF and download the rest. Free PDF page remover.",
+    "fancy-text-generator": "Turn text into fancy Unicode fonts for Instagram, TikTok and bios. Free fancy text generator."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -966,6 +971,71 @@
         {
           "q": "Is it secure?",
           "a": "Yes — it uses the browser crypto API and nothing is sent to a server."
+        }
+      ]
+    },
+    "merge-pdf": {
+      "intro": "Add PDFs, drag to reorder, and merge them into a single file.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Are my PDFs uploaded?",
+          "a": "No — everything runs locally in your browser."
+        }
+      ]
+    },
+    "split-pdf": {
+      "intro": "Upload a PDF and enter the pages or ranges you want to keep.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Are my PDFs uploaded?",
+          "a": "No — everything runs locally in your browser."
+        }
+      ]
+    },
+    "rotate-pdf": {
+      "intro": "Upload a PDF, choose an angle, and rotate every page at once.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Are my PDFs uploaded?",
+          "a": "No — everything runs locally in your browser."
+        }
+      ]
+    },
+    "remove-pdf-pages": {
+      "intro": "Upload a PDF and list the pages to delete; the rest is saved.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Are my PDFs uploaded?",
+          "a": "No — everything runs locally in your browser."
+        }
+      ]
+    },
+    "fancy-text-generator": {
+      "intro": "Type any text and copy it in bold, script, monospace and more Unicode styles.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Will it work on Instagram?",
+          "a": "Yes — these are Unicode characters you can paste almost anywhere."
         }
       ]
     }
