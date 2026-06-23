@@ -55,12 +55,12 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-6">
-        <Link href={`/${lang}`} className="font-bold text-xl text-brand-600">Tool<span className="text-gray-900">Boxy</span></Link>
+      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-2 sm:gap-4">
+        <Link href={`/${lang}`} className="font-bold text-xl text-brand-600 shrink-0 whitespace-nowrap">Tool<span className="text-gray-900">Boxy</span></Link>
         <nav className="flex items-center gap-5 text-sm font-medium text-gray-400 flex-1">
           <span className="hidden sm:inline">{th('hero_title')}</span>
         </nav>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 shrink-0">
           {LANGS.map((l) => (
             <Link key={l.code} href={switchLang(pathname, l.code)}
               className={`text-xs font-semibold px-2 py-1 rounded transition-colors ${lang === l.code ? 'bg-brand-600 text-white' : 'text-gray-500 hover:text-brand-600'}`}>
@@ -90,9 +90,9 @@ export default function Header() {
             )}
           </div>
         ) : (
-          <div className="flex items-center gap-2">
-            <Link href={`/${lang}/login`} className="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors">{t('login')}</Link>
-            <Link href={`/${lang}/signup`} className="btn-primary text-sm py-2 px-4">{t('signup')}</Link>
+          <div className="flex items-center gap-2 shrink-0">
+            <Link href={`/${lang}/login`} className="hidden sm:inline text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors whitespace-nowrap">{t('login')}</Link>
+            <Link href={`/${lang}/signup`} className="btn-primary text-sm py-1.5 px-3 sm:px-4 whitespace-nowrap">{t('signup')}</Link>
           </div>
         )}
       </div>
