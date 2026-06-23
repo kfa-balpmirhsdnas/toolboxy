@@ -1,8 +1,13 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { CATEGORY_META, isToolNew, type ToolMeta } from '@/lib/tools/registry'
 import ToolTracker from '@/components/tools/ToolTracker'
 import ToolFaq from '@/components/tools/ToolFaq'
 import UsageGate from '@/components/tools/UsageGate'
+
+const LOCALES = ['en', 'ja', 'ko']
 
 function slugToName(slug: string): string {
   return slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
@@ -10,11 +15,17 @@ function slugToName(slug: string): string {
 
 interface ToolLayoutProps {
   tool: ToolMeta
-  lang: string
+  lang?: string
   children: React.ReactNode
 }
 
-export default function ToolLayout({ tool, lang, children }: ToolLayoutProps) {
+export default function ToolLayout({ tool, lang: langProp, children }: ToolLayoutProps) {
+  // Fall back to the locale in the URL — many tool pages don't pass `lang`,
+  // which otherwise made breadcrumb links point to /undefined/tools/...
+  const pathname = usePathname()
+  const pathLang = pathname.split('/')[1]
+  const lang = langProp && langProp !== 'undefined' ? langProp : (LOCALES.includes(pathLang) ? pathLang : 'en')
+
   const catMeta = CATEGORY_META[tool.category]
   const name = slugToName(tool.slug)
 
