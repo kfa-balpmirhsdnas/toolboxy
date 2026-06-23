@@ -30,7 +30,13 @@
     "search_placeholder": "Search tools...",
     "popular_tools": "Popular Tools",
     "all_tools": "All Tools",
-    "view_all": "View All"
+    "view_all": "View All",
+    "browse_all": "Browse All Tools",
+    "stats_tools": "Free Tools",
+    "stats_install": "Installation Required",
+    "stats_languages": "Languages",
+    "save_cta": "Save your favorites & history",
+    "save_cta_sub": "Free account, no credit card required."
   },
   "tool": {
     "free_badge": "Free",
@@ -63,7 +69,8 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "contact": "Contact",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "legal": "Legal"
   },
   "errors": {
     "file_too_large": "File is too large. Max size is {size}MB.",
@@ -558,5 +565,12 @@
       "title": "HTML Color Names",
       "description": "Browse all 140+ CSS named colors with hex values. Click any color to copy its hex code."
     }
+  },
+  "gate": {
+    "title": "Get more from ToolBoxy",
+    "desc": "Create a free account to save your history, bookmark your favorite tools, and get a personal dashboard — no credit card needed.",
+    "create": "Create free account",
+    "signin": "Already have an account? Sign in",
+    "continue": "Continue without signing up"
   }
 }

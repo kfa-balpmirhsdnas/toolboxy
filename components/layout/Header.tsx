@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth'
+import { useTranslations } from 'next-intl'
 import { auth } from '@/lib/firebase/client'
 
 const LANGS = [
@@ -36,6 +37,7 @@ export default function Header() {
   const pathname = usePathname()
   const router = useRouter()
   const lang = getCurrentLang(pathname)
+  const t = useTranslations('nav')
   const [user, setUser] = useState<User | null | 'loading'>('loading')
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -55,7 +57,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-6">
         <Link href={`/${lang}`} className="font-bold text-xl text-brand-600">Tool<span className="text-gray-900">Boxy</span></Link>
         <nav className="flex items-center gap-5 text-sm font-medium text-gray-600 flex-1">
-          <Link href={`/${lang}/tools`} className="hover:text-brand-600 transition-colors">Tools</Link>
+          <Link href={`/${lang}/tools`} className="hover:text-brand-600 transition-colors">{t('tools')}</Link>
           {/* PRICING_HIDDEN <Link href={`/${lang}/pricing`} className="hover:text-brand-600 transition-colors">Pricing</Link> PRICING_HIDDEN */}
         </nav>
         <div className="flex items-center gap-1">
@@ -80,17 +82,17 @@ export default function Header() {
                   <p className="text-xs font-medium text-gray-900 truncate">{user.displayName ?? user.email}</p>
                   {user.displayName && <p className="text-xs text-gray-500 truncate">{user.email}</p>}
                 </div>
-                <Link href={`/${lang}/dashboard`} onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><span>ð</span> Dashboard</Link>
+                <Link href={`/${lang}/dashboard`} onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><span>📊</span> {t('dashboard')}</Link>
                 {/* UPGRADE_HIDDEN <Link href={`/${lang}/pricing`} onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><span>💳</span> Upgrade Plan</Link> UPGRADE_HIDDEN */}
                 <hr className="my-1 border-gray-100" />
-                <button onClick={handleSignOut} className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"><span>ðª</span> Sign Out</button>
+                <button onClick={handleSignOut} className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"><span>🚪</span> {t('logout')}</button>
               </div>
             )}
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <Link href={`/${lang}/login`} className="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors">Log In</Link>
-            <Link href={`/${lang}/signup`} className="btn-primary text-sm py-2 px-4">Sign Up</Link>
+            <Link href={`/${lang}/login`} className="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors">{t('login')}</Link>
+            <Link href={`/${lang}/signup`} className="btn-primary text-sm py-2 px-4">{t('signup')}</Link>
           </div>
         )}
       </div>
