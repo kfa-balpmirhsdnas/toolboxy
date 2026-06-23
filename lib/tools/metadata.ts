@@ -35,9 +35,13 @@ function slugToName(slug: string): string {
 async function getDescription(slug: string, lang: string): Promise<string | undefined> {
   try {
     const messages = (await import(`../../locales/${lang}/common.json`)).default as {
-      toolDescriptions?: Record<string, string>
+      toolDescriptions?: Record<string, string | { description?: string }>
     }
-    return messages.toolDescriptions?.[slug]
+    // Entries are a mix of plain strings and { title, description } objects.
+    const v = messages.toolDescriptions?.[slug]
+    if (typeof v === 'string') return v
+    if (v && typeof v === 'object' && typeof v.description === 'string') return v.description
+    return undefined
   } catch {
     return undefined
   }
