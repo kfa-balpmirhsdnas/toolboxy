@@ -1,70 +1,50 @@
 'use client'
-import { useState } from 'react'
+import {useState} from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-const tool = getToolBySlug('css-triangle-generator')!
+import {TOOLS} from '@/lib/tools/registry'
 type Dir='top'|'bottom'|'left'|'right'|'top-left'|'top-right'|'bottom-left'|'bottom-right'
-const DIRS:Dir[]=['top','bottom','left','right','top-left','top-right','bottom-left','bottom-right']
-function getTriangleCss(dir:Dir,w:number,h:number,color:string):{element:string;css:string}{
+function getCSS(dir:Dir,size:number,color:string){
+  const s=size+'px'
   const t='transparent'
-  const wHalf=Math.round(w/2),hHalf=Math.round(h/2)
-  const maps:Record<Dir,{border:string}>=
-  {top:{border:wHalf+'px solid '+t+'; border-top:0; border-bottom:'+h+'px solid '+color+'; border-left:'+wHalf+'px solid '+t},
-   bottom:{border:wHalf+'px solid '+t+'; border-bottom:0; border-top:'+h+'px solid '+color+'; border-left:'+wHalf+'px solid '+t},
-   left:{border:hHalf+'px solid '+t+'; border-left:0; border-right:'+w+'px solid '+color+'; border-top:'+hHalf+'px solid '+t},
-   right:{border:hHalf+'px solid '+t+'; border-right:0; border-left:'+w+'px solid '+color+'; border-top:'+hHalf+'px solid '+t},
-   'top-left':{border:w+'px solid '+t+'; border-top:'+h+'px solid '+color+'; border-right:0; border-left:0; border-bottom:0'},
-   'top-right':{border:w+'px solid '+t+'; border-top:'+h+'px solid '+color+'; border-left:0; border-right:0; border-bottom:0'},
-   'bottom-left':{border:w+'px solid '+t+'; border-bottom:'+h+'px solid '+color+'; border-right:0; border-left:0; border-top:0'},
-   'bottom-right':{border:w+'px solid '+t+'; border-bottom:'+h+'px solid '+color+'; border-left:0; border-right:0; border-top:0'}}
-  const b=maps[dir].border
-  const css='.triangle {\n  width: 0;
-  height: 0;
-  border: '+b+';
-}'\n  const style='width:0;height:0;border:'+b
-  return{element:style,css}
+  const m:{[k:string]:string}={
+    'top':   'border-left:'+s+' solid '+t+';border-right:'+s+' solid '+t+';border-bottom:'+s+' solid '+color+';width:0;height:0',
+    'bottom':'border-left:'+s+' solid '+t+';border-right:'+s+' solid '+t+';border-top:'+s+' solid '+color+';width:0;height:0',
+    'left':  'border-top:'+s+' solid '+t+';border-bottom:'+s+' solid '+t+';border-right:'+s+' solid '+color+';width:0;height:0',
+    'right': 'border-top:'+s+' solid '+t+';border-bottom:'+s+' solid '+t+';border-left:'+s+' solid '+color+';width:0;height:0',
+    'top-left':   'border-top:'+s+' solid '+color+';border-right:'+s+' solid '+t+';width:0;height:0',
+    'top-right':  'border-top:'+s+' solid '+color+';border-left:'+s+' solid '+t+';width:0;height:0',
+    'bottom-left':'border-bottom:'+s+' solid '+color+';border-right:'+s+' solid '+t+';width:0;height:0',
+    'bottom-right':'border-bottom:'+s+' solid '+color+';border-left:'+s+' solid '+t+';width:0;height:0'
+  }
+  return m[dir]||m['top']
 }
-export default function CssTriangleGeneratorPage() {
+const DIRS:Dir[]=['top','bottom','left','right','top-left','top-right','bottom-left','bottom-right']
+export default function Page(){
   const [dir,setDir]=useState<Dir>('top')
-  const [w,setW]=useState(100)
-  const [h,setH]=useState(80)
-  const [color,setColor]=useState('#6366f1')
-  const [copied,setCopied]=useState(false)
-  const {element,css}=getTriangleCss(dir,w,h,color)
-  const copy=()=>{navigator.clipboard.writeText(css);setCopied(true);setTimeout(()=>setCopied(false),1500)}
-  const DIR_ICONS:Record<Dir,string>={top:'up',bottom:'down',left:'left',right:'right','top-left':'top-left','top-right':'top-right','bottom-left':'bottom-left','bottom-right':'bottom-right'}
+  const [size,setSize]=useState(50)
+  const [color,setColor]=useState('#3b82f6')
+  const css=getCSS(dir,size,color)
+  const full='.triangle { '+css+'; display:inline-block; }'
+  const tool=TOOLS.find(t=>t.slug==='css-triangle-generator')
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-md mx-auto px-4 space-y-4">
-        <div>
-          <p className="text-sm font-medium text-gray-700 mb-2">Direction</p>
-          <div className="grid grid-cols-4 gap-2">
-            {DIRS.map(d=>(
-              <button key={d} onClick={()=>setDir(d)}
-                className={'py-2 rounded-lg border text-xs font-medium transition '+(dir===d?'bg-blue-600 text-white border-blue-600':'border-gray-200 hover:bg-gray-50')}>
-                {d.split('-').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')}
-              </button>
-            ))}
-          </div>
+      <div className="max-w-lg mx-auto px-4 space-y-4">
+        <div className="flex flex-wrap gap-2">
+          {DIRS.map(d=><button key={d} onClick={()=>setDir(d)} className={'px-3 py-1 rounded text-xs font-medium border '+(dir===d?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>{d}</button>)}
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          <div><label className="block text-xs text-gray-500 mb-1">Width: {w}px</label>
-            <input type="range" min="10" max="200" value={w} onChange={e=>setW(Number(e.target.value))} className="w-full"/></div>
-          <div><label className="block text-xs text-gray-500 mb-1">Height: {h}px</label>
-            <input type="range" min="10" max="200" value={h} onChange={e=>setH(Number(e.target.value))} className="w-full"/></div>
-          <div><label className="block text-xs text-gray-500 mb-1">Color</label>
-            <div className="flex gap-1.5 items-center">
-              <input type="color" value={color} onChange={e=>setColor(e.target.value)} className="w-10 h-8 rounded border border-gray-300 cursor-pointer p-0.5"/>
-              <input value={color} onChange={e=>setColor(e.target.value)} className="flex-1 rounded border border-gray-300 px-1 py-1 font-mono text-xs"/>
-            </div></div>
+        <div className="flex gap-4 items-center">
+          <label className="flex items-center gap-2 text-sm text-gray-700">Size
+            <input type="range" min={10} max={200} value={size} onChange={e=>setSize(+e.target.value)} className="w-28"/>
+            <span>{size}px</span></label>
+          <label className="flex items-center gap-2 text-sm text-gray-700">Color
+            <input type="color" value={color} onChange={e=>setColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer"/></label>
         </div>
-        <div className="flex justify-center py-8 bg-gray-50 rounded-xl border border-gray-200">
-          <div style={Object.fromEntries(element.split(';').map(s=>s.split(':').map(x=>x.trim())).filter(([k,v])=>k&&v))}/>
+        <div className="flex items-center justify-center bg-gray-50 rounded-xl p-8 border border-gray-200 min-h-[140px]">
+          <div style={Object.fromEntries(css.split(';').filter(Boolean).map(s=>{const[k,...v]=s.split(':');return[k.trim().replace(/-([a-z])/g,(_,c)=>c.toUpperCase()),v.join(':').trim()]}))}/>
         </div>
-        <div className="bg-gray-900 rounded-xl p-4 flex items-start justify-between gap-3">
-          <pre className="text-green-400 font-mono text-xs whitespace-pre-wrap">{css}</pre>
-          <button onClick={copy} className="flex-shrink-0 bg-blue-600 text-white px-3 py-1.5 rounded text-xs hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
-        </div>
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">CSS</label>
+          <textarea value={full} readOnly rows={3} className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-xs resize-none"/></div>
+        <button onClick={()=>navigator.clipboard?.writeText(full)} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">Copy CSS</button>
       </div>
     </ToolLayout>
   )
