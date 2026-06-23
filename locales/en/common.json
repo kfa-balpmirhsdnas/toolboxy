@@ -647,7 +647,21 @@
     "romaji-kana-converter": "Convert romaji to hiragana and katakana — or kana back to romaji — in real time. Free online Japanese romaji converter, no sign-up.",
     "fullwidth-halfwidth-converter": "Convert full-width (zenkaku) characters to half-width (hankaku) and back — letters, digits, symbols and spaces. Free online converter.",
     "hiragana-katakana-converter": "Convert hiragana to katakana and back instantly. Free online kana converter for Japanese learners.",
-    "hangul-romaja-converter": "Convert Korean Hangul to romanization (Revised Romanization). Free online Hangul-to-romaja converter for names and places."
+    "hangul-romaja-converter": "Convert Korean Hangul to romanization (Revised Romanization). Free online Hangul-to-romaja converter for names and places.",
+    "wifi-qr-generator": "Create a WiFi QR code so guests join your network by scanning — no typing the password. Free, no sign-up.",
+    "vcard-qr-generator": "Generate a vCard QR code for your contact details. Scan to save a contact instantly. Free online tool.",
+    "email-qr-generator": "Create a QR code that opens a pre-filled email. Free email QR generator, no installation.",
+    "phone-qr-generator": "Make a QR code that dials a number or starts a text message. Free phone & SMS QR generator.",
+    "body-fat-calculator": "Estimate your body fat percentage with the US Navy method. Free body fat calculator, instant result.",
+    "due-date-calculator": "Calculate your pregnancy due date from your last period. Free due date calculator with current week.",
+    "target-heart-rate-calculator": "Find your target heart-rate zones for exercise by age (Karvonen). Free heart rate zone calculator.",
+    "ideal-weight-calculator": "Calculate your ideal body weight from height with Devine, Robinson and more. Free ideal weight calculator.",
+    "ovulation-calculator": "Estimate your ovulation day and fertile window from your cycle. Free ovulation calculator.",
+    "robots-txt-generator": "Generate a robots.txt file with allow/disallow rules and a sitemap line. Free robots.txt generator.",
+    "sitemap-generator": "Turn a list of URLs into a valid XML sitemap for Google. Free online sitemap generator.",
+    "utm-builder": "Build trackable campaign URLs with UTM parameters for Google Analytics. Free UTM link builder.",
+    "schema-markup-generator": "Generate JSON-LD structured data (Organization, Article, Product, FAQ) for rich results. Free schema generator.",
+    "htaccess-redirect-generator": "Generate .htaccess 301/302 redirect rules and HTTPS/www forcing for Apache. Free redirect generator."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -706,6 +720,152 @@
         {
           "q": "Are names always exact?",
           "a": "It converts each syllable directly. Pronunciation changes between syllables are not applied, so some names may differ from official spellings."
+        }
+      ]
+    },
+    "wifi-qr-generator": {
+      "intro": "Enter your network name and password to get a QR code guests can scan to connect.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        },
+        {
+          "q": "Is my password safe?",
+          "a": "Yes. The QR is built in your browser and never sent to a server."
+        }
+      ]
+    },
+    "vcard-qr-generator": {
+      "intro": "Fill in your contact details to generate a QR code that saves a contact when scanned.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        }
+      ]
+    },
+    "email-qr-generator": {
+      "intro": "Enter a recipient, subject and body to make a QR that opens a pre-filled email.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        }
+      ]
+    },
+    "phone-qr-generator": {
+      "intro": "Choose call or SMS, enter a number, and get a scannable QR code.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        }
+      ]
+    },
+    "body-fat-calculator": {
+      "intro": "Enter your measurements to estimate body fat percentage with the US Navy circumference method.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        },
+        {
+          "q": "Is it accurate?",
+          "a": "It is a good estimate but less precise than a body scan. Not medical advice."
+        }
+      ]
+    },
+    "due-date-calculator": {
+      "intro": "Enter the first day of your last period to estimate your due date and current week.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        },
+        {
+          "q": "How is it calculated?",
+          "a": "Naegele’s rule: last period plus 280 days, adjusted for cycle length."
+        }
+      ]
+    },
+    "target-heart-rate-calculator": {
+      "intro": "Enter your age (and optionally resting heart rate) to see training heart-rate zones.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        }
+      ]
+    },
+    "ideal-weight-calculator": {
+      "intro": "Enter height and sex to see ideal body weight from several clinical formulas.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        }
+      ]
+    },
+    "ovulation-calculator": {
+      "intro": "Enter your last period and cycle length to estimate ovulation and fertile days.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        },
+        {
+          "q": "Can I use it for contraception?",
+          "a": "No — this is a calendar estimate, not a contraceptive method."
+        }
+      ]
+    },
+    "robots-txt-generator": {
+      "intro": "Choose a crawl policy, add disallow paths and your sitemap to generate robots.txt.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        },
+        {
+          "q": "Where do I put robots.txt?",
+          "a": "Place it at the root of your domain, e.g. example.com/robots.txt."
+        }
+      ]
+    },
+    "sitemap-generator": {
+      "intro": "Paste your URLs to build a valid XML sitemap you can submit to Google Search Console.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        }
+      ]
+    },
+    "utm-builder": {
+      "intro": "Add your URL and campaign details to build a trackable link with UTM parameters.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        }
+      ]
+    },
+    "schema-markup-generator": {
+      "intro": "Pick a type and fill the fields to generate ready-to-paste JSON-LD structured data.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
+        }
+      ]
+    },
+    "htaccess-redirect-generator": {
+      "intro": "Add redirect pairs (and optional HTTPS/www forcing) to generate .htaccess rules.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account or installation."
         }
       ]
     }

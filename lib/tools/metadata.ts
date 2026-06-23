@@ -22,7 +22,7 @@ const FALLBACK: Record<string, (name: string) => string> = {
 const ACRONYMS = new Set([
   'pdf', 'qr', 'url', 'jwt', 'json', 'csv', 'html', 'css', 'api', 'uuid',
   'ascii', 'rgb', 'hex', 'svg', 'xml', 'yaml', 'sql', 'md5', 'sha', 'utf',
-  'bmi', 'gif', 'png', 'jpg', 'ip', 'dns', 'seo', 'id',
+  'bmi', 'gif', 'png', 'jpg', 'ip', 'dns', 'seo', 'id', 'utm', 'qr', 'sms',
 ])
 
 function slugToName(slug: string): string {

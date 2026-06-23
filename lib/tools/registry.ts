@@ -22,6 +22,20 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'wifi-qr-generator',category:'qr',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['wifi','qr','password','network','ssid','wifi qr'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'vcard-qr-generator',category:'qr',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['vcard','qr','contact','business card','連絡先'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'email-qr-generator',category:'qr',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['email','qr','mailto'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'phone-qr-generator',category:'qr',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['phone','qr','tel','sms','call'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'body-fat-calculator',category:'health',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['body fat','navy','fitness','health','体脂肪','체지방'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'due-date-calculator',category:'health',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['pregnancy','due date','baby','出産予定日','출산예정일'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'target-heart-rate-calculator',category:'health',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['heart rate','zone','cardio','心拍数','심박수'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'ideal-weight-calculator',category:'health',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['ideal weight','devine','health','適正体重','적정체중'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'ovulation-calculator',category:'health',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['ovulation','fertility','cycle','排卵日','배란일'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'robots-txt-generator',category:'seo',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['robots','seo','crawler','webmaster'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'sitemap-generator',category:'seo',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['sitemap','xml','seo','webmaster'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'utm-builder',category:'seo',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['utm','campaign','url','marketing','analytics'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'schema-markup-generator',category:'seo',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['schema','json-ld','structured data','seo'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'htaccess-redirect-generator',category:'seo',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['htaccess','redirect','301','apache'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'romaji-kana-converter',category:'language',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['romaji','hiragana','katakana','kana','japanese','ローマ字','変換'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'fullwidth-halfwidth-converter',category:'language',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['fullwidth','halfwidth','全角','半角','変換','zenkaku','hankaku'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'hiragana-katakana-converter',category:'language',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['hiragana','katakana','ひらがな','カタカナ','変換','japanese'],maxFileSizeMB:{free:0,pro:0} },
