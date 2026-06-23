@@ -17,6 +17,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Per-tool view counters. Written only via the Admin SDK (server route);
+    // public read so popularity can be surfaced later.
+    match /toolStats/{toolSlug} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /adminConfig/{docId} {
       allow read: if true;
       allow write: if false;
