@@ -1,55 +1,76 @@
 'use client'
-import { useState, useMemo } from 'react'
+import {useState} from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-const tool = getToolBySlug('text-diff-checker')!
-type DiffLine={type:'equal'|'add'|'remove';text:string;lineA?:number;lineB?:number}
-function computeDiff(a:string,b:string):DiffLine[]{
-  const linesA=a.split('\n'),linesB=b.split('
-')\n  const m=linesA.length,n=linesB.length
-  const dp:number[][]=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?0:j===0?0:0))
-  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=linesA[i-1]===linesB[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1])
-  const result:DiffLine[]=[];let i=m,j=n
-  while(i>0||j>0){
-    if(i>0&&j>0&&linesA[i-1]===linesB[j-1]){result.unshift({type:'equal',text:linesA[i-1],lineA:i,lineB:j});i--;j--}
-    else if(j>0&&(i===0||dp[i][j-1]>=dp[i-1][j])){result.unshift({type:'add',text:linesB[j-1],lineB:j});j--}
-    else{result.unshift({type:'remove',text:linesA[i-1],lineA:i});i--}
+import {TOOLS} from '@/lib/tools/registry'
+
+function diff(a:string,b:string):{text:string,type:'same'|'add'|'del'}[]{
+  const la=a.split('\n'), lb=b.split('\n')
+  const result:{text:string,type:'same'|'add'|'del'}[]=[]
+  const maxLen=Math.max(la.length,lb.length)
+  for(let i=0;i<maxLen;i++){
+    const lineA=la[i], lineB=lb[i]
+    if(lineA===undefined) result.push({text:lineB,type:'add'})
+    else if(lineB===undefined) result.push({text:lineA,type:'del'})
+    else if(lineA===lineB) result.push({text:lineA,type:'same'})
+    else{
+      result.push({text:lineA,type:'del'})
+      result.push({text:lineB,type:'add'})
+    }
   }
   return result
 }
-const TEXT_A='The quick brown fox jumps over the lazy dog.\nPack my box with five dozen liquor jugs.
-How vexingly quick daft zebras jump!'\nconst TEXT_B='The quick brown fox leaps over the sleepy dog.\nPack my box with five dozen liquor jugs.\nHow vexingly quick daft zebras jump!\nNew line added at the end.'
-export default function TextDiffCheckerPage() {
-  const [a,setA]=useState(TEXT_A)
-  const [b,setB]=useState(TEXT_B)
-  const diff=useMemo(()=>computeDiff(a,b),[a,b])
-  const added=diff.filter(d=>d.type==='add').length
-  const removed=diff.filter(d=>d.type==='remove').length
-  const equal=diff.filter(d=>d.type==='equal').length
+
+export default function Page(){
+  const tool=TOOLS.find(t=>t.slug==='text-diff-checker')
+  const [textA,setTextA]=useState('Hello World\nThis is line 2\nThis is line 3')
+  const [textB,setTextB]=useState('Hello World\nThis line has changed\nThis is line 3\nNew line added')
+  const [compared,setCompared]=useState(false)
+
+  const changes=compared?diff(textA,textB):[]
+  const added=changes.filter(c=>c.type==='add').length
+  const deleted=changes.filter(c=>c.type==='del').length
+
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-2xl mx-auto px-4 space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-xs font-medium text-gray-600 mb-1">Original text</label>
-            <textarea value={a} onChange={e=>setA(e.target.value)} rows={6} className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:border-blue-400"/></div>
-          <div><label className="block text-xs font-medium text-gray-600 mb-1">Modified text</label>
-            <textarea value={b} onChange={e=>setB(e.target.value)} rows={6} className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:border-blue-400"/></div>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Text A (Original)</label>
+            <textarea value={textA} onChange={e=>{setTextA(e.target.value);setCompared(false)}}
+              className="w-full h-48 p-3 border rounded font-mono text-sm resize-y"/>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Text B (Modified)</label>
+            <textarea value={textB} onChange={e=>{setTextB(e.target.value);setCompared(false)}}
+              className="w-full h-48 p-3 border rounded font-mono text-sm resize-y"/>
+          </div>
         </div>
-        <div className="flex gap-3 text-sm">
-          <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-green-200 inline-block"/>Added: <strong>{added}</strong></div>
-          <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-red-200 inline-block"/>Removed: <strong>{removed}</strong></div>
-          <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gray-100 inline-block"/>Equal: <strong>{equal}</strong></div>
-        </div>
-        <div className="rounded-xl border border-gray-200 overflow-hidden font-mono text-xs">
-          {diff.map((line,i)=>(
-            <div key={i} className={'flex items-start gap-2 px-3 py-1 '+(line.type==='add'?'bg-green-50':line.type==='remove'?'bg-red-50':'bg-white')}>
-              <span className="flex-shrink-0 w-8 text-right text-gray-300">{line.lineA||''}</span>
-              <span className="flex-shrink-0 w-8 text-right text-gray-300">{line.lineB||''}</span>
-              <span className={'flex-shrink-0 w-4 font-bold '+(line.type==='add'?'text-green-600':line.type==='remove'?'text-red-600':'text-gray-300')}>{line.type==='add'?'+':line.type==='remove'?'-':' '}</span>
-              <span className={'whitespace-pre-wrap break-all '+(line.type==='add'?'text-green-800':line.type==='remove'?'text-red-800':'text-gray-700')}>{line.text}</span>
+        <button onClick={()=>setCompared(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          Compare
+        </button>
+        {compared&&(
+          <div>
+            <div className="flex gap-4 text-sm mb-2">
+              <span className="text-green-600">+{added} added</span>
+              <span className="text-red-500">-{deleted} deleted</span>
+              <span className="text-gray-500">{changes.filter(c=>c.type==='same').length} unchanged</span>
             </div>
-          ))}
-        </div>
+            <div className="border rounded font-mono text-sm overflow-auto max-h-64">
+              {changes.map((c,i)=>(
+                <div key={i} className={
+                  c.type==='add'?'bg-green-50 text-green-800':
+                  c.type==='del'?'bg-red-50 text-red-700':'text-gray-700'
+                }>
+                  <span className="inline-block w-6 text-center select-none opacity-40">
+                    {c.type==='add'?'+':c.type==='del'?'-':' '}
+                  </span>
+                  {c.text}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </ToolLayout>
   )
