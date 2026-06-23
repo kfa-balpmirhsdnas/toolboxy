@@ -56,7 +56,7 @@ export default function Header() {
         <Link href={`/${lang}`} className="font-bold text-xl text-brand-600">Tool<span className="text-gray-900">Boxy</span></Link>
         <nav className="flex items-center gap-5 text-sm font-medium text-gray-600 flex-1">
           <Link href={`/${lang}/tools`} className="hover:text-brand-600 transition-colors">Tools</Link>
-          <Link href={`/${lang}/pricing`} className="hover:text-brand-600 transition-colors">Pricing</Link>
+          {/* PRICING_HIDDEN <Link href={`/${lang}/pricing`} className="hover:text-brand-600 transition-colors">Pricing</Link> PRICING_HIDDEN */}
         </nav>
         <div className="flex items-center gap-1">
           {LANGS.map((l) => (
@@ -80,10 +80,10 @@ export default function Header() {
                   <p className="text-xs font-medium text-gray-900 truncate">{user.displayName ?? user.email}</p>
                   {user.displayName && <p className="text-xs text-gray-500 truncate">{user.email}</p>}
                 </div>
-                <Link href={`/${lang}/dashboard`} onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><span>📊</span> Dashboard</Link>
-                <Link href={`/${lang}/pricing`} onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><span>💳</span> Upgrade Plan</Link>
+                <Link href={`/${lang}/dashboard`} onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><span>ð</span> Dashboard</Link>
+                {/* UPGRADE_HIDDEN <Link href={`/${lang}/pricing`} onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><span>💳</span> Upgrade Plan</Link> UPGRADE_HIDDEN */}
                 <hr className="my-1 border-gray-100" />
-                <button onClick={handleSignOut} className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"><span>🚪</span> Sign Out</button>
+                <button onClick={handleSignOut} className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"><span>ðª</span> Sign Out</button>
               </div>
             )}
           </div>

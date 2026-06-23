@@ -45,7 +45,7 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
           setSub(data)
         }
       } catch {
-        // Stripe not configured yet — default to free plan
+        // Stripe not configured yet â default to free plan
       }
       setLoading(false)
     })
@@ -129,7 +129,7 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
             <div className="bg-gray-50 rounded-xl p-4">
               <p className="text-xs text-gray-500 mb-1">Uploads / day</p>
               <p className="font-bold text-gray-900 text-lg">
-                {planData.limits.uploadsPerDay === -1 ? '∞' : planData.limits.uploadsPerDay}
+                {planData.limits.uploadsPerDay === -1 ? 'â' : planData.limits.uploadsPerDay}
               </p>
             </div>
             <div className="bg-gray-50 rounded-xl p-4">
@@ -145,7 +145,7 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
           <ul className="space-y-2 mb-6">
             {planData.features.map((f) => (
               <li key={f} className="flex items-center gap-2 text-sm text-gray-700">
-                <span className="text-green-500 font-bold">✓</span> {f}
+                <span className="text-green-500 font-bold">â</span> {f}
               </li>
             ))}
           </ul>
@@ -156,26 +156,29 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
               disabled={portalLoading}
               className="btn-secondary w-full py-2.5 text-sm font-semibold disabled:opacity-60"
             >
-              {portalLoading ? 'Opening…' : 'Manage Subscription'}
+              {portalLoading ? 'Openingâ¦' : 'Manage Subscription'}
             </button>
           ) : (
+            {/* UPGRADE_HIDDEN
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => handleUpgrade('pro')}
                 className="flex-1 bg-brand-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors"
               >
-                Upgrade to Pro — $9/mo
+                Upgrade to Pro â $9/mo
               </button>
               <button
                 onClick={() => handleUpgrade('business')}
                 className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors"
               >
-                Upgrade to Business — $29/mo
+                Upgrade to Business â $29/mo
               </button>
             </div>
+            UPGRADE_HIDDEN */}
           )}
         </div>
 
+        {/* QUICK_LINKS_HIDDEN
         {/* Quick Links */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
           <h2 className="font-semibold text-gray-900 mb-4">Quick Links</h2>
@@ -184,16 +187,17 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
               href={`/${params.lang}/tools`}
               className="flex items-center gap-2 p-3 rounded-xl border border-gray-200 hover:border-brand-400 hover:bg-brand-50 transition-colors text-sm font-medium text-gray-700"
             >
-              <span>🔧</span> Browse Tools
+              <span>ð§</span> Browse Tools
             </Link>
             <Link
               href={`/${params.lang}/pricing`}
               className="flex items-center gap-2 p-3 rounded-xl border border-gray-200 hover:border-brand-400 hover:bg-brand-50 transition-colors text-sm font-medium text-gray-700"
             >
-              <span>💳</span> Pricing
+              <span>ð³</span> Pricing
             </Link>
           </div>
         </div>
+        QUICK_LINKS_HIDDEN */
 
       </div>
     </div>
