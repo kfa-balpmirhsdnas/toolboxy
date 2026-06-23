@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
+import SignupGateProvider from '@/components/auth/SignupGate'
 
 const SUPPORTED_LOCALES = ['en', 'ja', 'ko']
 
@@ -41,9 +42,11 @@ export default async function LangLayout({
     <>
       <GoogleAnalytics />
       <NextIntlClientProvider locale={lang} messages={messages}>
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <SignupGateProvider>
+          <Header />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+        </SignupGateProvider>
       </NextIntlClientProvider>
     </>
   )

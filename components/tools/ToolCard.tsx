@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import { CATEGORY_META, type ToolMeta } from '@/lib/tools/registry'
+import { useSignupGate } from '@/components/auth/SignupGate'
 
 interface ToolCardProps {
   tool: ToolMeta
@@ -16,9 +19,17 @@ function slugToName(slug: string): string {
 
 export default function ToolCard({ tool, lang }: ToolCardProps) {
   const catMeta = CATEGORY_META[tool.category] ?? { icon: '', label: '', color: 'gray' }
+  const { guard } = useSignupGate()
+  const href = `/${lang}/tools/${tool.slug}`
+
+  // Guests reaching a tool via internal navigation (Home / Tools listing) hit
+  // the sign-up gate; direct URL entries never go through this onClick.
+  const handleClick = (e: React.MouseEvent) => {
+    if (!guard(href)) e.preventDefault()
+  }
 
   return (
-    <Link href={`/${lang}/tools/${tool.slug}`} className="tool-card group block">
+    <Link href={href} onClick={handleClick} className="tool-card group block">
       <div className="flex items-start gap-3">
         <span className="text-2xl">{catMeta.icon}</span>
         <div className="flex-1 min-w-0">
