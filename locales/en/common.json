@@ -21,7 +21,9 @@
     "text": "Text",
     "developer": "Developer",
     "file": "File",
-    "utility": "Utility"
+    "utility": "Utility",
+    "funny": "Funny",
+    "game": "Game"
   },
   "home": {
     "hero_title": "Free Online Tools",

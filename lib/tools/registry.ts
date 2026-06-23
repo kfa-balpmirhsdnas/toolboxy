@@ -1,4 +1,4 @@
-export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility'
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game'
 export type Phase = 1 | 2 | 3
 
 export interface ToolMeta {
@@ -304,4 +304,6 @@ export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; 
   developer: { label: 'Developer', icon: String.fromCodePoint(0x1F4BB), color: 'blue'   },
   file:      { label: 'File',      icon: String.fromCodePoint(0x1F4C1), color: 'orange' },
   utility:   { label: 'Utility',   icon: String.fromCodePoint(0x1F527), color: 'teal'   },
+  funny:     { label: 'Funny',     icon: String.fromCodePoint(0x1F602), color: 'amber'  },
+  game:      { label: 'Game',      icon: String.fromCodePoint(0x1F3AE), color: 'indigo' },
 };
