@@ -52,6 +52,8 @@ export async function buildToolMetadata(slug: string, lang: string): Promise<Met
   const safeLang = (LANGS as readonly string[]).includes(lang) ? lang : 'en'
   const name = slugToName(slug)
   const description = (await getDescription(slug, safeLang)) ?? FALLBACK[safeLang](name)
+  // Use an absolute title so the brand appears exactly once (the root template
+  // only reaches the [lang] layout, not deeper tool/category segments).
   const title = `${name} – ${SUFFIX[safeLang]} | ToolBoxy`
   const url = `${BASE}/${safeLang}/tools/${slug}`
 
@@ -60,7 +62,7 @@ export async function buildToolMetadata(slug: string, lang: string): Promise<Met
   languages['x-default'] = `${BASE}/en/tools/${slug}`
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url, languages },
     openGraph: { title, description, url, siteName: 'ToolBoxy', type: 'website', locale: safeLang },
@@ -101,7 +103,7 @@ export async function buildCategoryMetadata(category: string, lang: string): Pro
   languages['x-default'] = `${BASE}/en/tools/${category}`
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: url, languages },
     openGraph: { title, description, url, siteName: 'ToolBoxy', type: 'website', locale: safeLang },

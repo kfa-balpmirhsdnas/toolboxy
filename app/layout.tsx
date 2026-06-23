@@ -7,7 +7,7 @@ const inter = Inter({subsets:['latin']})
 export const metadata:Metadata={
   title:{template:'%s | ToolBoxy',default:'ToolBoxy – Free Online Tools'},
   description:'ToolBoxy: 100+ free online tools for developers, designers, and everyday users.',
-  metadataBase:new URL('https://toolboxy.net'),
+  metadataBase:new URL('https://www.toolboxy.net'),
   openGraph:{
     type:'website',
     siteName:'ToolBoxy',

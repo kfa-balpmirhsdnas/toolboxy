@@ -17,8 +17,21 @@ export default function ToolLayout({ tool, lang, children }: ToolLayoutProps) {
   const catMeta = CATEGORY_META[tool.category]
   const name = slugToName(tool.slug)
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: `${name} – ToolBoxy`,
+    applicationCategory: 'UtilityApplication',
+    operatingSystem: 'Any (web browser)',
+    url: `https://www.toolboxy.net/${lang}/tools/${tool.slug}`,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    isAccessibleForFree: true,
+    publisher: { '@type': 'Organization', name: 'ToolBoxy', url: 'https://www.toolboxy.net' },
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ToolTracker slug={tool.slug} />
 
       {/* Breadcrumb */}
