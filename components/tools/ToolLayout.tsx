@@ -46,7 +46,7 @@ export default function ToolLayout({ tool, lang, children }: ToolLayoutProps) {
           )}
         </div>
         <p className="text-gray-500 text-sm">
-          {tool.tags.slice(0, 5).join(' · ')}
+          {(tool.tags ?? []).slice(0, 5).join(' · ')}
         </p>
       </div>
 
