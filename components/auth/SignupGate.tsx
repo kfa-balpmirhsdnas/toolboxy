@@ -83,12 +83,14 @@ export default function SignupGateProvider({ children }: { children: React.React
             <p className="text-sm text-gray-500 mb-6 leading-relaxed">{t('desc')}</p>
             <Link
               href={`/${lang}/signup`}
+              onClick={close}
               className="block w-full bg-brand-600 text-white text-center font-semibold py-3 rounded-xl hover:bg-brand-700 transition-colors mb-3"
             >
               {t('create')}
             </Link>
             <Link
               href={`/${lang}/login`}
+              onClick={close}
               className="block w-full text-center text-sm text-brand-600 hover:text-brand-700 py-1 mb-2"
             >
               {t('signin')}
