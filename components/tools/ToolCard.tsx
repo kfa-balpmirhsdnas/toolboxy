@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { CATEGORY_META, type ToolMeta } from '@/lib/tools/registry'
+import { CATEGORY_META, isToolNew, type ToolMeta } from '@/lib/tools/registry'
 import { useSignupGate } from '@/components/auth/SignupGate'
 
 interface ToolCardProps {
@@ -37,7 +37,7 @@ export default function ToolCard({ tool, lang }: ToolCardProps) {
             <h3 className="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors text-sm">
               {slugToName(tool.slug)}
             </h3>
-            {tool.isNew && <span className="badge-new">New</span>}
+            {isToolNew(tool) && <span className="badge-new">New</span>}
             {tool.isPro && <span className="badge-pro">Pro</span>}
             {!tool.isPro && <span className="badge-free">Free</span>}
           </div>

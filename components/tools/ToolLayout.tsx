@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { CATEGORY_META, type ToolMeta } from '@/lib/tools/registry'
+import { CATEGORY_META, isToolNew, type ToolMeta } from '@/lib/tools/registry'
 import ToolTracker from '@/components/tools/ToolTracker'
 import UsageGate from '@/components/tools/UsageGate'
 
@@ -54,7 +54,7 @@ export default function ToolLayout({ tool, lang, children }: ToolLayoutProps) {
           {tool.isPro && (
             <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-0.5 rounded-full">PRO</span>
           )}
-          {tool.isNew && (
+          {isToolNew(tool) && (
             <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">NEW</span>
           )}
         </div>
