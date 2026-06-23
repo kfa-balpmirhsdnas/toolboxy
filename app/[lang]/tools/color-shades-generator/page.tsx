@@ -1,21 +1,58 @@
 'use client'
-import { useState } from 'react'
+import {useState} from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-const tool = getToolBySlug('color-shades-generator')!
-function h2r(hex){return {r:parseInt(hex.slice(1,3),16),g:parseInt(hex.slice(3,5),16),b:parseInt(hex.slice(5,7),16)}}
-function r2h(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('')}
-function mix(hex,t,steps,n){const {r,g,b}=h2r(hex);return Array.from({length:n},(_,i)=>{const p=(i+1)/steps;return r2h(r+(t[0]-r)*p,g+(t[1]-g)*p,b+(t[2]-b)*p)})}
-export default function ColorShadesGeneratorPage() {
+import {TOOLS} from '@/lib/tools/registry'
+function hexToRgb(hex){const m=hex.replace('#','').match(/.{2}/g);return m?{r:parseInt(m[0],16),g:parseInt(m[1],16),b:parseInt(m[2],16)}:{r:0,g:0,b:0}}
+function rgbToHex(r,g,b){return '#'+[r,g,b].map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('')}
+function mixWith(base,mix,steps,total){
+  return Array.from({length:steps},(_,i)=>{
+    const t=i/total
+    return rgbToHex(base.r+(mix[0]-base.r)*t,base.g+(mix[1]-base.g)*t,base.b+(mix[2]-base.b)*t)
+  })
+}
+export default function Page(){
   const [base,setBase]=useState('#3b82f6')
-  const [steps,setSteps]=useState(9)
+  const [steps,setSteps]=useState(5)
   const [copied,setCopied]=useState('')
-  const tints=mix(base,[255,255,255],steps+1,steps).reverse()
-  const tones=mix(base,[128,128,128],steps+1,steps)
-  const shades=mix(base,[0,0,0],steps+1,steps)
-  const all=[...tints,base,...shades]
-  const cp=(hex)=>{navigator.clipboard.writeText(hex);setCopied(hex);setTimeout(()=>setCopied(''),2000)}
-  const cpAll=()=>{navigator.clipboard.writeText(all.join('\n'));setCopied('all');setTimeout(()=>setCopied(''),2000)}
-  const Row=({title,colors})=>(<div><p className="text-xs font-semibold text-gray-600 mb-2">{title}</p><div className="flex flex-wrap gap-2">{colors.map((hex,i)=>(<button key={i} onClick={()=>cp(hex)} title={hex} className="w-12 h-12 rounded-lg border-2 border-white shadow hover:scale-110 transition-transform" style={{background:hex}}/>))}</div></div>)
-  return (<ToolLayout tool={tool}><div className="max-w-2xl mx-auto px-4 space-y-6"><div className="flex flex-wrap gap-4 items-end"><div><label className="block text-sm font-medium text-gray-700 mb-1">Base Color</label><div className="flex gap-2 items-center"><input type="color" value={base} onChange={e=>setBase(e.target.value)} className="w-16 h-10 rounded border cursor-pointer"/><span className="font-mono text-sm">{base}</span></div></div><div><label className="block text-sm font-medium text-gray-700 mb-1">Steps: {steps}</label><input type="range" min={3} max={12} value={steps} onChange={e=>setSteps(Number(e.target.value))} className="w-32"/></div><button onClick={cpAll} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">{copied==='all'?'Copied!':'Copy All'}</button></div><div className="space-y-4"><Row title="Tints" colors={tints}/><Row title="Base" colors={[base]}/><Row title="Tones" colors={tones}/><Row title="Shades" colors={shades}/></div></div></ToolLayout>)
+  const rgb=hexToRgb(base)
+  const lights=mixWith(rgb,[255,255,255],steps+1,steps+1).slice(1).reverse()
+  const darks=mixWith(rgb,[0,0,0],steps+1,steps+1).slice(1)
+  const allColors=[...lights,base,...darks]
+  const copyAll=()=>{const all=allColors.join(', ');navigator.clipboard?.writeText(all);setCopied('all')}
+  const tool=TOOLS.find(t=>t.slug==='color-shades-generator')
+  const renderSwatches=(colors,title)=>(
+    <div>
+      <p className="text-xs font-semibold text-gray-600 mb-2">{title}</p>
+      <div className="flex flex-wrap gap-2">
+        {colors.map((c,i)=>(
+          <button key={i} onClick={()=>{navigator.clipboard?.writeText(c);setCopied(c)}} title={c}
+            className={'flex flex-col items-center gap-1 '+(copied===c?'ring-2 ring-offset-1 ring-blue-500 rounded':'')}>
+            <div className="w-12 h-12 rounded-lg border border-gray-200 shadow-sm" style={{backgroundColor:c}}/>
+            <span className="text-xs font-mono text-gray-500">{c}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+  return (
+    <ToolLayout tool={tool}>
+      <div className="max-w-2xl mx-auto px-4 space-y-5">
+        <div className="flex gap-4 items-center">
+          <label className="flex items-center gap-2 text-sm text-gray-700">Base Color
+            <input type="color" value={base} onChange={e=>setBase(e.target.value)} className="w-10 h-10 rounded cursor-pointer"/></label>
+          <label className="flex items-center gap-2 text-sm text-gray-700">Steps
+            <input type="number" min={2} max={10} value={steps} onChange={e=>setSteps(+e.target.value)} className="w-16 rounded border border-gray-300 px-2 py-1 text-sm"/></label>
+          <button onClick={copyAll} className="ml-auto px-3 py-1.5 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">{copied==='all'?'Copied!':'Copy All'}</button>
+        </div>
+        {renderSwatches(lights,'Tints (lighter)')}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-gray-200"/>
+          <div className="w-16 h-16 rounded-xl border-2 border-gray-300 shadow" style={{backgroundColor:base}}/>
+          <span className="font-mono text-sm text-gray-700">{base.toUpperCase()}</span>
+          <div className="flex-1 h-px bg-gray-200"/>
+        </div>
+        {renderSwatches(darks,'Shades (darker)')}
+      </div>
+    </ToolLayout>
+  )
 }
