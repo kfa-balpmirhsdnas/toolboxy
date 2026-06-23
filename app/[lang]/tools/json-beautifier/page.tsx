@@ -1,100 +1,63 @@
 'use client'
-import { useState, useRef } from 'react'
+import {useState} from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
+import {TOOLS} from '@/lib/tools/registry'
 
-const tool = getToolBySlug('json-beautifier')!
+export default function Page(){
+  const tool=TOOLS.find(t=>t.slug==='json-beautifier')
+  const [input,setInput]=useState('{"name":"Alice","age":30,"tags":["dev","designer"]}')
+  const [output,setOutput]=useState('')
+  const [error,setError]=useState('')
+  const [indent,setIndent]=useState(2)
 
-type JsonVal = string | number | boolean | null | JsonVal[] | { [k: string]: JsonVal }
-
-function beautify(input: string, indent: number): { output: string; error?: string } {
-  try {
-    const parsed = JSON.parse(input)
-    return { output: JSON.stringify(parsed, null, indent) }
-  } catch(e: unknown) {
-    return { output: '', error: e instanceof Error ? e.message : 'Invalid JSON' }
+  function format(){
+    try{
+      const parsed=JSON.parse(input)
+      setOutput(JSON.stringify(parsed,null,indent))
+      setError('')
+    }catch(e){
+      setError('Invalid JSON: '+(e as Error).message)
+    }
   }
-}
-
-function colorize(json: string): JSX.Element[] {
-  const parts: JSX.Element[] = []
-  const regex = /("(\\[\s\S]|[^"\\])*")(?:\s*:)?|true|false|null|(-?\d+(\.\d+)?([eE][+-]?\d+)?)/g
-  let last = 0
-  let i = 0
-
-  json.replace(regex, (match, ...args) => {
-    const offset = args[args.length-2] as number
-    if (offset > last) parts.push(<span key={'t'+i++}>{json.slice(last,offset)}</span>)
-    const isKey = json[offset+match.length] === ':'||json.slice(offset+match.length).trimStart()[0]===':'
-    const isStr = match.startsWith('"')
-    const cls = isStr&&isKey?'text-blue-400':isStr?'text-green-400':match==='true'||match==='false'?'text-yellow-400':match==='null'?'text-red-400':'text-purple-300'
-    parts.push(<span key={'m'+i++} className={cls}>{match}</span>)
-    last = offset+match.length
-    return match
-  })
-  if (last < json.length) parts.push(<span key={'end'}>{json.slice(last)}</span>)
-  return parts
-}
-
-export default function JsonBeautifierPage({ params }: { params: { lang: string } }) {
-  const [input, setInput] = useState('{"name":"Alice","age":30,"hobbies":["reading","coding"],"address":{"city":"Seoul","country":"KR"}}')
-  const [indent, setIndent] = useState(2)
-  const [highlight, setHighlight] = useState(true)
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
-
-  function track() { if (!tracked.current) { trackToolUsed('json-beautifier'); tracked.current = true } }
-
-  const { output, error } = beautify(input, indent)
-  const bytesBefore = new Blob([input]).size
-  const bytesAfter = output ? new Blob([output]).size : 0
-
-  async function copy() {
-    await navigator.clipboard.writeText(output)
-    trackToolCopy('json-beautifier')
-    setCopied(true); setTimeout(()=>setCopied(false),1500)
-  }
-  function download() {
-    const blob=new Blob([output],{type:'application/json'})
-    const url=URL.createObjectURL(blob);const a=document.createElement('a')
-    a.href=url;a.download='data.json';a.click();URL.revokeObjectURL(url)
-    trackToolDownload('json-beautifier','json')
+  function minify(){
+    try{
+      setOutput(JSON.stringify(JSON.parse(input)))
+      setError('')
+    }catch(e){
+      setError('Invalid JSON: '+(e as Error).message)
+    }
   }
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
-        <div className="flex gap-2 items-center flex-wrap">
-          <span className="text-xs font-medium text-gray-600">Indent:</span>
-          {[2,4,8].map(n=>(
-            <button key={n} onClick={()=>setIndent(n)}
-              className={'px-3 py-1.5 rounded-lg text-sm transition-colors ' + (indent===n?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {n} spaces
-            </button>
-          ))}
-          <label className="flex items-center gap-2 cursor-pointer text-sm ml-2">
-            <input type="checkbox" checked={highlight} onChange={e=>setHighlight(e.target.checked)} className="accent-brand-600" />
-            Syntax highlight
-          </label>
-        </div>
-        <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} rows={4} placeholder="Paste JSON..."
-          className={'w-full px-4 py-3 border rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none ' + (error?'border-red-300':'border-gray-200')} />
-        {error && <p className="text-xs text-red-600">{error}</p>}
-        {output && (
+    <ToolLayout tool={tool}>
+      <div className='space-y-4'>
+        <div className='flex gap-3 items-center flex-wrap'>
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">{bytesBefore}B \u2192 {bytesAfter}B</label>
-              <div className="flex gap-2">
-                <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
-                <button onClick={download} className="text-xs text-brand-600 hover:underline">Download</button>
-              </div>
-            </div>
-            <pre className="p-4 bg-gray-900 text-gray-300 text-xs rounded-xl font-mono overflow-auto max-h-80">
-              {highlight ? colorize(output) : output}
-            </pre>
+            <label className='text-sm font-medium mr-2'>Indent:</label>
+            <select value={indent} onChange={e=>setIndent(Number(e.target.value))} className='border rounded px-2 py-1'>
+              <option value={2}>2 spaces</option>
+              <option value={4}>4 spaces</option>
+            </select>
           </div>
-        )}
+          <button onClick={format} className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>Format</button>
+          <button onClick={minify} className='px-4 py-2 bg-gray-200 rounded hover:bg-gray-300'>Minify</button>
+        </div>
+        {error&&<p className='text-red-500 text-sm'>{error}</p>}
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <div>
+            <label className='block text-sm font-medium mb-1'>Input</label>
+            <textarea value={input} onChange={e=>setInput(e.target.value)}
+              className='w-full h-64 p-3 border rounded font-mono text-sm resize-y'
+              placeholder='Paste JSON...'/>
+          </div>
+          <div>
+            <label className='block text-sm font-medium mb-1'>Output</label>
+            <textarea readOnly value={output}
+              className='w-full h-64 p-3 border rounded font-mono text-sm bg-gray-50 resize-y'/>
+          </div>
+        </div>
+        {output&&<button onClick={()=>navigator.clipboard.writeText(output)}
+          className='px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm'>Copy</button>}
       </div>
     </ToolLayout>
   )
