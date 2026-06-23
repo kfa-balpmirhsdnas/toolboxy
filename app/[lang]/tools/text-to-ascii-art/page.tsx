@@ -1,52 +1,55 @@
 'use client'
-import { useState } from 'react'
+import {useState} from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-const tool = getToolBySlug('text-to-ascii-art')!
-const CHARS:Record<string,string[]>={
-  A:['  #  ','# #  ','###  ','#  # ','#  # '],
-  B:['###  ','#  # ','###  ','#  # ','###  '],
-  C:[' ### ','#    ','#    ','#    ',' ### '],
-  D:['###  ','#  # ','#  # ','#  # ','###  '],
-  E:['#### ','#    ','###  ','#    ','#### '],
-  F:['#### ','#    ','###  ','#    ','#    '],
-  G:[' ### ','#    ','# ## ','#  # ',' ### '],
-  H:['#  # ','#  # ','#### ','#  # ','#  # '],
-  I:[' ### ','  #  ','  #  ','  #  ',' ### '],
-  J:['  ## ','   # ','   # ','#  # ',' ##  '],
-  K:['#  # ','# #  ','##   ','# #  ','#  # '],
-  L:['#    ','#    ','#    ','#    ','#### '],
-  M:['#   #','## ##','# # #','#   #','#   #'],
-  N:['#  # ','## # ','# ## ','#  # ','#  # '],
-  O:[' ### ','#   #','#   #','#   #',' ### '],
-  P:['###  ','#  # ','###  ','#    ','#    '],
-  Q:[' ### ','#   #','#   #','# ## ',' ###.'],
-  R:['###  ','#  # ','###  ','# #  ','#  # '],
-  S:[' ### ','#    ',' ##  ','   # ',' ### '],
-  T:['#####','  #  ','  #  ','  #  ','  #  '],
-  U:['#   #','#   #','#   #','#   #',' ### '],
-  V:['#   #','#   #',' # # ',' # # ','  #  '],
-  W:['#   #','#   #','# # #','## ##','#   #'],
-  X:['#   #',' # # ','  #  ',' # # ','#   #'],
-  Y:['#   #',' # # ','  #  ','  #  ','  #  '],
-  Z:['#####','   # ','  #  ',' #   ','#####'],
+import {TOOLS} from '@/lib/tools/registry'
+
+const BLOCK:Record<string,string[]>={
+  A:['  A  ',' A A ',' AAA ',' A A ',' A A '],
+  B:['BBB  ',' B B ','BBB  ',' B B ','BBB  '],
+  C:[' CCC ','C    ','C    ','C    ',' CCC '],
+  D:['DDD  ',' D D ',' D D ',' D D ','DDD  '],
+  E:['EEEE ','E    ','EEE  ','E    ','EEEE '],
+  F:['FFFF ','F    ','FFF  ','F    ','F    '],
+  G:[' GGG ','G    ','G GG ','G  G ',' GGG '],
+  H:['H  H ','H  H ','HHHH ','H  H ','H  H '],
+  I:[' III ',' I   ',' I   ',' I   ',' III '],
+  J:[' JJJ ','  J  ','  J  ','J J  ',' J   '],
+  K:['K  K ','K K  ','KK   ','K K  ','K  K '],
+  L:['L    ','L    ','L    ','L    ','LLLL '],
+  M:['M   M','MM MM','M M M','M   M','M   M'],
+  N:['N   N','NN  N','N N N','N  NN','N   N'],
+  O:[' OOO ','O   O','O   O','O   O',' OOO '],
+  P:['PPP  ','P  P ','PPP  ','P    ','P    '],
+  Q:[' QQQ ','Q   Q','Q Q Q','Q  QQ',' QQQQ'],
+  R:['RRR  ','R  R ','RRR  ','R R  ','R  R '],
+  S:[' SSS ','S    ',' SS  ','   S ',' SSS '],
+  T:['TTTTT','  T  ','  T  ','  T  ','  T  '],
+  U:['U   U','U   U','U   U','U   U',' UUU '],
+  V:['V   V','V   V',' V V ','  V  ','  V  '],
+  W:['W   W','W   W','W W W','WW WW','W   W'],
+  X:['X   X',' X X ','  X  ',' X X ','X   X'],
+  Y:['Y   Y',' Y Y ','  Y  ','  Y  ','  Y  '],
+  Z:['ZZZZZ','   Z ','  Z  ',' Z   ','ZZZZZ'],
   ' ':['     ','     ','     ','     ','     '],
-  '!':['  #  ','  #  ','  #  ','     ','  #  '],
-  '?':['#### ','   # ',' ##  ','     ','  #  '],
-  '0':[' ### ','#  ##','# # #','##  #',' ### '],
-  '1':['  #  ',' ##  ','  #  ','  #  ','##### '],
-  '2':[' ### ','#   #','  ## ',' #   ','#### '],
-  '3':['#### ','   # ',' ##  ','   # ','#### '],
 }
-export default function TextToAsciiArtPage() {
-  const [text,setText]=useState('HELLO')
-  const [char,setChar]=useState('#')
-  const [spacing,setSpacing]=useState(1)
-  const [copied,setCopied]=useState(false)
-  const upper=text.toUpperCase()
-  const lines:string[]=Array(5).fill('')
-  for(const c of upper){
-    const glyph=CHARS[c]||CHARS['?']
-    for(let i=0;i<5;i++){lines[i]+=glyph[i].replace(/#/g,char)+' '.repeat(spacing)}
-  }
-  const art=lines.join('\n')\n  const copy=()=>{navigator.clipboard.writeText(art);setCopied(true);setTimeout(()=>setCopied(false),1500)}\n  return (\n    <ToolLayout tool={tool}>\n      <div className="max-w-lg mx-auto px-4 space-y-4">\n        <div className="flex gap-3">\n          <div className="flex-1"><label className="block text-sm font-medium text-gray-700 mb-1">Text</label>\n            <input value={text} onChange={e=>setText(e.target.value.slice(0,15))} className="w-full rounded border border-gray-300 px-3 py-2.5" placeholder="HELLO" maxLength={15}/></div>\n          <div className="w-20"><label className="block text-sm font-medium text-gray-700 mb-1">Char</label>\n            <input value={char} onChange={e=>setChar(e.target.value.slice(-1)||'#')} className="w-full rounded border border-gray-300 px-3 py-2.5 text-center text-xl font-bold" maxLength={1}/></div>\n          <div className="w-24"><label className="block text-sm font-medium text-gray-700 mb-1">Spacing</label>\n            <select value={spacing} onChange={e=>setSpacing(Number(e.target.value))} className="w-full rounded border border-gray-300 px-2 py-2.5">\n              {[0,1,2,3].map(n=><option key={n} value={n}>{n}</option>)}</select></div>\n        </div>\n        <div className="bg-gray-900 rounded-xl overflow-hidden">\n          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">\n            <span className="text-xs text-gray-400">ASCII Art</span>\n            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>\n          </div>\n          <pre className="px-4 py-4 text-green-400 font-mono text-sm overflow-x-auto leading-relaxed">{art}</pre>\n        </div>\n      </div>\n    </ToolLayout>\n  )\n}
+
+export default function Page(){
+  const tool=TOOLS.find(t=>t.slug==='text-to-ascii-art')
+  const [input,setInput]=useState('HELLO')
+  const chars=input.toUpperCase().split('').filter(c=>c in BLOCK)
+  const rows=Array.from({length:5},(_,r)=>chars.map(c=>BLOCK[c][r]).join(' ')).join('\n')
+  return (
+    <ToolLayout tool={tool}>
+      <div className='space-y-4'>
+        <input value={input} onChange={e=>setInput(e.target.value.slice(0,20))}
+          className='w-full border rounded px-3 py-2 text-lg font-mono uppercase'
+          placeholder='Type text (A-Z, max 20 chars)'/>
+        <pre className='bg-gray-900 text-green-400 p-4 rounded font-mono text-sm overflow-auto whitespace-pre'>
+          {rows||'Enter text above'}
+        </pre>
+        <button onClick={()=>navigator.clipboard.writeText(rows)}
+          className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm'>Copy ASCII Art</button>
+      </div>
+    </ToolLayout>
+  )
+}

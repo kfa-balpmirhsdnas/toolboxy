@@ -1,75 +1,55 @@
 'use client'
-import { useState } from 'react'
+import {useState} from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-const tool = getToolBySlug('statistics-calculator')!
-function stats(nums:number[]):{label:string;val:string}[]{
-  if(nums.length===0)return []
+import {TOOLS} from '@/lib/tools/registry'
+
+function stats(nums:number[]){
+  if(!nums.length) return null
   const sorted=[...nums].sort((a,b)=>a-b)
   const n=nums.length
   const sum=nums.reduce((a,b)=>a+b,0)
   const mean=sum/n
-  const median=n%2===0?(sorted[n/2-1]+sorted[n/2])/2:sorted[Math.floor(n/2)]
-  const variance=nums.reduce((a,b)=>a+Math.pow(b-mean,2),0)/n
-  const stdDev=Math.sqrt(variance)
-  const sampleStd=n>1?Math.sqrt(nums.reduce((a,b)=>a+Math.pow(b-mean,2),0)/(n-1)):0
-  const freq:Record<number,number>={};nums.forEach(v=>{freq[v]=(freq[v]||0)+1})
-  const maxFreq=Math.max(...Object.values(freq))
-  const mode=Object.entries(freq).filter(([,f])=>f===maxFreq).map(([v])=>Number(v))
-  const range=sorted[n-1]-sorted[0]
-  const q1=sorted[Math.floor(n*0.25)]
-  const q3=sorted[Math.floor(n*0.75)]
-  const iqr=q3-q1
-  return [
-    {label:'Count',val:String(n)},
-    {label:'Sum',val:parseFloat(sum.toFixed(4)).toString()},
-    {label:'Mean (average)',val:parseFloat(mean.toFixed(4)).toString()},
-    {label:'Median',val:parseFloat(median.toFixed(4)).toString()},
-    {label:'Mode',val:mode.length<=3?mode.join(', '):'Multiple'},
-    {label:'Min',val:String(sorted[0])},
-    {label:'Max',val:String(sorted[n-1])},
-    {label:'Range',val:parseFloat(range.toFixed(4)).toString()},
-    {label:'Variance (pop)',val:parseFloat(variance.toFixed(4)).toString()},
-    {label:'Std Dev (pop)',val:parseFloat(stdDev.toFixed(4)).toString()},
-    {label:'Std Dev (sample)',val:parseFloat(sampleStd.toFixed(4)).toString()},
-    {label:'Q1',val:parseFloat(q1.toFixed(4)).toString()},
-    {label:'Q3',val:parseFloat(q3.toFixed(4)).toString()},
-    {label:'IQR',val:parseFloat(iqr.toFixed(4)).toString()},
-  ]
+  const mid=Math.floor(n/2)
+  const median=n%2===0?(sorted[mid-1]+sorted[mid])/2:sorted[mid]
+  const freq:Record<number,number>={}
+  for(const v of nums) freq[v]=(freq[v]||0)+1
+  const maxF=Math.max(...Object.values(freq))
+  const mode=Object.entries(freq).filter(([,f])=>f===maxF).map(([v])=>Number(v))
+  const variance=nums.reduce((a,b)=>a+(b-mean)**2,0)/n
+  const stddev=Math.sqrt(variance)
+  return {n,sum,mean,median,mode,min:sorted[0],max:sorted[n-1],range:sorted[n-1]-sorted[0],stddev,variance}
 }
-export default function StatisticsCalculatorPage() {
-  const [input,setInput]=useState('2, 4, 4, 4, 5, 5, 7, 9')
-  const nums=input.split(/[,s
-]+/).map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n))
-  const results=stats(nums)
+
+export default function Page(){
+  const tool=TOOLS.find(t=>t.slug==='statistics-calculator')
+  const [input,setInput]=useState('4 8 15 16 23 42')
+  const nums=input.split(/[,\s]+/).map(Number).filter(n=>!isNaN(n)&&String(n)!=='')
+  const s=stats(nums)
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-lg mx-auto px-4 space-y-4">
-        <div><label className="block text-sm font-medium text-gray-700 mb-1">Numbers (comma or space separated)</label>
-          <textarea value={input} onChange={e=>setInput(e.target.value)} rows={4} placeholder="e.g. 1, 2, 3, 4, 5" className="w-full rounded border border-gray-300 px-3 py-2 font-mono resize-none"/>
-          <p className="text-xs text-gray-400 mt-0.5">{nums.length} numbers detected</p></div>
-        {results.length>0&&(
-          <div className="grid grid-cols-2 gap-2">
-            {results.map(r=>(
-              <div key={r.label} className="bg-gray-50 rounded-xl px-3 py-2.5">
-                <p className="text-xs text-gray-500">{r.label}</p>
-                <p className="text-lg font-bold text-gray-800 mt-0.5 font-mono">{r.val}</p>
+      <div className='space-y-4'>
+        <div>
+          <label className='block text-sm font-medium mb-1'>Numbers (space or comma separated)</label>
+          <input value={input} onChange={e=>setInput(e.target.value)}
+            className='w-full border rounded px-3 py-2 font-mono text-sm'
+            placeholder='e.g. 1 2 3 4 5'/>
+        </div>
+        {s&&(
+          <div className='grid grid-cols-2 md:grid-cols-3 gap-3'>
+            {[
+              ['Count',s.n],['Sum',s.sum.toFixed(4)],['Mean',s.mean.toFixed(4)],
+              ['Median',s.median.toFixed(4)],['Mode',s.mode.join(', ')],
+              ['Min',s.min],['Max',s.max],['Range',s.range],
+              ['Std Dev',s.stddev.toFixed(4)],['Variance',s.variance.toFixed(4)]
+            ].map(([l,v])=>(
+              <div key={String(l)} className='bg-gray-50 border rounded p-3'>
+                <div className='text-xs text-gray-500'>{l}</div>
+                <div className='font-mono font-bold'>{v}</div>
               </div>
             ))}
           </div>
         )}
-        {nums.length>1&&(
-          <div>
-            <p className="text-xs font-medium text-gray-600 mb-2">Distribution (sorted)</p>
-            <div className="flex items-end gap-0.5 h-20">
-              {[...nums].sort((a,b)=>a-b).map((n,i,arr)=>{
-                const min=arr[0],max=arr[arr.length-1],range=max-min||1
-                const pct=((n-min)/range)*80+10
-                return <div key={i} className="flex-1 bg-blue-400 rounded-t min-w-0.5" style={{height:pct+'%'}} title={String(n)}/>
-              })}
-            </div>
-          </div>
-        )}
+        {!s&&<p className='text-gray-400 text-sm'>Enter numbers above to see statistics.</p>}
       </div>
     </ToolLayout>
   )
