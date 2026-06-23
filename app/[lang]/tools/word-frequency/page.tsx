@@ -1,85 +1,53 @@
 'use client'
-import { useState, useRef } from 'react'
+import {useState} from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
+import {TOOLS} from '@/lib/tools/registry'
 
-const tool = getToolBySlug('word-frequency')!
+export default function Page(){
+  const tool=TOOLS.find(t=>t.slug==='word-frequency')
+  const [input,setInput]=useState('the quick brown fox jumps over the lazy dog the fox')
+  const [top,setTop]=useState(10)
+  const [caseSensitive,setCaseSensitive]=useState(false)
 
-interface WordEntry { word: string; count: number; pct: string }
-
-function analyze(text: string): WordEntry[] {
-  if (!text.trim()) return []
-  const words = text.toLowerCase().match(/\b[a-z'\u00C0-\u024F]+\b/g) || []
-  const map: Record<string, number> = {}
-  for (const w of words) map[w] = (map[w] || 0) + 1
-  const total = words.length
-  return Object.entries(map)
-    .sort((a, b) => b[1] - a[1])
-    .map(([word, count]) => ({ word, count, pct: ((count / total) * 100).toFixed(1) }))
-}
-
-export default function WordFrequencyPage({ params }: { params: { lang: string } }) {
-  const [text, setText] = useState('')
-  const [copied, setCopied] = useState(false)
-  const tracked = useRef(false)
-
-  function track() {
-    if (!tracked.current) { trackToolUsed('word-frequency'); tracked.current = true }
-  }
-
-  const entries = analyze(text)
-  const wordCount = text.trim() ? (text.toLowerCase().match(/\b[a-z'\u00C0-\u024F]+\b/g) || []).length : 0
-  const charCount = text.length
-  const uniqueWords = entries.length
-
-  async function copyResults() {
-    const csv = 'Word,Count,Frequency\n' + entries.map(e => `${e.word},${e.count},${e.pct}%`).join('\n')
-    await navigator.clipboard.writeText(csv)
-    trackToolCopy('word-frequency')
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
+  const text=caseSensitive?input:input.toLowerCase()
+  const words=text.match(/[a-zA-Z]+/g)||[]
+  const freq:Record<string,number>={}
+  for(const w of words) freq[w]=(freq[w]||0)+1
+  const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,top)
+  const maxCount=sorted[0]?.[1]||1
 
   return (
-    <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-5">
-        <textarea
-          value={text}
-          onChange={e => { setText(e.target.value); track() }}
-          placeholder="Paste or type your text here..."
-          rows={6}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
-        />
-        {text.trim() && (
-          <>
-            <div className="grid grid-cols-3 gap-3">
-              {[['Total Words', wordCount], ['Unique Words', uniqueWords], ['Characters', charCount]].map(([label, val]) => (
-                <div key={label as string} className="p-3 bg-brand-50 border border-brand-100 rounded-xl text-center">
-                  <p className="text-xl font-bold text-brand-800">{val}</p>
-                  <p className="text-xs text-brand-600 mt-0.5">{label}</p>
-                </div>
-              ))}
+    <ToolLayout tool={tool}>
+      <div className='space-y-4'>
+        <textarea value={input} onChange={e=>setInput(e.target.value)}
+          className='w-full h-32 p-3 border rounded font-mono text-sm resize-y'
+          placeholder='Paste your text here...'/>
+        <div className='flex gap-4 items-center flex-wrap'>
+          <label className='flex items-center gap-2 text-sm'>
+            <input type='checkbox' checked={caseSensitive} onChange={e=>setCaseSensitive(e.target.checked)}/>
+            Case sensitive
+          </label>
+          <label className='flex items-center gap-2 text-sm'>
+            Show top
+            <select value={top} onChange={e=>setTop(Number(e.target.value))} className='border rounded px-2 py-1'>
+              {[10,20,30,50].map(n=>(<option key={n} value={n}>{n}</option>))}
+            </select>
+            words
+          </label>
+        </div>
+        <div className='space-y-1'>
+          {sorted.map(([word,count],i)=>(
+            <div key={word} className='flex items-center gap-2'>
+              <span className='text-gray-400 text-xs w-5'>{i+1}</span>
+              <span className='font-mono text-sm w-24 truncate'>{word}</span>
+              <div className='flex-1 bg-gray-100 rounded h-5'>
+                <div className='bg-blue-500 h-5 rounded' style={{width:(count/maxCount*100)+'%'}}/>
+              </div>
+              <span className='text-sm text-gray-600 w-8 text-right'>{count}</span>
             </div>
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-gray-700">Word Frequency ({entries.length} words)</h3>
-              <button onClick={copyResults} className="text-xs text-brand-600 hover:underline">
-                {copied ? '\u2713 Copied' : 'Copy as CSV'}
-              </button>
-            </div>
-            <div className="space-y-1.5 max-h-80 overflow-y-auto">
-              {entries.slice(0, 50).map(({ word, count, pct }) => (
-                <div key={word} className="flex items-center gap-3">
-                  <span className="text-sm font-mono text-gray-700 w-36 shrink-0 truncate">{word}</span>
-                  <div className="flex-1 bg-gray-100 rounded-full h-2">
-                    <div className="bg-brand-500 h-2 rounded-full" style={{ width: pct + '%' }} />
-                  </div>
-                  <span className="text-xs text-gray-500 w-16 text-right shrink-0">{count}x ({pct}%)</span>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+          ))}
+        </div>
+        <p className='text-xs text-gray-400'>Total words: {words.length} | Unique: {Object.keys(freq).length}</p>
       </div>
     </ToolLayout>
   )

@@ -1,65 +1,62 @@
 'use client'
-import { useState } from 'react'
+import {useState} from 'react'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { getToolBySlug } from '@/lib/tools/registry'
-const tool = getToolBySlug('number-sorter')!
-export default function NumberSorterPage() {
-  const [input,setInput]=useState('5, 2, 8, 1, 9, 3, 7, 4, 6, 10')
+import {TOOLS} from '@/lib/tools/registry'
+
+export default function Page(){
+  const tool=TOOLS.find(t=>t.slug==='number-sorter')
+  const [input,setInput]=useState('42\n7\n15\n3\n99\n1')
   const [order,setOrder]=useState<'asc'|'desc'>('asc')
-  const [sep,setSep]=useState<'comma'|'newline'|'space'>('comma')
-  const [unique,setUnique]=useState(false)
-  const [remove0,setRemove0]=useState(false)
-  const [copied,setCopied]=useState(false)
-  const sepChar=sep==='comma'?',':sep==='newline'?'\n':' '\n  const parsed=(sep==='comma'?input.split(','):sep==='newline'?input.split('
-'):input.split(/s+/)).map(s=>s.trim()).filter(Boolean).map(Number).filter(n=>!isNaN(n))\n  let nums=[...parsed]
-  if(remove0)nums=nums.filter(n=>n!==0)
-  if(unique)nums=[...new Set(nums)]
-  nums.sort((a,b)=>order==='asc'?a-b:b-a)
-  const out=nums.join(sepChar+(sep!=='newline'?' ':''))
-  const copy=()=>{navigator.clipboard.writeText(out);setCopied(true);setTimeout(()=>setCopied(false),1500)}
-  const stats=nums.length>0?{min:Math.min(...nums),max:Math.max(...nums),sum:nums.reduce((a,b)=>a+b,0),avg:parseFloat((nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(4))}:null
+  const [sep,setSep]=useState<'newline'|'comma'|'space'>('newline')
+  const [output,setOutput]=useState('')
+
+  function sort(){
+    const delim=sep==='comma'?',':sep==='space'?' ':'\n'
+    const nums=input.split(delim).map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n))
+    nums.sort((a,b)=>order==='asc'?a-b:b-a)
+    setOutput(nums.join(delim))
+  }
+
   return (
     <ToolLayout tool={tool}>
-      <div className="max-w-md mx-auto px-4 space-y-4">
-        <div><label className="block text-sm font-medium text-gray-700 mb-1">Numbers</label>
-          <textarea value={input} onChange={e=>setInput(e.target.value)} rows={4}
-            className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-sm resize-none focus:outline-none focus:border-blue-400"
-            placeholder="Enter numbers..."/></div>
-        <div className="flex flex-wrap gap-3 items-center">
-          <div className="flex rounded-lg overflow-hidden border border-gray-300 text-sm">
-            <button onClick={()=>setOrder('asc')} className={'px-3 py-2 font-medium transition '+(order==='asc'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Ascending</button>
-            <button onClick={()=>setOrder('desc')} className={'px-3 py-2 font-medium transition '+(order==='desc'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Descending</button>
+      <div className='space-y-4'>
+        <div className='flex gap-4 flex-wrap'>
+          <div>
+            <label className='block text-sm font-medium mb-1'>Separator</label>
+            <select value={sep} onChange={e=>setSep(e.target.value as 'newline'|'comma'|'space')}
+              className='border rounded px-3 py-2'>
+              <option value='newline'>Newline</option>
+              <option value='comma'>Comma</option>
+              <option value='space'>Space</option>
+            </select>
           </div>
-          <div className="flex items-center gap-1.5 text-sm">
-            <span className="text-gray-600">Sep:</span>
-            {[{l:'Comma',v:'comma'},{l:'Newline',v:'newline'},{l:'Space',v:'space'}].map(s=>(
-              <button key={s.v} onClick={()=>setSep(s.v as any)}
-                className={'px-2.5 py-1.5 rounded border text-xs transition '+(sep===s.v?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>
-                {s.l}
-              </button>
-            ))}
+          <div>
+            <label className='block text-sm font-medium mb-1'>Order</label>
+            <div className='flex gap-2'>
+              {(['asc','desc'] as const).map(o=>(
+                <button key={o} onClick={()=>setOrder(o)}
+                  className={'px-3 py-2 rounded border '+(order===o?'bg-blue-600 text-white':'bg-white hover:bg-gray-50')}>
+                  {o==='asc'?'Ascending':'Descending'}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="flex gap-4 text-sm">
-          {[['Remove duplicates',unique,setUnique],['Remove zeros',remove0,setRemove0]].map(([l,v,s])=>(
-            <label key={l as string} className="flex items-center gap-1.5 cursor-pointer text-gray-600">
-              <input type="checkbox" checked={v as boolean} onChange={e=>(s as Function)(e.target.checked)} className="rounded"/>{l as string}
-            </label>
-          ))}
-        </div>
-        {stats&&(
-          <div className="grid grid-cols-4 gap-2 text-center">
-            {[['Count',nums.length],['Min',stats.min],['Max',stats.max],['Avg',stats.avg]].map(([l,v])=>(
-              <div key={l} className="bg-gray-50 rounded-xl py-2.5">
-                <p className="text-lg font-bold text-gray-800 font-mono">{v}</p>
-                <p className="text-xs text-gray-500">{l}</p>
-              </div>
-            ))}
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <div>
+            <label className='block text-sm font-medium mb-1'>Numbers</label>
+            <textarea value={input} onChange={e=>setInput(e.target.value)}
+              className='w-full h-36 p-3 border rounded font-mono text-sm resize-y'/>
           </div>
-        )}
-        <div className="bg-gray-900 rounded-xl p-4 flex gap-3">
-          <pre className="flex-1 text-green-400 font-mono text-sm whitespace-pre-wrap break-all max-h-32 overflow-y-auto">{out||'No valid numbers'}</pre>
-          <button onClick={copy} className="flex-shrink-0 bg-blue-600 text-white px-3 py-1.5 rounded text-xs h-fit hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
+          <div>
+            <label className='block text-sm font-medium mb-1'>Sorted</label>
+            <textarea readOnly value={output}
+              className='w-full h-36 p-3 border rounded font-mono text-sm bg-gray-50 resize-y'/>
+          </div>
+        </div>
+        <div className='flex gap-3'>
+          <button onClick={sort} className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>Sort</button>
+          {output&&<button onClick={()=>navigator.clipboard.writeText(output)} className='px-4 py-2 bg-gray-200 rounded hover:bg-gray-300'>Copy</button>}
         </div>
       </div>
     </ToolLayout>
