@@ -22,6 +22,14 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'favicon-generator',category:'image',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['favicon','icon','generator','ico','ファビコン','파비콘'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'webp-converter',category:'image',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['webp','convert','png','jpg','compress'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'image-to-pdf',category:'image',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['image','pdf','convert','jpg','png'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'compound-interest-calculator',category:'finance',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['compound interest','investment','savings','複利','복리'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'salary-converter',category:'finance',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['salary','hourly','annual','wage','給与','급여'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'vat-calculator',category:'finance',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['vat','sales tax','消費税','부가세'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'savings-goal-calculator',category:'finance',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['savings','goal','budget','貯金','저축'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'random-string-generator',category:'security',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['random','string','token','password','generator'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'wifi-qr-generator',category:'qr',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['wifi','qr','password','network','ssid','wifi qr'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'vcard-qr-generator',category:'qr',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['vcard','qr','contact','business card','連絡先'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'email-qr-generator',category:'qr',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['email','qr','mailto'],maxFileSizeMB:{free:0,pro:0} },

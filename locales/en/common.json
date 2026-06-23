@@ -661,7 +661,15 @@
     "sitemap-generator": "Turn a list of URLs into a valid XML sitemap for Google. Free online sitemap generator.",
     "utm-builder": "Build trackable campaign URLs with UTM parameters for Google Analytics. Free UTM link builder.",
     "schema-markup-generator": "Generate JSON-LD structured data (Organization, Article, Product, FAQ) for rich results. Free schema generator.",
-    "htaccess-redirect-generator": "Generate .htaccess 301/302 redirect rules and HTTPS/www forcing for Apache. Free redirect generator."
+    "htaccess-redirect-generator": "Generate .htaccess 301/302 redirect rules and HTTPS/www forcing for Apache. Free redirect generator.",
+    "favicon-generator": "Generate favicons in every common size from one image, with ready-to-paste HTML tags. Free favicon generator.",
+    "webp-converter": "Convert images to WebP — or WebP back to PNG/JPG — right in your browser. Free WebP converter.",
+    "image-to-pdf": "Combine JPG, PNG and other images into a single PDF — one image per page. Free image-to-PDF converter.",
+    "compound-interest-calculator": "Calculate compound interest with regular monthly contributions. Free compound interest calculator.",
+    "salary-converter": "Convert pay between hourly, daily, weekly, monthly and yearly. Free salary / wage converter.",
+    "vat-calculator": "Add or remove VAT (sales tax) at any rate, with net, tax and gross amounts. Free VAT calculator.",
+    "savings-goal-calculator": "See how long it takes to reach a savings goal with monthly deposits and returns. Free savings goal calculator.",
+    "random-string-generator": "Generate secure random strings with custom length and character sets. Free random string / token generator."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -866,6 +874,98 @@
         {
           "q": "Is it free?",
           "a": "Yes — completely free, no account or installation."
+        }
+      ]
+    },
+    "favicon-generator": {
+      "intro": "Upload a square image and download favicons in every size, plus the HTML tags to add them.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Are my files uploaded?",
+          "a": "No — everything is processed locally in your browser."
+        }
+      ]
+    },
+    "webp-converter": {
+      "intro": "Drop an image and convert it to WebP, PNG or JPG with adjustable quality.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Are my files uploaded?",
+          "a": "No — everything is processed locally in your browser."
+        }
+      ]
+    },
+    "image-to-pdf": {
+      "intro": "Add images in the order you want and download them as a single PDF.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Are my files uploaded?",
+          "a": "No — everything is processed locally in your browser."
+        }
+      ]
+    },
+    "compound-interest-calculator": {
+      "intro": "Enter your starting amount, rate, term and monthly contribution to project your savings.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        }
+      ]
+    },
+    "salary-converter": {
+      "intro": "Enter any pay rate and see the equivalent hourly, weekly, monthly and yearly amounts.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Is this take-home pay?",
+          "a": "No — it shows gross pay before tax, which varies by country."
+        }
+      ]
+    },
+    "vat-calculator": {
+      "intro": "Enter an amount and rate, then add or remove VAT to see net, tax and gross.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        }
+      ]
+    },
+    "savings-goal-calculator": {
+      "intro": "Enter your goal, current savings, monthly deposit and return to see the time needed.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        }
+      ]
+    },
+    "random-string-generator": {
+      "intro": "Choose length and character sets to generate secure random strings or tokens.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Is it secure?",
+          "a": "Yes — it uses the browser crypto API and nothing is sent to a server."
         }
       ]
     }
