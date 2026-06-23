@@ -22,6 +22,10 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'screen-recorder',category:'video',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['screen recorder','record','capture','webm','画面録画','화면 녹화'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'webcam-test',category:'video',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['webcam','camera','test','check','ウェブカメラ','웹캠'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'voice-recorder',category:'audio',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['voice recorder','audio','microphone','record','ボイスレコーダー','음성 녹음'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'tone-generator',category:'audio',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['tone','frequency','hz','sound','test','トーン','주파수'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'merge-pdf',category:'pdf',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['pdf','merge','combine','join','結合','병합'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'split-pdf',category:'pdf',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['pdf','split','extract','pages','分割','분할'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'rotate-pdf',category:'pdf',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['pdf','rotate','turn','回転','회전'],maxFileSizeMB:{free:0,pro:0} },

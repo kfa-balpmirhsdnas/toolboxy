@@ -674,7 +674,11 @@
     "split-pdf": "Extract specific pages or ranges from a PDF into a new file. Free PDF splitter.",
     "rotate-pdf": "Rotate all pages of a PDF by 90, 180 or 270 degrees and download. Free PDF rotator.",
     "remove-pdf-pages": "Delete unwanted pages from a PDF and download the rest. Free PDF page remover.",
-    "fancy-text-generator": "Turn text into fancy Unicode fonts for Instagram, TikTok and bios. Free fancy text generator."
+    "fancy-text-generator": "Turn text into fancy Unicode fonts for Instagram, TikTok and bios. Free fancy text generator.",
+    "screen-recorder": "Record your screen to a video file right in your browser — no install. Free online screen recorder.",
+    "webcam-test": "Test your webcam online and check its resolution — no software needed. Free webcam test.",
+    "voice-recorder": "Record audio from your microphone and download it. Free online voice recorder, no sign-up.",
+    "tone-generator": "Play any frequency from 20 Hz to 20 kHz with selectable waveforms. Free online tone generator."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1036,6 +1040,62 @@
         {
           "q": "Will it work on Instagram?",
           "a": "Yes — these are Unicode characters you can paste almost anywhere."
+        }
+      ]
+    },
+    "screen-recorder": {
+      "intro": "Click start, pick the screen or window to share, and download the recording when you stop.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Is anything uploaded?",
+          "a": "No — recording happens in your browser and stays on your device."
+        },
+        {
+          "q": "What format do I get?",
+          "a": "A WebM file. Converting to MP4/MP3 needs separate software."
+        }
+      ]
+    },
+    "webcam-test": {
+      "intro": "Click to start your camera and instantly see the preview and resolution.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Is anything uploaded?",
+          "a": "No — recording happens in your browser and stays on your device."
+        }
+      ]
+    },
+    "voice-recorder": {
+      "intro": "Allow microphone access, record, then play back and download your audio.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
+        },
+        {
+          "q": "Is anything uploaded?",
+          "a": "No — recording happens in your browser and stays on your device."
+        },
+        {
+          "q": "What format do I get?",
+          "a": "A WebM file. Converting to MP4/MP3 needs separate software."
+        }
+      ]
+    },
+    "tone-generator": {
+      "intro": "Set a frequency and waveform, then play a pure test tone through your speakers or headphones.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no account needed."
         }
       ]
     }
