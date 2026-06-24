@@ -12,8 +12,8 @@ type SoundId = 'white' | 'pink' | 'brown' | 'rain' | 'fire' | 'ocean' | 'fan' | 
 
 // Ocean = rise → long fade-out → calm gap. Each phase is an independent duration
 // (seconds) so any one can change without affecting the others.
-const OCEAN_RISE_SEC = 2.3
-const OCEAN_FADE_SEC = 10
+const OCEAN_RISE_SEC = 4
+const OCEAN_FADE_SEC = 9
 const OCEAN_GAP_SEC = 4
 const OCEAN_WAVE_SEC = OCEAN_RISE_SEC + OCEAN_FADE_SEC
 
