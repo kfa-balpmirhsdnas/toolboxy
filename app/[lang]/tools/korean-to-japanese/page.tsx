@@ -34,6 +34,15 @@ export default function KoreanToJapanesePage({ params }: { params: { lang: strin
     setCopied(true); setTimeout(() => setCopied(false), 1500)
   }
 
+  function speak() {
+    if (!result || typeof window === 'undefined' || !window.speechSynthesis) return
+    const u = new SpeechSynthesisUtterance(result.replace(/・/g, '、'))
+    u.lang = 'ja-JP'
+    u.rate = 0.9
+    window.speechSynthesis.cancel()
+    window.speechSynthesis.speak(u)
+  }
+
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
@@ -49,7 +58,11 @@ export default function KoreanToJapanesePage({ params }: { params: { lang: strin
           ) : result ? (
             <div>
               <p className="text-3xl font-bold text-gray-900">{result}</p>
-              <button onClick={copy} className="mt-3 text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50">{copied ? t('qs_copied') : t('qs_copy')}</button>
+              <div className="mt-3 flex items-center justify-center gap-2">
+                <button onClick={speak} aria-label="Listen" title="🔊"
+                  className="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50">🔊</button>
+                <button onClick={copy} className="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50">{copied ? t('qs_copied') : t('qs_copy')}</button>
+              </div>
             </div>
           ) : (
             <p className="text-sm text-gray-500">{t('kj_notfound')}</p>
