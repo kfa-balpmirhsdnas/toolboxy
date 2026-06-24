@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -14,6 +15,7 @@ function fmtBytes(b: number) {
 }
 
 export default function ImageCompressPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [original, setOriginal] = useState<File|null>(null)
   const [preview, setPreview] = useState('')
   const [compressed, setCompressed] = useState<Blob|null>(null)
@@ -84,21 +86,21 @@ export default function ImageCompressPage({ params }: { params: { lang: string }
           ) : (
             <>
               <p className="text-4xl mb-2">&#x1F4F7;</p>
-              <p className="text-sm font-medium text-gray-600">Drop image here or click to select</p>
-              <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP, HEIC supported</p>
+              <p className="text-sm font-medium text-gray-600">{t('ic_drop')}</p>
+              <p className="text-xs text-gray-400 mt-1">{t('ic_supported')}</p>
             </>
           )}
         </div>
         {/* Settings */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Max Size (MB)</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">{t('ic_maxsize')}</label>
             <input type="number" min={0.1} max={10} step={0.1} value={maxSizeMB}
               onChange={e => setMaxSizeMB(parseFloat(e.target.value))}
               className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Max Dimension (px)</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">{t('ic_maxdim')}</label>
             <select value={maxDim} onChange={e => setMaxDim(Number(e.target.value))}
               className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white">
               {[800,1024,1280,1920,2560,3840].map(d => <option key={d} value={d}>{d}px</option>)}
@@ -107,18 +109,18 @@ export default function ImageCompressPage({ params }: { params: { lang: string }
         </div>
         <button onClick={compress} disabled={!original || loading}
           className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors">
-          {loading ? 'Compressing...' : 'Compress Image'}
+          {loading ? t('ic_compressing') : t('ic_compress')}
         </button>
         {/* Preview side-by-side */}
         {preview && (
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <p className="text-xs text-gray-500 font-medium">Original {original ? '(' + fmtBytes(original.size) + ')' : ''}</p>
+              <p className="text-xs text-gray-500 font-medium">{t('ic_original')} {original ? '(' + fmtBytes(original.size) + ')' : ''}</p>
               <img src={preview} alt="original" className="w-full rounded-xl border border-gray-200 object-contain max-h-48" />
             </div>
             {compressedUrl && (
               <div className="space-y-1">
-                <p className="text-xs text-gray-500 font-medium">Compressed {compressed ? '(' + fmtBytes(compressed.size) + ')' : ''}</p>
+                <p className="text-xs text-gray-500 font-medium">{t('ic_compressed')} {compressed ? '(' + fmtBytes(compressed.size) + ')' : ''}</p>
                 <img src={compressedUrl} alt="compressed" className="w-full rounded-xl border border-gray-200 object-contain max-h-48" />
               </div>
             )}
@@ -128,13 +130,13 @@ export default function ImageCompressPage({ params }: { params: { lang: string }
           <div className="flex items-center gap-4 p-4 bg-green-50 border border-green-200 rounded-xl">
             <div className="text-center">
               <p className="text-2xl font-bold text-green-700">{savings}%</p>
-              <p className="text-xs text-green-600">Saved</p>
+              <p className="text-xs text-green-600">{t('ic_saved')}</p>
             </div>
             <div className="flex-1 text-sm text-green-800">
               {fmtBytes(original.size)} &#x2192; {fmtBytes(compressed.size)}
             </div>
             <button onClick={download} className="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 transition-colors">
-              &#x2B07; Download
+              {t('ic_download')}
             </button>
           </div>
         )}

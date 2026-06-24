@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -8,6 +9,7 @@ import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 const tool = getToolBySlug('pdf-to-jpg')!
 
 export default function PdfToJpgPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [file, setFile] = useState<File | null>(null)
   const [pages, setPages] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
@@ -35,7 +37,7 @@ export default function PdfToJpgPage({ params }: { params: { lang: string } }) {
       setPages(out)
     } catch (e) {
       console.error(e)
-      setError('Could not read this PDF.')
+      setError(t('pj_error'))
     } finally {
       setLoading(false)
     }
@@ -57,11 +59,11 @@ export default function PdfToJpgPage({ params }: { params: { lang: string } }) {
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
           <input ref={inputRef} type="file" accept="application/pdf" className="hidden" onChange={(e) => e.target.files?.[0] && handle(e.target.files[0])} />
           <p className="text-4xl mb-2">🖼</p>
-          <p className="text-sm font-medium text-gray-600">{file ? file.name : 'Drop a PDF or click to select'}</p>
-          <p className="text-xs text-gray-400 mt-1">Each page becomes a downloadable JPG</p>
+          <p className="text-sm font-medium text-gray-600">{file ? file.name : t('pj_drop')}</p>
+          <p className="text-xs text-gray-400 mt-1">{t('pj_sub')}</p>
         </div>
 
-        {loading && <p className="text-sm text-gray-500 text-center">Rendering pages…</p>}
+        {loading && <p className="text-sm text-gray-500 text-center">{t('pj_rendering')}</p>}
         {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl p-3">{error}</p>}
 
         {pages.length > 0 && (
@@ -69,12 +71,12 @@ export default function PdfToJpgPage({ params }: { params: { lang: string } }) {
             {pages.map((p, i) => (
               <button key={i} onClick={() => download(p, i)} className="group flex flex-col items-center gap-1">
                 <img src={p} alt={`page ${i + 1}`} className="w-full rounded-lg border border-gray-200 group-hover:ring-2 ring-brand-400" />
-                <span className="text-xs text-gray-500">Page {i + 1} ⬇</span>
+                <span className="text-xs text-gray-500">{t('pj_page', { n: i + 1 })} ⬇</span>
               </button>
             ))}
           </div>
         )}
-        <p className="text-xs text-gray-400 text-center">Rendered entirely in your browser — the PDF is never uploaded.</p>
+        <p className="text-xs text-gray-400 text-center">{t('pj_note')}</p>
       </div>
     </ToolLayout>
   )

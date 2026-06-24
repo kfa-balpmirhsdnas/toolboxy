@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -8,6 +9,7 @@ import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 const tool = getToolBySlug('merge-pdf')!
 
 export default function MergePdfPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [files, setFiles] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -50,7 +52,7 @@ export default function MergePdfPage({ params }: { params: { lang: string } }) {
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
           <input ref={inputRef} type="file" accept="application/pdf" multiple className="hidden" onChange={(e) => add(e.target.files)} />
           <p className="text-4xl mb-2">📄</p>
-          <p className="text-sm font-medium text-gray-600">Drop PDFs or click to add</p>
+          <p className="text-sm font-medium text-gray-600">{t('mp_drop')}</p>
         </div>
 
         {files.length > 0 && (
@@ -66,11 +68,11 @@ export default function MergePdfPage({ params }: { params: { lang: string } }) {
             ))}
             <button onClick={merge} disabled={files.length < 2 || loading}
               className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors">
-              {loading ? 'Merging…' : `Merge ${files.length} PDFs`}
+              {loading ? t('mp_merging') : t('mp_merge_n', { n: files.length })}
             </button>
           </div>
         )}
-        <p className="text-xs text-gray-400">Merged in your browser in the order shown — files are never uploaded.</p>
+        <p className="text-xs text-gray-400">{t('mp_note')}</p>
       </div>
 
     </ToolLayout>

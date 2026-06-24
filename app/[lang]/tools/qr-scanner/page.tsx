@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
@@ -8,6 +9,7 @@ import { trackToolUsed } from '@/lib/gtag'
 const tool = getToolBySlug('qr-scanner')!
 
 export default function QrScannerPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [result, setResult] = useState('')
   const [error, setError] = useState('')
   const [preview, setPreview] = useState('')
@@ -27,9 +29,9 @@ export default function QrScannerPage({ params }: { params: { lang: string } }) 
       const jsQR = (await import('jsqr')).default
       const code = jsQR(data.data, data.width, data.height)
       if (code?.data) setResult(code.data)
-      else setError('No QR code found in this image. Try a clearer, closer photo.')
+      else setError(t('qs_noqr'))
     }
-    img.onerror = () => setError('Could not read this image.')
+    img.onerror = () => setError(t('qs_cantread'))
     img.src = URL.createObjectURL(file)
   }
 
@@ -48,8 +50,8 @@ export default function QrScannerPage({ params }: { params: { lang: string } }) 
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
           <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
           <p className="text-4xl mb-2">🔳</p>
-          <p className="text-sm font-medium text-gray-600">Drop a QR code image or click to upload</p>
-          <p className="text-xs text-gray-400 mt-1">A screenshot or photo of the QR code works</p>
+          <p className="text-sm font-medium text-gray-600">{t('qs_drop')}</p>
+          <p className="text-xs text-gray-400 mt-1">{t('qs_sub')}</p>
         </div>
 
         {preview && <img src={preview} alt="QR" className="max-h-40 rounded-xl border border-gray-200 object-contain mx-auto" />}
@@ -57,15 +59,15 @@ export default function QrScannerPage({ params }: { params: { lang: string } }) 
 
         {result && (
           <div className="rounded-xl border border-green-200 bg-green-50 p-4">
-            <p className="text-xs text-green-700 mb-1 font-medium">Decoded content</p>
+            <p className="text-xs text-green-700 mb-1 font-medium">{t('qs_decoded')}</p>
             <p className="text-sm text-gray-900 break-all">{result}</p>
             <div className="flex gap-2 mt-3">
-              <button onClick={copy} className="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50">{copied ? '✓ Copied' : 'Copy'}</button>
-              {isUrl && <a href={result} target="_blank" rel="noopener noreferrer" className="text-xs bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700">Open link →</a>}
+              <button onClick={copy} className="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50">{copied ? t('qs_copied') : t('qs_copy')}</button>
+              {isUrl && <a href={result} target="_blank" rel="noopener noreferrer" className="text-xs bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700">{t('qs_openlink')}</a>}
             </div>
           </div>
         )}
-        <p className="text-xs text-gray-400">Decoded entirely in your browser — the image is never uploaded.</p>
+        <p className="text-xs text-gray-400">{t('qs_note')}</p>
       </div>
     </ToolLayout>
   )
