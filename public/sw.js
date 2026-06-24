@@ -8,17 +8,16 @@
  *    is stored for OFFLINE use; everything else just falls back to an offline page.
  *  Bump VERSION to force-drop old caches on the next activate.
  */
-const VERSION = 'v1'
+const VERSION = 'v2'
 const STATIC_CACHE = `static-${VERSION}`
 const PAGE_CACHE = `pages-${VERSION}`
 const OFFLINE_URL = '/offline.html'
 
-// Tool slugs that run 100% in the browser and are worth keeping offline.
-const OFFLINE_SLUGS = [
-  'korean-to-japanese', 'korean-to-english', 'japanese-to-korean', 'english-to-korean',
-  'japanese-to-english', 'english-to-japanese', 'korean-antonyms', 'japanese-antonyms', 'english-antonyms',
-]
-const isOfflinePage = (url) => OFFLINE_SLUGS.some((s) => url.pathname.includes(`/tools/${s}`))
+// Pages we never keep offline: they need the server (auth / live data), so a
+// cached copy would just be stale and misleading. Everything else a user has
+// visited (home + tool pages) is cached so the installed app opens offline.
+const NO_OFFLINE = ['/api/', '/admin', '/dashboard', '/login', '/signup']
+const isCacheableNav = (url) => !NO_OFFLINE.some((p) => url.pathname.includes(p))
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -61,7 +60,7 @@ async function cacheFirst(req) {
 async function navigationHandler(req, url) {
   try {
     const res = await fetch(req)
-    if (res.ok && isOfflinePage(url)) {
+    if (res.ok && isCacheableNav(url)) {
       const cache = await caches.open(PAGE_CACHE)
       cache.put(req, res.clone())
     }

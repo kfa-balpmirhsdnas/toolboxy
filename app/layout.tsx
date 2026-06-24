@@ -2,6 +2,7 @@ import type {Metadata, Viewport} from 'next'
 import {Inter} from 'next/font/google'
 import './globals.css'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
+import DynamicManifest from '@/components/DynamicManifest'
 
 const inter = Inter({subsets:['latin']})
 
@@ -9,7 +10,7 @@ export const metadata:Metadata={
   title:{template:'%s | ToolBoxy',default:'ToolBoxy – Free Online Tools'},
   description:'ToolBoxy: 100+ free online tools for developers, designers, and everyday users.',
   metadataBase:new URL('https://www.toolboxy.net'),
-  manifest:'/manifest.webmanifest',
+  manifest:'/api/manifest?start=/en',
   appleWebApp:{capable:true,title:'ToolBoxy',statusBarStyle:'default'},
   icons:{icon:'/icon.svg',apple:'/icon.svg'},
   openGraph:{
@@ -28,6 +29,7 @@ export default function RootLayout({children}:{children:React.ReactNode}){
     <html suppressHydrationWarning className={inter.className}>
       <body className="bg-white text-gray-900 antialiased">
         {children}
+        <DynamicManifest/>
         <ServiceWorkerRegister/>
       </body>
     </html>
