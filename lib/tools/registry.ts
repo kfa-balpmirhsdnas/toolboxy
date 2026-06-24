@@ -319,7 +319,6 @@ export const TOOLS: ToolMeta[] = [
   {slug:'word-cloud-generator',category:'text',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['word-cloud','visualize','text'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'word-frequency',category:'text',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['word','frequency','count'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'word-wrap',category:'text',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['wrap','text','format'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'flip-a-coin',category:'game',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['coin','flip','random'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'habit-tracker',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['habit','tracker','productivity'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'keyboard-shortcut-tester',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['keyboard','shortcut','test'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'number-converter',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['number','convert','base'],maxFileSizeMB:{free:0,pro:0} },

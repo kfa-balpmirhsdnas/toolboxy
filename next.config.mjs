@@ -28,6 +28,16 @@ const nextConfig = {
       },
     ]
   },
+  async redirects() {
+    return [
+      // Deduped: flip-a-coin merged into the better coin-flip tool.
+      {
+        source: '/:lang/tools/flip-a-coin',
+        destination: '/:lang/tools/coin-flip',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default withNextIntl(nextConfig)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useMessages } from 'next-intl'
 
 interface FaqItem {
   q: string
@@ -28,6 +28,7 @@ export default function ToolFaq({ slug }: { slug: string }) {
   const lt = useTranslations('langTools')
   const c = useTranslations('faqCommon')
   const td = useTranslations('toolDescriptions')
+  const messages = useMessages() as { toolAbout?: Record<string, string> }
 
   // Per-tool custom data (intro + extra Q&As), if any.
   let data: FaqData | undefined
@@ -46,7 +47,14 @@ export default function ToolFaq({ slug }: { slug: string }) {
     }
   } catch { /* no description */ }
 
-  const whatAnswer = description ?? data?.intro
+  // Prefer a warm, fuller hand-written "about" blurb; otherwise fall back to the
+  // SEO description softened with a friendly closing line.
+  const about = messages?.toolAbout?.[slug]
+  const whatAnswer = about
+    ? about
+    : description
+      ? `${description} ${c('aboutTail')}`
+      : data?.intro
 
   const items: FaqItem[] = [{ q: c('q'), a: c('a') }]
   if (whatAnswer) items.push({ q: c('whatQ'), a: whatAnswer })

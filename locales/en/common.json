@@ -355,10 +355,6 @@
       "title": "Text Diff",
       "description": "Compare two texts and see additions, deletions, and unchanged lines highlighted in a unified diff view"
     },
-    "flip-a-coin": {
-      "title": "Flip a Coin",
-      "description": "Flip a virtual coin and get heads or tails — tracks your flip history and statistics"
-    },
     "reading-time-calculator": {
       "title": "Reading Time Calculator",
       "description": "Estimate how long it takes to read any text based on words per minute reading speed"
@@ -1315,6 +1311,22 @@
   "faqCommon": {
     "q": "Is this tool free?",
     "a": "Yes — it is completely free to use, with no account or sign-up required.",
-    "whatQ": "What is this tool?"
+    "whatQ": "What is this tool?",
+    "aboutTail": "You can use it for free with no sign-up or installation — just open the page and start right away."
+  },
+  "toolAbout": {
+    "pdf-to-jpg": "This tool turns each page of a PDF into its own JPG image. Just upload a PDF and it renders every page as a picture you can preview and download one by one. It's handy when you want to share a document on social media as images, or keep only a few pages as photos. Everything happens right inside your browser, so your file is never uploaded to a server and stays completely private.",
+    "merge-pdf": "This tool combines several PDF files into a single, tidy document. Add the files in the order you want and download them merged into one PDF. It's great for pulling together contracts, receipts, or reports that arrived as separate files. Since everything is processed inside your browser, nothing is uploaded — so even sensitive documents stay private.",
+    "qr-generator": "Type in any link or text and this tool instantly creates a QR code for it. You can download the code as an image and place it on business cards, posters, menus, or product packaging — anywhere. It's perfect for sharing a website address or bridging printed materials to your online content. There's no app to install: you can make one in just a few seconds, right in your browser.",
+    "qr-scanner": "Upload a photo or screenshot containing a QR code and this tool reads the link or text inside it right away. Even when a camera struggles to scan, you can just drop in a saved image to see what it contains. It's a safe way to check where a QR code leads before you actually visit it. The image is analyzed entirely in your browser and never uploaded, so your privacy stays protected.",
+    "image-compress": "This tool shrinks the file size of your photos and images in a smart way. It keeps the quality as high as possible while making the file lighter, so uploads, email attachments, and messages go through much faster. It's especially useful if you post lots of photos to a blog or online store and want quicker page loads. Compression happens right in your browser, so your original photos never leave your device.",
+    "image-resizer": "This tool changes the width and height of an image to whatever you need. Whether it's a profile picture, a thumbnail, or a social-media size requirement, just type in the dimensions and it resizes cleanly. You can scale it down while keeping the aspect ratio, or match an exact pixel size with ease. Everything runs in your browser, so it's fast and your original image is never sent to a server.",
+    "heic-to-jpg": "This tool converts HEIC/HEIF photos taken on an iPhone into JPG files that open anywhere. HEIC is Apple's default format and often won't open on Windows PCs or in some apps and sites, but converting it clears up those compatibility headaches. Just upload a photo, press convert, and save it as a JPG. The conversion happens entirely in your browser, so your precious photos are never uploaded.",
+    "meme-generator": "This tool lets you slap bold text onto an image to make a fun meme in seconds. Upload any picture, type your top and bottom captions, and it automatically adds the classic black-outlined meme lettering. It's perfect for whipping up a joke to send a friend or a post for social media. You can download the finished image right away, and since it all runs in your browser, there's nothing to upload.",
+    "bmi-calculator": "Enter your height and weight, and this tool calculates your Body Mass Index (BMI) to show your health status at a glance. Along with the number, it shows which range you fall into — underweight, normal, or overweight — so you can easily see where you stand. It's a great starting point for setting a diet goal or managing your health. Your details aren't stored and are calculated right in your browser, so feel free to use it without worry.",
+    "password-generator": "This tool instantly creates strong passwords that are hard to guess. Choose the length and whether to include uppercase, lowercase, numbers, and symbols, and it generates a random, secure password for you. It's a lifesaver when you want a different password for every account but can't keep dreaming them up. Everything is generated inside your browser and never stored or sent anywhere, so you can copy it with confidence.",
+    "word-counter": "This tool counts the characters and words in your text in real time. Just type or paste your text and it instantly shows character counts (with and without spaces), word count, and even sentence count. It's especially reassuring when you're writing something with a length limit, like a cover letter, an assignment, or a social post. Your text is never stored anywhere and is processed entirely in your browser, so you can use it with peace of mind.",
+    "hangul-romaja-converter": "This tool converts Korean (Hangul) names and words into their Roman-alphabet spelling. It follows the official Revised Romanization rules, so it's handy for writing the English version of your name on a passport, business card, or overseas paperwork. Type in Hangul and you get the romanized result instantly — no need to memorize every rule yourself. All conversion happens in your browser, so it's fast and the names you enter are never sent anywhere.",
+    "age-calculator": "Enter your date of birth and this tool works out exactly how old you are in years, months, and days. It shows not just your age, but how many days you've been alive and how long until your next birthday — all at once. It's handy for filling out forms that need your exact age, or for keeping track of milestones. The date you enter isn't stored and is calculated instantly in your browser, so feel free to give it a try."
   }
 }
