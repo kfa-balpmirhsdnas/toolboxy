@@ -683,7 +683,16 @@
     "auto-loan-calculator": "Calculate your monthly car payment and total interest. Free online auto loan calculator.",
     "retirement-calculator": "Project how much you will have saved by retirement. Free retirement savings calculator.",
     "inflation-calculator": "See how inflation changes the value of money over time. Free inflation calculator.",
-    "reaction-time-test": "Test your reaction time — click when the screen turns green. Free online reaction time test with a global leaderboard."
+    "reaction-time-test": "Test your reaction time — click when the screen turns green. Free online reaction time test with a global leaderboard.",
+    "qr-scanner": "Scan and decode any QR code from an image - get the link or text instantly. Free online QR code reader, no upload.",
+    "pdf-to-jpg": "Convert each PDF page into a high-quality JPG image, right in your browser. Free PDF to JPG converter, no upload.",
+    "watermark-pdf": "Add a diagonal text watermark to every page of a PDF. Free online PDF watermark tool, processed in your browser.",
+    "pdf-page-numbers": "Add page numbers to a PDF in seconds - choose the position. Free online tool, processed in your browser.",
+    "heic-to-jpg": "Convert iPhone HEIC/HEIF photos to JPG instantly in your browser. Free HEIC to JPG converter, no upload.",
+    "rotate-image": "Rotate and flip images online - left, right, horizontal or vertical. Free image rotate and flip tool, no upload.",
+    "meme-generator": "Make a meme in seconds - add bold top and bottom text to any image. Free online meme generator, no upload.",
+    "circle-crop": "Crop any image into a perfect circle with transparent corners (PNG). Free online circle crop tool, no upload.",
+    "blur-image": "Blur an image or hide sensitive parts with an adjustable blur slider. Free online image blur tool, no upload."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1154,6 +1163,123 @@
         {
           "q": "What is a good reaction time?",
           "a": "Around 200–300 ms is typical; under 200 ms is fast."
+        }
+      ]
+    },
+    "qr-scanner": {
+      "intro": "Upload a file to get started - everything runs in your browser.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes - completely free with no sign-up."
+        },
+        {
+          "q": "Can it read QR codes from a screenshot?",
+          "a": "Yes - upload a screenshot or photo and it decodes the QR code instantly."
+        }
+      ]
+    },
+    "pdf-to-jpg": {
+      "intro": "Upload a file to get started - everything runs in your browser.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes - completely free with no sign-up."
+        },
+        {
+          "q": "Are my files uploaded?",
+          "a": "No - pages are rendered locally in your browser; nothing is sent to a server."
+        }
+      ]
+    },
+    "watermark-pdf": {
+      "intro": "Upload a file to get started - everything runs in your browser.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes - completely free with no sign-up."
+        },
+        {
+          "q": "Is the original PDF uploaded?",
+          "a": "No - the watermark is applied in your browser; your file never leaves your device."
+        }
+      ]
+    },
+    "pdf-page-numbers": {
+      "intro": "Upload a file to get started - everything runs in your browser.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes - completely free with no sign-up."
+        },
+        {
+          "q": "Can I choose where the numbers appear?",
+          "a": "Yes - pick bottom-center, bottom-right, or top-right."
+        }
+      ]
+    },
+    "heic-to-jpg": {
+      "intro": "Upload a file to get started - everything runs in your browser.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes - completely free with no sign-up."
+        },
+        {
+          "q": "Why will my HEIC not open elsewhere?",
+          "a": "HEIC is Apple format; this tool converts it to JPG that opens everywhere."
+        }
+      ]
+    },
+    "rotate-image": {
+      "intro": "Upload a file to get started - everything runs in your browser.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes - completely free with no sign-up."
+        },
+        {
+          "q": "Does it keep image quality?",
+          "a": "Yes - the output is re-encoded losslessly to PNG."
+        }
+      ]
+    },
+    "meme-generator": {
+      "intro": "Upload a file to get started - everything runs in your browser.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes - completely free with no sign-up."
+        },
+        {
+          "q": "What font does it use?",
+          "a": "Bold Impact-style text with a black outline - the classic meme look."
+        }
+      ]
+    },
+    "circle-crop": {
+      "intro": "Upload a file to get started - everything runs in your browser.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes - completely free with no sign-up."
+        },
+        {
+          "q": "Will the corners be transparent?",
+          "a": "Yes - the result is a PNG with transparent corners, great for avatars."
+        }
+      ]
+    },
+    "blur-image": {
+      "intro": "Upload a file to get started - everything runs in your browser.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes - completely free with no sign-up."
+        },
+        {
+          "q": "Can I blur just part of the image?",
+          "a": "This tool blurs the whole image; adjust the strength with the slider."
         }
       ]
     }

@@ -22,6 +22,15 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'qr-scanner',category:'qr',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['qr reader','qr scanner','scan qr','decode qr','qr read','qr scanner ko','QR read jp'],maxFileSizeMB:{free:10,pro:40} },
+  {slug:'pdf-to-jpg',category:'pdf',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['pdf to jpg','pdf to image','convert pdf','pdf image convert','PDF to JPG jp'],maxFileSizeMB:{free:50,pro:200} },
+  {slug:'watermark-pdf',category:'pdf',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['watermark pdf','add watermark','pdf watermark','PDF watermark jp'],maxFileSizeMB:{free:50,pro:200} },
+  {slug:'pdf-page-numbers',category:'pdf',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['pdf page numbers','number pages','pdf page number','PDF page number jp'],maxFileSizeMB:{free:50,pro:200} },
+  {slug:'heic-to-jpg',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['heic to jpg','heic converter','iphone photo','heic convert','HEIC jp'],maxFileSizeMB:{free:30,pro:120} },
+  {slug:'rotate-image',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['rotate image','flip image','image rotate','image flip','image rotate jp'],maxFileSizeMB:{free:30,pro:120} },
+  {slug:'meme-generator',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['meme generator','meme maker','meme make','meme jp'],maxFileSizeMB:{free:30,pro:120} },
+  {slug:'circle-crop',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['circle crop','round image','circle crop ko','circle crop jp'],maxFileSizeMB:{free:30,pro:120} },
+  {slug:'blur-image',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['blur image','blur photo','image blur','image blur jp'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'reaction-time-test',category:'game',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['reaction time','reflex','game','test','leaderboard','반응속도','反応速度'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'mortgage-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['mortgage','home loan','calculator','住宅ローン','주택담보대출'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'auto-loan-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['auto loan','car loan','calculator','自動車ローン','자동차 대출'],maxFileSizeMB:{free:0,pro:0} },
