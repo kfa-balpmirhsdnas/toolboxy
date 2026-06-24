@@ -1759,7 +1759,10 @@
     "ej_ko_voice": "Korean audio",
     "ej_time": "Study time",
     "ej_hint": "Press Start — a new word appears automatically.",
-    "ej_note": "Audio needs Japanese/Korean text-to-speech voices on your device."
+    "ej_note": "Audio needs Japanese/Korean text-to-speech voices on your device.",
+    "ej_voicegap": "Gap",
+    "ej_repeat": "Repeat",
+    "ej_times": "×"
   },
   "toolNames": {
     "circle-crop": "Image Circle Crop",
