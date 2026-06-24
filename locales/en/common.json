@@ -1314,6 +1314,7 @@
   },
   "faqCommon": {
     "q": "Is this tool free?",
-    "a": "Yes — it is completely free to use, with no account or sign-up required."
+    "a": "Yes — it is completely free to use, with no account or sign-up required.",
+    "whatQ": "What is this tool?"
   }
 }
