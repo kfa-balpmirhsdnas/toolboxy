@@ -359,7 +359,9 @@ export function getAllTools(): ToolMeta[] {
 // our own tool count. Switch to a data-driven order once GA4/toolStats traffic
 // accumulates. `file` is empty and sits last.
 export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; color: string }> = {
-  image:     { label: 'Image',     icon: String.fromCodePoint(0x1F5BC), color: 'purple' },
+  // U+FE0F forces emoji (color) presentation — without it this glyph defaults
+  // to a monochrome/text picture and looked grey next to the other icons.
+  image:     { label: 'Image',     icon: String.fromCodePoint(0x1F5BC, 0xFE0F), color: 'purple' },
   pdf:       { label: 'PDF',       icon: String.fromCodePoint(0x1F4C4), color: 'red'    },
   finance:   { label: 'Finance',      icon: String.fromCodePoint(0x1F4B0), color: 'emerald' },
   text:      { label: 'Text',      icon: String.fromCodePoint(0x1F4DD), color: 'green'  },
