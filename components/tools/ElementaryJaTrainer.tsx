@@ -8,8 +8,8 @@ import { ELEMENTARY_JA, type JaWord } from '@/lib/elementary-ja'
 import { trackToolUsed } from '@/lib/gtag'
 
 const tool = getToolBySlug('elementary-japanese-words')!
-const INTERVALS = [2, 3, 5, 7, 10, 15, 20]
-const GAPS = [0, 1, 2, 3]
+const INTERVALS = [1, 2, 3, 5, 7, 10, 15]
+const GAPS = [0, 1, 2, 3, 4, 5]
 const REPEATS = [1, 3, 5]
 
 function shuffle(n: number): number[] {
@@ -27,81 +27,111 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
   const [idx, setIdx] = useState(0)
   const [running, setRunning] = useState(false)
   const [started, setStarted] = useState(false)
-  const [intervalSec, setIntervalSec] = useState(10)
-  const [gapSec, setGapSec] = useState(1)
+  const [intervalSec, setIntervalSec] = useState(3) // gap BETWEEN words (after KO -> next JA)
+  const [gapSec, setGapSec] = useState(3) // gap between JA and KO of the same word
   const [repeat, setRepeat] = useState(1)
   const [jaVoice, setJaVoice] = useState(true)
   const [koVoice, setKoVoice] = useState(true)
   const [elapsed, setElapsed] = useState(0)
 
+  const runningRef = useRef(running); runningRef.current = running
   const jaRef = useRef(jaVoice); jaRef.current = jaVoice
   const koRef = useRef(koVoice); koRef.current = koVoice
+  const intervalRef = useRef(intervalSec); intervalRef.current = intervalSec
   const gapRef = useRef(gapSec); gapRef.current = gapSec
   const repeatRef = useRef(repeat); repeatRef.current = repeat
   const idxRef = useRef(0); useEffect(() => { idxRef.current = idx }, [idx])
-  const gapTimer = useRef<number | null>(null)
+  const timer = useRef<number | null>(null)
+  const watchdog = useRef<number | null>(null)
+  const genRef = useRef(0)
+  const playRef = useRef<(auto: boolean) => void>(() => {})
 
   const word: JaWord = ELEMENTARY_JA[order[idx]]
 
-  // Speak Japanese then Korean (each repeated), with a configurable pause between.
-  const speak = useCallback((w: JaWord) => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return
-    const synth = window.speechSynthesis
-    if (gapTimer.current) { clearTimeout(gapTimer.current); gapTimer.current = null }
-    synth.cancel()
-    const one: { text: string; lang: string; rate: number }[] = []
-    if (jaRef.current) one.push({ text: w.ja, lang: 'ja-JP', rate: 0.9 })
-    if (koRef.current) one.push({ text: w.ko.replace(/\(.*?\)/g, '').replace(/\/.*/, '').trim(), lang: 'ko-KR', rate: 1 })
-    if (one.length === 0) return
-    const parts: typeof one = []
-    for (let r = 0; r < Math.max(1, repeatRef.current); r++) parts.push(...one)
-    const gapMs = gapRef.current * 1000
-    let i = 0
-    const next = () => {
-      if (i >= parts.length) return
-      const p = parts[i++]
-      const u = new SpeechSynthesisUtterance(p.text)
-      u.lang = p.lang; u.rate = p.rate
-      u.onend = () => { if (i < parts.length) { if (gapMs > 0) gapTimer.current = window.setTimeout(next, gapMs); else next() } }
-      synth.speak(u)
-    }
-    next()
-  }, [])
-
-  const stopAudio = useCallback(() => {
-    if (gapTimer.current) { clearTimeout(gapTimer.current); gapTimer.current = null }
+  const stopAll = useCallback(() => {
+    genRef.current++
+    if (timer.current) { clearTimeout(timer.current); timer.current = null }
+    if (watchdog.current) { clearTimeout(watchdog.current); watchdog.current = null }
     if (typeof window !== 'undefined') window.speechSynthesis?.cancel()
   }, [])
 
-  // Auto-advance + speak each new word while running.
+  // Audio-driven playback: JA --(voice gap)-- KO ... (repeat), then --(interval)--
+  // next word. Driven by each utterance's onend; a generation token invalidates
+  // stale callbacks (skip/pause), and a watchdog advances if onend never fires
+  // (e.g. the device has no TTS voice for that language).
+  const play = useCallback((auto: boolean) => {
+    if (typeof window === 'undefined') return
+    const synth = window.speechSynthesis
+    const myGen = ++genRef.current
+    if (timer.current) { clearTimeout(timer.current); timer.current = null }
+    if (watchdog.current) { clearTimeout(watchdog.current); watchdog.current = null }
+    synth?.cancel()
+    const alive = () => genRef.current === myGen && (!auto || runningRef.current)
+
+    const w = ELEMENTARY_JA[order[idxRef.current]]
+    const koText = w.ko.replace(/\(.*?\)/g, '').replace(/\/.*/, '').trim()
+    const one: { text: string; lang: string; rate: number }[] = []
+    if (jaRef.current) one.push({ text: w.ja, lang: 'ja-JP', rate: 0.9 })
+    if (koRef.current) one.push({ text: koText, lang: 'ko-KR', rate: 1 })
+    const parts: typeof one = []
+    for (let r = 0; r < Math.max(1, repeatRef.current); r++) parts.push(...one)
+
+    const advance = () => {
+      timer.current = window.setTimeout(() => {
+        if (!alive()) return
+        const ni = idxRef.current + 1 >= order.length ? 0 : idxRef.current + 1
+        idxRef.current = ni; setIdx(ni)
+        playRef.current(true)
+      }, intervalRef.current * 1000)
+    }
+
+    if (parts.length === 0 || !synth) { if (auto) advance(); return }
+    const seq = (k: number) => {
+      if (!alive()) return
+      const p = parts[k]
+      const u = new SpeechSynthesisUtterance(p.text)
+      u.lang = p.lang; u.rate = p.rate
+      let done = false
+      const proceed = () => {
+        if (done || !alive()) return
+        done = true
+        if (watchdog.current) { clearTimeout(watchdog.current); watchdog.current = null }
+        if (k + 1 < parts.length) timer.current = window.setTimeout(() => seq(k + 1), gapRef.current * 1000)
+        else if (auto) advance()
+      }
+      u.onend = proceed; u.onerror = proceed
+      synth.speak(u)
+      watchdog.current = window.setTimeout(proceed, Math.min(12000, p.text.length * 350 + 4000))
+    }
+    seq(0)
+  }, [order])
+  playRef.current = play
+
+  // Start / stop the loop when `running` flips.
   useEffect(() => {
     if (!running) return
-    speak(ELEMENTARY_JA[order[idxRef.current]])
-    const id = window.setInterval(() => {
-      const ni = idxRef.current + 1 >= order.length ? 0 : idxRef.current + 1
-      idxRef.current = ni
-      setIdx(ni)
-      speak(ELEMENTARY_JA[order[ni]])
-    }, intervalSec * 1000)
-    return () => window.clearInterval(id)
-  }, [running, intervalSec, order, speak])
+    play(true)
+    return () => stopAll()
+  }, [running, play, stopAll])
 
-  // Study-time clock (runs only while playing).
+  // Study-time clock.
   useEffect(() => {
     if (!running) return
     const id = window.setInterval(() => setElapsed((e) => e + 1), 1000)
     return () => window.clearInterval(id)
   }, [running])
 
-  useEffect(() => stopAudio, [stopAudio])
+  useEffect(() => stopAll, [stopAll])
 
   function toggle() {
     if (!running) { trackToolUsed(tool.slug); setStarted(true); setRunning(true) }
-    else { setRunning(false); stopAudio() }
+    else { setRunning(false) }
   }
   function go(delta: number) {
     const ni = (idxRef.current + delta + order.length) % order.length
-    idxRef.current = ni; setIdx(ni); setStarted(true); speak(ELEMENTARY_JA[order[ni]])
+    idxRef.current = ni; setIdx(ni); setStarted(true)
+    if (runningRef.current) play(true)
+    else play(false)
   }
 
   const mmss = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`
@@ -116,7 +146,7 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
               <p className="h-7 text-lg text-gray-400 mb-1">{word.yomi !== word.ja ? word.yomi : ''}</p>
               <p className="text-5xl font-bold text-gray-900 leading-tight">{word.ja}</p>
               <p className="text-2xl text-brand-700 mt-4">{word.ko}</p>
-              <button onClick={() => speak(word)} aria-label="Listen"
+              <button onClick={() => play(false)} aria-label="Listen"
                 className="mt-5 text-sm bg-white border border-gray-200 px-4 py-1.5 rounded-lg hover:bg-gray-50">🔊</button>
             </>
           ) : (
