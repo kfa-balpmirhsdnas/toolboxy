@@ -691,7 +691,9 @@
     "blur-image": "Blur an image or hide sensitive parts with an adjustable blur slider. Free online image blur tool, no upload.",
     "click-speed-test": "How fast can you click? Test your clicks per second (CPS) in 5 seconds and beat the leaderboard. Free CPS click speed test.",
     "add-text-to-image": "Add text and emoji stickers to any image, drag to position, and download. Free online add-text-to-image tool, no upload.",
-    "pdf-to-png": "Convert each PDF page into a high-quality PNG image, right in your browser. Free PDF to PNG converter — lossless, transparent-friendly, no upload."
+    "pdf-to-png": "Convert each PDF page into a high-quality PNG image, right in your browser. Free PDF to PNG converter — lossless, transparent-friendly, no upload.",
+    "add-pdf-pages": "Add blank pages to a PDF — at the start, end, or after any page. Free online tool to insert pages into a PDF, no upload.",
+    "heic-to-png": "Convert iPhone HEIC/HEIF photos to PNG instantly in your browser. Free HEIC to PNG converter — lossless, no upload."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1537,7 +1539,9 @@
     "text-encryption": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere.",
     "text-encryptor": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere.",
     "text-encrypt-decrypt": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere.",
-    "pdf-to-png": "This tool turns each page of a PDF into a high-quality PNG image. PNG is lossless and keeps text and lines crisp, which makes it ideal for diagrams, screenshots, and documents you want to stay sharp. Just upload a PDF and download each page as a PNG. Everything runs in your browser, so your file is never uploaded."
+    "pdf-to-png": "This tool turns each page of a PDF into a high-quality PNG image. PNG is lossless and keeps text and lines crisp, which makes it ideal for diagrams, screenshots, and documents you want to stay sharp. Just upload a PDF and download each page as a PNG. Everything runs in your browser, so your file is never uploaded.",
+    "add-pdf-pages": "This tool adds blank pages to a PDF wherever you need them — at the start, at the end, or after a specific page. The new pages match your document's size, so they fit right in. It's handy for adding note space, separators, or room for a signature. Everything runs in your browser, so your file is never uploaded.",
+    "heic-to-png": "This tool converts HEIC/HEIF photos from your iPhone into PNG files. PNG is lossless and widely supported, so it's a great choice when you want maximum quality or need transparency. Just upload a photo and it's converted right away. Everything runs in your browser, so your photos are never uploaded."
   },
   "howto": {
     "title": "How to use",
@@ -1685,6 +1689,19 @@
     "hj_error": "Could not convert this file. Make sure it is a HEIC/HEIF image.",
     "hj_download": "⬇ Download JPG",
     "hj_note": "Converted entirely in your browser — photos are never uploaded.",
-    "pn_sub": "Each page becomes a downloadable PNG"
+    "pn_sub": "Each page becomes a downloadable PNG",
+    "ap_count": "Number of blank pages",
+    "ap_position": "Where to add",
+    "ap_pos_start": "At the beginning",
+    "ap_pos_end": "At the end",
+    "ap_pos_after": "After page",
+    "ap_apply": "Add pages",
+    "ap_adding": "Adding…",
+    "ap_note": "Blank pages match your document's size — processed in your browser.",
+    "hp_sub": "iPhone .heic / .heif photos → PNG",
+    "hp_download": "⬇ Download PNG"
+  },
+  "toolNames": {
+    "circle-crop": "Image Circle Crop"
   }
 }
