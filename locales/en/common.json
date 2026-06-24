@@ -1601,6 +1601,12 @@
       "Press start to begin.",
       "Play and do your best.",
       "See your score and try to beat it."
+    ],
+    "elementary-japanese-words": [
+      "Press ▶ Start and the word cards advance automatically at the interval you set.",
+      "Each card plays the Japanese audio, then after the voice gap reads the Korean meaning.",
+      "Adjust the interval, voice gap, repeat count, and the Japanese / Korean audio toggles.",
+      "Use ‹ › to step through words by hand; a study timer tracks how long you practice."
     ]
   },
   "games": {

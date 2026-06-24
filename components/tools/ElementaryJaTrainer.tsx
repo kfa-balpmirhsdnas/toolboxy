@@ -45,6 +45,7 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
   const watchdog = useRef<number | null>(null)
   const genRef = useRef(0)
   const playRef = useRef<(auto: boolean) => void>(() => {})
+  const cardRef = useRef<HTMLDivElement>(null)
 
   const word: JaWord = ELEMENTARY_JA[order[idx]]
 
@@ -124,8 +125,11 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
   useEffect(() => stopAll, [stopAll])
 
   function toggle() {
-    if (!running) { trackToolUsed(tool.slug); setStarted(true); setRunning(true) }
-    else { setRunning(false) }
+    if (!running) {
+      trackToolUsed(tool.slug); setStarted(true); setRunning(true)
+      // Scroll so the card is at the top (above the keyboard / below the header).
+      setTimeout(() => cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
+    } else { setRunning(false) }
   }
   function go(delta: number) {
     const ni = (idxRef.current + delta + order.length) % order.length
@@ -140,7 +144,7 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-5">
         {/* Flashcard — fixed height so it never resizes between words */}
-        <div className="rounded-2xl border-2 border-brand-100 bg-gradient-to-b from-brand-50 to-white px-6 h-72 flex flex-col items-center justify-center text-center overflow-hidden">
+        <div ref={cardRef} className="scroll-mt-20 rounded-2xl border-2 border-brand-100 bg-gradient-to-b from-brand-50 to-white px-6 h-72 flex flex-col items-center justify-center text-center overflow-hidden">
           {started ? (
             <>
               <p className="h-7 text-lg text-gray-400 mb-1">{word.yomi !== word.ja ? word.yomi : ''}</p>

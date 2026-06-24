@@ -36,7 +36,8 @@ export default function ToolHowTo({ tool }: { tool: ToolMeta }) {
   const messages = useMessages() as HowtoMessages
   const howto = messages?.howto
   const title = howto?.title || 'How to use'
-  const raw = howto ? howto[archetypeOf(tool)] : undefined
+  // Per-tool steps (howto[slug]) take priority; otherwise fall back to the archetype.
+  const raw = howto ? (howto[tool.slug] ?? howto[archetypeOf(tool)]) : undefined
   const steps = Array.isArray(raw) ? raw.filter((x): x is string => typeof x === 'string') : []
   if (steps.length === 0) return null
 
