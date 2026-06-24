@@ -693,7 +693,11 @@
     "add-text-to-image": "Add text and emoji stickers to any image, drag to position, and download. Free online add-text-to-image tool, no upload.",
     "pdf-to-png": "Convert each PDF page into a high-quality PNG image, right in your browser. Free PDF to PNG converter — lossless, transparent-friendly, no upload.",
     "add-pdf-pages": "Add blank pages to a PDF — at the start, end, or after any page. Free online tool to insert pages into a PDF, no upload.",
-    "heic-to-png": "Convert iPhone HEIC/HEIF photos to PNG instantly in your browser. Free HEIC to PNG converter — lossless, no upload."
+    "heic-to-png": "Convert iPhone HEIC/HEIF photos to PNG instantly in your browser. Free HEIC to PNG converter — lossless, no upload.",
+    "video-trimmer": "Trim a video without re-encoding — super fast. Free online video cutter that runs in your browser, no upload.",
+    "audio-trimmer": "Trim audio (MP3, etc.) without re-encoding — super fast. Free online audio/MP3 cutter, runs in your browser, no upload.",
+    "video-to-audio": "Extract the audio from a video and save it as MP3, right in your browser. Free video-to-audio / video-to-MP3 tool, no upload.",
+    "korean-to-japanese": "Type a common Korean word and instantly see the Japanese. Free Korean-to-Japanese word lookup, works offline in your browser."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1541,7 +1545,11 @@
     "text-encrypt-decrypt": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere.",
     "pdf-to-png": "This tool turns each page of a PDF into a high-quality PNG image. PNG is lossless and keeps text and lines crisp, which makes it ideal for diagrams, screenshots, and documents you want to stay sharp. Just upload a PDF and download each page as a PNG. Everything runs in your browser, so your file is never uploaded.",
     "add-pdf-pages": "This tool adds blank pages to a PDF wherever you need them — at the start, at the end, or after a specific page. The new pages match your document's size, so they fit right in. It's handy for adding note space, separators, or room for a signature. Everything runs in your browser, so your file is never uploaded.",
-    "heic-to-png": "This tool converts HEIC/HEIF photos from your iPhone into PNG files. PNG is lossless and widely supported, so it's a great choice when you want maximum quality or need transparency. Just upload a photo and it's converted right away. Everything runs in your browser, so your photos are never uploaded."
+    "heic-to-png": "This tool converts HEIC/HEIF photos from your iPhone into PNG files. PNG is lossless and widely supported, so it's a great choice when you want maximum quality or need transparency. Just upload a photo and it's converted right away. Everything runs in your browser, so your photos are never uploaded.",
+    "video-trimmer": "This tool cuts a clip out of a video — fast. Because it copies the stream instead of re-encoding, saving takes seconds instead of minutes, with no quality loss. Just pick the start and end points and download the trimmed video. Everything runs in your browser, so your video is never uploaded.",
+    "audio-trimmer": "This tool trims an audio file — fast. It copies the stream instead of re-encoding, so saving is near-instant with no quality loss. Set the start and end and download the cut audio. Everything runs in your browser, so your file is never uploaded.",
+    "video-to-audio": "This tool pulls the audio out of a video and saves it as an MP3. It's perfect for grabbing a song, a lecture, or a podcast track from a video file. Just upload a video and download the audio. Everything runs in your browser, so your video is never uploaded.",
+    "korean-to-japanese": "This tool gives you the Japanese for a common Korean word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser."
   },
   "howto": {
     "title": "How to use",
@@ -1699,7 +1707,24 @@
     "ap_adding": "Adding…",
     "ap_note": "Blank pages match your document's size — processed in your browser.",
     "hp_sub": "iPhone .heic / .heif photos → PNG",
-    "hp_download": "⬇ Download PNG"
+    "hp_download": "⬇ Download PNG",
+    "md_drop_video": "Drop a video or click to select",
+    "md_drop_audio": "Drop an audio file or click to select",
+    "md_loading": "Loading the engine (first time ~30MB)…",
+    "md_processing": "Processing…",
+    "md_extracting": "Extracting audio…",
+    "md_start": "Start",
+    "md_end": "End",
+    "md_trim": "Trim & download",
+    "md_extract": "Extract the audio as MP3",
+    "md_download": "⬇ Download",
+    "md_note_fast": "Cut without re-encoding — fast, and processed in your browser.",
+    "md_note_browser": "Processed entirely in your browser — nothing is uploaded.",
+    "md_error": "Something went wrong. Try a shorter clip or a different file.",
+    "kj_ph": "Type a Korean word (e.g. 무료)",
+    "kj_hint": "Enter a Korean word to see the Japanese.",
+    "kj_notfound": "Not in the dictionary yet — try a more common, single word.",
+    "kj_note": "A built-in dictionary of common words — instant, free, and works offline."
   },
   "toolNames": {
     "circle-crop": "Image Circle Crop"

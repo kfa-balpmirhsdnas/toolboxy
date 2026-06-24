@@ -1,0 +1,9 @@
+import { buildToolMetadata } from '@/lib/tools/metadata'
+
+export function generateMetadata({ params }: { params: { lang: string } }) {
+  return buildToolMetadata('korean-to-japanese', params.lang)
+}
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return children
+}
