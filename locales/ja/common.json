@@ -2041,7 +2041,10 @@
     "cs_source": "原文（漢字）と読みはパブリックドメインで、解釈はToolBoxy独自の平易な訳であり、特定の宗派・出版社の標準訳とは表現が異なります。真言・陀羅尼は音写のため訳しません。",
     "cs_size": "サイズ",
     "cs_voice": "音声",
-    "cs_voice_default": "既定"
+    "cs_voice_default": "既定",
+    "cs_voice_off": "オフ",
+    "cs_prev": "前の行",
+    "cs_next": "次の行"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

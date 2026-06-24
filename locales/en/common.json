@@ -1849,7 +1849,10 @@
     "cs_source": "The original Hanja and its Korean reading are public domain; the meaning is ToolBoxy's own plain rendering and differs in wording from any standard translation. Mantras (진언/다라니) are transliterations and are left untranslated.",
     "cs_size": "Size",
     "cs_voice": "Voice",
-    "cs_voice_default": "Default"
+    "cs_voice_default": "Default",
+    "cs_voice_off": "Off",
+    "cs_prev": "Previous line",
+    "cs_next": "Next line"
   },
   "toolNames": {
     "cheonsugyeong": "Cheonsugyeong (Thousand-Hands Sutra)",

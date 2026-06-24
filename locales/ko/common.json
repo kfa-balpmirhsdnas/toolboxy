@@ -2074,7 +2074,10 @@
     "cs_source": "원문(한자)과 독음은 공유저작물이며, 해석은 ToolBoxy가 직접 옮긴 평이한 우리말로 특정 종단·출판사의 표준 번역과는 문구가 다릅니다. 진언·다라니는 음역이라 번역하지 않습니다.",
     "cs_size": "크기",
     "cs_voice": "음성",
-    "cs_voice_default": "기본"
+    "cs_voice_default": "기본",
+    "cs_voice_off": "끄기",
+    "cs_prev": "이전 줄",
+    "cs_next": "다음 줄"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

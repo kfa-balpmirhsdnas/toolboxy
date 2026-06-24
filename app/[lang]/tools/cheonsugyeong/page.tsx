@@ -41,12 +41,13 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   const [rate, setRate] = useState(1)
   const [fontScale, setFontScale] = useState(1)
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
-  const [voiceURI, setVoiceURI] = useState('')
+  const [voiceURI, setVoiceURI] = useState('off') // 'off' = silent follow-along (default)
 
   const genRef = useRef(0)
   const idxRef = useRef(0)
   const rateRef = useRef(rate); rateRef.current = rate
   const voiceRef = useRef<SpeechSynthesisVoice | null>(null)
+  const voiceOnRef = useRef(false); voiceOnRef.current = voiceURI !== 'off'
   const watchdog = useRef<number | null>(null)
 
   // Load available Korean voices (populates asynchronously on some browsers).
@@ -98,9 +99,6 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
       let rep = 0
       const once = () => {
         if (!alive()) return
-        const u = new SpeechSynthesisUtterance(line.reading)
-        u.lang = 'ko-KR'; u.rate = rateRef.current
-        if (voiceRef.current) u.voice = voiceRef.current
         let done = false
         const proceed = () => {
           if (done || !alive()) return
@@ -110,6 +108,14 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
           if (rep < reps) once()
           else speakLine(i + 1)
         }
+        // Voice off → silent follow-along, paced by estimated reading time.
+        if (!voiceOnRef.current || !synth) {
+          watchdog.current = window.setTimeout(proceed, Math.max(1100, (line.reading.length * 170) / rateRef.current))
+          return
+        }
+        const u = new SpeechSynthesisUtterance(line.reading)
+        u.lang = 'ko-KR'; u.rate = rateRef.current
+        if (voiceRef.current) u.voice = voiceRef.current
         u.onend = proceed; u.onerror = proceed
         synth.speak(u)
         // Advance even if the device has no Korean TTS voice (onend never fires).
@@ -132,6 +138,19 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   function reset() {
     stopAll(); setPlaying(false); idxRef.current = 0; setCurOrder(null)
     window.scrollTo({ top: 0, behavior: 'smooth' }) // all the way to the page top, above the sticky bar
+  }
+  // Tap any line to jump there — if reciting, continue from that line.
+  function jumpTo(order: number) {
+    const i = LINES.findIndex((l) => l.order === order)
+    if (i < 0) return
+    idxRef.current = i
+    if (playing) speakFrom(i)
+    else { setCurOrder(order); scrollToOrder(order) }
+  }
+  // Move one line at a time (floating ▲/▼).
+  function step(delta: number) {
+    const ni = Math.min(LINES.length - 1, Math.max(0, idxRef.current + delta))
+    jumpTo(LINES[ni].order)
   }
 
   return (
@@ -159,15 +178,14 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
                 {FONT_SCALES.map((f) => <option key={f} value={f}>{f}×</option>)}
               </select>
             </label>
-            {voices.length > 0 && (
-              <label className="flex items-center gap-1 whitespace-nowrap">
-                {t('cs_voice')}
-                <select value={voiceURI} onChange={(e) => setVoiceURI(e.target.value)} className="rounded-lg border border-gray-200 px-1 py-1.5 w-[3.6rem]">
-                  <option value="">{t('cs_voice_default')}</option>
-                  {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{genderHint(v)}{v.name}</option>)}
-                </select>
-              </label>
-            )}
+            <label className="flex items-center gap-1 whitespace-nowrap">
+              {t('cs_voice')}
+              <select value={voiceURI} onChange={(e) => setVoiceURI(e.target.value)} className="rounded-lg border border-gray-200 px-1 py-1.5 w-[3.6rem]">
+                <option value="off">{t('cs_voice_off')}</option>
+                <option value="">{t('cs_voice_default')}</option>
+                {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{genderHint(v)}{v.name}</option>)}
+              </select>
+            </label>
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
             <label className="flex items-center gap-1.5 cursor-pointer">
@@ -192,8 +210,8 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
               </h2>
               <div className="space-y-3">
                 {sec.lines.map((l) => (
-                  <div key={l.order} data-order={l.order}
-                    className={`scroll-mt-24 rounded-lg px-3 py-2 transition-colors ${curOrder === l.order ? 'bg-brand-50 ring-1 ring-brand-200' : ''}`}>
+                  <div key={l.order} data-order={l.order} onClick={() => jumpTo(l.order)}
+                    className={`scroll-mt-24 rounded-lg px-3 py-2 cursor-pointer transition-colors ${curOrder === l.order ? 'bg-brand-50 ring-1 ring-brand-200' : 'hover:bg-gray-50'}`}>
                     {showHanja && l.hanja && <p className="text-[0.9em] text-gray-400 leading-relaxed">{l.hanja}</p>}
                     {showReading && <p className="text-[1.05em] text-gray-900 font-medium leading-relaxed">{l.reading}{l.repeat > 1 && <span className="ml-1.5 text-[0.7em] text-brand-400 align-middle">×{l.repeat}</span>}</p>}
                     {showTrans && l.translation && <p className="text-[0.9em] text-gray-500 leading-relaxed">{l.translation}</p>}
@@ -207,11 +225,17 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
         <p className="text-xs text-gray-400 leading-relaxed border-t border-gray-100 pt-4">{t('cs_source')}</p>
       </div>
 
-      {/* Floating play/pause — always reachable, however far you've scrolled */}
-      <button onClick={toggle} aria-label={playing ? t('cs_pause') : t('cs_play')}
-        className={`fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full shadow-lg text-white text-2xl flex items-center justify-center transition-colors ${playing ? 'bg-red-600 hover:bg-red-700' : 'bg-brand-600 hover:bg-brand-700'}`}>
-        {playing ? '⏸' : '▶'}
-      </button>
+      {/* Floating controls — always reachable: prev line / play-pause / next line */}
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-2">
+        <button onClick={() => step(-1)} aria-label={t('cs_prev')}
+          className="w-11 h-11 rounded-full bg-white shadow-lg border border-gray-200 text-gray-600 text-lg flex items-center justify-center hover:bg-gray-50">▲</button>
+        <button onClick={toggle} aria-label={playing ? t('cs_pause') : t('cs_play')}
+          className={`w-14 h-14 rounded-full shadow-lg text-white text-2xl flex items-center justify-center transition-colors ${playing ? 'bg-red-600 hover:bg-red-700' : 'bg-brand-600 hover:bg-brand-700'}`}>
+          {playing ? '⏸' : '▶'}
+        </button>
+        <button onClick={() => step(1)} aria-label={t('cs_next')}
+          className="w-11 h-11 rounded-full bg-white shadow-lg border border-gray-200 text-gray-600 text-lg flex items-center justify-center hover:bg-gray-50">▼</button>
+      </div>
     </ToolLayout>
   )
 }
