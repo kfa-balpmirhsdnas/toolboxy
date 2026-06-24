@@ -36,3 +36,8 @@ next-env.d.ts
 
 # claude code (local)
 .claude/
+
+# 천수경 source CSV (third-party translation — do not commit) + generator
+천수경_*.csv
+_gen_cheon.py
+_cheon_extract.txt

@@ -1,4 +1,4 @@
-export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language'
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics'
 export type Phase = 1 | 2 | 3
 
 export interface ToolMeta {
@@ -44,6 +44,7 @@ export function isAppTool(tool: ToolMeta): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'cheonsugyeong',category:'classics',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['천수경','천수경 한글','천수경 해석','천수경 독송','한글 천수경','buddhist sutra'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'white-noise-machine',category:'audio',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['white noise machine','white noise','백색소음','rain fire ocean sounds','focus sleep sounds'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'elementary-english-words',category:'language',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['elementary english words','english vocabulary trainer','초등 영어 단어','교육부 영단어','english flashcards'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'elementary-japanese-words',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['elementary japanese words','japanese flashcards','초등 일본어 단어','日本語 単語 暗記','japanese vocabulary trainer'],maxFileSizeMB:{free:0,pro:0} },
@@ -417,4 +418,5 @@ export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; 
   funny:     { label: 'Funny',     icon: String.fromCodePoint(0x1F602), color: 'amber'  },
   game:      { label: 'Game',      icon: String.fromCodePoint(0x1F3AE), color: 'indigo' },
   file:      { label: 'File',      icon: String.fromCodePoint(0x1F4C1), color: 'orange' },
+  classics:  { label: 'Classics',  icon: String.fromCodePoint(0x1F4DC), color: 'amber'  },
 };
