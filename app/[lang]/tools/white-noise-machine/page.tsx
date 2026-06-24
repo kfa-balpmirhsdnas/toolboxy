@@ -16,6 +16,7 @@ const OCEAN_RISE_SEC = 4
 const OCEAN_FADE_SEC = 9
 const OCEAN_GAP_SEC = 4
 const OCEAN_WAVE_SEC = OCEAN_RISE_SEC + OCEAN_FADE_SEC
+const OCEAN_FADE_K = 3 // fade-out curvature: higher = faster early drop, slower tail (log-like)
 
 const SOUNDS: { id: SoundId; emoji: string; seconds: number }[] = [
   { id: 'white', emoji: '⚪', seconds: 4 },
@@ -101,6 +102,7 @@ function genOcean(d: Float32Array, sr: number) {
   const n = d.length
   const riseEnd = Math.floor(sr * OCEAN_RISE_SEC)
   const waveEnd = Math.min(n, Math.floor(sr * OCEAN_WAVE_SEC)) // rise + fade; rest = quiet gap
+  const eK = Math.exp(-OCEAN_FADE_K)
   for (let i = 0; i < n; i++) {
     const w = Math.random() * 2 - 1
     last = (last + 0.025 * w) / 1.025
@@ -108,7 +110,8 @@ function genOcean(d: Float32Array, sr: number) {
     if (i < riseEnd) {
       env = Math.pow(Math.sin((Math.PI / 2) * (i / riseEnd)), 2) // rise 0 → 1
     } else if (i < waveEnd) {
-      env = Math.pow(Math.cos((Math.PI / 2) * ((i - riseEnd) / (waveEnd - riseEnd))), 2) // fade 1 → 0
+      const t = (i - riseEnd) / (waveEnd - riseEnd) // 0 → 1
+      env = (Math.exp(-OCEAN_FADE_K * t) - eK) / (1 - eK) // fast early drop, slow tail → 0
     }
     d[i] = last * 3.4 * env
   }
