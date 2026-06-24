@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import RubyText from '@/components/tools/RubyText'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
@@ -13,11 +14,13 @@ export default function KoreanToJapanesePage({ params }: { params: { lang: strin
   const [input, setInput] = useState('')
   const [copied, setCopied] = useState(false)
   const [dict, setDict] = useState<Record<string, string> | null>(null)
+  const [furi, setFuri] = useState<Record<string, string> | null>(null)
 
-  // Lazily load the (large) dictionary on first interaction, not on page load.
+  // Lazily load the (large) dictionary + furigana on first interaction.
   const loadDict = useCallback(() => {
     if (!dict) import('@/lib/kr-ja-dict').then((m) => setDict(m.KR_JA))
-  }, [dict])
+    if (!furi) import('@/lib/furigana').then((m) => setFuri(m.FURIGANA))
+  }, [dict, furi])
 
   const key = input.trim().replace(/\s+/g, '')
   const result = dict && key ? (dict[key] ?? '') : ''
@@ -57,7 +60,7 @@ export default function KoreanToJapanesePage({ params }: { params: { lang: strin
             <p className="text-sm text-gray-400">…</p>
           ) : result ? (
             <div>
-              <p className="text-3xl font-bold text-gray-900">{result}</p>
+              <p className="text-3xl font-bold text-gray-900 leading-loose"><RubyText text={result} furi={furi} /></p>
               <div className="mt-3 flex items-center justify-center gap-2">
                 <button onClick={speak} aria-label="Listen" title="🔊"
                   className="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50">🔊</button>

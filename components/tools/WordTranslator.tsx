@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import RubyText from '@/components/tools/RubyText'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 import type { Lang } from '@/lib/word-translate'
@@ -17,10 +18,12 @@ export default function WordTranslator({ slug, from, to, lang }: { slug: string;
   const [input, setInput] = useState('')
   const [copied, setCopied] = useState(false)
   const [dict, setDict] = useState<Record<string, string> | null>(null)
+  const [furi, setFuri] = useState<Record<string, string> | null>(null)
 
   const loadDict = useCallback(() => {
     if (!dict) import('@/lib/word-translate').then((m) => setDict(m.buildDict(from, to)))
-  }, [dict, from, to])
+    if (to === 'ja' && !furi) import('@/lib/furigana').then((m) => setFuri(m.FURIGANA))
+  }, [dict, furi, from, to])
 
   const key = from === 'en' ? input.trim().toLowerCase() : input.trim().replace(/\s+/g, '')
   const result = dict && key ? (dict[key] ?? '') : ''
@@ -61,7 +64,7 @@ export default function WordTranslator({ slug, from, to, lang }: { slug: string;
             <p className="text-sm text-gray-400">…</p>
           ) : result ? (
             <div>
-              <p className="text-3xl font-bold text-gray-900">{result}</p>
+              <p className="text-3xl font-bold text-gray-900 leading-loose">{to === 'ja' ? <RubyText text={result} furi={furi} /> : result}</p>
               <div className="mt-3 flex items-center justify-center gap-2">
                 <button onClick={speak} aria-label="Listen" title="🔊"
                   className="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50">🔊</button>
