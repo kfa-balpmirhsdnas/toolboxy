@@ -33,8 +33,7 @@ export default function DynamicManifest() {
       const label = (document.title || '').split(/\s+[–—|]\s+/)[0].trim()
       const params = new URLSearchParams({ start: pathname || '/en' })
       if (label && label.toLowerCase() !== 'toolboxy') params.set('name', label)
-      const slug = (pathname || '').split('/').pop() || ''
-      if (ICON_LABEL[slug]) params.set('icon', ICON_LABEL[slug])
+      // No &icon: a dynamic SVG-with-text icon breaks Android WebAPK minting.
       link.href = `/api/manifest?${params.toString()}`
     }, 60)
     return () => clearTimeout(id)

@@ -81,10 +81,12 @@ export async function buildToolMetadata(slug: string, lang: string): Promise<Met
   // Server-render a per-tool manifest link so each tool installs as its OWN PWA.
   // (A shared SSR default would make Chrome treat every page as the same app, so
   // installing one would block installing the others.)
-  const iconLabel = ICON_LABEL[slug]
+  // NOTE: no &icon — use the plain brand icon. A dynamic SVG-with-text icon makes
+  // Android's WebAPK minting fail (it can't rasterise the text), so it falls back
+  // to a Chrome shortcut and separate installs break. Distinct icons come back as
+  // pre-rendered PNGs later.
   const manifest =
-    `/api/manifest?start=${encodeURIComponent(`/${safeLang}/tools/${slug}`)}&name=${encodeURIComponent(name)}` +
-    (iconLabel ? `&icon=${encodeURIComponent(iconLabel)}` : '')
+    `/api/manifest?start=${encodeURIComponent(`/${safeLang}/tools/${slug}`)}&name=${encodeURIComponent(name)}`
 
   return {
     title: { absolute: title },
