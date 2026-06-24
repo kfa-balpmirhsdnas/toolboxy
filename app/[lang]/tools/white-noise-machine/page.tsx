@@ -16,7 +16,7 @@ const SOUNDS: { id: SoundId; emoji: string; seconds: number }[] = [
   { id: 'brown', emoji: '🟤', seconds: 4 },
   { id: 'rain', emoji: '🌧️', seconds: 4 },
   { id: 'fire', emoji: '🔥', seconds: 5 },
-  { id: 'ocean', emoji: '🌊', seconds: 9 }, // one full swell → seamless loop
+  { id: 'ocean', emoji: '🌊', seconds: 12 }, // one full swell → seamless loop (slower wave)
   { id: 'fan', emoji: '🌀', seconds: 4 },
   { id: 'pencil', emoji: '✏️', seconds: 4 },
 ]
@@ -75,8 +75,8 @@ function genFire(d: Float32Array, sr: number) {
     last = (last + 0.02 * w) / 1.02
     d[i] = last * 1.8 // low rumble
   }
-  // random crackle pops
-  const pops = Math.floor((d.length / sr) * 14)
+  // random crackle pops (~30% slower crackle rate)
+  const pops = Math.floor((d.length / sr) * 10)
   for (let k = 0; k < pops; k++) {
     const pos = Math.floor(Math.random() * d.length)
     const len = Math.floor(sr * 0.008 * (0.3 + Math.random() * 2))
@@ -104,7 +104,7 @@ function genFan(d: Float32Array, sr: number) {
     lp += 0.08 * (w - lp)
     hp += 0.002 * (lp - hp)
     const band = lp - hp // crude bandpass
-    const wob = 0.85 + 0.15 * Math.sin((2 * Math.PI * i * 0.6) / sr) // motor whirr
+    const wob = 0.85 + 0.15 * Math.sin((2 * Math.PI * i * 0.42) / sr) // motor whirr (~30% slower)
     d[i] = band * 0.95 * wob
   }
 }
@@ -114,8 +114,8 @@ function genPencil(d: Float32Array, sr: number) {
   let lp = 0
   let pos = 0
   while (pos < d.length) {
-    const strokeLen = Math.floor(sr * (0.16 + Math.random() * 0.14)) // 0.16–0.30s
-    const gapLen = Math.floor(sr * (0.10 + Math.random() * 0.18))    // 0.10–0.28s
+    const strokeLen = Math.floor(sr * (0.21 + Math.random() * 0.18)) // 0.21–0.39s (~30% slower)
+    const gapLen = Math.floor(sr * (0.13 + Math.random() * 0.23))    // 0.13–0.36s
     const amp = 0.5 + Math.random() * 0.5
     for (let j = 0; j < strokeLen && pos < d.length; j++, pos++) {
       const w = Math.random() * 2 - 1
