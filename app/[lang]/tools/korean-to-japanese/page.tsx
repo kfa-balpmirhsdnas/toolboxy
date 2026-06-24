@@ -50,11 +50,12 @@ export default function KoreanToJapanesePage({ params }: { params: { lang: strin
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <input value={input} onChange={(e) => onChange(e.target.value)} autoFocus
-          onFocus={(e) => {
+          onFocus={loadDict}
+          onPointerDown={(e) => {
             const el = e.currentTarget
             setInput(''); setCopied(false); loadDict()
             if (typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches)
-              setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
+              setTimeout(() => window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 64, behavior: 'smooth' }), 300)
           }}
           placeholder={t('kj_ph')}
           className="w-full scroll-mt-20 rounded-xl border border-gray-200 px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-brand-400" />
