@@ -87,16 +87,24 @@ function genFire(d: Float32Array, sr: number) {
   }
 }
 function genOcean(d: Float32Array) {
-  // One swell (first 60% of the buffer) then a long calm gap (remaining 40%),
-  // looping. env = 0 at i=0, at waveEnd, and at n → seamless. Concentrating the
-  // wave leaves a longer quiet stretch between waves.
+  // One wave (first 78% of the buffer) then a short calm gap, looping. The
+  // envelope is asymmetric: a quick rise then a long, gentle fall so the wave
+  // recedes slowly instead of cutting off. env = 0 at i=0, at waveEnd, and at n
+  // → seamless.
   let last = 0
   const n = d.length
-  const waveEnd = Math.floor(n * 0.6)
+  const waveEnd = Math.floor(n * 0.78)
+  const attack = 0.25 // first quarter of the wave rises; the rest is a long recede
   for (let i = 0; i < n; i++) {
     const w = Math.random() * 2 - 1
     last = (last + 0.025 * w) / 1.025
-    const env = i < waveEnd ? Math.pow(Math.sin(Math.PI * (i / waveEnd)), 2) : 0
+    let env = 0
+    if (i < waveEnd) {
+      const p = i / waveEnd
+      env = p < attack
+        ? Math.pow(Math.sin((Math.PI / 2) * (p / attack)), 2)
+        : Math.pow(Math.cos((Math.PI / 2) * ((p - attack) / (1 - attack))), 2)
+    }
     d[i] = last * 3.4 * env
   }
 }
