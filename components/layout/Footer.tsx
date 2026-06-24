@@ -76,6 +76,9 @@ export default function Footer() {
         <p className="text-center text-xs text-gray-600">
           © {year} ToolBoxy. {t('rights')}
         </p>
+        <p className="text-center text-[10px] text-gray-700 mt-1 font-mono">
+          build {process.env.NEXT_PUBLIC_BUILD_ID} · {process.env.NEXT_PUBLIC_BUILD_TIME}
+        </p>
       </div>
     </footer>
   )

@@ -3,6 +3,11 @@ import createNextIntlPlugin from 'next-intl/plugin'
 
 const withNextIntl = createNextIntlPlugin('./lib/utils/i18n.ts')
 
+// Surfaced in the footer so you can confirm which deploy the browser is showing
+// (e.g. when a service-worker cache might be serving an older build).
+const BUILD_ID = (process.env.VERCEL_GIT_COMMIT_SHA || '').slice(0, 7) || 'local'
+const BUILD_TIME = new Date().toISOString().slice(0, 16).replace('T', ' ') + 'Z'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
@@ -10,6 +15,10 @@ const nextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  env: {
+    NEXT_PUBLIC_BUILD_ID: BUILD_ID,
+    NEXT_PUBLIC_BUILD_TIME: BUILD_TIME,
   },
   images: {
     remotePatterns: [
