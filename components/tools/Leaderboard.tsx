@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { onAuthStateChanged, type User } from 'firebase/auth'
 import { auth } from '@/lib/firebase/client'
 
@@ -35,6 +36,7 @@ export default function Leaderboard({
   const [myRank, setMyRank] = useState<{ rank: number; total: number } | null>(null)
   const [submittedScore, setSubmittedScore] = useState<number | null>(null)
   const [user, setUser] = useState<User | null | 'loading'>('loading')
+  const t = useTranslations('leaderboard')
 
   const pathname = usePathname()
   const lang = LOCALES.includes(pathname.split('/')[1]) ? pathname.split('/')[1] : 'en'
@@ -76,19 +78,17 @@ export default function Leaderboard({
 
   return (
     <section className="max-w-md mx-auto mt-8">
-      <h2 className="text-lg font-bold text-gray-900 mb-3">🏆 Leaderboard</h2>
+      <h2 className="text-lg font-bold text-gray-900 mb-3">🏆 {t('title')}</h2>
 
       {hasScore && loggedIn && (
         <div className="mb-4 rounded-xl border border-brand-100 bg-brand-50 p-4">
-          <p className="text-sm text-brand-800 mb-2">
-            Add your score (<span className="font-bold">{score}{unit}</span>) to the leaderboard?
-          </p>
+          <p className="text-sm text-brand-800 mb-2">{t('add_score', { score: `${score}${unit}` })}</p>
           <div className="flex gap-2">
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Display name (optional)" maxLength={20}
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('display_name')} maxLength={20}
               className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
             <button onClick={submit} disabled={submitting}
               className="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-60">
-              {submitting ? '…' : 'Submit'}
+              {submitting ? '…' : t('submit')}
             </button>
           </div>
         </div>
@@ -96,26 +96,24 @@ export default function Leaderboard({
 
       {hasScore && user === null && (
         <div className="mb-4 rounded-xl border border-brand-100 bg-brand-50 p-4 text-center">
-          <p className="text-sm text-brand-800 mb-2">
-            Log in to add your score (<span className="font-bold">{score}{unit}</span>) to the leaderboard.
-          </p>
+          <p className="text-sm text-brand-800 mb-2">{t('login_prompt', { score: `${score}${unit}` })}</p>
           <Link href={`/${lang}/login?redirect=${encodeURIComponent(pathname)}`}
             className="inline-block rounded-lg bg-brand-600 px-5 py-2 text-sm font-semibold text-white hover:bg-brand-700">
-            Log in to submit
+            {t('login_btn')}
           </Link>
-          <p className="mt-2 text-xs text-gray-400">Your display name can be anything — your account just prevents fake scores.</p>
+          <p className="mt-2 text-xs text-gray-400">{t('login_note')}</p>
         </div>
       )}
 
       {myRank && (
         <p className="mb-3 text-center text-sm font-medium text-brand-700">
-          You ranked #{myRank.rank} of {myRank.total}! 🎉
+          {t('ranked', { rank: myRank.rank, total: myRank.total })}
         </p>
       )}
 
       <div className="rounded-xl border border-gray-200 divide-y divide-gray-100">
         {top.length === 0 ? (
-          <p className="px-4 py-6 text-center text-sm text-gray-400">No scores yet — be the first!</p>
+          <p className="px-4 py-6 text-center text-sm text-gray-400">{t('empty')}</p>
         ) : (
           top.map((e, i) => (
             <div key={i} className={`flex items-center gap-3 px-4 py-2.5 text-sm ${i === 0 ? 'bg-amber-50' : ''}`}>
@@ -127,7 +125,7 @@ export default function Leaderboard({
         )}
       </div>
       <p className="mt-2 text-center text-xs text-gray-400">
-        {better === 'lower' ? 'Lower is better.' : 'Higher is better.'} Casual leaderboard — for fun only.
+        {better === 'lower' ? t('lower_better') : t('higher_better')} {t('casual')}
       </p>
     </section>
   )

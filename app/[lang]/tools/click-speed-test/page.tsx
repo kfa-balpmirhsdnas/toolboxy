@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -12,6 +13,7 @@ const DURATION = 5 // seconds
 type Phase = 'idle' | 'running' | 'done'
 
 export default function ClickSpeedTestPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('games')
   const [phase, setPhase] = useState<Phase>('idle')
   const [clicks, setClicks] = useState(0)
   const [timeLeft, setTimeLeft] = useState(DURATION)
@@ -57,9 +59,9 @@ export default function ClickSpeedTestPage({ params }: { params: { lang: string 
   function reset() { runningRef.current = false; clicksRef.current = 0; setPhase('idle'); setClicks(0); setTimeLeft(DURATION) }
 
   const box = {
-    idle: { bg: 'bg-brand-600', title: 'Click Speed Test', sub: `Click as fast as you can for ${DURATION}s — click to start` },
-    running: { bg: 'bg-green-500', title: `${clicks}`, sub: `${timeLeft.toFixed(1)}s left — keep clicking!` },
-    done: { bg: 'bg-gray-700', title: `${cps} CPS`, sub: `${clicks} clicks in ${DURATION}s` },
+    idle: { bg: 'bg-brand-600', title: t('cps_title'), sub: t('cps_start', { seconds: DURATION }) },
+    running: { bg: 'bg-green-500', title: `${clicks}`, sub: t('cps_running', { time: timeLeft.toFixed(1) }) },
+    done: { bg: 'bg-gray-700', title: `${cps} ${t('cps_unit')}`, sub: t('cps_done', { clicks, seconds: DURATION }) },
   }[phase]
 
   return (
@@ -72,10 +74,10 @@ export default function ClickSpeedTestPage({ params }: { params: { lang: string 
         </button>
 
         <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
-          {best != null && <span>Your best: <span className="font-bold text-brand-700">{best} CPS</span></span>}
-          {phase === 'done' && <button onClick={reset} className="px-4 py-1.5 rounded-lg border border-gray-200 hover:border-brand-400">Try again</button>}
+          {best != null && <span>{t('best')}: <span className="font-bold text-brand-700">{best} {t('cps_unit')}</span></span>}
+          {phase === 'done' && <button onClick={reset} className="px-4 py-1.5 rounded-lg border border-gray-200 hover:border-brand-400">{t('tryAgain')}</button>}
         </div>
-        <p className="text-center text-xs text-gray-400">CPS = clicks per second. Average is ~6–8 CPS.</p>
+        <p className="text-center text-xs text-gray-400">{t('cps_hint')}</p>
       </div>
 
       <Leaderboard game="click-speed-test" score={best} unit=" CPS" better="higher" />

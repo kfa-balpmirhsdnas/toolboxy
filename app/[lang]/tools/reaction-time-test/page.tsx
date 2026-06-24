@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -11,6 +12,7 @@ const tool = getToolBySlug('reaction-time-test')!
 type Phase = 'idle' | 'waiting' | 'go' | 'early'
 
 export default function ReactionTimeTestPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('games')
   const [phase, setPhase] = useState<Phase>('idle')
   const [result, setResult] = useState<number | null>(null)
   const [best, setBest] = useState<number | null>(null)
@@ -41,10 +43,10 @@ export default function ReactionTimeTestPage({ params }: { params: { lang: strin
   }
 
   const box = {
-    idle: { bg: 'bg-brand-600', title: result != null ? `${result} ms` : 'Reaction Time Test', sub: result != null ? 'Click to try again' : 'Click to start' },
-    waiting: { bg: 'bg-red-500', title: 'Wait for green…', sub: 'Don’t click yet' },
-    go: { bg: 'bg-green-500', title: 'CLICK!', sub: '' },
-    early: { bg: 'bg-gray-700', title: 'Too soon! 😅', sub: 'Click to try again' },
+    idle: { bg: 'bg-brand-600', title: result != null ? `${result} ${t('rt_unit')}` : t('rt_title'), sub: result != null ? t('rt_again') : t('rt_start') },
+    waiting: { bg: 'bg-red-500', title: t('rt_wait'), sub: t('rt_dont') },
+    go: { bg: 'bg-green-500', title: t('rt_click'), sub: '' },
+    early: { bg: 'bg-gray-700', title: t('rt_toosoon'), sub: t('rt_again') },
   }[phase]
 
   return (
@@ -58,11 +60,11 @@ export default function ReactionTimeTestPage({ params }: { params: { lang: strin
 
         {best != null && (
           <div className="text-center text-sm text-gray-600">
-            Your best: <span className="font-bold text-brand-700">{best} ms</span>
+            {t('best')}: <span className="font-bold text-brand-700">{best} {t('rt_unit')}</span>
           </div>
         )}
         <p className="text-center text-xs text-gray-400">
-          When the box turns green, click as fast as you can. Average is ~200–300 ms.
+          {t('rt_hint')}
         </p>
       </div>
 
