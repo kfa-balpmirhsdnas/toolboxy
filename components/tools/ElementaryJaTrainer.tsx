@@ -34,9 +34,9 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
   const [intervalSec, setIntervalSec] = useState(3)
   const [gapSec, setGapSec] = useState(3)
   const [repeat, setRepeat] = useState(1)
-  const [jaVoice, setJaVoice] = useState(true)
+  const [jaVoice] = useState(true) // Japanese is always on (the word itself)
   const [koVoice, setKoVoice] = useState(true)
-  const [enVoice, setEnVoice] = useState(false)
+  const [enVoice, setEnVoice] = useState(true)
   const [elapsed, setElapsed] = useState(0)
 
   const runningRef = useRef(running); runningRef.current = running
@@ -147,8 +147,8 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
             <>
               <p className="h-6 text-base text-gray-400">{word.yomi !== word.ja ? word.yomi : ''}</p>
               <p className="text-5xl font-bold text-gray-900 leading-tight">{word.ja}</p>
-              <p className="text-2xl text-brand-700 mt-3">{word.ko}</p>
-              <p className="text-sm text-gray-400 mt-1">{word.en}</p>
+              {koVoice && <p className="text-2xl text-brand-700 mt-3">{word.ko}</p>}
+              {enVoice && <p className="text-2xl text-brand-700 mt-2">{word.en}</p>}
               <button onClick={() => play(false)} aria-label="Listen"
                 className="mt-4 text-sm bg-white border border-gray-200 px-4 py-1.5 rounded-lg hover:bg-gray-50">🔊</button>
             </>
@@ -187,17 +187,20 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
               {REPEATS.map((s) => <option key={s} value={s}>{s}{t('ej_times')}</option>)}
             </select>
           </label>
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" checked={jaVoice} onChange={(e) => setJaVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
-            🇯🇵 {t('ej_ja_voice')}
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
+          <label className="flex items-center gap-1.5 text-gray-400">
+            <input type="checkbox" checked={jaVoice} readOnly disabled className="w-4 h-4 accent-brand-600" />
+            {t('ej_ja')}
           </label>
           <label className="flex items-center gap-1.5 cursor-pointer">
             <input type="checkbox" checked={koVoice} onChange={(e) => setKoVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
-            🇰🇷 {t('ej_ko_voice')}
+            {t('ej_ko')}
           </label>
           <label className="flex items-center gap-1.5 cursor-pointer">
             <input type="checkbox" checked={enVoice} onChange={(e) => setEnVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
-            🇺🇸 {t('ej_en_voice')}
+            {t('ej_en')}
           </label>
         </div>
 
