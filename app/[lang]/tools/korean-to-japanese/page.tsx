@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { KR_JA } from '@/lib/kr-ja-dict'
 import { trackToolUsed } from '@/lib/gtag'
 
 const tool = getToolBySlug('korean-to-japanese')!
@@ -13,13 +12,20 @@ export default function KoreanToJapanesePage({ params }: { params: { lang: strin
   const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const [copied, setCopied] = useState(false)
+  const [dict, setDict] = useState<Record<string, string> | null>(null)
+
+  // Lazily load the (large) dictionary on first interaction, not on page load.
+  const loadDict = useCallback(() => {
+    if (!dict) import('@/lib/kr-ja-dict').then((m) => setDict(m.KR_JA))
+  }, [dict])
 
   const key = input.trim().replace(/\s+/g, '')
-  const result = key ? KR_JA[key] : ''
+  const result = dict && key ? (dict[key] ?? '') : ''
 
   function onChange(v: string) {
     setInput(v); setCopied(false)
-    if (v.trim() && KR_JA[v.trim().replace(/\s+/g, '')]) trackToolUsed('korean-to-japanese')
+    loadDict()
+    if (v.trim() && dict?.[v.trim().replace(/\s+/g, '')]) trackToolUsed('korean-to-japanese')
   }
 
   async function copy() {
@@ -31,13 +37,15 @@ export default function KoreanToJapanesePage({ params }: { params: { lang: strin
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
-        <input value={input} onChange={(e) => onChange(e.target.value)} autoFocus
+        <input value={input} onChange={(e) => onChange(e.target.value)} onFocus={loadDict} autoFocus
           placeholder={t('kj_ph')}
           className="w-full rounded-xl border border-gray-200 px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-brand-400" />
 
         <div className="min-h-[5rem] rounded-xl border border-gray-200 bg-gray-50 p-5 flex items-center justify-center text-center">
           {!key ? (
             <p className="text-sm text-gray-400">{t('kj_hint')}</p>
+          ) : !dict ? (
+            <p className="text-sm text-gray-400">…</p>
           ) : result ? (
             <div>
               <p className="text-3xl font-bold text-gray-900">{result}</p>
