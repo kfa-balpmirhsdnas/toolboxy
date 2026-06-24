@@ -682,7 +682,8 @@
     "mortgage-calculator": "Calculate your monthly mortgage payment, total interest and full cost. Free online mortgage calculator.",
     "auto-loan-calculator": "Calculate your monthly car payment and total interest. Free online auto loan calculator.",
     "retirement-calculator": "Project how much you will have saved by retirement. Free retirement savings calculator.",
-    "inflation-calculator": "See how inflation changes the value of money over time. Free inflation calculator."
+    "inflation-calculator": "See how inflation changes the value of money over time. Free inflation calculator.",
+    "reaction-time-test": "Test your reaction time — click when the screen turns green. Free online reaction time test with a global leaderboard."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1140,6 +1141,19 @@
         {
           "q": "Is it free?",
           "a": "Yes — completely free, no sign-up."
+        }
+      ]
+    },
+    "reaction-time-test": {
+      "intro": "Click to start, wait for the box to turn green, then click as fast as you can. Submit your best time to the leaderboard.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes — completely free, no sign-up."
+        },
+        {
+          "q": "What is a good reaction time?",
+          "a": "Around 200–300 ms is typical; under 200 ms is fast."
         }
       ]
     }

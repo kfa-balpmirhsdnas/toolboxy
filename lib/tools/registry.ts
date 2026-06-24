@@ -22,6 +22,7 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'reaction-time-test',category:'game',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['reaction time','reflex','game','test','leaderboard','반응속도','反応速度'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'mortgage-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['mortgage','home loan','calculator','住宅ローン','주택담보대출'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'auto-loan-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['auto loan','car loan','calculator','自動車ローン','자동차 대출'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'retirement-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['retirement','savings','nest egg','老後資金','은퇴 자금'],maxFileSizeMB:{free:0,pro:0} },

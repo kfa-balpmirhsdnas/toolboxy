@@ -24,6 +24,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Game leaderboards. Public read; scores written only via the Admin SDK
+    // (the /api/leaderboard route validates and clamps them).
+    match /leaderboards/{game}/scores/{scoreId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /adminConfig/{docId} {
       allow read: if true;
       allow write: if false;
