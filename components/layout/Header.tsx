@@ -13,6 +13,9 @@ const LANGS = [
   { code: 'ko', label: 'KO' },
 ]
 
+// Owner-only menu entry; the /admin page enforces this server-side too.
+const ADMIN_EMAILS = ['sandshrimp.lab@gmail.com']
+
 function getCurrentLang(pathname: string): string {
   const seg = pathname.split('/')[1]
   return ['en', 'ja', 'ko'].includes(seg) ? seg : 'en'
@@ -83,6 +86,9 @@ export default function Header() {
                   {user.displayName && <p className="text-xs text-gray-500 truncate">{user.email}</p>}
                 </div>
                 <Link href={`/${lang}/dashboard`} onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><span>📊</span> {t('dashboard')}</Link>
+                {user.email && ADMIN_EMAILS.includes(user.email) && (
+                  <Link href={`/${lang}/admin`} onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><span>🛠</span> Admin</Link>
+                )}
                 {/* UPGRADE_HIDDEN <Link href={`/${lang}/pricing`} onClick={() => setMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><span>💳</span> Upgrade Plan</Link> UPGRADE_HIDDEN */}
                 <hr className="my-1 border-gray-100" />
                 <button onClick={handleSignOut} className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"><span>🚪</span> {t('logout')}</button>
