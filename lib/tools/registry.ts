@@ -36,6 +36,7 @@ export function isAppTool(tool: ToolMeta): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'white-noise-machine',category:'audio',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['white noise machine','white noise','백색소음','rain fire ocean sounds','focus sleep sounds'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'elementary-english-words',category:'language',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['elementary english words','english vocabulary trainer','초등 영어 단어','교육부 영단어','english flashcards'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'elementary-japanese-words',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['elementary japanese words','japanese flashcards','초등 일본어 단어','日本語 単語 暗記','japanese vocabulary trainer'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'korean-antonyms',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['korean antonyms','korean opposite words','한글 반대말','한국어 반대말','韓国語 反対語'],maxFileSizeMB:{free:0,pro:0} },

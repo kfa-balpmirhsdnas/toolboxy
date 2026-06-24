@@ -90,6 +90,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "white-noise-machine": "Free white noise machine — play rain, a crackling fire, ocean waves, a fan, pencil writing, or white/pink/brown noise for focus, sleep, and relaxation, with an elapsed-time display. Sounds are generated right in your browser, nothing to download.",
     "pdf-to-text": "Extract plain text from PDF files instantly in your browser. No upload to server needed.",
     "base64-decoder": "Decode Base64 encoded strings back to plain text. Supports Unicode / UTF-8.",
     "url-decoder": "Decode percent-encoded URLs back to human-readable text. Fast and private.",
@@ -718,6 +719,19 @@
     "continue": "Continue without signing up"
   },
   "langTools": {
+    "white-noise-machine": {
+      "intro": "Play soothing background sounds — rain, fire, ocean, and more — to help you focus, sleep, or relax, all generated right in your browser.",
+      "faq": [
+        {
+          "q": "Which sounds can I play?",
+          "a": "Rain, a crackling fire, ocean waves, a fan, pencil writing, and pure white, pink, and brown noise."
+        },
+        {
+          "q": "Does it work offline?",
+          "a": "Yes. The sounds are generated in your browser with the Web Audio API, so once the page has loaded it keeps playing without an internet connection."
+        }
+      ]
+    },
     "romaji-kana-converter": {
       "intro": "Type romaji (Latin letters) and instantly get hiragana or katakana, or paste kana to get romaji back. Everything runs in your browser.",
       "faq": [
@@ -1335,6 +1349,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "white-noise-machine": "This white noise machine plays soothing background sounds to help you focus, sleep, or relax. Choose from rain, a crackling fire, ocean waves, a fan, a pencil writing, or pure white, pink, and brown noise, then adjust the volume and watch the elapsed-time counter. Every sound is generated live in your browser with the Web Audio API — there are no audio files to download, it keeps working offline once the page has loaded, and nothing is ever sent to a server.",
     "pdf-to-jpg": "This tool turns each page of a PDF into its own JPG image. Just upload a PDF and it renders every page as a picture you can preview and download one by one. It's handy when you want to share a document on social media as images, or keep only a few pages as photos. Everything happens right inside your browser, so your file is never uploaded to a server and stays completely private.",
     "merge-pdf": "This tool combines several PDF files into a single, tidy document. Add the files in the order you want and download them merged into one PDF. It's great for pulling together contracts, receipts, or reports that arrived as separate files. Since everything is processed inside your browser, nothing is uploaded — so even sensitive documents stay private.",
     "qr-generator": "Type in any link or text and this tool instantly creates a QR code for it. You can download the code as an image and place it on business cards, posters, menus, or product packaging — anywhere. It's perfect for sharing a website address or bridging printed materials to your online content. There's no app to install: you can make one in just a few seconds, right in your browser.",
@@ -1780,9 +1795,23 @@
     "ej_en_voice": "English audio",
     "ej_en": "English",
     "ej_ko": "Korean",
-    "ej_ja": "Japanese"
+    "ej_ja": "Japanese",
+    "wnm_white": "White noise",
+    "wnm_pink": "Pink noise",
+    "wnm_brown": "Brown noise",
+    "wnm_rain": "Rain",
+    "wnm_fire": "Fire",
+    "wnm_ocean": "Ocean",
+    "wnm_fan": "Fan",
+    "wnm_pencil": "Pencil",
+    "wnm_play": "Play",
+    "wnm_stop": "Stop",
+    "wnm_volume": "Volume",
+    "wnm_elapsed": "Elapsed",
+    "wnm_note": "Sounds are generated in your browser — no files, works offline. Start at a low volume."
   },
   "toolNames": {
+    "white-noise-machine": "White Noise Machine",
     "circle-crop": "Image Circle Crop",
     "korean-to-english": "Korean to English Word Translator",
     "japanese-to-korean": "Japanese to Korean Word Translator",
