@@ -22,6 +22,7 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'elementary-japanese-words',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['elementary japanese words','japanese flashcards','초등 일본어 단어','日本語 単語 暗記','japanese vocabulary trainer'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'korean-antonyms',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['korean antonyms','korean opposite words','한글 반대말','한국어 반대말','韓国語 反対語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'japanese-antonyms',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['japanese antonyms','japanese opposite words','일본어 반대말','日本語 反対語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'english-antonyms',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['english antonyms','english opposite words','영어 반대말','英語 反対語'],maxFileSizeMB:{free:0,pro:0} },
