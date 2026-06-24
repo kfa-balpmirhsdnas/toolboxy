@@ -10,13 +10,18 @@ const tool = getToolBySlug('white-noise-machine')!
 
 type SoundId = 'white' | 'pink' | 'brown' | 'rain' | 'fire' | 'ocean' | 'fan' | 'pencil'
 
+// Ocean = a fixed-length wave (rise + long recede) then a calm gap. Kept as two
+// independent values so the quiet gap can change without altering the wave.
+const OCEAN_WAVE_SEC = 9.36
+const OCEAN_GAP_SEC = 4
+
 const SOUNDS: { id: SoundId; emoji: string; seconds: number }[] = [
   { id: 'white', emoji: '⚪', seconds: 4 },
   { id: 'pink', emoji: '🌸', seconds: 4 },
   { id: 'brown', emoji: '🟤', seconds: 4 },
   { id: 'rain', emoji: '🌧️', seconds: 4 },
   { id: 'fire', emoji: '🔥', seconds: 5 },
-  { id: 'ocean', emoji: '🌊', seconds: 12 }, // one full swell → seamless loop (slower wave)
+  { id: 'ocean', emoji: '🌊', seconds: OCEAN_WAVE_SEC + OCEAN_GAP_SEC }, // wave + quiet gap; seamless loop
   { id: 'fan', emoji: '🌀', seconds: 4 },
   { id: 'pencil', emoji: '✏️', seconds: 18 }, // long buffer → many unique strokes, less obvious looping
 ]
@@ -86,14 +91,13 @@ function genFire(d: Float32Array, sr: number) {
     }
   }
 }
-function genOcean(d: Float32Array) {
-  // One wave (first 78% of the buffer) then a short calm gap, looping. The
-  // envelope is asymmetric: a quick rise then a long, gentle fall so the wave
-  // recedes slowly instead of cutting off. env = 0 at i=0, at waveEnd, and at n
-  // → seamless.
+function genOcean(d: Float32Array, sr: number) {
+  // One fixed-length wave then a calm gap, looping. The envelope is asymmetric:
+  // a quick rise then a long, gentle fall so the wave recedes slowly instead of
+  // cutting off. env = 0 at i=0, at waveEnd, and at n → seamless.
   let last = 0
   const n = d.length
-  const waveEnd = Math.floor(n * 0.78)
+  const waveEnd = Math.min(n, Math.floor(sr * OCEAN_WAVE_SEC)) // fixed wave; rest = quiet gap
   const attack = 0.25 // first quarter of the wave rises; the rest is a long recede
   for (let i = 0; i < n; i++) {
     const w = Math.random() * 2 - 1
@@ -147,7 +151,7 @@ function fillBuffer(id: SoundId, d: Float32Array, sr: number) {
     case 'brown': return genBrown(d)
     case 'rain': return genRain(d, sr)
     case 'fire': return genFire(d, sr)
-    case 'ocean': return genOcean(d)
+    case 'ocean': return genOcean(d, sr)
     case 'fan': return genFan(d, sr)
     case 'pencil': return genPencil(d, sr)
   }
