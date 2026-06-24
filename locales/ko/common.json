@@ -9,9 +9,10 @@
     "pricing": "요금제",
     "blog": "블로그",
     "login": "로그인",
-    "signup": "회원가입",
+    "signup": "무료가입",
     "dashboard": "대시보드",
-    "logout": "로그아웃"
+    "logout": "로그아웃",
+    "install": "앱 설치"
   },
   "categories": {
     "pdf": "PDF",

@@ -8,6 +8,7 @@ import ToolTracker from '@/components/tools/ToolTracker'
 import ToolFaq from '@/components/tools/ToolFaq'
 import ToolHowTo from '@/components/tools/ToolHowTo'
 import UsageGate from '@/components/tools/UsageGate'
+import InstallButton from '@/components/tools/InstallButton'
 
 const LOCALES = ['en', 'ja', 'ko']
 const ACRONYMS = new Set([
@@ -86,6 +87,7 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
         <p className="text-gray-500 text-sm">
           {(tool.tags ?? []).slice(0, 5).join(' · ')}
         </p>
+        <div className="mt-3"><InstallButton /></div>
       </div>
 
       {/* Usage limit banner (logged-in users only, near/at limit) */}

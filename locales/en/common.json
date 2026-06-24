@@ -9,9 +9,10 @@
     "pricing": "Pricing",
     "blog": "Blog",
     "login": "Log In",
-    "signup": "Sign Up",
+    "signup": "Sign up free",
     "dashboard": "Dashboard",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "install": "Install app"
   },
   "categories": {
     "pdf": "PDF",

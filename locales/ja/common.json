@@ -9,9 +9,10 @@
     "pricing": "料金",
     "blog": "ブログ",
     "login": "ログイン",
-    "signup": "新規登録",
+    "signup": "無料登録",
     "dashboard": "ダッシュボード",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "install": "アプリ版"
   },
   "categories": {
     "pdf": "PDF",
