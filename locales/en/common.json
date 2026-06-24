@@ -692,7 +692,9 @@
     "rotate-image": "Rotate and flip images online - left, right, horizontal or vertical. Free image rotate and flip tool, no upload.",
     "meme-generator": "Make a meme in seconds - add bold top and bottom text to any image. Free online meme generator, no upload.",
     "circle-crop": "Crop any image into a perfect circle with transparent corners (PNG). Free online circle crop tool, no upload.",
-    "blur-image": "Blur an image or hide sensitive parts with an adjustable blur slider. Free online image blur tool, no upload."
+    "blur-image": "Blur an image or hide sensitive parts with an adjustable blur slider. Free online image blur tool, no upload.",
+    "click-speed-test": "How fast can you click? Test your clicks per second (CPS) in 5 seconds and beat the leaderboard. Free CPS click speed test.",
+    "add-text-to-image": "Add text and emoji stickers to any image, drag to position, and download. Free online add-text-to-image tool, no upload."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1280,6 +1282,32 @@
         {
           "q": "Can I blur just part of the image?",
           "a": "This tool blurs the whole image; adjust the strength with the slider."
+        }
+      ]
+    },
+    "click-speed-test": {
+      "intro": "Click the box and click as fast as you can for 5 seconds. Submit your best CPS to the leaderboard.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes - completely free with no sign-up."
+        },
+        {
+          "q": "What is a good CPS?",
+          "a": "Around 6-8 clicks per second is average; over 10 is very fast."
+        }
+      ]
+    },
+    "add-text-to-image": {
+      "intro": "Upload an image, then add text or emoji and drag them where you want.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes - completely free with no sign-up."
+        },
+        {
+          "q": "Can I move the text around?",
+          "a": "Yes - drag any text or emoji to position it, and resize or recolor it."
         }
       ]
     }

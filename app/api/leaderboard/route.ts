@@ -5,6 +5,7 @@ import { FieldValue } from 'firebase-admin/firestore'
 // Per-game config: ranking direction + plausible score bounds (anti-abuse).
 const GAMES: Record<string, { order: 'asc' | 'desc'; min: number; max: number }> = {
   'reaction-time-test': { order: 'asc', min: 80, max: 2000 },
+  'click-speed-test': { order: 'desc', min: 1, max: 25 },
 }
 
 function clean(name: string): string {

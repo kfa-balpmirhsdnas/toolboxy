@@ -22,6 +22,8 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'click-speed-test',category:'game',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['click speed test','cps test','clicks per second','click speed','cps game'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'add-text-to-image',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['add text to image','text on photo','image text sticker','add text photo','sticker image'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'qr-scanner',category:'qr',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['qr reader','qr scanner','scan qr','decode qr','qr read','qr scanner ko','QR read jp'],maxFileSizeMB:{free:10,pro:40} },
   {slug:'pdf-to-jpg',category:'pdf',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['pdf to jpg','pdf to image','convert pdf','pdf image convert','PDF to JPG jp'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'watermark-pdf',category:'pdf',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['watermark pdf','add watermark','pdf watermark','PDF watermark jp'],maxFileSizeMB:{free:50,pro:200} },
