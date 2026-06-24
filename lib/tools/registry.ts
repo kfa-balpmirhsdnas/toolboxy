@@ -355,22 +355,25 @@ export function getAllTools(): ToolMeta[] {
   return TOOLS
 }
 
+// Ordered by general search demand (with our coverage sanity-checked), not by
+// our own tool count. Switch to a data-driven order once GA4/toolStats traffic
+// accumulates. `file` is empty and sits last.
 export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; color: string }> = {
-  pdf:       { label: 'PDF',       icon: String.fromCodePoint(0x1F4C4), color: 'red'    },
   image:     { label: 'Image',     icon: String.fromCodePoint(0x1F5BC), color: 'purple' },
-  video:     { label: 'Video',     icon: String.fromCodePoint(0x1F3AC), color: 'pink'   },
-  audio:     { label: 'Audio',     icon: String.fromCodePoint(0x1F50A), color: 'yellow' },
+  pdf:       { label: 'PDF',       icon: String.fromCodePoint(0x1F4C4), color: 'red'    },
+  finance:   { label: 'Finance',      icon: String.fromCodePoint(0x1F4B0), color: 'emerald' },
   text:      { label: 'Text',      icon: String.fromCodePoint(0x1F4DD), color: 'green'  },
   developer: { label: 'Developer', icon: String.fromCodePoint(0x1F4BB), color: 'blue'   },
-  file:      { label: 'File',      icon: String.fromCodePoint(0x1F4C1), color: 'orange' },
+  seo:       { label: 'SEO',          icon: String.fromCodePoint(0x1F50D), color: 'sky'     },
+  qr:        { label: 'QR & Barcode', icon: String.fromCodePoint(0x1F533), color: 'slate'   },
+  design:    { label: 'Color & Design', icon: String.fromCodePoint(0x1F3A8), color: 'fuchsia' },
+  health:    { label: 'Health',       icon: String.fromCodePoint(0x1FA7A), color: 'lime'    },
+  security:  { label: 'Security',     icon: String.fromCodePoint(0x1F512), color: 'rose'    },
   utility:   { label: 'Utility',   icon: String.fromCodePoint(0x1F527), color: 'teal'   },
+  language:  { label: 'Language',     icon: String.fromCodePoint(0x1F310), color: 'cyan'    },
+  video:     { label: 'Video',     icon: String.fromCodePoint(0x1F3AC), color: 'pink'   },
+  audio:     { label: 'Audio',     icon: String.fromCodePoint(0x1F50A), color: 'yellow' },
   funny:     { label: 'Funny',     icon: String.fromCodePoint(0x1F602), color: 'amber'  },
   game:      { label: 'Game',      icon: String.fromCodePoint(0x1F3AE), color: 'indigo' },
-  qr:        { label: 'QR & Barcode', icon: String.fromCodePoint(0x1F533), color: 'slate'   },
-  security:  { label: 'Security',     icon: String.fromCodePoint(0x1F512), color: 'rose'    },
-  finance:   { label: 'Finance',      icon: String.fromCodePoint(0x1F4B0), color: 'emerald' },
-  health:    { label: 'Health',       icon: String.fromCodePoint(0x1FA7A), color: 'lime'    },
-  design:    { label: 'Color & Design', icon: String.fromCodePoint(0x1F3A8), color: 'fuchsia' },
-  seo:       { label: 'SEO',          icon: String.fromCodePoint(0x1F50D), color: 'sky'     },
-  language:  { label: 'Language',     icon: String.fromCodePoint(0x1F310), color: 'cyan'    },
+  file:      { label: 'File',      icon: String.fromCodePoint(0x1F4C1), color: 'orange' },
 };
