@@ -105,7 +105,7 @@ function genFan(d: Float32Array, sr: number) {
     hp += 0.002 * (lp - hp)
     const band = lp - hp // crude bandpass
     const wob = 0.85 + 0.15 * Math.sin((2 * Math.PI * i * 0.6) / sr) // motor whirr
-    d[i] = band * 2.6 * wob
+    d[i] = band * 1.9 * wob
   }
 }
 function genPencil(d: Float32Array, sr: number) {
