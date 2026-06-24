@@ -697,7 +697,12 @@
     "video-trimmer": "Trim a video without re-encoding — super fast. Free online video cutter that runs in your browser, no upload.",
     "audio-trimmer": "Trim audio (MP3, etc.) without re-encoding — super fast. Free online audio/MP3 cutter, runs in your browser, no upload.",
     "video-to-audio": "Extract the audio from a video and save it as MP3, right in your browser. Free video-to-audio / video-to-MP3 tool, no upload.",
-    "korean-to-japanese": "Type a common Korean word and instantly see the Japanese. Free Korean-to-Japanese word lookup, works offline in your browser."
+    "korean-to-japanese": "Type a common Korean word and instantly see the Japanese. Free Korean-to-Japanese word lookup, works offline in your browser.",
+    "korean-to-english": "Type a common Korean word and instantly see the English. Free Korean-to-English word lookup, works offline in your browser.",
+    "japanese-to-korean": "Type a common Japanese word and instantly see the Korean. Free Japanese-to-Korean word lookup, works offline in your browser.",
+    "english-to-korean": "Type a common English word and instantly see the Korean. Free English-to-Korean word lookup, works offline in your browser.",
+    "japanese-to-english": "Type a common Japanese word and instantly see the English. Free Japanese-to-English word lookup, works offline in your browser.",
+    "english-to-japanese": "Type a common English word and instantly see the Japanese. Free English-to-Japanese word lookup, works offline in your browser."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1549,7 +1554,12 @@
     "video-trimmer": "This tool cuts a clip out of a video — fast. Because it copies the stream instead of re-encoding, saving takes seconds instead of minutes, with no quality loss. Just pick the start and end points and download the trimmed video. Everything runs in your browser, so your video is never uploaded.",
     "audio-trimmer": "This tool trims an audio file — fast. It copies the stream instead of re-encoding, so saving is near-instant with no quality loss. Set the start and end and download the cut audio. Everything runs in your browser, so your file is never uploaded.",
     "video-to-audio": "This tool pulls the audio out of a video and saves it as an MP3. It's perfect for grabbing a song, a lecture, or a podcast track from a video file. Just upload a video and download the audio. Everything runs in your browser, so your video is never uploaded.",
-    "korean-to-japanese": "This tool gives you the Japanese for a common Korean word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser."
+    "korean-to-japanese": "This tool gives you the Japanese for a common Korean word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser.",
+    "korean-to-english": "This tool gives you the English for a common Korean word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser.",
+    "japanese-to-korean": "This tool gives you the Korean for a common Japanese word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser.",
+    "english-to-korean": "This tool gives you the Korean for a common English word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser.",
+    "japanese-to-english": "This tool gives you the English for a common Japanese word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser.",
+    "english-to-japanese": "This tool gives you the Japanese for a common English word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser."
   },
   "howto": {
     "title": "How to use",
@@ -1724,10 +1734,19 @@
     "kj_ph": "Type a Korean word (e.g. 무료)",
     "kj_hint": "Enter a Korean word to see the Japanese.",
     "kj_notfound": "Not in the dictionary yet — try a more common, single word.",
-    "kj_note": "A built-in dictionary of common words — instant, free, and works offline."
+    "kj_note": "A built-in dictionary of common words — instant, free, and works offline.",
+    "wt_ph": "Type a word",
+    "wt_hint": "Enter a word to see the translation.",
+    "wt_notfound": "Not in the dictionary yet — try a more common word.",
+    "wt_note": "A built-in dictionary of common words — instant, free, and works offline."
   },
   "toolNames": {
-    "circle-crop": "Image Circle Crop"
+    "circle-crop": "Image Circle Crop",
+    "korean-to-english": "Korean to English Word Translator",
+    "japanese-to-korean": "Japanese to Korean Word Translator",
+    "english-to-korean": "English to Korean Word Translator",
+    "japanese-to-english": "Japanese to English Word Translator",
+    "english-to-japanese": "English to Japanese Word Translator"
   },
   "howtoNote": {
     "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",

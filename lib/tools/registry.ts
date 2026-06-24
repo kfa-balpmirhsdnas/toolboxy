@@ -22,6 +22,11 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'korean-to-english',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['korean to english','korean english word','한글 영어','韓国語 英語'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'japanese-to-korean',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['japanese to korean','japanese korean word','일본어 한글','日本語 韓国語'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'english-to-korean',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['english to korean','english korean word','영어 한글','英語 韓国語'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'japanese-to-english',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['japanese to english','japanese english word','일본어 영어','日本語 英語'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'english-to-japanese',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['english to japanese','english japanese word','영어 일본어','英語 日本語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'video-trimmer',category:'video',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['video trimmer','cut video','video cutter','trim video','영상 자르기'],maxFileSizeMB:{free:200,pro:500} },
   {slug:'audio-trimmer',category:'audio',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['audio trimmer','cut audio','mp3 cutter','trim audio','오디오 자르기'],maxFileSizeMB:{free:100,pro:300} },
   {slug:'video-to-audio',category:'video',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['video to audio','extract audio','video to mp3','audio extractor','오디오 추출'],maxFileSizeMB:{free:200,pro:500} },
