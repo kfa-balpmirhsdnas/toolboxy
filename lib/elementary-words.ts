@@ -143,7 +143,7 @@ export const ELEMENTARY_WORDS: Word[] = [
   { en: 'diary', ko: '일기', ja: '日記', yomi: 'にっき' }, { en: 'dictionary', ko: '사전', ja: '辞書', yomi: 'じしょ' }, { en: 'dirty', ko: '더러운', ja: '汚い', yomi: 'きたない' }, { en: 'dish', ko: '큰접시', ja: '皿', yomi: 'さら' },
   { en: 'dollar', ko: '달러', ja: 'ドル', yomi: 'ドル' }, { en: 'down', ko: '아래에', ja: '', yomi: '' }, { en: 'drum', ko: '북', ja: 'ドラム', yomi: 'ドラム' }, { en: 'dry', ko: '마른', ja: '乾いた', yomi: 'かわいた' },
   { en: 'early', ko: '일찍', ja: '早い', yomi: 'はやい' }, { en: 'easy', ko: '쉬운', ja: '簡単', yomi: 'かんたん' }, { en: 'empty', ko: '텅빈', ja: '空の', yomi: 'からの' }, { en: 'enjoy', ko: '즐기다', ja: '楽しむ', yomi: 'たのしむ' },
-  { en: 'enough', ko: '충분한', ja: '十分', yomi: 'じゅうぶん' }, { en: 'exellent', ko: '뛰어난', ja: '優れた', yomi: 'すぐれた' }, { en: 'excite', ko: '흥분시키다', ja: '興奮させる', yomi: 'こうふんさせる' }, { en: 'exercise', ko: '연습', ja: '運動', yomi: 'うんどう' },
+  { en: 'enough', ko: '충분한', ja: '十分', yomi: 'じゅうぶん' }, { en: 'excellent', ko: '뛰어난', ja: '優れた', yomi: 'すぐれた' }, { en: 'excite', ko: '흥분시키다', ja: '興奮させる', yomi: 'こうふんさせる' }, { en: 'exercise', ko: '연습', ja: '運動', yomi: 'うんどう' },
   { en: 'fair', ko: '공정한', ja: '公平', yomi: 'こうへい' }, { en: 'far', ko: '멀리떨어진', ja: '遠い', yomi: 'とおい' }, { en: 'fast', ko: '빠른', ja: '速い', yomi: 'はやい' }, { en: 'fat', ko: '쌀찐', ja: '太った', yomi: 'ふとった' },
   { en: 'famous', ko: '유명한', ja: '有名', yomi: 'ゆうめい' }, { en: 'few', ko: '다소양이적은', ja: '少し', yomi: 'すこし' }, { en: 'fight', ko: '싸움', ja: '戦い', yomi: 'たたかい' }, { en: 'film', ko: '필름', ja: 'フィルム', yomi: 'フィルム' },
   { en: 'fine', ko: '좋은/맑은', ja: '元気', yomi: 'げんき' }, { en: 'flag', ko: '깃발', ja: '旗', yomi: 'はた' }, { en: 'floor', ko: '마루', ja: '床', yomi: 'ゆか' }, { en: 'follow', ko: '뒤를따르다', ja: '従う', yomi: 'したがう' },
