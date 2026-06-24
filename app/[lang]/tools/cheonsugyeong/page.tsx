@@ -131,7 +131,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
 
   function reset() {
     stopAll(); setPlaying(false); idxRef.current = 0; setCurOrder(null)
-    document.querySelector('[data-order]')?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+    window.scrollTo({ top: 0, behavior: 'smooth' }) // all the way to the page top, above the sticky bar
   }
 
   return (
@@ -146,7 +146,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
             </button>
             <button onClick={reset} className="px-3 py-2.5 text-sm rounded-xl border border-gray-200 hover:bg-gray-50">↺ {t('cs_reset')}</button>
           </div>
-          <div className="flex items-center justify-between text-sm text-gray-500">
+          <div className="flex items-center justify-between sm:justify-start sm:gap-4 text-sm text-gray-500">
             <label className="flex items-center gap-1 whitespace-nowrap">
               {t('cs_rate')}
               <select value={rate} onChange={(e) => setRate(Number(e.target.value))} className="rounded-lg border border-gray-200 px-1 py-1.5 w-[3.6rem]">
