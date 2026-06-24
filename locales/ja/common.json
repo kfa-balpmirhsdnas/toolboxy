@@ -1999,6 +1999,10 @@
     "wnm_stop": "停止",
     "wnm_volume": "音量",
     "wnm_elapsed": "経過時間",
+    "wnm_sleep": "スリープタイマー",
+    "wnm_off": "オフ",
+    "wnm_min": "分",
+    "wnm_until": "停止まで",
     "wnm_note": "音はブラウザで生成されます — ファイル不要・オフライン対応。音量は小さめから始めてください。"
   },
   "howtoNote": {

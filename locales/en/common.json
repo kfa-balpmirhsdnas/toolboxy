@@ -1808,6 +1808,10 @@
     "wnm_stop": "Stop",
     "wnm_volume": "Volume",
     "wnm_elapsed": "Elapsed",
+    "wnm_sleep": "Sleep timer",
+    "wnm_off": "Off",
+    "wnm_min": " min",
+    "wnm_until": "Stops in",
     "wnm_note": "Sounds are generated in your browser — no files, works offline. Start at a low volume."
   },
   "toolNames": {
