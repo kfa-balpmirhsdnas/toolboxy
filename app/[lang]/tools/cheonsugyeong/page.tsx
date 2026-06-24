@@ -56,11 +56,12 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
     if (!synth) return
     const load = () => {
       // Match Korean only — `^ko` plus a separator/end so we don't catch e.g.
-      // Konkani (`kok-IN`), which `/ko/` did. De-dupe by name (engines often
-      // expose the same voice several times).
+      // Konkani (`kok-IN`), which `/ko/` did. Drop the device-default voice
+      // (already represented by the '기본' option) and de-dupe by name, so we
+      // don't list e.g. "한국어 (대한민국)" right next to "기본".
       const ko = synth.getVoices().filter((v) => /^ko([-_]|$)/i.test(v.lang))
       const seen = new Set<string>()
-      setVoices(ko.filter((v) => (seen.has(v.name) ? false : (seen.add(v.name), true))))
+      setVoices(ko.filter((v) => (v.default || seen.has(v.name)) ? false : (seen.add(v.name), true)))
     }
     load()
     synth.addEventListener?.('voiceschanged', load)
