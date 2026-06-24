@@ -61,11 +61,17 @@ interface Stats {
   }>
   topTools: Array<{ slug: string; count: number }>
   topViewed: Array<{ slug: string; views: number; category: string }>
+  topWeek: Array<{ slug: string; views: number; category: string }>
+  topToday: Array<{ slug: string; views: number; category: string }>
 }
+
+type Period = 'all' | 'week' | 'today'
+const PERIOD_LABEL: Record<Period, string> = { all: '전체 누적', week: '이번 주', today: '오늘' }
 
 export default function AdminPage({ params }: { params: { lang: string } }) {
   const [authed, setAuthed] = useState<'loading' | 'ok' | 'denied'>('loading')
   const [stats, setStats] = useState<Stats | null>(null)
+  const [period, setPeriod] = useState<Period>('all')
   const [statsLoading, setStatsLoading] = useState(false)
   const [statsError, setStatsError] = useState('')
 
@@ -160,37 +166,54 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
         </div>
       </div>
 
-      {stats && stats.topViewed && stats.topViewed.length > 0 && (
-        <div>
-          <h2 className="text-lg font-semibold text-gray-800 mb-1">인기 툴 Top 30 — 전체 누적 클릭 (게스트 포함)</h2>
-          <p className="text-xs text-gray-400 mb-4">toolStats 조회수 기준 · 전체 기간 누적</p>
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 w-12">#</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Tool</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Category</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600">Clicks</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {stats.topViewed.map((t, i) => (
-                  <tr key={t.slug} className="hover:bg-gray-50">
-                    <td className={'px-4 py-3 font-bold ' + (i < 3 ? 'text-amber-500' : 'text-gray-400')}>{i + 1}</td>
-                    <td className="px-4 py-3">
-                      <a href={'/' + params.lang + '/tools/' + t.slug} target="_blank" rel="noopener noreferrer"
-                        className="font-mono text-gray-700 hover:text-brand-600 hover:underline">{t.slug}</a>
-                    </td>
-                    <td className="px-4 py-3 text-gray-400 text-xs">{t.category}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-brand-600">{t.views.toLocaleString()}</td>
-                  </tr>
+      {stats && (() => {
+        const rows = period === 'all' ? stats.topViewed : period === 'week' ? (stats.topWeek ?? []) : (stats.topToday ?? [])
+        return (
+          <div>
+            <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
+              <h2 className="text-lg font-semibold text-gray-800">인기 툴 Top 30 — 클릭수 (게스트 포함)</h2>
+              <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+                {(['all', 'week', 'today'] as Period[]).map((p) => (
+                  <button key={p} onClick={() => setPeriod(p)}
+                    className={'px-3 py-1 text-xs font-semibold rounded-md transition-colors ' + (period === p ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>
+                    {PERIOD_LABEL[p]}
+                  </button>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </div>
+            <p className="text-xs text-gray-400 mb-4">
+              {period === 'all' ? 'toolStats 조회수 · 전체 기간 누적' : period === 'week' ? '최근 7일 합계 · 일자별 집계 추가 시점부터' : '오늘(UTC) · 일자별 집계 추가 시점부터'}
+            </p>
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600 w-12">#</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Tool</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600">Category</th>
+                    <th className="text-right px-4 py-3 font-medium text-gray-600">Clicks</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {rows.length === 0 ? (
+                    <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-400 text-sm">아직 데이터가 없습니다 {period !== 'all' && '(집계 시작 후 쌓입니다)'}</td></tr>
+                  ) : rows.map((t, i) => (
+                    <tr key={t.slug} className="hover:bg-gray-50">
+                      <td className={'px-4 py-3 font-bold ' + (i < 3 ? 'text-amber-500' : 'text-gray-400')}>{i + 1}</td>
+                      <td className="px-4 py-3">
+                        <a href={'/' + params.lang + '/tools/' + t.slug} target="_blank" rel="noopener noreferrer"
+                          className="font-mono text-gray-700 hover:text-brand-600 hover:underline">{t.slug}</a>
+                      </td>
+                      <td className="px-4 py-3 text-gray-400 text-xs">{t.category}</td>
+                      <td className="px-4 py-3 text-right font-semibold text-brand-600">{t.views.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {stats && stats.topTools.length > 0 && (
         <div>

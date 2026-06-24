@@ -24,6 +24,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Per-day click rollups (one doc per UTC date, slug -> count). Written only
+    // via the Admin SDK; read by the admin dashboard server-side.
+    match /toolStatsDaily/{date} {
+      allow read: if false;
+      allow write: if false;
+    }
+
     // Game leaderboards. Public read; scores written only via the Admin SDK
     // (the /api/leaderboard route validates and clamps them).
     match /leaderboards/{game}/scores/{scoreId} {

@@ -19,14 +19,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
     }
 
-    await adminDb.collection('toolStats').doc(slug).set(
-      {
-        slug,
-        views: FieldValue.increment(1),
-        updatedAt: FieldValue.serverTimestamp(),
-      },
+    // One batch: all-time per-tool total + a per-day doc (slug -> count) so the
+    // admin dashboard can rank by today / this week. Date is UTC to match reads.
+    const today = new Date().toISOString().slice(0, 10)
+    const batch = adminDb.batch()
+    batch.set(
+      adminDb.collection('toolStats').doc(slug),
+      { slug, views: FieldValue.increment(1), updatedAt: FieldValue.serverTimestamp() },
       { merge: true },
     )
+    batch.set(
+      adminDb.collection('toolStatsDaily').doc(today),
+      { [slug]: FieldValue.increment(1), updatedAt: FieldValue.serverTimestamp() },
+      { merge: true },
+    )
+    await batch.commit()
 
     return NextResponse.json({ ok: true })
   } catch (err) {
