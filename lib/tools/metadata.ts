@@ -32,19 +32,22 @@ function slugToName(slug: string): string {
     .join(' ')
 }
 
-async function getDescription(slug: string, lang: string): Promise<string | undefined> {
+async function loadMessages(lang: string) {
   try {
-    const messages = (await import(`../../locales/${lang}/common.json`)).default as {
+    return (await import(`../../locales/${lang}/common.json`)).default as {
       toolDescriptions?: Record<string, string | { description?: string }>
+      toolNames?: Record<string, string>
     }
-    // Entries are a mix of plain strings and { title, description } objects.
-    const v = messages.toolDescriptions?.[slug]
-    if (typeof v === 'string') return v
-    if (v && typeof v === 'object' && typeof v.description === 'string') return v.description
-    return undefined
   } catch {
     return undefined
   }
+}
+
+function descFrom(v: string | { description?: string } | undefined): string | undefined {
+  // Entries are a mix of plain strings and { title, description } objects.
+  if (typeof v === 'string') return v
+  if (v && typeof v === 'object' && typeof v.description === 'string') return v.description
+  return undefined
 }
 
 /**
@@ -54,8 +57,11 @@ async function getDescription(slug: string, lang: string): Promise<string | unde
  */
 export async function buildToolMetadata(slug: string, lang: string): Promise<Metadata> {
   const safeLang = (LANGS as readonly string[]).includes(lang) ? lang : 'en'
-  const name = slugToName(slug)
-  const description = (await getDescription(slug, safeLang)) ?? FALLBACK[safeLang](name)
+  const messages = await loadMessages(safeLang)
+  // Localized tool name (opt-in via the `toolNames` namespace) drives the most
+  // important on-page SEO signal — the <title>. Falls back to the English name.
+  const name = messages?.toolNames?.[slug] ?? slugToName(slug)
+  const description = descFrom(messages?.toolDescriptions?.[slug]) ?? FALLBACK[safeLang](name)
   // Use an absolute title so the brand appears exactly once (the root template
   // only reaches the [lang] layout, not deeper tool/category segments).
   const title = `${name} – ${SUFFIX[safeLang]} | ToolBoxy`

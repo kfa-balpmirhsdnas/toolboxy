@@ -2,15 +2,24 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useMessages } from 'next-intl'
 import { CATEGORY_META, isToolNew, type ToolMeta } from '@/lib/tools/registry'
 import ToolTracker from '@/components/tools/ToolTracker'
 import ToolFaq from '@/components/tools/ToolFaq'
 import UsageGate from '@/components/tools/UsageGate'
 
 const LOCALES = ['en', 'ja', 'ko']
+const ACRONYMS = new Set([
+  'pdf', 'qr', 'url', 'jwt', 'json', 'csv', 'html', 'css', 'api', 'uuid',
+  'ascii', 'rgb', 'hex', 'svg', 'xml', 'yaml', 'sql', 'md5', 'sha', 'utf',
+  'bmi', 'gif', 'png', 'jpg', 'ip', 'dns', 'seo', 'id', 'utm', 'sms', 'heic', 'cps',
+])
 
 function slugToName(slug: string): string {
-  return slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  return slug
+    .split('-')
+    .map((w) => (ACRONYMS.has(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)))
+    .join(' ')
 }
 
 interface ToolLayoutProps {
@@ -27,7 +36,10 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
   const lang = langProp && langProp !== 'undefined' ? langProp : (LOCALES.includes(pathLang) ? pathLang : 'en')
 
   const catMeta = CATEGORY_META[tool.category]
-  const name = slugToName(tool.slug)
+  // Localized name (opt-in via the `toolNames` namespace), else the English name.
+  const messages = useMessages() as { toolNames?: Record<string, string>; categories?: Record<string, string> }
+  const name = messages?.toolNames?.[tool.slug] ?? slugToName(tool.slug)
+  const catLabel = messages?.categories?.[tool.category] ?? catMeta.label
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -52,7 +64,7 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
         <span>/</span>
         <span className="text-gray-400">{catMeta.icon}</span>
         <Link href={`/${lang}/tools/${tool.category}`} className="hover:text-brand-600 transition-colors capitalize">
-          {catMeta.label}
+          {catLabel}
         </Link>
         <span>/</span>
         <span className="text-gray-900 font-medium">{name}</span>
