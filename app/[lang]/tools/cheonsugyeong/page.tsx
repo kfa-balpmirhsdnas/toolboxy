@@ -45,6 +45,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
 
   const genRef = useRef(0)
   const idxRef = useRef(0)
+  const playingRef = useRef(playing); playingRef.current = playing
   const rateRef = useRef(rate); rateRef.current = rate
   const voiceRef = useRef<SpeechSynthesisVoice | null>(null)
   const voiceOnRef = useRef(false); voiceOnRef.current = voiceURI !== 'off'
@@ -128,6 +129,21 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   }, [])
 
   useEffect(() => stopAll, [stopAll])
+
+  // Manual scroll (wheel / touch drag) pauses recitation so the auto-scroll stops
+  // fighting the user. These events fire only on real input — programmatic
+  // scrollIntoView does not trigger them, so there are no false pauses.
+  useEffect(() => {
+    const onUserScroll = () => {
+      if (playingRef.current) { stopAll(); setPlaying(false) }
+    }
+    window.addEventListener('wheel', onUserScroll, { passive: true })
+    window.addEventListener('touchmove', onUserScroll, { passive: true })
+    return () => {
+      window.removeEventListener('wheel', onUserScroll)
+      window.removeEventListener('touchmove', onUserScroll)
+    }
+  }, [stopAll])
 
   const toggle = useCallback(() => {
     if (playing) { stopAll(); setPlaying(false); return }
