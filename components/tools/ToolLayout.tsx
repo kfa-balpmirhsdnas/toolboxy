@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useMessages } from 'next-intl'
-import { CATEGORY_META, isToolNew, type ToolMeta } from '@/lib/tools/registry'
+import { CATEGORY_META, isToolNew, isAppTool, type ToolMeta } from '@/lib/tools/registry'
 import ToolTracker from '@/components/tools/ToolTracker'
 import ToolFaq from '@/components/tools/ToolFaq'
 import ToolHowTo from '@/components/tools/ToolHowTo'
@@ -82,6 +82,9 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
           )}
           {isToolNew(tool) && (
             <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">NEW</span>
+          )}
+          {isAppTool(tool) && (
+            <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full">📲 APP</span>
           )}
         </div>
         <p className="text-gray-500 text-sm">

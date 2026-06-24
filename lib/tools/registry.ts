@@ -21,6 +21,20 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
   return ms >= 0 && ms <= days * 86_400_000
 }
 
+/**
+ * Tools we've built a dedicated installable-app experience for (custom home-screen
+ * icon + offline support). These get an "APP" badge by the title. Keep in sync with
+ * DICT_SLUGS + SINGLE_ICON in app/api/manifest/route.ts.
+ */
+export const APP_TOOLS = new Set([
+  'korean-to-japanese', 'korean-to-english', 'japanese-to-korean', 'english-to-korean',
+  'japanese-to-english', 'english-to-japanese', 'korean-antonyms', 'japanese-antonyms', 'english-antonyms',
+  'elementary-japanese-words', 'elementary-english-words',
+])
+export function isAppTool(tool: ToolMeta): boolean {
+  return APP_TOOLS.has(tool.slug)
+}
+
 export const TOOLS: ToolMeta[] = [
   {slug:'elementary-english-words',category:'language',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['elementary english words','english vocabulary trainer','초등 영어 단어','교육부 영단어','english flashcards'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'elementary-japanese-words',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['elementary japanese words','japanese flashcards','초등 일본어 단어','日本語 単語 暗記','japanese vocabulary trainer'],maxFileSizeMB:{free:0,pro:0} },
