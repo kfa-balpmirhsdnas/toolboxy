@@ -119,8 +119,8 @@ function genPencil(d: Float32Array, sr: number) {
     const amp = 0.5 + Math.random() * 0.5
     for (let j = 0; j < strokeLen && pos < d.length; j++, pos++) {
       const w = Math.random() * 2 - 1
-      lp += 0.18 * (w - lp) // mild lowpass → soft scratch grain
-      d[pos] = lp * Math.sin(Math.PI * (j / strokeLen)) * amp * 0.19 // quiet, subtle scratch
+      lp += 0.32 * (w - lp) // higher cutoff → thinner/finer scratch
+      d[pos] = lp * Math.sin(Math.PI * (j / strokeLen)) * amp * 0.095 // very quiet, subtle scratch
     }
     for (let j = 0; j < gapLen && pos < d.length; j++, pos++) { lp += 0.18 * (0 - lp); d[pos] = 0 }
   }
