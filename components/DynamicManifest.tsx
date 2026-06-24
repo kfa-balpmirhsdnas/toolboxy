@@ -3,6 +3,14 @@
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
+// Short icon label per dictionary tool, so each installed app has a
+// distinguishable home-screen icon (한=한국어, 일=일본어, 영=영어, ↔=반대말).
+const ICON_LABEL: Record<string, string> = {
+  'korean-to-japanese': '한일', 'korean-to-english': '한영', 'japanese-to-korean': '일한',
+  'english-to-korean': '영한', 'japanese-to-english': '일영', 'english-to-japanese': '영일',
+  'korean-antonyms': '한↔', 'japanese-antonyms': '일↔', 'english-antonyms': '영↔',
+}
+
 /**
  * Points the <link rel="manifest"> at /api/manifest with the current page's path
  * (start_url + id) and the tool's display name. Because id is the page path,
@@ -25,6 +33,8 @@ export default function DynamicManifest() {
       const label = (document.title || '').split(/\s+[–—|]\s+/)[0].trim()
       const params = new URLSearchParams({ start: pathname || '/en' })
       if (label && label.toLowerCase() !== 'toolboxy') params.set('name', label)
+      const slug = (pathname || '').split('/').pop() || ''
+      if (ICON_LABEL[slug]) params.set('icon', ICON_LABEL[slug])
       link.href = `/api/manifest?${params.toString()}`
     }, 60)
     return () => clearTimeout(id)
