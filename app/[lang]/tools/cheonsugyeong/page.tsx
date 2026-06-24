@@ -9,7 +9,8 @@ import { trackToolUsed } from '@/lib/gtag'
 
 const tool = getToolBySlug('cheonsugyeong')!
 const LINES = CHEONSUGYEONG
-const RATES = [0.7, 0.85, 1, 1.15, 1.3]
+const RATES = [0.5, 0.6, 0.7, 0.85, 1, 1.15, 1.3, 1.5]
+const FONT_SCALES = [0.8, 1, 1.5, 2, 3]
 
 interface Section { no: number; ko: string; hanja: string; type: string; lines: SutraLine[] }
 const SECTIONS: Section[] = (() => {
@@ -22,6 +23,14 @@ const SECTIONS: Section[] = (() => {
   return s
 })()
 
+// Best-effort gender hint from known Korean TTS voice names (device-dependent).
+function genderHint(v: SpeechSynthesisVoice): string {
+  const n = (v.name + ' ' + v.voiceURI).toLowerCase()
+  if (/injoon|inhyeok|male|남/.test(n)) return '👨 '
+  if (/yuna|heami|sunhi|suni|nari|female|여/.test(n)) return '👩 '
+  return ''
+}
+
 export default function CheonsugyeongPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const [showHanja, setShowHanja] = useState(false)
@@ -30,11 +39,31 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   const [playing, setPlaying] = useState(false)
   const [curOrder, setCurOrder] = useState<number | null>(null)
   const [rate, setRate] = useState(1)
+  const [fontScale, setFontScale] = useState(1)
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
+  const [voiceURI, setVoiceURI] = useState('')
 
   const genRef = useRef(0)
   const idxRef = useRef(0)
   const rateRef = useRef(rate); rateRef.current = rate
+  const voiceRef = useRef<SpeechSynthesisVoice | null>(null)
   const watchdog = useRef<number | null>(null)
+
+  // Load available Korean voices (populates asynchronously on some browsers).
+  useEffect(() => {
+    const synth = window.speechSynthesis
+    if (!synth) return
+    const load = () => {
+      const ko = synth.getVoices().filter((v) => /ko/i.test(v.lang))
+      setVoices(ko)
+    }
+    load()
+    synth.addEventListener?.('voiceschanged', load)
+    return () => synth.removeEventListener?.('voiceschanged', load)
+  }, [])
+  useEffect(() => {
+    voiceRef.current = voices.find((v) => v.voiceURI === voiceURI) ?? null
+  }, [voiceURI, voices])
 
   const scrollToOrder = (order: number) => {
     document.querySelector(`[data-order="${order}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' })
@@ -67,6 +96,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
         if (!alive()) return
         const u = new SpeechSynthesisUtterance(line.reading)
         u.lang = 'ko-KR'; u.rate = rateRef.current
+        if (voiceRef.current) u.voice = voiceRef.current
         let done = false
         const proceed = () => {
           if (done || !alive()) return
@@ -88,12 +118,13 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
 
   useEffect(() => stopAll, [stopAll])
 
-  function toggle() {
+  const toggle = useCallback(() => {
     if (playing) { stopAll(); setPlaying(false); return }
     trackToolUsed(tool.slug)
     setPlaying(true)
     speakFrom(idxRef.current)
-  }
+  }, [playing, stopAll, speakFrom])
+
   function reset() {
     stopAll(); setPlaying(false); idxRef.current = 0; setCurOrder(null)
     document.querySelector('[data-order]')?.scrollIntoView({ block: 'start', behavior: 'smooth' })
@@ -103,19 +134,36 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-5">
         {/* Controls */}
-        <div className="sticky top-0 z-10 -mx-6 px-6 py-3 bg-white/95 backdrop-blur border-b border-gray-100 space-y-3">
+        <div className="space-y-3 pb-3 border-b border-gray-100">
           <div className="flex items-center gap-2">
             <button onClick={toggle}
               className={`flex-1 py-2.5 text-sm font-semibold rounded-xl text-white transition-colors ${playing ? 'bg-red-600 hover:bg-red-700' : 'bg-brand-600 hover:bg-brand-700'}`}>
               {playing ? `⏸ ${t('cs_pause')}` : `▶ ${t('cs_play')}`}
             </button>
             <button onClick={reset} className="px-3 py-2.5 text-sm rounded-xl border border-gray-200 hover:bg-gray-50">↺ {t('cs_reset')}</button>
-            <label className="flex items-center gap-1.5 text-sm text-gray-500">
+          </div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
+            <label className="flex items-center gap-1.5 whitespace-nowrap">
               {t('cs_rate')}
               <select value={rate} onChange={(e) => setRate(Number(e.target.value))} className="rounded-lg border border-gray-200 px-2 py-1.5">
                 {RATES.map((r) => <option key={r} value={r}>{r}×</option>)}
               </select>
             </label>
+            <label className="flex items-center gap-1.5 whitespace-nowrap">
+              {t('cs_size')}
+              <select value={fontScale} onChange={(e) => setFontScale(Number(e.target.value))} className="rounded-lg border border-gray-200 px-2 py-1.5">
+                {FONT_SCALES.map((f) => <option key={f} value={f}>{f}×</option>)}
+              </select>
+            </label>
+            {voices.length > 0 && (
+              <label className="flex items-center gap-1.5">
+                {t('cs_voice')}
+                <select value={voiceURI} onChange={(e) => setVoiceURI(e.target.value)} className="rounded-lg border border-gray-200 px-2 py-1.5 max-w-[11rem]">
+                  <option value="">{t('cs_voice_default')}</option>
+                  {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{genderHint(v)}{v.name}</option>)}
+                </select>
+              </label>
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
             <label className="flex items-center gap-1.5 cursor-pointer">
@@ -130,8 +178,8 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
           </div>
         </div>
 
-        {/* Sutra body */}
-        <div className="space-y-7">
+        {/* Sutra body (font scales with the selected multiplier) */}
+        <div className="space-y-7" style={{ fontSize: `${fontScale}rem` }}>
           {SECTIONS.map((sec) => (
             <section key={sec.no}>
               <h2 className="text-base font-bold text-brand-700 mb-2">
@@ -142,9 +190,9 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
                 {sec.lines.map((l) => (
                   <div key={l.order} data-order={l.order}
                     className={`scroll-mt-24 rounded-lg px-3 py-2 transition-colors ${curOrder === l.order ? 'bg-brand-50 ring-1 ring-brand-200' : ''}`}>
-                    {showHanja && l.hanja && <p className="text-gray-400 text-sm leading-relaxed">{l.hanja}</p>}
-                    {showReading && <p className="text-gray-900 font-medium leading-relaxed">{l.reading}{l.repeat > 1 && <span className="ml-1.5 text-xs text-brand-400 align-middle">×{l.repeat}</span>}</p>}
-                    {showTrans && l.translation && <p className="text-gray-500 text-sm leading-relaxed">{l.translation}</p>}
+                    {showHanja && l.hanja && <p className="text-[0.9em] text-gray-400 leading-relaxed">{l.hanja}</p>}
+                    {showReading && <p className="text-[1.05em] text-gray-900 font-medium leading-relaxed">{l.reading}{l.repeat > 1 && <span className="ml-1.5 text-[0.7em] text-brand-400 align-middle">×{l.repeat}</span>}</p>}
+                    {showTrans && l.translation && <p className="text-[0.9em] text-gray-500 leading-relaxed">{l.translation}</p>}
                   </div>
                 ))}
               </div>
@@ -154,6 +202,12 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
 
         <p className="text-xs text-gray-400 leading-relaxed border-t border-gray-100 pt-4">{t('cs_source')}</p>
       </div>
+
+      {/* Floating play/pause — always reachable, however far you've scrolled */}
+      <button onClick={toggle} aria-label={playing ? t('cs_pause') : t('cs_play')}
+        className={`fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full shadow-lg text-white text-2xl flex items-center justify-center transition-colors ${playing ? 'bg-red-600 hover:bg-red-700' : 'bg-brand-600 hover:bg-brand-700'}`}>
+        {playing ? '⏸' : '▶'}
+      </button>
     </ToolLayout>
   )
 }
