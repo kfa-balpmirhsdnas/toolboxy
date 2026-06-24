@@ -22,15 +22,23 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 /**
- * Tools we've built a dedicated installable-app experience for (custom home-screen
- * icon + offline support). These get an "APP" badge by the title. Keep in sync with
- * DICT_SLUGS + SINGLE_ICON in app/api/manifest/route.ts.
+ * Single source of truth for "installable app" tools — those we ship with a
+ * dedicated home-screen icon + offline support. The PWA manifest route reads
+ * these to serve the right icon, and the tool title reads them (isAppTool) to
+ * show the "App" badge. Add a tool here ONCE and it gets both — the app-install
+ * icon and the badge can never drift apart.
+ *
+ * DICT_APP_TOOLS get a localized label icon (/icons/<slug>-<locale>.png);
+ * SINGLE_APP_TOOLS get one locale-independent icon (/icons/<slug>.png).
  */
-export const APP_TOOLS = new Set([
+export const DICT_APP_TOOLS = new Set([
   'korean-to-japanese', 'korean-to-english', 'japanese-to-korean', 'english-to-korean',
   'japanese-to-english', 'english-to-japanese', 'korean-antonyms', 'japanese-antonyms', 'english-antonyms',
-  'elementary-japanese-words', 'elementary-english-words',
 ])
+export const SINGLE_APP_TOOLS = new Set([
+  'elementary-japanese-words', 'elementary-english-words', 'white-noise-machine',
+])
+export const APP_TOOLS = new Set([...DICT_APP_TOOLS, ...SINGLE_APP_TOOLS])
 export function isAppTool(tool: ToolMeta): boolean {
   return APP_TOOLS.has(tool.slug)
 }

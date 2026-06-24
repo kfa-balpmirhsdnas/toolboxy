@@ -3,10 +3,17 @@
 import { useTranslations, useMessages } from 'next-intl'
 import { getToolBySlug } from '@/lib/tools/registry'
 
+// Generators/recorders sit in file categories (audio/video/image) but never take
+// an upload, so the "are my files sent to a server?" FAQ doesn't apply to them.
+const NO_UPLOAD = new Set([
+  'white-noise-machine', 'tone-generator', 'voice-recorder', 'screen-recorder', 'webcam-test',
+])
+
 // Upload-type tools get an extra privacy FAQ ("are my files sent to a server?").
 function isUploadTool(slug: string): boolean {
   const t = getToolBySlug(slug)
   if (!t) return false
+  if (NO_UPLOAD.has(slug)) return false
   return ['image', 'pdf', 'video', 'audio'].includes(t.category) || (t.maxFileSizeMB?.free ?? 0) > 0
 }
 
