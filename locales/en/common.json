@@ -1056,8 +1056,8 @@
           "a": "Yes — completely free, no account needed."
         },
         {
-          "q": "Is anything uploaded?",
-          "a": "No — recording happens in your browser and stays on your device."
+          "q": "Is the video uploaded or shared anywhere?",
+          "a": "No — recording happens entirely in your browser and is saved only to your device. Nothing is sent to a server or shared externally."
         },
         {
           "q": "What format do I get?",
