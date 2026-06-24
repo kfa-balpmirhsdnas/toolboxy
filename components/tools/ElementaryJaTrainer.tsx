@@ -4,10 +4,12 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { ELEMENTARY_JA, type JaWord } from '@/lib/elementary-ja'
+import { ELEMENTARY_WORDS, type Word } from '@/lib/elementary-words'
 import { trackToolUsed } from '@/lib/gtag'
 
 const tool = getToolBySlug('elementary-japanese-words')!
+// Japanese trainer only uses words that have a Japanese form (skip pure grammar words).
+const WORDS = ELEMENTARY_WORDS.filter((w) => w.ja)
 const INTERVALS = [1, 2, 3, 5, 7, 10, 15]
 const GAPS = [0, 1, 2, 3, 4, 5]
 const REPEATS = [1, 3, 5]
@@ -21,22 +23,26 @@ function shuffle(n: number): number[] {
   return a
 }
 
+const firstMeaning = (ko: string) => ko.split(/[,，/]/)[0].replace(/[~()]/g, '').trim() || ko
+
 export default function ElementaryJaTrainer({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
-  const [order] = useState<number[]>(() => shuffle(ELEMENTARY_JA.length))
+  const [order] = useState<number[]>(() => shuffle(WORDS.length))
   const [idx, setIdx] = useState(0)
   const [running, setRunning] = useState(false)
   const [started, setStarted] = useState(false)
-  const [intervalSec, setIntervalSec] = useState(3) // gap BETWEEN words (after KO -> next JA)
-  const [gapSec, setGapSec] = useState(3) // gap between JA and KO of the same word
+  const [intervalSec, setIntervalSec] = useState(3)
+  const [gapSec, setGapSec] = useState(3)
   const [repeat, setRepeat] = useState(1)
   const [jaVoice, setJaVoice] = useState(true)
   const [koVoice, setKoVoice] = useState(true)
+  const [enVoice, setEnVoice] = useState(false)
   const [elapsed, setElapsed] = useState(0)
 
   const runningRef = useRef(running); runningRef.current = running
   const jaRef = useRef(jaVoice); jaRef.current = jaVoice
   const koRef = useRef(koVoice); koRef.current = koVoice
+  const enRef = useRef(enVoice); enRef.current = enVoice
   const intervalRef = useRef(intervalSec); intervalRef.current = intervalSec
   const gapRef = useRef(gapSec); gapRef.current = gapSec
   const repeatRef = useRef(repeat); repeatRef.current = repeat
@@ -47,7 +53,7 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
   const playRef = useRef<(auto: boolean) => void>(() => {})
   const cardRef = useRef<HTMLDivElement>(null)
 
-  const word: JaWord = ELEMENTARY_JA[order[idx]]
+  const word: Word = WORDS[order[idx]]
 
   const stopAll = useCallback(() => {
     genRef.current++
@@ -56,10 +62,6 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
     if (typeof window !== 'undefined') window.speechSynthesis?.cancel()
   }, [])
 
-  // Audio-driven playback: JA --(voice gap)-- KO ... (repeat), then --(interval)--
-  // next word. Driven by each utterance's onend; a generation token invalidates
-  // stale callbacks (skip/pause), and a watchdog advances if onend never fires
-  // (e.g. the device has no TTS voice for that language).
   const play = useCallback((auto: boolean) => {
     if (typeof window === 'undefined') return
     const synth = window.speechSynthesis
@@ -69,11 +71,11 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
     synth?.cancel()
     const alive = () => genRef.current === myGen && (!auto || runningRef.current)
 
-    const w = ELEMENTARY_JA[order[idxRef.current]]
-    const koText = w.ko.replace(/\(.*?\)/g, '').replace(/\/.*/, '').trim()
+    const w = WORDS[order[idxRef.current]]
     const one: { text: string; lang: string; rate: number }[] = []
     if (jaRef.current) one.push({ text: w.ja, lang: 'ja-JP', rate: 0.9 })
-    if (koRef.current) one.push({ text: koText, lang: 'ko-KR', rate: 1 })
+    if (koRef.current) one.push({ text: firstMeaning(w.ko), lang: 'ko-KR', rate: 1 })
+    if (enRef.current) one.push({ text: w.en, lang: 'en-US', rate: 0.95 })
     const parts: typeof one = []
     for (let r = 0; r < Math.max(1, repeatRef.current); r++) parts.push(...one)
 
@@ -108,14 +110,12 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
   }, [order])
   playRef.current = play
 
-  // Start / stop the loop when `running` flips.
   useEffect(() => {
     if (!running) return
     play(true)
     return () => stopAll()
   }, [running, play, stopAll])
 
-  // Study-time clock.
   useEffect(() => {
     if (!running) return
     const id = window.setInterval(() => setElapsed((e) => e + 1), 1000)
@@ -127,7 +127,6 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
   function toggle() {
     if (!running) {
       trackToolUsed(tool.slug); setStarted(true); setRunning(true)
-      // Scroll so the card is at the top (above the keyboard / below the header).
       setTimeout(() => cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
     } else { setRunning(false) }
   }
@@ -143,35 +142,32 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-5">
-        {/* Flashcard — fixed height so it never resizes between words */}
         <div ref={cardRef} className="scroll-mt-20 rounded-2xl border-2 border-brand-100 bg-gradient-to-b from-brand-50 to-white px-6 h-72 flex flex-col items-center justify-center text-center overflow-hidden">
           {started ? (
             <>
-              <p className="h-7 text-lg text-gray-400 mb-1">{word.yomi !== word.ja ? word.yomi : ''}</p>
+              <p className="h-6 text-base text-gray-400">{word.yomi !== word.ja ? word.yomi : ''}</p>
               <p className="text-5xl font-bold text-gray-900 leading-tight">{word.ja}</p>
-              <p className="text-2xl text-brand-700 mt-4">{word.ko}</p>
+              <p className="text-2xl text-brand-700 mt-3">{word.ko}</p>
+              <p className="text-sm text-gray-400 mt-1">{word.en}</p>
               <button onClick={() => play(false)} aria-label="Listen"
-                className="mt-5 text-sm bg-white border border-gray-200 px-4 py-1.5 rounded-lg hover:bg-gray-50">🔊</button>
+                className="mt-4 text-sm bg-white border border-gray-200 px-4 py-1.5 rounded-lg hover:bg-gray-50">🔊</button>
             </>
           ) : (
             <p className="text-gray-400">{t('ej_hint')}</p>
           )}
         </div>
 
-        {/* Progress + study time */}
         <div className="flex items-center justify-between text-sm text-gray-500">
-          <span>{idx + 1} / {ELEMENTARY_JA.length}</span>
+          <span>{idx + 1} / {WORDS.length}</span>
           <span className="font-mono">⏱ {t('ej_time')} {mmss}</span>
         </div>
 
-        {/* Playback controls — fixed button width so it doesn't jump on play/pause */}
         <div className="flex items-center justify-center gap-3">
           <button onClick={() => go(-1)} className="w-11 h-11 rounded-full border border-gray-200 text-xl hover:bg-gray-50">‹</button>
           <button onClick={toggle} className="btn-primary w-40 py-3 text-base text-center">{running ? `⏸ ${t('ej_pause')}` : `▶ ${t('ej_start')}`}</button>
           <button onClick={() => go(1)} className="w-11 h-11 rounded-full border border-gray-200 text-xl hover:bg-gray-50">›</button>
         </div>
 
-        {/* Settings */}
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-sm pt-3 border-t border-gray-100">
           <label className="flex items-center gap-1.5">
             {t('ej_interval')}
@@ -198,6 +194,10 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
           <label className="flex items-center gap-1.5 cursor-pointer">
             <input type="checkbox" checked={koVoice} onChange={(e) => setKoVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
             🇰🇷 {t('ej_ko_voice')}
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" checked={enVoice} onChange={(e) => setEnVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
+            🇺🇸 {t('ej_en_voice')}
           </label>
         </div>
 

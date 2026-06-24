@@ -4,10 +4,11 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
-import { ELEMENTARY_EN, type EnWord } from '@/lib/elementary-en'
+import { ELEMENTARY_WORDS, type Word } from '@/lib/elementary-words'
 import { trackToolUsed } from '@/lib/gtag'
 
 const tool = getToolBySlug('elementary-english-words')!
+const WORDS = ELEMENTARY_WORDS // English trainer uses every word (incl. grammar words)
 const INTERVALS = [1, 2, 3, 5, 7, 10, 15]
 const GAPS = [0, 1, 2, 3, 4, 5]
 const REPEATS = [1, 3, 5]
@@ -26,7 +27,7 @@ const firstMeaning = (ko: string) => ko.split(/[,，/]/)[0].replace(/[~()]/g, ''
 
 export default function ElementaryEnTrainer({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
-  const [order] = useState<number[]>(() => shuffle(ELEMENTARY_EN.length))
+  const [order] = useState<number[]>(() => shuffle(WORDS.length))
   const [idx, setIdx] = useState(0)
   const [running, setRunning] = useState(false)
   const [started, setStarted] = useState(false)
@@ -35,11 +36,13 @@ export default function ElementaryEnTrainer({ params }: { params: { lang: string
   const [repeat, setRepeat] = useState(1)
   const [enVoice, setEnVoice] = useState(true)
   const [koVoice, setKoVoice] = useState(true)
+  const [jaVoice, setJaVoice] = useState(false)
   const [elapsed, setElapsed] = useState(0)
 
   const runningRef = useRef(running); runningRef.current = running
   const enRef = useRef(enVoice); enRef.current = enVoice
   const koRef = useRef(koVoice); koRef.current = koVoice
+  const jaRef = useRef(jaVoice); jaRef.current = jaVoice
   const intervalRef = useRef(intervalSec); intervalRef.current = intervalSec
   const gapRef = useRef(gapSec); gapRef.current = gapSec
   const repeatRef = useRef(repeat); repeatRef.current = repeat
@@ -50,7 +53,7 @@ export default function ElementaryEnTrainer({ params }: { params: { lang: string
   const playRef = useRef<(auto: boolean) => void>(() => {})
   const cardRef = useRef<HTMLDivElement>(null)
 
-  const word: EnWord = ELEMENTARY_EN[order[idx]]
+  const word: Word = WORDS[order[idx]]
 
   const stopAll = useCallback(() => {
     genRef.current++
@@ -69,10 +72,11 @@ export default function ElementaryEnTrainer({ params }: { params: { lang: string
     synth?.cancel()
     const alive = () => genRef.current === myGen && (!auto || runningRef.current)
 
-    const w = ELEMENTARY_EN[order[idxRef.current]]
+    const w = WORDS[order[idxRef.current]]
     const one: { text: string; lang: string; rate: number }[] = []
     if (enRef.current) one.push({ text: w.en, lang: 'en-US', rate: 0.95 })
     if (koRef.current) one.push({ text: firstMeaning(w.ko), lang: 'ko-KR', rate: 1 })
+    if (jaRef.current && w.ja) one.push({ text: w.ja, lang: 'ja-JP', rate: 0.9 })
     const parts: typeof one = []
     for (let r = 0; r < Math.max(1, repeatRef.current); r++) parts.push(...one)
 
@@ -143,7 +147,8 @@ export default function ElementaryEnTrainer({ params }: { params: { lang: string
           {started ? (
             <>
               <p className="text-5xl font-bold text-gray-900 leading-tight break-words">{word.en}</p>
-              <p className="text-2xl text-brand-700 mt-4">{word.ko}</p>
+              <p className="text-2xl text-brand-700 mt-3">{word.ko}</p>
+              {word.ja && <p className="text-base text-gray-400 mt-1">{word.ja}{word.yomi !== word.ja ? ` (${word.yomi})` : ''}</p>}
               <button onClick={() => play(false)} aria-label="Listen"
                 className="mt-5 text-sm bg-white border border-gray-200 px-4 py-1.5 rounded-lg hover:bg-gray-50">🔊</button>
             </>
@@ -153,7 +158,7 @@ export default function ElementaryEnTrainer({ params }: { params: { lang: string
         </div>
 
         <div className="flex items-center justify-between text-sm text-gray-500">
-          <span>{idx + 1} / {ELEMENTARY_EN.length}</span>
+          <span>{idx + 1} / {WORDS.length}</span>
           <span className="font-mono">⏱ {t('ej_time')} {mmss}</span>
         </div>
 
@@ -189,6 +194,10 @@ export default function ElementaryEnTrainer({ params }: { params: { lang: string
           <label className="flex items-center gap-1.5 cursor-pointer">
             <input type="checkbox" checked={koVoice} onChange={(e) => setKoVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
             🇰🇷 {t('ej_ko_voice')}
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" checked={jaVoice} onChange={(e) => setJaVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
+            🇯🇵 {t('ej_ja_voice')}
           </label>
         </div>
 
