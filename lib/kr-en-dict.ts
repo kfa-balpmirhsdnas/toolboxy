@@ -542,4 +542,6 @@ export const KR_EN: Record<string, string> = {
   '휘발유': 'gasoline', '휴가': 'vacation', '휴식': 'rest', '휴학': 'leave of absence', '흐르다': 'flow', '흔들리다': 'shake', '힘': 'strength',
   '더': 'more', '더럽히다': 'dirty', '부탁해': 'please', '싫어해': 'dislike', '졸졸': 'trickling', '좋아해': 'like', '축하해': 'congrats',
   '질문': 'question', '대답': 'answer',
+  // 반대말 쌍 보강용 추가
+  '행복하다': 'happy', '불행하다': 'unhappy', '맞다': 'correct', '늦다': 'late', '이르다': 'early', '진하다': 'thick', '연하다': 'light', '맑다': 'clear', '흐리다': 'cloudy', '싱겁다': 'bland', '부정확하다': 'inaccurate', '내리다': 'go down', '전진하다': 'advance', '후퇴하다': 'retreat', '흩어지다': 'scatter', '수요': 'demand', '공급': 'supply', '실제': 'reality', '어둠': 'darkness', '승리': 'victory', '패배': 'defeat', '거짓': 'falsehood', '어린이': 'child', '노인': 'elderly', '공개': 'disclosure', '퇴장': 'exit',
 }
