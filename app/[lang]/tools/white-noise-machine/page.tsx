@@ -18,7 +18,7 @@ const SOUNDS: { id: SoundId; emoji: string; seconds: number }[] = [
   { id: 'fire', emoji: '🔥', seconds: 5 },
   { id: 'ocean', emoji: '🌊', seconds: 12 }, // one full swell → seamless loop (slower wave)
   { id: 'fan', emoji: '🌀', seconds: 4 },
-  { id: 'pencil', emoji: '✏️', seconds: 4 },
+  { id: 'pencil', emoji: '✏️', seconds: 18 }, // long buffer → many unique strokes, less obvious looping
 ]
 
 const SLEEP = [0, 5, 10, 15, 30, 45, 60] // sleep-timer minutes (0 = off)
@@ -73,7 +73,7 @@ function genFire(d: Float32Array, sr: number) {
   for (let i = 0; i < d.length; i++) {
     const w = Math.random() * 2 - 1
     last = (last + 0.02 * w) / 1.02
-    d[i] = last * 1.8 // low rumble
+    d[i] = last * 0.9 // low background rumble (halved — crackle stays on top)
   }
   // random crackle pops (~30% slower crackle rate)
   const pops = Math.floor((d.length / sr) * 10)
@@ -87,13 +87,16 @@ function genFire(d: Float32Array, sr: number) {
   }
 }
 function genOcean(d: Float32Array) {
-  // one wave per buffer; sin² envelope → 0 at both ends = seamless loop
+  // One swell (first 60% of the buffer) then a long calm gap (remaining 40%),
+  // looping. env = 0 at i=0, at waveEnd, and at n → seamless. Concentrating the
+  // wave leaves a longer quiet stretch between waves.
   let last = 0
   const n = d.length
+  const waveEnd = Math.floor(n * 0.6)
   for (let i = 0; i < n; i++) {
     const w = Math.random() * 2 - 1
     last = (last + 0.025 * w) / 1.025
-    const env = Math.pow(Math.sin(Math.PI * (i / n)), 2)
+    const env = i < waveEnd ? Math.pow(Math.sin(Math.PI * (i / waveEnd)), 2) : 0
     d[i] = last * 3.4 * env
   }
 }
