@@ -5,6 +5,14 @@ import { useRouter } from 'next/navigation'
 import { auth } from '@/lib/firebase/client'
 import { onAuthStateChanged, type User } from 'firebase/auth'
 import { PLANS, type PlanId } from '@/lib/stripe/plans'
+import { GAME_META } from '@/lib/games'
+
+interface GameRecord {
+  game: string
+  best: number | null
+  attempts: number
+  lastPlayed: number
+}
 
 interface SubscriptionData {
   plan: PlanId
@@ -22,6 +30,7 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [sub, setSub] = useState<SubscriptionData | null>(null)
+  const [records, setRecords] = useState<GameRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [portalLoading, setPortalLoading] = useState(false)
 
@@ -33,19 +42,26 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
       }
       setUser(u)
 
+      const token = await u.getIdToken()
+
       // Fetch subscription
       try {
-        const token = await u.getIdToken()
         const res = await fetch('/api/stripe/subscription', {
           headers: { Authorization: `Bearer ${token}` },
         })
-        if (res.ok) {
-          const data = await res.json()
-          setSub(data)
-        }
+        if (res.ok) setSub(await res.json())
       } catch {
         // Stripe not configured yet — default to free plan
       }
+
+      // Fetch the user's own game records
+      try {
+        const res = await fetch('/api/leaderboard/mine', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (res.ok) setRecords((await res.json()).games ?? [])
+      } catch { /* no records yet */ }
+
       setLoading(false)
     })
     return unsub
@@ -141,6 +157,36 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
             >
               {portalLoading ? 'Opening…' : 'Manage Subscription'}
             </button>
+          )}
+        </div>
+
+        {/* My game records */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          <h2 className="font-semibold text-gray-900 text-lg mb-4">🎮 My Game Records</h2>
+          {records.length === 0 ? (
+            <p className="text-sm text-gray-500">
+              No records yet. Play a game like{' '}
+              <Link href={`/${params.lang}/tools/reaction-time-test`} className="text-brand-600 hover:underline">Reaction Time</Link>{' '}or{' '}
+              <Link href={`/${params.lang}/tools/click-speed-test`} className="text-brand-600 hover:underline">Click Speed</Link>{' '}
+              and submit your score to see it here.
+            </p>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {records.map((r) => {
+                const meta = GAME_META[r.game]
+                return (
+                  <div key={r.game} className="flex items-center gap-3 py-3">
+                    <Link href={`/${params.lang}/tools/${r.game}`} className="flex-1 text-sm font-medium text-gray-800 hover:text-brand-600">
+                      {meta?.label ?? r.game}
+                    </Link>
+                    <span className="text-xs text-gray-400">{r.attempts} {r.attempts === 1 ? 'play' : 'plays'}</span>
+                    <span className="text-sm font-bold text-brand-700 w-24 text-right">
+                      {r.best != null ? `${r.best}${meta?.unit ?? ''}` : '—'}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
           )}
         </div>
 

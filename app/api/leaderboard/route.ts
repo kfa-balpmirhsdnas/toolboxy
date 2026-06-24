@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { adminDb } from '@/lib/firebase-admin'
+import { adminDb, adminAuth } from '@/lib/firebase-admin'
 import { FieldValue } from 'firebase-admin/firestore'
 
 // Per-game config: ranking direction + plausible score bounds (anti-abuse).
@@ -36,18 +36,37 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST { game, name, score } -> stores and returns the player's rank
+// POST { game, name, score } -> stores and returns the player's rank.
+// Requires a signed-in user (Bearer ID token). The display name stays the
+// player's choice (or Anonymous), but the entry is tied to their uid so it can
+// appear on their personal records page.
 export async function POST(req: NextRequest) {
   try {
+    // Auth: only logged-in users may submit scores.
+    const authz = req.headers.get('authorization') || ''
+    const token = authz.startsWith('Bearer ') ? authz.slice(7) : ''
+    if (!token) return NextResponse.json({ error: 'Login required' }, { status: 401 })
+    let uid = ''
+    try {
+      uid = (await adminAuth.verifyIdToken(token)).uid
+    } catch {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+    }
+
     const { game, name, score } = (await req.json()) as { game?: string; name?: string; score?: number }
     const cfg = game ? GAMES[game] : undefined
-    if (!cfg) return NextResponse.json({ error: 'Unknown game' }, { status: 400 })
+    if (!cfg || !game) return NextResponse.json({ error: 'Unknown game' }, { status: 400 })
     if (typeof score !== 'number' || !isFinite(score) || score < cfg.min || score > cfg.max) {
       return NextResponse.json({ error: 'Invalid score' }, { status: 400 })
     }
 
+    const displayName = clean(name ?? '')
     const ref = scoresRef(game)
-    await ref.add({ name: clean(name ?? ''), score, createdAt: FieldValue.serverTimestamp() })
+    await ref.add({ name: displayName, score, uid, createdAt: FieldValue.serverTimestamp() })
+    // Also keep a per-user record so the player can see their history.
+    await adminDb.collection('users').doc(uid).collection('gameRecords').add({
+      game, score, name: displayName, createdAt: FieldValue.serverTimestamp(),
+    })
 
     // Rank = (# of strictly better scores) + 1
     const betterOp = cfg.order === 'asc' ? '<' : '>'

@@ -1,11 +1,17 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { onAuthStateChanged, type User } from 'firebase/auth'
+import { auth } from '@/lib/firebase/client'
 
 interface Entry {
   name: string
   score: number
 }
+
+const LOCALES = ['en', 'ja', 'ko']
 
 /**
  * Opt-in leaderboard for score-based games. Shows the top scores and, when a
@@ -28,6 +34,12 @@ export default function Leaderboard({
   const [submitting, setSubmitting] = useState(false)
   const [myRank, setMyRank] = useState<{ rank: number; total: number } | null>(null)
   const [submittedScore, setSubmittedScore] = useState<number | null>(null)
+  const [user, setUser] = useState<User | null | 'loading'>('loading')
+
+  const pathname = usePathname()
+  const lang = LOCALES.includes(pathname.split('/')[1]) ? pathname.split('/')[1] : 'en'
+
+  useEffect(() => onAuthStateChanged(auth, (u) => setUser(u)), [])
 
   const load = useCallback(async () => {
     try {
@@ -39,12 +51,13 @@ export default function Leaderboard({
   useEffect(() => { load() }, [load])
 
   async function submit() {
-    if (score == null) return
+    if (score == null || !user || user === 'loading') return
     setSubmitting(true)
     try {
+      const token = await user.getIdToken()
       const res = await fetch('/api/leaderboard', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ game, name, score }),
       })
       const data = await res.json()
@@ -58,25 +71,39 @@ export default function Leaderboard({
     }
   }
 
-  const canSubmit = score != null && submittedScore !== score
+  const hasScore = score != null && submittedScore !== score
+  const loggedIn = !!user && user !== 'loading'
 
   return (
     <section className="max-w-md mx-auto mt-8">
       <h2 className="text-lg font-bold text-gray-900 mb-3">🏆 Leaderboard</h2>
 
-      {canSubmit && (
+      {hasScore && loggedIn && (
         <div className="mb-4 rounded-xl border border-brand-100 bg-brand-50 p-4">
           <p className="text-sm text-brand-800 mb-2">
             Add your score (<span className="font-bold">{score}{unit}</span>) to the leaderboard?
           </p>
           <div className="flex gap-2">
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name (optional)" maxLength={20}
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Display name (optional)" maxLength={20}
               className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
             <button onClick={submit} disabled={submitting}
               className="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-60">
               {submitting ? '…' : 'Submit'}
             </button>
           </div>
+        </div>
+      )}
+
+      {hasScore && user === null && (
+        <div className="mb-4 rounded-xl border border-brand-100 bg-brand-50 p-4 text-center">
+          <p className="text-sm text-brand-800 mb-2">
+            Log in to add your score (<span className="font-bold">{score}{unit}</span>) to the leaderboard.
+          </p>
+          <Link href={`/${lang}/login?redirect=${encodeURIComponent(pathname)}`}
+            className="inline-block rounded-lg bg-brand-600 px-5 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+            Log in to submit
+          </Link>
+          <p className="mt-2 text-xs text-gray-400">Your display name can be anything — your account just prevents fake scores.</p>
         </div>
       )}
 

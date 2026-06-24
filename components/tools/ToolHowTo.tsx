@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations, useMessages } from 'next-intl'
+import { useMessages } from 'next-intl'
 import type { ToolMeta } from '@/lib/tools/registry'
 
 const ACRONYMS = new Set(['pdf', 'qr', 'json', 'csv', 'svg', 'png', 'jpg', 'heic', 'bmi', 'cps', 'seo', 'url', 'utm', 'rgb', 'hex'])
@@ -20,35 +20,37 @@ function archetypeOf(tool: ToolMeta): Archetype {
   return 'text'
 }
 
+interface HowtoMessages {
+  howto?: { title?: string } & Record<string, unknown>
+  toolNames?: Record<string, string>
+}
+
 /**
- * "How to use" steps for every tool, chosen by tool archetype (upload / text /
- * calc / generate / convert / game) and localized. Adds HowTo JSON-LD. The
- * visible steps are the real value — Google has largely retired HowTo rich
- * results, but the schema is valid and harmless.
+ * "How to use" steps for every tool, chosen by tool archetype and localized.
+ * Reads messages directly (no useTranslations) so a missing key can never throw
+ * during static generation. Adds HowTo JSON-LD (valid + harmless; Google has
+ * largely retired HowTo rich results, so the visible steps are the real value).
  */
 export default function ToolHowTo({ tool }: { tool: ToolMeta }) {
-  const t = useTranslations('howto')
-  const messages = useMessages() as { toolNames?: Record<string, string> }
-
-  let steps: string[] = []
-  try {
-    const raw = t.raw(archetypeOf(tool)) as unknown
-    if (Array.isArray(raw)) steps = raw.filter((x): x is string => typeof x === 'string')
-  } catch { /* namespace missing */ }
+  const messages = useMessages() as HowtoMessages
+  const howto = messages?.howto
+  const title = howto?.title || 'How to use'
+  const raw = howto ? howto[archetypeOf(tool)] : undefined
+  const steps = Array.isArray(raw) ? raw.filter((x): x is string => typeof x === 'string') : []
   if (steps.length === 0) return null
 
   const name = messages?.toolNames?.[tool.slug] ?? slugToName(tool.slug)
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
-    name: `${t('title')} — ${name}`,
+    name: `${title} — ${name}`,
     step: steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s, text: s })),
   }
 
   return (
     <section className="max-w-4xl mx-auto px-4 mt-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <h2 className="text-lg font-bold text-gray-900 mb-4">{t('title')}</h2>
+      <h2 className="text-lg font-bold text-gray-900 mb-4">{title}</h2>
       <ol className="space-y-3">
         {steps.map((s, i) => (
           <li key={i} className="flex gap-3">

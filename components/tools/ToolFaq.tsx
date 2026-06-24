@@ -1,6 +1,14 @@
 'use client'
 
 import { useTranslations, useMessages } from 'next-intl'
+import { getToolBySlug } from '@/lib/tools/registry'
+
+// Upload-type tools get an extra privacy FAQ ("are my files sent to a server?").
+function isUploadTool(slug: string): boolean {
+  const t = getToolBySlug(slug)
+  if (!t) return false
+  return ['image', 'pdf', 'video', 'audio'].includes(t.category) || (t.maxFileSizeMB?.free ?? 0) > 0
+}
 
 interface FaqItem {
   q: string
@@ -58,6 +66,7 @@ export default function ToolFaq({ slug }: { slug: string }) {
 
   const items: FaqItem[] = [{ q: c('q'), a: c('a') }]
   if (whatAnswer) items.push({ q: c('whatQ'), a: whatAnswer })
+  if (isUploadTool(slug)) items.push({ q: c('uploadPrivacyQ'), a: c('uploadPrivacyA') })
   for (const it of data?.faq ?? []) {
     if (!isFreeQuestion(it.q)) items.push(it)
   }

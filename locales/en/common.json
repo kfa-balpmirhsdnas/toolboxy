@@ -1312,7 +1312,9 @@
     "q": "Is this tool free?",
     "a": "Yes — it is completely free to use, with no account or sign-up required.",
     "whatQ": "What is this tool?",
-    "aboutTail": "You can use it for free with no sign-up or installation — just open the page and start right away."
+    "aboutTail": "You can use it for free with no sign-up or installation — just open the page and start right away.",
+    "uploadPrivacyQ": "Are my uploaded files sent to a server?",
+    "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
     "pdf-to-jpg": "This tool turns each page of a PDF into its own JPG image. Just upload a PDF and it renders every page as a picture you can preview and download one by one. It's handy when you want to share a document on social media as images, or keep only a few pages as photos. Everything happens right inside your browser, so your file is never uploaded to a server and stays completely private.",
