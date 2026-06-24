@@ -73,7 +73,18 @@ export default function Header() {
         <nav className="flex items-center gap-5 text-sm font-medium text-gray-400 flex-1">
           <span className="hidden sm:inline">{th('hero_title')}</span>
         </nav>
-        <div className="relative shrink-0" ref={langRef}>
+        {/* Desktop: inline native names (room to spare) */}
+        <div className="hidden sm:flex items-center gap-1 shrink-0">
+          {LANGS.map((l) => (
+            <Link key={l.code} href={switchLang(pathname, l.code)}
+              className={`text-xs font-semibold px-2 py-1 rounded transition-colors ${lang === l.code ? 'bg-brand-600 text-white' : 'text-gray-500 hover:text-brand-600'}`}>
+              {l.label}
+            </Link>
+          ))}
+        </div>
+
+        {/* Mobile: compact globe dropdown */}
+        <div className="relative shrink-0 sm:hidden" ref={langRef}>
           <button onClick={() => setLangOpen((o) => !o)} aria-label="Change language"
             className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-brand-600 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 010 18 15 15 0 010-18z" /></svg>

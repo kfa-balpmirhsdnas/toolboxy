@@ -22,6 +22,7 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'pdf-to-png',category:'pdf',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['pdf to png','pdf to image','convert pdf','pdf png','PDFをPNG'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'click-speed-test',category:'game',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['click speed test','cps test','clicks per second','click speed','cps game'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'add-text-to-image',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['add text to image','text on photo','image text sticker','add text photo','sticker image'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'qr-scanner',category:'qr',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['qr reader','qr scanner','scan qr','decode qr','qr read','qr scanner ko','QR read jp'],maxFileSizeMB:{free:10,pro:40} },

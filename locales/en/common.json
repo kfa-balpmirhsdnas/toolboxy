@@ -690,7 +690,8 @@
     "circle-crop": "Crop any image into a perfect circle with transparent corners (PNG). Free online circle crop tool, no upload.",
     "blur-image": "Blur an image or hide sensitive parts with an adjustable blur slider. Free online image blur tool, no upload.",
     "click-speed-test": "How fast can you click? Test your clicks per second (CPS) in 5 seconds and beat the leaderboard. Free CPS click speed test.",
-    "add-text-to-image": "Add text and emoji stickers to any image, drag to position, and download. Free online add-text-to-image tool, no upload."
+    "add-text-to-image": "Add text and emoji stickers to any image, drag to position, and download. Free online add-text-to-image tool, no upload.",
+    "pdf-to-png": "Convert each PDF page into a high-quality PNG image, right in your browser. Free PDF to PNG converter — lossless, transparent-friendly, no upload."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1535,7 +1536,8 @@
     "caesar-cipher": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere.",
     "text-encryption": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere.",
     "text-encryptor": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere.",
-    "text-encrypt-decrypt": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere."
+    "text-encrypt-decrypt": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere.",
+    "pdf-to-png": "This tool turns each page of a PDF into a high-quality PNG image. PNG is lossless and keeps text and lines crisp, which makes it ideal for diagrams, screenshots, and documents you want to stay sharp. Just upload a PDF and download each page as a PNG. Everything runs in your browser, so your file is never uploaded."
   },
   "howto": {
     "title": "How to use",
@@ -1682,6 +1684,7 @@
     "hj_converting": "Converting…",
     "hj_error": "Could not convert this file. Make sure it is a HEIC/HEIF image.",
     "hj_download": "⬇ Download JPG",
-    "hj_note": "Converted entirely in your browser — photos are never uploaded."
+    "hj_note": "Converted entirely in your browser — photos are never uploaded.",
+    "pn_sub": "Each page becomes a downloadable PNG"
   }
 }
