@@ -2000,7 +2000,10 @@
     "ej_voicegap": "음성 간격",
     "ej_repeat": "반복",
     "ej_times": "회",
-    "ej_en_voice": "영어 음성"
+    "ej_en_voice": "영어 음성",
+    "ej_en": "영어",
+    "ej_ko": "한국어",
+    "ej_ja": "일본어"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

@@ -1777,7 +1777,10 @@
     "ej_voicegap": "Gap",
     "ej_repeat": "Repeat",
     "ej_times": "×",
-    "ej_en_voice": "English audio"
+    "ej_en_voice": "English audio",
+    "ej_en": "English",
+    "ej_ko": "Korean",
+    "ej_ja": "Japanese"
   },
   "toolNames": {
     "circle-crop": "Image Circle Crop",

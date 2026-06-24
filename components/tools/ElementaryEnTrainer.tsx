@@ -34,9 +34,9 @@ export default function ElementaryEnTrainer({ params }: { params: { lang: string
   const [intervalSec, setIntervalSec] = useState(3)
   const [gapSec, setGapSec] = useState(3)
   const [repeat, setRepeat] = useState(1)
-  const [enVoice, setEnVoice] = useState(true)
+  const [enVoice] = useState(true) // English is always on (word itself)
   const [koVoice, setKoVoice] = useState(true)
-  const [jaVoice, setJaVoice] = useState(false)
+  const [jaVoice, setJaVoice] = useState(true)
   const [elapsed, setElapsed] = useState(0)
 
   const runningRef = useRef(running); runningRef.current = running
@@ -147,8 +147,8 @@ export default function ElementaryEnTrainer({ params }: { params: { lang: string
           {started ? (
             <>
               <p className="text-5xl font-bold text-gray-900 leading-tight break-words">{word.en}</p>
-              <p className="text-2xl text-brand-700 mt-3">{word.ko}</p>
-              {word.ja && <p className="text-base text-gray-400 mt-1">{word.ja}{word.yomi !== word.ja ? ` (${word.yomi})` : ''}</p>}
+              {koVoice && <p className="text-2xl text-brand-700 mt-3">{word.ko}</p>}
+              {jaVoice && word.ja && <p className="text-2xl text-brand-700 mt-2">{word.ja}{word.yomi !== word.ja ? ` (${word.yomi})` : ''}</p>}
               <button onClick={() => play(false)} aria-label="Listen"
                 className="mt-5 text-sm bg-white border border-gray-200 px-4 py-1.5 rounded-lg hover:bg-gray-50">🔊</button>
             </>
@@ -187,17 +187,20 @@ export default function ElementaryEnTrainer({ params }: { params: { lang: string
               {REPEATS.map((s) => <option key={s} value={s}>{s}{t('ej_times')}</option>)}
             </select>
           </label>
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" checked={enVoice} onChange={(e) => setEnVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
-            🇺🇸 {t('ej_en_voice')}
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
+          <label className="flex items-center gap-1.5 text-gray-400">
+            <input type="checkbox" checked={enVoice} readOnly disabled className="w-4 h-4 accent-brand-600" />
+            {t('ej_en')}
           </label>
           <label className="flex items-center gap-1.5 cursor-pointer">
             <input type="checkbox" checked={koVoice} onChange={(e) => setKoVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
-            🇰🇷 {t('ej_ko_voice')}
+            {t('ej_ko')}
           </label>
           <label className="flex items-center gap-1.5 cursor-pointer">
             <input type="checkbox" checked={jaVoice} onChange={(e) => setJaVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
-            🇯🇵 {t('ej_ja_voice')}
+            {t('ej_ja')}
           </label>
         </div>
 

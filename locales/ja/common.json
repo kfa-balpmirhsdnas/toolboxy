@@ -1967,7 +1967,10 @@
     "ej_voicegap": "音声間隔",
     "ej_repeat": "繰り返し",
     "ej_times": "回",
-    "ej_en_voice": "英語の音声"
+    "ej_en_voice": "英語の音声",
+    "ej_en": "英語",
+    "ej_ko": "韓国語",
+    "ej_ja": "日本語"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
