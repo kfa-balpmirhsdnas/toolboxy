@@ -74,10 +74,10 @@ export default function Header() {
           <span className="hidden sm:inline">{th('hero_title')}</span>
         </nav>
         {/* Desktop: segmented control with native names (even spacing) */}
-        <div className="hidden sm:flex items-center bg-gray-100 rounded-lg p-0.5 shrink-0">
+        <div className="hidden sm:flex items-center bg-gray-200 rounded-lg p-0.5 shrink-0">
           {LANGS.map((l) => (
             <Link key={l.code} href={switchLang(pathname, l.code)}
-              className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${lang === l.code ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
+              className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${lang === l.code ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
               {l.label}
             </Link>
           ))}

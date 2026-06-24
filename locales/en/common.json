@@ -1728,5 +1728,10 @@
   },
   "toolNames": {
     "circle-crop": "Image Circle Crop"
+  },
+  "howtoNote": {
+    "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",
+    "video-to-audio": "Very large videos (several hundred MB+) may fail due to browser memory limits.",
+    "audio-trimmer": "Very large files may fail due to browser memory limits."
   }
 }

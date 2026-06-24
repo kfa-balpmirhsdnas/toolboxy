@@ -23,6 +23,7 @@ function archetypeOf(tool: ToolMeta): Archetype {
 interface HowtoMessages {
   howto?: { title?: string } & Record<string, unknown>
   toolNames?: Record<string, string>
+  howtoNote?: Record<string, string>
 }
 
 /**
@@ -39,6 +40,7 @@ export default function ToolHowTo({ tool }: { tool: ToolMeta }) {
   const steps = Array.isArray(raw) ? raw.filter((x): x is string => typeof x === 'string') : []
   if (steps.length === 0) return null
 
+  const note = messages?.howtoNote?.[tool.slug]
   const name = messages?.toolNames?.[tool.slug] ?? slugToName(tool.slug)
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -59,6 +61,7 @@ export default function ToolHowTo({ tool }: { tool: ToolMeta }) {
           </li>
         ))}
       </ol>
+      {note && <p className="mt-4 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">⚠ {note}</p>}
     </section>
   )
 }
