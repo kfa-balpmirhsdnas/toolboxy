@@ -133,8 +133,8 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-5">
-        {/* Controls */}
-        <div className="space-y-3 pb-3 border-b border-gray-100">
+        {/* Controls — stay pinned below the site header so options stay reachable mid-recitation */}
+        <div className="sticky top-14 z-30 -mx-6 px-6 pt-4 pb-3 bg-white/95 backdrop-blur border-b border-gray-200 space-y-3">
           <div className="flex items-center gap-2">
             <button onClick={toggle}
               className={`flex-1 py-2.5 text-sm font-semibold rounded-xl text-white transition-colors ${playing ? 'bg-red-600 hover:bg-red-700' : 'bg-brand-600 hover:bg-brand-700'}`}>
@@ -156,7 +156,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
               </select>
             </label>
             {voices.length > 0 && (
-              <label className="flex items-center gap-1.5">
+              <label className="flex items-center gap-1.5 whitespace-nowrap">
                 {t('cs_voice')}
                 <select value={voiceURI} onChange={(e) => setVoiceURI(e.target.value)} className="rounded-lg border border-gray-200 px-2 py-1.5 max-w-[11rem]">
                   <option value="">{t('cs_voice_default')}</option>
