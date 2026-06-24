@@ -55,6 +55,13 @@ function descFrom(v: string | { description?: string } | undefined): string | un
  * (localized via toolDescriptions, with a localized fallback), canonical URL,
  * and hreflang alternates for en/ja/ko. Used by each tool folder's layout.tsx.
  */
+// Short icon label per dictionary tool (mirrors components/DynamicManifest).
+const ICON_LABEL: Record<string, string> = {
+  'korean-to-japanese': '한일', 'korean-to-english': '한영', 'japanese-to-korean': '일한',
+  'english-to-korean': '영한', 'japanese-to-english': '일영', 'english-to-japanese': '영일',
+  'korean-antonyms': '한↔', 'japanese-antonyms': '일↔', 'english-antonyms': '영↔',
+}
+
 export async function buildToolMetadata(slug: string, lang: string): Promise<Metadata> {
   const safeLang = (LANGS as readonly string[]).includes(lang) ? lang : 'en'
   const messages = await loadMessages(safeLang)
@@ -71,9 +78,18 @@ export async function buildToolMetadata(slug: string, lang: string): Promise<Met
   for (const l of LANGS) languages[l] = `${BASE}/${l}/tools/${slug}`
   languages['x-default'] = `${BASE}/en/tools/${slug}`
 
+  // Server-render a per-tool manifest link so each tool installs as its OWN PWA.
+  // (A shared SSR default would make Chrome treat every page as the same app, so
+  // installing one would block installing the others.)
+  const iconLabel = ICON_LABEL[slug]
+  const manifest =
+    `/api/manifest?start=${encodeURIComponent(`/${safeLang}/tools/${slug}`)}&name=${encodeURIComponent(name)}` +
+    (iconLabel ? `&icon=${encodeURIComponent(iconLabel)}` : '')
+
   return {
     title: { absolute: title },
     description,
+    manifest,
     alternates: { canonical: url, languages },
     openGraph: { title, description, url, siteName: 'ToolBoxy', type: 'website', locale: safeLang },
     twitter: { card: 'summary', title, description },
