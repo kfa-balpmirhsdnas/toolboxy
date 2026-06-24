@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminDb, adminAuth } from '@/lib/firebase-admin'
+import { getToolBySlug } from '@/lib/tools/registry'
 
 const ADMIN_EMAILS = ['sandshrimp.lab@gmail.com']
 
@@ -59,13 +60,27 @@ export async function GET(req: NextRequest) {
       .slice(0, 20)
       .map(([slug, count]) => ({ slug, count }))
 
-    // 3. Total user count
+    // 3. All-time per-tool clicks (every visitor, guests included) from the
+    // self-hosted toolStats view counter — the real "most clicked" ranking.
+    const statsSnap = await adminDb.collection('toolStats').get()
+    const topViewed = statsSnap.docs
+      .map((d) => {
+        const v = d.data() as { slug?: string; views?: number }
+        const slug = v.slug ?? d.id
+        return { slug, views: v.views ?? 0, category: getToolBySlug(slug)?.category ?? '—' }
+      })
+      .sort((a, b) => b.views - a.views)
+    const totalViews = topViewed.reduce((s, t) => s + t.views, 0)
+
+    // 4. Total user count
     const totalUsers = listResult.users.length // approximate
 
     return NextResponse.json({
       totalUsers,
       recentUsers: users.slice(0, 20),
       topTools,
+      topViewed: topViewed.slice(0, 30),
+      totalViews,
       today,
     })
   } catch (err) {
