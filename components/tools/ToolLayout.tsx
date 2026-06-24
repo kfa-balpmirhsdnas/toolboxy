@@ -77,15 +77,10 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
         <div className="flex items-center gap-3 mb-2">
           <span className="text-3xl">{catMeta.icon}</span>
           <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
-          {tool.isPro && (
-            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-0.5 rounded-full">PRO</span>
-          )}
-          {isToolNew(tool) && (
-            <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">NEW</span>
-          )}
-          {isAppTool(tool) && (
-            <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full">📲 APP</span>
-          )}
+          {isToolNew(tool) && <span className="badge-new">New</span>}
+          {tool.isPro && <span className="badge-pro">Pro</span>}
+          {!tool.isPro && <span className="badge-free">Free</span>}
+          {isAppTool(tool) && <span className="badge-app">App</span>}
         </div>
         <p className="text-gray-500 text-sm">
           {(tool.tags ?? []).slice(0, 5).join(' · ')}

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useMessages } from 'next-intl'
-import { CATEGORY_META, isToolNew, type ToolMeta } from '@/lib/tools/registry'
+import { CATEGORY_META, isToolNew, isAppTool, type ToolMeta } from '@/lib/tools/registry'
 import { useSignupGate } from '@/components/auth/SignupGate'
 
 interface ToolCardProps {
@@ -50,6 +50,7 @@ export default function ToolCard({ tool, lang }: ToolCardProps) {
             {isToolNew(tool) && <span className="badge-new">New</span>}
             {tool.isPro && <span className="badge-pro">Pro</span>}
             {!tool.isPro && <span className="badge-free">Free</span>}
+            {isAppTool(tool) && <span className="badge-app">App</span>}
           </div>
           <p className="text-xs text-gray-500 mt-1 truncate">
             {(tool.tags ?? []).slice(0, 3).join(' · ')}
