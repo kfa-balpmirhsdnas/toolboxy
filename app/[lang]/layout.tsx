@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
 import SignupGateProvider from '@/components/auth/SignupGate'
+import SelectSampleOnFocus from '@/components/SelectSampleOnFocus'
 
 const SUPPORTED_LOCALES = ['en', 'ja', 'ko']
 
@@ -68,6 +69,7 @@ export default async function LangLayout({
       <GoogleAnalytics />
       <NextIntlClientProvider locale={lang} messages={messages}>
         <SignupGateProvider>
+          <SelectSampleOnFocus />
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
