@@ -22,18 +22,18 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
-  {slug:'korean-antonyms',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['korean antonyms','korean opposite words','한글 반대말','韓国語 反対語'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'korean-antonyms',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['korean antonyms','korean opposite words','한글 반대말','한국어 반대말','韓国語 反対語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'japanese-antonyms',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['japanese antonyms','japanese opposite words','일본어 반대말','日本語 反対語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'english-antonyms',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['english antonyms','english opposite words','영어 반대말','英語 反対語'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'korean-to-english',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['korean to english','korean english word','한글 영어','韓国語 英語'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'japanese-to-korean',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['japanese to korean','japanese korean word','일본어 한글','日本語 韓国語'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'english-to-korean',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['english to korean','english korean word','영어 한글','英語 韓国語'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'korean-to-english',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['korean to english','korean english word','한글 영어','한국어 영어','韓国語 英語'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'japanese-to-korean',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['japanese to korean','japanese korean word','일본어 한글','일본어 한국어','日本語 韓国語'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'english-to-korean',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['english to korean','english korean word','영어 한글','영어 한국어','英語 韓国語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'japanese-to-english',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['japanese to english','japanese english word','일본어 영어','日本語 英語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'english-to-japanese',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['english to japanese','english japanese word','영어 일본어','英語 日本語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'video-trimmer',category:'video',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['video trimmer','cut video','video cutter','trim video','영상 자르기'],maxFileSizeMB:{free:200,pro:500} },
   {slug:'audio-trimmer',category:'audio',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['audio trimmer','cut audio','mp3 cutter','trim audio','오디오 자르기'],maxFileSizeMB:{free:100,pro:300} },
   {slug:'video-to-audio',category:'video',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['video to audio','extract audio','video to mp3','audio extractor','오디오 추출'],maxFileSizeMB:{free:200,pro:500} },
-  {slug:'korean-to-japanese',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['korean to japanese','korean japanese word','한글 일본어','韓国語 日本語'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'korean-to-japanese',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['korean to japanese','korean japanese word','한글 일본어','한국어 일본어','韓国語 日本語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'add-pdf-pages',category:'pdf',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['add pdf pages','insert pdf page','add blank page pdf','pdf page insert','PDF페이지추가'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'heic-to-png',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['heic to png','heic converter','iphone photo png','heic png','HEICをPNG'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'pdf-to-png',category:'pdf',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['pdf to png','pdf to image','convert pdf','pdf png','PDFをPNG'],maxFileSizeMB:{free:50,pro:200} },
