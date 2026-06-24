@@ -1534,5 +1534,38 @@
     "text-encryption": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere.",
     "text-encryptor": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere.",
     "text-encrypt-decrypt": "This tool encrypts and decrypts text so you can scramble a message and unscramble it later. It's useful for simple secret notes, learning about ciphers, or light obfuscation. Everything happens in your browser and is never sent anywhere."
+  },
+  "howto": {
+    "title": "How to use",
+    "upload": [
+      "Upload your file, or drag and drop it onto the page.",
+      "Adjust the available options to fit what you need.",
+      "Download the result — everything is processed right in your browser."
+    ],
+    "text": [
+      "Type or paste your text into the box.",
+      "Choose any options for how it should be handled.",
+      "Copy or download the result instantly."
+    ],
+    "calc": [
+      "Enter the required values into the fields.",
+      "See your result calculated instantly.",
+      "Change the inputs anytime to compare different scenarios."
+    ],
+    "generate": [
+      "Set your options or enter your content.",
+      "Generate the result with a single click.",
+      "Copy or download what you created."
+    ],
+    "convert": [
+      "Add your input — type it, paste it, or upload a file.",
+      "Pick the format or settings you want.",
+      "Get the converted result and save it."
+    ],
+    "game": [
+      "Press start to begin.",
+      "Play and do your best.",
+      "See your score and try to beat it."
+    ]
   }
 }

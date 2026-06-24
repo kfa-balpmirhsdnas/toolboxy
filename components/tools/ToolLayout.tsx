@@ -6,6 +6,7 @@ import { useMessages } from 'next-intl'
 import { CATEGORY_META, isToolNew, type ToolMeta } from '@/lib/tools/registry'
 import ToolTracker from '@/components/tools/ToolTracker'
 import ToolFaq from '@/components/tools/ToolFaq'
+import ToolHowTo from '@/components/tools/ToolHowTo'
 import UsageGate from '@/components/tools/UsageGate'
 
 const LOCALES = ['en', 'ja', 'ko']
@@ -94,6 +95,9 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         {children}
       </div>
+
+      {/* How-to steps (by tool archetype) + HowTo JSON-LD */}
+      <ToolHowTo tool={tool} />
 
       {/* FAQ (per-tool if available, otherwise a common free-to-use answer) */}
       <ToolFaq slug={tool.slug} />
