@@ -73,7 +73,9 @@ export default function ElementaryJaTrainer({ params }: { params: { lang: string
 
     const w = WORDS[order[idxRef.current]]
     const one: { text: string; lang: string; rate: number }[] = []
-    if (jaRef.current) one.push({ text: w.ja, lang: 'ja-JP', rate: 0.9 })
+    // Speak the kana reading (yomi), not the kanji surface — TTS misreads lone
+    // kanji with the on-yomi (e.g. 湖 → こ instead of みずうみ).
+    if (jaRef.current) one.push({ text: w.yomi || w.ja, lang: 'ja-JP', rate: 0.9 })
     if (koRef.current) one.push({ text: firstMeaning(w.ko), lang: 'ko-KR', rate: 1 })
     if (enRef.current) one.push({ text: w.en, lang: 'en-US', rate: 0.95 })
     const parts: typeof one = []

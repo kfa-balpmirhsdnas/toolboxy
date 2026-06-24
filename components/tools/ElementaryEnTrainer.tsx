@@ -76,7 +76,9 @@ export default function ElementaryEnTrainer({ params }: { params: { lang: string
     const one: { text: string; lang: string; rate: number }[] = []
     if (enRef.current) one.push({ text: w.en, lang: 'en-US', rate: 0.95 })
     if (koRef.current) one.push({ text: firstMeaning(w.ko), lang: 'ko-KR', rate: 1 })
-    if (jaRef.current && w.ja) one.push({ text: w.ja, lang: 'ja-JP', rate: 0.9 })
+    // Speak the kana reading (yomi), not the kanji surface — TTS misreads lone
+    // kanji with the on-yomi (e.g. 湖 → こ instead of みずうみ).
+    if (jaRef.current && w.ja) one.push({ text: w.yomi || w.ja, lang: 'ja-JP', rate: 0.9 })
     const parts: typeof one = []
     for (let r = 0; r < Math.max(1, repeatRef.current); r++) parts.push(...one)
 
