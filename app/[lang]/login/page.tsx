@@ -15,6 +15,7 @@ export default function LoginPage({ params }: { params: { lang: string } }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [showEmail, setShowEmail] = useState(false)
 
   function friendlyError(code: string) {
     if (code === 'auth/user-not-found' || code === 'auth/invalid-credential') return 'Email or password is incorrect.'
@@ -58,25 +59,32 @@ export default function LoginPage({ params }: { params: { lang: string } }) {
             {googleLoading ? 'Connecting…' : 'Continue with Google'}
           </button>
           <div className="flex items-center gap-3 mb-4"><div className="flex-1 h-px bg-gray-200" /><span className="text-xs text-gray-400">or</span><div className="flex-1 h-px bg-gray-200" /></div>
-          <form onSubmit={handleEmail} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="you@example.com"
-                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-            </div>
-            <div>
-              <div className="flex justify-between mb-1">
-                <label className="text-sm font-medium text-gray-700">Password</label>
-                <Link href={`/${params.lang}/forgot-password`} className="text-xs text-brand-600 hover:underline">Forgot password?</Link>
-              </div>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" placeholder="••••••••"
-                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-            </div>
-            {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">⚠ {error}</p>}
-            <button type="submit" disabled={loading} className="w-full bg-brand-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors disabled:opacity-60">
-              {loading ? 'Logging in…' : 'Log In'}
+          {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg mb-4">⚠ {error}</p>}
+          {!showEmail ? (
+            <button onClick={() => setShowEmail(true)}
+              className="w-full text-center text-sm font-medium text-gray-600 hover:text-brand-600 py-2 transition-colors">
+              Log in with email
             </button>
-          </form>
+          ) : (
+            <form onSubmit={handleEmail} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="you@example.com" autoFocus
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+              </div>
+              <div>
+                <div className="flex justify-between mb-1">
+                  <label className="text-sm font-medium text-gray-700">Password</label>
+                  <Link href={`/${params.lang}/forgot-password`} className="text-xs text-brand-600 hover:underline">Forgot password?</Link>
+                </div>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" placeholder="••••••••"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+              </div>
+              <button type="submit" disabled={loading} className="w-full bg-brand-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors disabled:opacity-60">
+                {loading ? 'Logging in…' : 'Log In'}
+              </button>
+            </form>
+          )}
         </div>
         <p className="text-center text-sm text-gray-500 mt-6">Don't have an account?{' '}
           <Link href={`/${params.lang}/signup`} className="text-brand-600 font-medium hover:underline">Sign up free</Link></p>
