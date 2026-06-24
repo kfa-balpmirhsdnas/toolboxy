@@ -9,7 +9,7 @@ import { trackToolUsed } from '@/lib/gtag'
 
 const tool = getToolBySlug('cheonsugyeong')!
 const LINES = CHEONSUGYEONG
-const RATES = [0.5, 0.6, 0.7, 0.85, 1, 1.15, 1.3, 1.5]
+const RATES = [0.3, 0.4, 0.5, 0.6, 0.7, 0.85, 1, 1.15, 1.3, 1.5]
 const FONT_SCALES = [0.8, 1, 1.5, 2, 3]
 
 interface Section { no: number; ko: string; hanja: string; type: string; lines: SutraLine[] }
@@ -54,8 +54,12 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
     const synth = window.speechSynthesis
     if (!synth) return
     const load = () => {
-      const ko = synth.getVoices().filter((v) => /ko/i.test(v.lang))
-      setVoices(ko)
+      // Match Korean only — `^ko` plus a separator/end so we don't catch e.g.
+      // Konkani (`kok-IN`), which `/ko/` did. De-dupe by name (engines often
+      // expose the same voice several times).
+      const ko = synth.getVoices().filter((v) => /^ko([-_]|$)/i.test(v.lang))
+      const seen = new Set<string>()
+      setVoices(ko.filter((v) => (seen.has(v.name) ? false : (seen.add(v.name), true))))
     }
     load()
     synth.addEventListener?.('voiceschanged', load)
@@ -142,23 +146,23 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
             </button>
             <button onClick={reset} className="px-3 py-2.5 text-sm rounded-xl border border-gray-200 hover:bg-gray-50">↺ {t('cs_reset')}</button>
           </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
-            <label className="flex items-center gap-1.5 whitespace-nowrap">
+          <div className="flex items-center justify-between text-sm text-gray-500">
+            <label className="flex items-center gap-1 whitespace-nowrap">
               {t('cs_rate')}
-              <select value={rate} onChange={(e) => setRate(Number(e.target.value))} className="rounded-lg border border-gray-200 px-2 py-1.5">
+              <select value={rate} onChange={(e) => setRate(Number(e.target.value))} className="rounded-lg border border-gray-200 px-1 py-1.5 w-[3.6rem]">
                 {RATES.map((r) => <option key={r} value={r}>{r}×</option>)}
               </select>
             </label>
-            <label className="flex items-center gap-1.5 whitespace-nowrap">
+            <label className="flex items-center gap-1 whitespace-nowrap">
               {t('cs_size')}
-              <select value={fontScale} onChange={(e) => setFontScale(Number(e.target.value))} className="rounded-lg border border-gray-200 px-2 py-1.5">
+              <select value={fontScale} onChange={(e) => setFontScale(Number(e.target.value))} className="rounded-lg border border-gray-200 px-1 py-1.5 w-[3.6rem]">
                 {FONT_SCALES.map((f) => <option key={f} value={f}>{f}×</option>)}
               </select>
             </label>
             {voices.length > 0 && (
-              <label className="flex items-center gap-1.5 whitespace-nowrap">
+              <label className="flex items-center gap-1 whitespace-nowrap">
                 {t('cs_voice')}
-                <select value={voiceURI} onChange={(e) => setVoiceURI(e.target.value)} className="rounded-lg border border-gray-200 px-2 py-1.5 max-w-[11rem]">
+                <select value={voiceURI} onChange={(e) => setVoiceURI(e.target.value)} className="rounded-lg border border-gray-200 px-1 py-1.5 w-[3.6rem]">
                   <option value="">{t('cs_voice_default')}</option>
                   {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{genderHint(v)}{v.name}</option>)}
                 </select>

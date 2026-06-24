@@ -2036,10 +2036,10 @@
     "cs_translation": "解釈",
     "cs_play": "読誦",
     "cs_pause": "停止",
-    "cs_reset": "先頭へ",
+    "cs_reset": "最初から",
     "cs_rate": "速度",
     "cs_source": "原文（漢字）と読みはパブリックドメインで、解釈はToolBoxy独自の平易な訳であり、特定の宗派・出版社の標準訳とは表現が異なります。真言・陀羅尼は音写のため訳しません。",
-    "cs_size": "文字サイズ",
+    "cs_size": "サイズ",
     "cs_voice": "音声",
     "cs_voice_default": "既定"
   },

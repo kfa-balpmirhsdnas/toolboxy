@@ -2069,11 +2069,11 @@
     "cs_translation": "해석",
     "cs_play": "독송",
     "cs_pause": "멈춤",
-    "cs_reset": "처음으로",
+    "cs_reset": "처음부터",
     "cs_rate": "속도",
     "cs_source": "원문(한자)과 독음은 공유저작물이며, 해석은 ToolBoxy가 직접 옮긴 평이한 우리말로 특정 종단·출판사의 표준 번역과는 문구가 다릅니다. 진언·다라니는 음역이라 번역하지 않습니다.",
-    "cs_size": "글자크기",
-    "cs_voice": "목소리",
+    "cs_size": "크기",
+    "cs_voice": "음성",
     "cs_voice_default": "기본"
   },
   "howtoNote": {

@@ -85,7 +85,9 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
         <p className="text-gray-500 text-sm">
           {(tool.tags ?? []).slice(0, 5).join(' · ')}
         </p>
-        <div className="mt-3"><InstallButton /></div>
+        {/* App-install is an explicit per-tool decision: only show it once a tool
+            is added to APP_TOOLS (after its feature set is settled). */}
+        {isAppTool(tool) && <div className="mt-3"><InstallButton /></div>}
       </div>
 
       {/* Usage limit banner (logged-in users only, near/at limit) */}

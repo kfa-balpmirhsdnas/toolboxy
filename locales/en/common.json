@@ -1844,10 +1844,10 @@
     "cs_translation": "Meaning",
     "cs_play": "Recite",
     "cs_pause": "Pause",
-    "cs_reset": "Top",
+    "cs_reset": "Restart",
     "cs_rate": "Speed",
     "cs_source": "The original Hanja and its Korean reading are public domain; the meaning is ToolBoxy's own plain rendering and differs in wording from any standard translation. Mantras (진언/다라니) are transliterations and are left untranslated.",
-    "cs_size": "Text size",
+    "cs_size": "Size",
     "cs_voice": "Voice",
     "cs_voice_default": "Default"
   },
