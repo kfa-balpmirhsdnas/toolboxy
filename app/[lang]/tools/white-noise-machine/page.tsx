@@ -10,10 +10,12 @@ const tool = getToolBySlug('white-noise-machine')!
 
 type SoundId = 'white' | 'pink' | 'brown' | 'rain' | 'fire' | 'ocean' | 'fan' | 'pencil'
 
-// Ocean = a fixed-length wave (rise + long recede) then a calm gap. Kept as two
-// independent values so the quiet gap can change without altering the wave.
-const OCEAN_WAVE_SEC = 9.36
+// Ocean = rise → long fade-out → calm gap. Each phase is an independent duration
+// (seconds) so any one can change without affecting the others.
+const OCEAN_RISE_SEC = 2.3
+const OCEAN_FADE_SEC = 10
 const OCEAN_GAP_SEC = 4
+const OCEAN_WAVE_SEC = OCEAN_RISE_SEC + OCEAN_FADE_SEC
 
 const SOUNDS: { id: SoundId; emoji: string; seconds: number }[] = [
   { id: 'white', emoji: '⚪', seconds: 4 },
@@ -97,17 +99,16 @@ function genOcean(d: Float32Array, sr: number) {
   // cutting off. env = 0 at i=0, at waveEnd, and at n → seamless.
   let last = 0
   const n = d.length
-  const waveEnd = Math.min(n, Math.floor(sr * OCEAN_WAVE_SEC)) // fixed wave; rest = quiet gap
-  const attack = 0.25 // first quarter of the wave rises; the rest is a long recede
+  const riseEnd = Math.floor(sr * OCEAN_RISE_SEC)
+  const waveEnd = Math.min(n, Math.floor(sr * OCEAN_WAVE_SEC)) // rise + fade; rest = quiet gap
   for (let i = 0; i < n; i++) {
     const w = Math.random() * 2 - 1
     last = (last + 0.025 * w) / 1.025
     let env = 0
-    if (i < waveEnd) {
-      const p = i / waveEnd
-      env = p < attack
-        ? Math.pow(Math.sin((Math.PI / 2) * (p / attack)), 2)
-        : Math.pow(Math.cos((Math.PI / 2) * ((p - attack) / (1 - attack))), 2)
+    if (i < riseEnd) {
+      env = Math.pow(Math.sin((Math.PI / 2) * (i / riseEnd)), 2) // rise 0 → 1
+    } else if (i < waveEnd) {
+      env = Math.pow(Math.cos((Math.PI / 2) * ((i - riseEnd) / (waveEnd - riseEnd))), 2) // fade 1 → 0
     }
     d[i] = last * 3.4 * env
   }
