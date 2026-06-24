@@ -3,21 +3,31 @@
  *
  * Strategy (chosen to avoid the classic "stuck on an old version" PWA trap):
  *  - /_next/static/* are content-hashed & immutable -> cache-first (safe forever).
- *  - HTML navigations -> network-first, so ONLINE users always get fresh pages.
- *  - Only an allowlist of fully client-side tool pages (dictionaries / antonyms)
- *    is stored for OFFLINE use; everything else just falls back to an offline page.
+ *  - HTML navigations -> network-first, so ONLINE users always get fresh pages;
+ *    every visited page (except auth/live-data + heavy ffmpeg tools) is cached
+ *    so pure client-side tools and the installed app open offline.
+ *  - Small CDN libraries (pdf.js etc.) -> cache-first, so the tools that pull
+ *    them work offline too. The ~30MB ffmpeg core is deliberately NOT cached.
  *  Bump VERSION to force-drop old caches on the next activate.
  */
-const VERSION = 'v2'
+const VERSION = 'v3'
 const STATIC_CACHE = `static-${VERSION}`
 const PAGE_CACHE = `pages-${VERSION}`
+const CDN_CACHE = `cdn-${VERSION}`
 const OFFLINE_URL = '/offline.html'
 
-// Pages we never keep offline: they need the server (auth / live data), so a
-// cached copy would just be stale and misleading. Everything else a user has
-// visited (home + tool pages) is cached so the installed app opens offline.
-const NO_OFFLINE = ['/api/', '/admin', '/dashboard', '/login', '/signup']
+// Pages we never keep offline: server-backed (auth / live data) so a cached copy
+// would be stale, or ffmpeg-based (video/audio) which need a ~30MB CDN core we
+// don't cache — better to show the offline page than open-and-break mid-task.
+const NO_OFFLINE = [
+  '/api/', '/admin', '/dashboard', '/login', '/signup',
+  '/video-trimmer', '/audio-trimmer', '/video-to-audio',
+]
 const isCacheableNav = (url) => !NO_OFFLINE.some((p) => url.pathname.includes(p))
+
+// CDN hosts whose (small) library files we cache for offline tool use.
+const CDN_HOSTS = ['unpkg.com', 'cdnjs.cloudflare.com']
+const isCacheableCdn = (url) => CDN_HOSTS.includes(url.hostname) && !url.pathname.includes('@ffmpeg/core')
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -37,10 +47,13 @@ self.addEventListener('fetch', (event) => {
   const req = event.request
   if (req.method !== 'GET') return
   const url = new URL(req.url)
-  if (url.origin !== self.location.origin) return // let CDN/API requests pass straight through
 
+  if (url.origin !== self.location.origin) {
+    if (isCacheableCdn(url)) event.respondWith(cacheFirst(req, CDN_CACHE))
+    return // other cross-origin (incl. ffmpeg core) passes straight to network
+  }
   if (url.pathname.startsWith('/_next/static/')) {
-    event.respondWith(cacheFirst(req))
+    event.respondWith(cacheFirst(req, STATIC_CACHE))
     return
   }
   if (req.mode === 'navigate') {
@@ -48,8 +61,8 @@ self.addEventListener('fetch', (event) => {
   }
 })
 
-async function cacheFirst(req) {
-  const cache = await caches.open(STATIC_CACHE)
+async function cacheFirst(req, cacheName) {
+  const cache = await caches.open(cacheName)
   const hit = await cache.match(req)
   if (hit) return hit
   const res = await fetch(req)
