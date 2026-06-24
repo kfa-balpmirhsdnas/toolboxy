@@ -73,11 +73,11 @@ export default function Header() {
         <nav className="flex items-center gap-5 text-sm font-medium text-gray-400 flex-1">
           <span className="hidden sm:inline">{th('hero_title')}</span>
         </nav>
-        {/* Desktop: inline native names (room to spare) */}
-        <div className="hidden sm:flex items-center gap-1 shrink-0">
+        {/* Desktop: segmented control with native names (even spacing) */}
+        <div className="hidden sm:flex items-center bg-gray-100 rounded-lg p-0.5 shrink-0">
           {LANGS.map((l) => (
             <Link key={l.code} href={switchLang(pathname, l.code)}
-              className={`text-xs font-semibold px-2 py-1 rounded transition-colors ${lang === l.code ? 'bg-brand-600 text-white' : 'text-gray-500 hover:text-brand-600'}`}>
+              className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${lang === l.code ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
               {l.label}
             </Link>
           ))}
@@ -102,6 +102,8 @@ export default function Header() {
             </div>
           )}
         </div>
+        {/* Reserve a stable width so loading↔resolved doesn't shift the header */}
+        <div className="flex items-center justify-end shrink-0 min-w-[88px]">
         {user === 'loading' ? (
           <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
         ) : user ? (
@@ -132,6 +134,7 @@ export default function Header() {
             <Link href={`/${lang}/signup`} className="btn-primary text-sm py-1.5 px-3 sm:px-4 whitespace-nowrap">{t('signup')}</Link>
           </div>
         )}
+        </div>
       </div>
     </header>
   )

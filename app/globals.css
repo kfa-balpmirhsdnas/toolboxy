@@ -6,6 +6,12 @@
   :root {
     --radius: 0.5rem;
   }
+
+  /* Always reserve the scrollbar gutter so pages of different heights don't
+     shift the centered layout horizontally when navigating. */
+  html {
+    scrollbar-gutter: stable;
+  }
 }
 
 @layer components {
