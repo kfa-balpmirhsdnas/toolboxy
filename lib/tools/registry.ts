@@ -22,6 +22,9 @@ export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'korean-antonyms',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['korean antonyms','korean opposite words','한글 반대말','韓国語 反対語'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'japanese-antonyms',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['japanese antonyms','japanese opposite words','일본어 반대말','日本語 反対語'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'english-antonyms',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['english antonyms','english opposite words','영어 반대말','英語 反対語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'korean-to-english',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['korean to english','korean english word','한글 영어','韓国語 英語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'japanese-to-korean',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['japanese to korean','japanese korean word','일본어 한글','日本語 韓国語'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'english-to-korean',category:'language',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['english to korean','english korean word','영어 한글','英語 韓国語'],maxFileSizeMB:{free:0,pro:0} },

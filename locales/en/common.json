@@ -702,7 +702,10 @@
     "japanese-to-korean": "Type a common Japanese word and instantly see the Korean. Free Japanese-to-Korean word lookup, works offline in your browser.",
     "english-to-korean": "Type a common English word and instantly see the Korean. Free English-to-Korean word lookup, works offline in your browser.",
     "japanese-to-english": "Type a common Japanese word and instantly see the English. Free Japanese-to-English word lookup, works offline in your browser.",
-    "english-to-japanese": "Type a common English word and instantly see the Japanese. Free English-to-Japanese word lookup, works offline in your browser."
+    "english-to-japanese": "Type a common English word and instantly see the Japanese. Free English-to-Japanese word lookup, works offline in your browser.",
+    "korean-antonyms": "Type a Korean word and instantly get its opposite. Free Korean antonym dictionary that works offline in your browser.",
+    "japanese-antonyms": "Type a Japanese word and instantly get its opposite. Free Japanese antonym dictionary that works offline in your browser.",
+    "english-antonyms": "Type a English word and instantly get its opposite. Free English antonym dictionary that works offline in your browser."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1559,7 +1562,10 @@
     "japanese-to-korean": "This tool gives you the Korean for a common Japanese word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser.",
     "english-to-korean": "This tool gives you the Korean for a common English word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser.",
     "japanese-to-english": "This tool gives you the English for a common Japanese word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser.",
-    "english-to-japanese": "This tool gives you the Japanese for a common English word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser."
+    "english-to-japanese": "This tool gives you the Japanese for a common English word the moment you type it — no button to press. It uses a built-in dictionary of everyday words, so it's instant and works even offline. It's meant for single common words, not full sentences, and is handy for quick study or travel. Nothing you type leaves your browser.",
+    "korean-antonyms": "This tool gives you the opposite of a common Korean word the moment you type it. It uses a built-in dictionary of everyday antonym pairs, so it's instant and works even offline. It's great for studying, word games, and writing. Nothing you type leaves your browser.",
+    "japanese-antonyms": "This tool gives you the opposite of a common Japanese word the moment you type it. It uses a built-in dictionary of everyday antonym pairs, so it's instant and works even offline. It's great for studying, word games, and writing. Nothing you type leaves your browser.",
+    "english-antonyms": "This tool gives you the opposite of a common English word the moment you type it. It uses a built-in dictionary of everyday antonym pairs, so it's instant and works even offline. It's great for studying, word games, and writing. Nothing you type leaves your browser."
   },
   "howto": {
     "title": "How to use",
@@ -1738,7 +1744,9 @@
     "wt_ph": "Type a word",
     "wt_hint": "Enter a word to see the translation.",
     "wt_notfound": "Not in the dictionary yet — try a more common word.",
-    "wt_note": "A built-in dictionary of common words — instant, free, and works offline."
+    "wt_note": "A built-in dictionary of common words — instant, free, and works offline.",
+    "an_notfound": "No opposite found — try a common word such as an adjective.",
+    "an_note": "A built-in dictionary of common antonyms — instant and free."
   },
   "toolNames": {
     "circle-crop": "Image Circle Crop",
@@ -1746,7 +1754,10 @@
     "japanese-to-korean": "Japanese to Korean Word Translator",
     "english-to-korean": "English to Korean Word Translator",
     "japanese-to-english": "Japanese to English Word Translator",
-    "english-to-japanese": "English to Japanese Word Translator"
+    "english-to-japanese": "English to Japanese Word Translator",
+    "korean-antonyms": "Korean Antonym Dictionary",
+    "japanese-antonyms": "Japanese Antonym Dictionary",
+    "english-antonyms": "English Antonym Dictionary"
   },
   "howtoNote": {
     "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",

@@ -541,4 +541,5 @@ export const KR_EN: Record<string, string> = {
   '후문': 'back gate', '후반': 'second half', '후배': 'junior', '후추': 'pepper', '후회하다': 'regret', '훨씬': 'much more',
   '휘발유': 'gasoline', '휴가': 'vacation', '휴식': 'rest', '휴학': 'leave of absence', '흐르다': 'flow', '흔들리다': 'shake', '힘': 'strength',
   '더': 'more', '더럽히다': 'dirty', '부탁해': 'please', '싫어해': 'dislike', '졸졸': 'trickling', '좋아해': 'like', '축하해': 'congrats',
+  '질문': 'question', '대답': 'answer',
 }
