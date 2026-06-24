@@ -1,6 +1,7 @@
-import type {Metadata} from 'next'
+import type {Metadata, Viewport} from 'next'
 import {Inter} from 'next/font/google'
 import './globals.css'
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
 
 const inter = Inter({subsets:['latin']})
 
@@ -8,6 +9,9 @@ export const metadata:Metadata={
   title:{template:'%s | ToolBoxy',default:'ToolBoxy – Free Online Tools'},
   description:'ToolBoxy: 100+ free online tools for developers, designers, and everyday users.',
   metadataBase:new URL('https://www.toolboxy.net'),
+  manifest:'/manifest.webmanifest',
+  appleWebApp:{capable:true,title:'ToolBoxy',statusBarStyle:'default'},
+  icons:{icon:'/icon.svg',apple:'/icon.svg'},
   openGraph:{
     type:'website',
     siteName:'ToolBoxy',
@@ -15,11 +19,16 @@ export const metadata:Metadata={
   }
 }
 
+export const viewport:Viewport={
+  themeColor:'#0284c7'
+}
+
 export default function RootLayout({children}:{children:React.ReactNode}){
   return (
     <html suppressHydrationWarning className={inter.className}>
       <body className="bg-white text-gray-900 antialiased">
         {children}
+        <ServiceWorkerRegister/>
       </body>
     </html>
   )

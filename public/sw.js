@@ -1,0 +1,74 @@
+/*
+ * ToolBoxy service worker — conservative, scoped offline support.
+ *
+ * Strategy (chosen to avoid the classic "stuck on an old version" PWA trap):
+ *  - /_next/static/* are content-hashed & immutable -> cache-first (safe forever).
+ *  - HTML navigations -> network-first, so ONLINE users always get fresh pages.
+ *  - Only an allowlist of fully client-side tool pages (dictionaries / antonyms)
+ *    is stored for OFFLINE use; everything else just falls back to an offline page.
+ *  Bump VERSION to force-drop old caches on the next activate.
+ */
+const VERSION = 'v1'
+const STATIC_CACHE = `static-${VERSION}`
+const PAGE_CACHE = `pages-${VERSION}`
+const OFFLINE_URL = '/offline.html'
+
+// Tool slugs that run 100% in the browser and are worth keeping offline.
+const OFFLINE_SLUGS = [
+  'korean-to-japanese', 'korean-to-english', 'japanese-to-korean', 'english-to-korean',
+  'japanese-to-english', 'english-to-japanese', 'korean-antonyms', 'japanese-antonyms', 'english-antonyms',
+]
+const isOfflinePage = (url) => OFFLINE_SLUGS.some((s) => url.pathname.includes(`/tools/${s}`))
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(PAGE_CACHE).then((c) => c.add(OFFLINE_URL)).then(() => self.skipWaiting()),
+  )
+})
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => !k.endsWith(VERSION)).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim()),
+  )
+})
+
+self.addEventListener('fetch', (event) => {
+  const req = event.request
+  if (req.method !== 'GET') return
+  const url = new URL(req.url)
+  if (url.origin !== self.location.origin) return // let CDN/API requests pass straight through
+
+  if (url.pathname.startsWith('/_next/static/')) {
+    event.respondWith(cacheFirst(req))
+    return
+  }
+  if (req.mode === 'navigate') {
+    event.respondWith(navigationHandler(req, url))
+  }
+})
+
+async function cacheFirst(req) {
+  const cache = await caches.open(STATIC_CACHE)
+  const hit = await cache.match(req)
+  if (hit) return hit
+  const res = await fetch(req)
+  if (res.ok) cache.put(req, res.clone())
+  return res
+}
+
+async function navigationHandler(req, url) {
+  try {
+    const res = await fetch(req)
+    if (res.ok && isOfflinePage(url)) {
+      const cache = await caches.open(PAGE_CACHE)
+      cache.put(req, res.clone())
+    }
+    return res
+  } catch (e) {
+    const cached = await caches.match(req)
+    if (cached) return cached
+    return (await caches.match(OFFLINE_URL)) || Response.error()
+  }
+}
