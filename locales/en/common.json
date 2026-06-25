@@ -47,7 +47,7 @@
     "stats_install": "Installation Required",
     "stats_languages": "Languages",
     "save_cta": "Save your favorites & history",
-    "save_cta_sub": "Free account, no credit card required."
+    "save_cta_sub": "Free account — sign up in a minute."
   },
   "tool": {
     "free_badge": "Free",
@@ -715,7 +715,7 @@
   },
   "gate": {
     "title": "Get more from ToolBoxy",
-    "desc": "Create a free account to save your history, bookmark your favorite tools, and get a personal dashboard — no credit card needed.",
+    "desc": "Create a free account to save your history, bookmark your favorite tools, and get a personal dashboard.",
     "create": "Create free account",
     "signin": "Already have an account? Sign in",
     "continue": "Continue without signing up"
@@ -1706,7 +1706,7 @@
     "no_account": "Don’t have an account?",
     "signup_link": "Sign up free",
     "create_account": "Create your account",
-    "signup_subtitle": "Free forever — no credit card required",
+    "signup_subtitle": "Free forever — just sign up",
     "signup_with_email": "Sign up with email",
     "name": "Name",
     "optional": "(optional)",
