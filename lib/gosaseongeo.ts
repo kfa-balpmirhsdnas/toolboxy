@@ -1,4 +1,4 @@
-// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 156).
+// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 196).
 // 성어·뜻은 공유 지식, 유래·예문은 자체 작성(저작권 클린). 확장은 gosaseongeo_확장_지시문.md 참고.
 export interface Idiom { id: string; hanja: string; reading: string; len: number; lit: string; fig: string; origin: string; source: string; example: string; syn: string[]; reviewed: boolean }
 export const IDIOMS: Idiom[] = [
@@ -157,7 +157,47 @@ export const IDIOMS: Idiom[] = [
   {"id":"gs0153","hanja":"誇大妄想","reading":"과대망상","len":4,"lit":"사실보다 부풀려 망령되이 생각함","fig":"자신을 실제보다 크게 평가하는 헛된 생각","origin":"","source":"","example":"근거 없는 자신감은 과대망상일 뿐이다.","syn":[],"reviewed":true},
   {"id":"gs0154","hanja":"權謀術數","reading":"권모술수","len":4,"lit":"권세를 위한 꾀와 술수","fig":"목적을 위해 수단을 가리지 않는 온갖 꾀","origin":"","source":"","example":"그는 권모술수에 능한 사람이다.","syn":[],"reviewed":true},
   {"id":"gs0155","hanja":"群雄割據","reading":"군웅할거","len":4,"lit":"여러 영웅이 땅을 나눠 차지함","fig":"여러 세력이 각지에서 맞서 세력을 떨침","origin":"","source":"","example":"초창기 시장은 군웅할거의 양상이었다.","syn":[],"reviewed":true},
-  {"id":"gs0156","hanja":"今時初聞","reading":"금시초문","len":4,"lit":"지금 처음 들음","fig":"이제야 비로소 처음 들음","origin":"","source":"","example":"그 소식은 금시초문인데?","syn":[],"reviewed":true}
+  {"id":"gs0156","hanja":"今時初聞","reading":"금시초문","len":4,"lit":"지금 처음 들음","fig":"이제야 비로소 처음 들음","origin":"","source":"","example":"그 소식은 금시초문인데?","syn":[],"reviewed":true},
+  {"id":"gs0157","hanja":"美辭麗句","reading":"미사여구","len":4,"lit":"아름다운 말과 고운 글귀","fig":"듣기 좋게 꾸민 말과 글귀","origin":"","source":"","example":"미사여구만 늘어놓지 말고 핵심을 말해라.","syn":[],"reviewed":true},
+  {"id":"gs0158","hanja":"博學多識","reading":"박학다식","len":4,"lit":"널리 배우고 아는 것이 많음","fig":"학식이 넓고 아는 것이 많음","origin":"","source":"","example":"그는 박학다식해서 모르는 게 없다.","syn":[],"reviewed":true},
+  {"id":"gs0159","hanja":"半信半疑","reading":"반신반의","len":4,"lit":"반은 믿고 반은 의심함","fig":"믿으면서도 한편으로는 의심함","origin":"","source":"","example":"그 소문을 반신반의하며 들었다.","syn":[],"reviewed":true},
+  {"id":"gs0160","hanja":"無用之物","reading":"무용지물","len":4,"lit":"쓸데없는 물건","fig":"아무 쓸모가 없는 물건이나 사람","origin":"","source":"","example":"고장 나서 무용지물이 된 기계.","syn":[],"reviewed":true},
+  {"id":"gs0161","hanja":"無爲徒食","reading":"무위도식","len":4,"lit":"하는 일 없이 헛되이 먹기만 함","fig":"일하지 않고 놀고먹음","origin":"","source":"","example":"젊어서 무위도식하면 늙어 고생한다.","syn":[],"reviewed":true},
+  {"id":"gs0162","hanja":"門前成市","reading":"문전성시","len":4,"lit":"문 앞이 저자를 이룸","fig":"찾아오는 사람이 많아 문 앞이 붐빔","origin":"","source":"","example":"맛집으로 소문나 문전성시를 이룬다.","syn":[],"reviewed":true},
+  {"id":"gs0163","hanja":"小貪大失","reading":"소탐대실","len":4,"lit":"작은 것을 탐하다 큰 것을 잃음","fig":"작은 이익을 욕심내다 큰 손해를 봄","origin":"","source":"","example":"할인에 혹해 충동구매하면 소탐대실이다.","syn":[],"reviewed":true},
+  {"id":"gs0164","hanja":"束手無策","reading":"속수무책","len":4,"lit":"손이 묶인 듯 방책이 없음","fig":"어찌할 도리가 없어 꼼짝 못함","origin":"","source":"","example":"갑작스러운 정전에 속수무책이었다.","syn":[],"reviewed":true},
+  {"id":"gs0165","hanja":"袖手傍觀","reading":"수수방관","len":4,"lit":"소매에 손을 넣고 곁에서 봄","fig":"직접 나서지 않고 그저 지켜보기만 함","origin":"","source":"","example":"위험에 빠진 사람을 수수방관할 수 없다.","syn":[],"reviewed":true},
+  {"id":"gs0166","hanja":"信賞必罰","reading":"신상필벌","len":4,"lit":"상은 믿음 있게, 벌은 반드시","fig":"공이 있으면 반드시 상을 주고 죄가 있으면 반드시 벌함","origin":"","source":"한비자","example":"신상필벌이 분명해야 조직이 산다.","syn":[],"reviewed":true},
+  {"id":"gs0167","hanja":"進退兩難","reading":"진퇴양난","len":4,"lit":"나아가기도 물러서기도 어려움","fig":"이러지도 저러지도 못하는 난처한 처지","origin":"","source":"","example":"양쪽 다 거절할 수 없어 진퇴양난이다.","syn":["四面楚歌"],"reviewed":true},
+  {"id":"gs0168","hanja":"千辛萬苦","reading":"천신만고","len":4,"lit":"천 가지 매움과 만 가지 쓴 것","fig":"온갖 어려움과 고생","origin":"","source":"","example":"천신만고 끝에 정상에 올랐다.","syn":[],"reviewed":true},
+  {"id":"gs0169","hanja":"千差萬別","reading":"천차만별","len":4,"lit":"천 가지 차이와 만 가지 구별","fig":"여러 가지가 서로 차이와 구별이 많음","origin":"","source":"","example":"사람마다 취향이 천차만별이다.","syn":[],"reviewed":true},
+  {"id":"gs0170","hanja":"針小棒大","reading":"침소봉대","len":4,"lit":"바늘만 한 것을 몽둥이만 하다고 함","fig":"작은 일을 크게 부풀려 떠벌림","origin":"","source":"","example":"소문이 침소봉대되어 퍼졌다.","syn":[],"reviewed":true},
+  {"id":"gs0171","hanja":"波瀾萬丈","reading":"파란만장","len":4,"lit":"물결이 만 길이나 높음","fig":"일의 진행에 변화와 곡절이 매우 심함","origin":"","source":"","example":"그의 삶은 파란만장한 한 편의 드라마 같았다.","syn":[],"reviewed":true},
+  {"id":"gs0172","hanja":"表裏不同","reading":"표리부동","len":4,"lit":"겉과 속이 같지 않음","fig":"마음이 음흉해 겉과 속이 다름","origin":"","source":"","example":"표리부동한 사람은 믿기 어렵다.","syn":["羊頭狗肉"],"reviewed":true},
+  {"id":"gs0173","hanja":"好事多魔","reading":"호사다마","len":4,"lit":"좋은 일에는 마가 많음","fig":"좋은 일에는 흔히 방해되는 일이 많음","origin":"","source":"","example":"호사다마라더니 잔치 날 비가 쏟아졌다.","syn":[],"reviewed":true},
+  {"id":"gs0174","hanja":"畵中之餠","reading":"화중지병","len":4,"lit":"그림 속의 떡","fig":"보기만 좋을 뿐 차지할 수 없는 것","origin":"","source":"","example":"비싼 차는 내겐 화중지병일 뿐이다.","syn":[],"reviewed":true},
+  {"id":"gs0175","hanja":"蛇足","reading":"사족","len":2,"lit":"뱀의 발","fig":"쓸데없이 덧붙인 군더더기","origin":"뱀을 먼저 그린 사람이 발까지 그려 넣다가 도리어 내기에서 졌다는 이야기에서 비롯","source":"전국책","example":"설명이 충분하니 사족은 빼자.","syn":[],"reviewed":true},
+  {"id":"gs0176","hanja":"咸興差使","reading":"함흥차사","len":4,"lit":"함흥으로 보낸 심부름꾼","fig":"심부름을 가서 소식이 없거나 돌아오지 않는 사람","origin":"태조 이성계가 함흥에 머물 때 보낸 사신들이 돌아오지 못한 데서 비롯했다고 전함","source":"","example":"심부름 보냈더니 함흥차사다.","syn":[],"reviewed":true},
+  {"id":"gs0177","hanja":"安貧樂道","reading":"안빈낙도","len":4,"lit":"가난을 편안히 여기며 도를 즐김","fig":"가난한 가운데서도 편안한 마음으로 분수를 지킴","origin":"","source":"","example":"그는 안빈낙도하며 글을 벗 삼아 산다.","syn":[],"reviewed":true},
+  {"id":"gs0178","hanja":"靑雲之志","reading":"청운지지","len":4,"lit":"푸른 구름의 뜻","fig":"높은 이상이나 큰 포부","origin":"","source":"","example":"청운지지를 품고 도시로 올라왔다.","syn":[],"reviewed":true},
+  {"id":"gs0179","hanja":"初志一貫","reading":"초지일관","len":4,"lit":"처음 뜻을 끝까지 밀고 감","fig":"처음 먹은 마음을 한결같이 지킴","origin":"","source":"","example":"초지일관 한 우물을 판 끝에 성공했다.","syn":[],"reviewed":true},
+  {"id":"gs0180","hanja":"水魚之交","reading":"수어지교","len":4,"lit":"물과 물고기의 사귐","fig":"떼려야 뗄 수 없는 매우 친밀한 사이","origin":"유비가 제갈량과의 사이를 물과 물고기에 빗댄 데서 비롯","source":"삼국지","example":"두 사람은 수어지교처럼 가까웠다.","syn":["莫逆之友"],"reviewed":true},
+  {"id":"gs0181","hanja":"百年偕老","reading":"백년해로","len":4,"lit":"백 년을 함께 늙음","fig":"부부가 화목하게 평생을 함께함","origin":"","source":"","example":"두 분 백년해로하시길 빕니다.","syn":[],"reviewed":true},
+  {"id":"gs0182","hanja":"說往說來","reading":"설왕설래","len":4,"lit":"말이 오가고 옴","fig":"옳고 그름을 따지며 말을 주고받음","origin":"","source":"","example":"결론 없이 설왕설래만 길어졌다.","syn":["甲論乙駁"],"reviewed":true},
+  {"id":"gs0183","hanja":"一刀兩斷","reading":"일도양단","len":4,"lit":"한 칼에 두 도막을 냄","fig":"머뭇거리지 않고 단번에 결단함","origin":"","source":"","example":"고민을 일도양단으로 끊고 결정했다.","syn":[],"reviewed":true},
+  {"id":"gs0184","hanja":"天衣無縫","reading":"천의무봉","len":4,"lit":"하늘 옷에 꿰맨 자국이 없음","fig":"꾸밈없이 자연스럽고 완전무결함","origin":"선녀의 옷에는 바느질 자국이 없다는 이야기에서 비롯","source":"","example":"그의 문장은 천의무봉처럼 자연스럽다.","syn":[],"reviewed":true},
+  {"id":"gs0185","hanja":"胡蝶之夢","reading":"호접지몽","len":4,"lit":"나비의 꿈","fig":"인생의 덧없음, 또는 나와 사물의 경계가 모호함","origin":"장자가 나비가 된 꿈을 꾸고 깨어 내가 나비인지 나비가 나인지 모르겠다고 한 데서 비롯","source":"장자","example":"지난 일이 호접지몽처럼 아득하다.","syn":[],"reviewed":true},
+  {"id":"gs0186","hanja":"亡羊補牢","reading":"망양보뢰","len":4,"lit":"양을 잃고 우리를 고침","fig":"일이 잘못된 뒤에 늦게라도 대비함","origin":"","source":"전국책","example":"사고 후에야 점검하니 망양보뢰인 셈이다.","syn":[],"reviewed":true},
+  {"id":"gs0187","hanja":"良藥苦口","reading":"양약고구","len":4,"lit":"좋은 약은 입에 씀","fig":"바른 충고는 듣기 거북하지만 이로움","origin":"","source":"","example":"양약고구라니 쓴소리도 새겨듣자.","syn":[],"reviewed":true},
+  {"id":"gs0188","hanja":"右往左往","reading":"우왕좌왕","len":4,"lit":"오른쪽으로 갔다 왼쪽으로 갔다 함","fig":"갈팡질팡하며 이리저리 헤맴","origin":"","source":"","example":"안내가 없어 사람들이 우왕좌왕했다.","syn":[],"reviewed":true},
+  {"id":"gs0189","hanja":"東問西答","reading":"동문서답","len":4,"lit":"동쪽을 묻는데 서쪽을 답함","fig":"묻는 말에 엉뚱하게 대답함","origin":"","source":"","example":"질문과 상관없는 동문서답만 한다.","syn":[],"reviewed":true},
+  {"id":"gs0190","hanja":"明若觀火","reading":"명약관화","len":4,"lit":"불을 보듯 분명함","fig":"더 볼 것 없이 매우 명백함","origin":"","source":"","example":"준비 없이 가면 실패할 게 명약관화하다.","syn":[],"reviewed":true},
+  {"id":"gs0191","hanja":"武陵桃源","reading":"무릉도원","len":4,"lit":"무릉의 복숭아꽃 핀 곳","fig":"속세를 떠난 별천지, 이상향","origin":"한 어부가 복숭아꽃을 따라 들어간 골짜기에서 평화로운 마을을 만났다는 이야기에서 비롯","source":"","example":"한적한 시골이 무릉도원이 따로 없다.","syn":[],"reviewed":true},
+  {"id":"gs0192","hanja":"百尺竿頭","reading":"백척간두","len":4,"lit":"백 자나 되는 장대 끝","fig":"몹시 위태롭고 어려운 지경","origin":"","source":"","example":"회사가 백척간두의 위기에 놓였다.","syn":["風前燈火","累卵之危"],"reviewed":true},
+  {"id":"gs0193","hanja":"一攫千金","reading":"일확천금","len":4,"lit":"한 번에 천금을 움켜쥠","fig":"단번에 큰돈을 얻음","origin":"","source":"","example":"일확천금을 노리다 가진 것마저 잃었다.","syn":[],"reviewed":true},
+  {"id":"gs0194","hanja":"莫逆之友","reading":"막역지우","len":4,"lit":"거스름이 없는 벗","fig":"허물없이 아주 친한 친구","origin":"","source":"장자","example":"그와는 어릴 적부터 막역지우다.","syn":["竹馬故友","水魚之交"],"reviewed":true},
+  {"id":"gs0195","hanja":"見利思義","reading":"견리사의","len":4,"lit":"이익을 보면 의로움을 생각함","fig":"이익 앞에서 옳음을 먼저 헤아림","origin":"","source":"논어","example":"견리사의를 새겨 부정한 돈은 멀리한다.","syn":[],"reviewed":true},
+  {"id":"gs0196","hanja":"天佑神助","reading":"천우신조","len":4,"lit":"하늘이 돕고 신이 도움","fig":"뜻밖에 큰 도움을 받아 어려움을 벗어남","origin":"","source":"","example":"천우신조로 사고를 면했다.","syn":[],"reviewed":true}
 ]
 export const BY_READING: Record<string, Idiom> = Object.fromEntries(IDIOMS.map(i => [i.reading, i]))
 
