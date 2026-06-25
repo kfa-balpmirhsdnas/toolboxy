@@ -1,4 +1,4 @@
-export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science' | 'time' | 'device' | 'world'
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science' | 'time' | 'device' | 'world' | 'social'
 export type Phase = 1 | 2 | 3
 
 export interface ToolMeta {
@@ -132,6 +132,13 @@ export const TOOLS: ToolMeta[] = [
   {slug:'capital-quiz',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['수도 퀴즈','나라 수도','capital quiz','world capitals','수도 맞히기'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'country-compare',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['나라 정보 비교','국가 비교','country compare','compare countries','나라 비교'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'capital-distance',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['두 도시 거리','수도 간 거리','distance between cities','capital distance','도시 거리 계산'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'time-difference',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['시차 계산기','나라 시차','time difference','한국 미국 시차','timezone difference'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'plug-type',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['나라별 콘센트','플러그 타입','power plug type','콘센트 모양','travel adapter'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'youtube-thumbnail',category:'image',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['유튜브 썸네일','썸네일 다운로드','youtube thumbnail','thumbnail downloader','유튜브 이미지'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'savings-calculator',category:'finance',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['적금 계산기','적금 이자','savings calculator','만기 수령액','적금 만기'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'social-character-counter',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['글자수 세기','sns 글자수','character counter','instagram caption length','트위터 글자수'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'instagram-line-break',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['인스타 줄바꿈','인스타그램 줄바꿈','instagram line break','캡션 줄바꿈','띄어쓰기'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'hashtag-generator',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['해시태그 생성','해시태그 만들기','hashtag generator','인스타 해시태그','#태그'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'voice-recorder',category:'audio',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['voice recorder','audio','microphone','record','ボイスレコーダー','음성 녹음'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'tone-generator',category:'audio',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['tone','frequency','hz','sound','test','トーン','주파수'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'merge-pdf',category:'pdf',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['pdf','merge','combine','join','結合','병합'],maxFileSizeMB:{free:0,pro:0} },
@@ -438,4 +445,5 @@ export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; 
   time:      { label: 'Time',      icon: String.fromCodePoint(0x23F0), color: 'sky'    },
   device:    { label: 'Device Test', icon: String.fromCodePoint(0x1F5A5, 0xFE0F), color: 'slate' },
   world:     { label: 'World',      icon: String.fromCodePoint(0x1F30F), color: 'cyan' },
+  social:    { label: 'Social',     icon: String.fromCodePoint(0x1F4F1), color: 'pink' },
 };
