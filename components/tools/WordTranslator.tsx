@@ -68,6 +68,7 @@ export default function WordTranslator({ slug, from, to, lang }: { slug: string;
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4">
         <input value={input} onChange={(e) => onChange(e.target.value)} autoFocus
+          autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} data-1p-ignore data-lpignore="true"
           onFocus={loadDict}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setHeld(result || null); setInput(''); setCopied(false) } }}
           onPointerDown={(e) => {
