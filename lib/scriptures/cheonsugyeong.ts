@@ -146,7 +146,7 @@ export const CHEONSUGYEONG: SutraLine[] = [
     "repeat": 1,
     "note": "대비주를 청하는 계청",
     "translationJa": "とらわれのない大いなる慈悲心の大陀羅尼を請い、お受けします",
-    "readingJa": "むげ だいひしん だいだらに けいしん"
+    "readingJa": "むげ だいひしん だいだらに けいしょう"
   },
   {
     "order": 10,
@@ -832,7 +832,7 @@ export const CHEONSUGYEONG: SutraLine[] = [
     "repeat": 1,
     "note": "신묘한 대다라니 / 음역 진언 — 번역하지 않고 음 그대로 봉독",
     "translationJa": "",
-    "readingJa": "りんとうばー なむ のらーきんじー けいりー もこーはーやーまーしゃーみー さーぼーおーとうじょー しゅーべん おーしゅーいん"
+    "readingJa": "りんとうばー なむ のらーきんじー けいりー もこーはーどーしゃーめー さーぼーおーとうじょー しゅーべん おーしゅーいん"
   },
   {
     "order": 59,
@@ -888,7 +888,7 @@ export const CHEONSUGYEONG: SutraLine[] = [
     "repeat": 1,
     "note": "신묘한 대다라니 / 음역 진언 — 번역하지 않고 음 그대로 봉독",
     "translationJa": "",
-    "readingJa": "だーらーだーらー ちりにー しふらーやー しゃーらーしゃーらー ま ま はーまーらー"
+    "readingJa": "だーらーだーらー ちりにー しふらーやー しゃーらーしゃーらー まーまーはーまーらー"
   },
   {
     "order": 63,
