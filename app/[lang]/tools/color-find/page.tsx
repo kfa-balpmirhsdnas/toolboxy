@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('color-find')!
@@ -23,9 +24,12 @@ export default function ColorFindPage({ params }: { params: { lang: string } }) 
   const [board, setBoard] = useState(() => makeLevel(1))
   const [time, setTime] = useState(30)
   const [over, setOver] = useState(false)
+  const [best, setBest] = useState(0)
 
   const start = useCallback(() => { setLevel(1); setBoard(makeLevel(1)); setTime(30); setOver(false) }, [])
+  useEffect(() => { setBest(+(localStorage.getItem('colorfind-best') || 0)) }, [])
   useEffect(() => { if (over) return; const id = setInterval(() => setTime((tm) => { if (tm <= 0.1) { setOver(true); return 0 } return tm - 0.1 }), 100); return () => clearInterval(id) }, [over])
+  useEffect(() => { if (over) setBest((b) => { const nb = Math.max(b, level); localStorage.setItem('colorfind-best', String(nb)); return nb }) }, [over]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function pick(i: number) {
     if (over) return
@@ -53,6 +57,7 @@ export default function ColorFindPage({ params }: { params: { lang: string } }) 
         <button onClick={start} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{over ? t('cf2_retry') : t('cf2_new')}</button>
         <p className="text-xs text-gray-400">{t('cf2_note')}</p>
       </div>
+      <Leaderboard game="color-find" score={best || null} better="higher" />
     </ToolLayout>
   )
 }

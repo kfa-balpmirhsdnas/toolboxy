@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('game-2048')!
@@ -74,6 +75,7 @@ export default function Game2048Page({ params }: { params: { lang: string } }) {
         <button onClick={reset} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('g2_new')}</button>
         <p className="text-xs text-gray-400">{t('g2_note')}</p>
       </div>
+      <Leaderboard game="game-2048" score={best || null} better="higher" />
     </ToolLayout>
   )
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('number-order')!
@@ -52,6 +53,7 @@ export default function NumberOrderPage({ params }: { params: { lang: string } }
         {done && <div className="rounded-xl bg-emerald-50 text-emerald-700 py-3 font-semibold">{t('no_done', { time: time.toFixed(1) })}</div>}
         <button onClick={reset} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('no_new')}</button>
       </div>
+      <Leaderboard game="number-order" score={best != null ? Math.round(best * 10) / 10 : null} unit=" s" better="lower" />
     </ToolLayout>
   )
 }

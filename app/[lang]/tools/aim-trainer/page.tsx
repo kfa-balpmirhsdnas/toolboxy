@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('aim-trainer')!
@@ -51,6 +52,7 @@ export default function AimTrainerPage({ params }: { params: { lang: string } })
         </div>
         <p className="text-xs text-gray-400">{t('at_note')}</p>
       </div>
+      <Leaderboard game="aim-trainer" score={best || null} better="higher" />
     </ToolLayout>
   )
 }
