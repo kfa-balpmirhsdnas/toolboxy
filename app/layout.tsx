@@ -3,6 +3,7 @@ import {Inter} from 'next/font/google'
 import './globals.css'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
 import DynamicManifest from '@/components/DynamicManifest'
+import {Analytics} from '@vercel/analytics/react'
 
 const inter = Inter({subsets:['latin']})
 
@@ -31,6 +32,7 @@ export default function RootLayout({children}:{children:React.ReactNode}){
         {children}
         <DynamicManifest/>
         <ServiceWorkerRegister/>
+        <Analytics/>
       </body>
     </html>
   )
