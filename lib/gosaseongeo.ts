@@ -1,4 +1,4 @@
-// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 300).
+// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 340).
 // 성어·뜻은 공유 지식, 유래·예문은 자체 작성(저작권 클린). 확장은 gosaseongeo_확장_지시문.md 참고.
 export interface Idiom { id: string; hanja: string; reading: string; len: number; lit: string; fig: string; origin: string; source: string; example: string; syn: string[]; reviewed: boolean }
 export const IDIOMS: Idiom[] = [
@@ -301,7 +301,47 @@ export const IDIOMS: Idiom[] = [
   {"id":"gs0297","hanja":"命在頃刻","reading":"명재경각","len":4,"lit":"목숨이 짧은 순간에 달림","fig":"거의 죽게 되어 곧 숨이 끊어질 지경","origin":"","source":"","example":"환자가 명재경각의 위태로운 상태다.","syn":["風前燈火"],"reviewed":true},
   {"id":"gs0298","hanja":"一言半句","reading":"일언반구","len":4,"lit":"한 마디 말과 반 구절","fig":"아주 짧은 말","origin":"","source":"","example":"일언반구 사과도 없었다.","syn":[],"reviewed":true},
   {"id":"gs0299","hanja":"萬古不變","reading":"만고불변","len":4,"lit":"오랜 세월 변하지 않음","fig":"아주 오랜 세월 동안 변함이 없음","origin":"","source":"","example":"우정만은 만고불변이길 바란다.","syn":[],"reviewed":true},
-  {"id":"gs0300","hanja":"格物致知","reading":"격물치지","len":4,"lit":"사물을 궁구해 앎에 이름","fig":"사물의 이치를 끝까지 따져 참된 앎에 이름","origin":"","source":"대학","example":"격물치지의 자세로 깊이 파고들었다.","syn":[],"reviewed":true}
+  {"id":"gs0300","hanja":"格物致知","reading":"격물치지","len":4,"lit":"사물을 궁구해 앎에 이름","fig":"사물의 이치를 끝까지 따져 참된 앎에 이름","origin":"","source":"대학","example":"격물치지의 자세로 깊이 파고들었다.","syn":[],"reviewed":true},
+  {"id":"gs0301","hanja":"虎視眈眈","reading":"호시탐탐","len":4,"lit":"호랑이가 노려봄","fig":"기회를 노리며 가만히 형세를 엿봄","origin":"","source":"","example":"경쟁사가 호시탐탐 기회를 엿본다.","syn":[],"reviewed":true},
+  {"id":"gs0302","hanja":"左衝右突","reading":"좌충우돌","len":4,"lit":"왼쪽을 찌르고 오른쪽을 부딪침","fig":"이리저리 마구 치고받거나 부딪침","origin":"","source":"","example":"준비 없이 좌충우돌하며 일을 배웠다.","syn":[],"reviewed":true},
+  {"id":"gs0303","hanja":"雨後竹筍","reading":"우후죽순","len":4,"lit":"비 온 뒤의 죽순","fig":"어떤 일이 한때에 많이 생겨남","origin":"","source":"","example":"새 카페가 우후죽순처럼 생겼다.","syn":[],"reviewed":true},
+  {"id":"gs0304","hanja":"刮目相對","reading":"괄목상대","len":4,"lit":"눈을 비비고 다시 봄","fig":"남의 학식이나 재주가 부쩍 는 것을 보고 놀람","origin":"오나라 여몽이 학문에 힘써 몰라보게 발전하자 노숙이 눈을 비비고 다시 보았다는 이야기에서 비롯","source":"삼국지","example":"몇 달 새 실력이 늘어 괄목상대했다.","syn":["日就月將"],"reviewed":true},
+  {"id":"gs0305","hanja":"人面獸心","reading":"인면수심","len":4,"lit":"사람 얼굴에 짐승의 마음","fig":"사람의 도리를 저버린 흉악한 마음","origin":"","source":"","example":"그런 짓을 하다니 인면수심이다.","syn":[],"reviewed":true},
+  {"id":"gs0306","hanja":"烏飛梨落","reading":"오비이락","len":4,"lit":"까마귀 날자 배 떨어짐","fig":"우연히 일이 겹쳐 공연히 의심을 받음","origin":"","source":"","example":"오비이락으로 괜한 오해를 샀다.","syn":[],"reviewed":true},
+  {"id":"gs0307","hanja":"天人共怒","reading":"천인공노","len":4,"lit":"하늘과 사람이 함께 분노함","fig":"누구나 분노할 만큼 행위가 몹시 악함","origin":"","source":"","example":"천인공노할 만행이다.","syn":[],"reviewed":true},
+  {"id":"gs0308","hanja":"立身揚名","reading":"입신양명","len":4,"lit":"몸을 세우고 이름을 떨침","fig":"출세하여 이름을 세상에 떨침","origin":"","source":"","example":"입신양명보다 사람됨이 먼저다.","syn":["錦衣還鄕"],"reviewed":true},
+  {"id":"gs0309","hanja":"多事多難","reading":"다사다난","len":4,"lit":"일도 많고 어려움도 많음","fig":"여러 가지 일과 어려움이 많음","origin":"","source":"","example":"다사다난했던 한 해가 저문다.","syn":[],"reviewed":true},
+  {"id":"gs0310","hanja":"珍羞盛饌","reading":"진수성찬","len":4,"lit":"진귀한 음식과 푸짐한 상","fig":"푸짐하게 잘 차린 음식","origin":"","source":"","example":"명절이라 진수성찬을 차렸다.","syn":["山海珍味"],"reviewed":true},
+  {"id":"gs0311","hanja":"龍虎相搏","reading":"용호상박","len":4,"lit":"용과 호랑이가 서로 싸움","fig":"강한 둘이 맞서 서로 싸움","origin":"","source":"","example":"두 강팀의 용호상박이 펼쳐졌다.","syn":["難兄難弟"],"reviewed":true},
+  {"id":"gs0312","hanja":"天壤之差","reading":"천양지차","len":4,"lit":"하늘과 땅의 차이","fig":"차이가 엄청나게 큼","origin":"","source":"","example":"둘의 실력은 천양지차다.","syn":[],"reviewed":true},
+  {"id":"gs0313","hanja":"伯仲之勢","reading":"백중지세","len":4,"lit":"맏이와 둘째의 형세","fig":"우열을 가리기 어려운 비슷한 형세","origin":"","source":"","example":"두 후보가 백중지세를 이룬다.","syn":["難兄難弟","莫上莫下"],"reviewed":true},
+  {"id":"gs0314","hanja":"不撤晝夜","reading":"불철주야","len":4,"lit":"밤낮을 가리지 않음","fig":"밤낮없이 쉬지 않고 함","origin":"","source":"","example":"불철주야 연구에 매달렸다.","syn":[],"reviewed":true},
+  {"id":"gs0315","hanja":"豪言壯談","reading":"호언장담","len":4,"lit":"호기롭고 장한 말","fig":"분수에 넘치게 큰소리침","origin":"","source":"","example":"우승을 호언장담했다.","syn":[],"reviewed":true},
+  {"id":"gs0316","hanja":"重言復言","reading":"중언부언","len":4,"lit":"한 말을 거듭함","fig":"이미 한 말을 자꾸 되풀이함","origin":"","source":"","example":"요점 없이 중언부언했다.","syn":[],"reviewed":true},
+  {"id":"gs0317","hanja":"靑天白日","reading":"청천백일","len":4,"lit":"맑은 하늘의 밝은 해","fig":"환히 드러난 결백, 또는 맑게 갠 날씨","origin":"","source":"","example":"청천백일 아래 결백이 밝혀졌다.","syn":[],"reviewed":true},
+  {"id":"gs0318","hanja":"君子三樂","reading":"군자삼락","len":4,"lit":"군자의 세 가지 즐거움","fig":"군자가 누리는 세 가지 참된 즐거움","origin":"맹자가 말한, 부모 형제의 무고함 등 군자의 세 즐거움에서 비롯","source":"맹자","example":"가족의 건강이 군자삼락의 으뜸이다.","syn":[],"reviewed":true},
+  {"id":"gs0319","hanja":"百年佳約","reading":"백년가약","len":4,"lit":"백 년의 아름다운 언약","fig":"부부가 되기로 한 약속","origin":"","source":"","example":"두 사람이 백년가약을 맺었다.","syn":["百年偕老"],"reviewed":true},
+  {"id":"gs0320","hanja":"十伐之木","reading":"십벌지목","len":4,"lit":"열 번 찍은 나무","fig":"꾸준히 애쓰면 안 되는 일이 없음","origin":"","source":"","example":"십벌지목이라고, 거듭 설득해 마음을 돌렸다.","syn":["愚公移山","磨斧作針"],"reviewed":true},
+  {"id":"gs0321","hanja":"一罰百戒","reading":"일벌백계","len":4,"lit":"한 사람을 벌해 백 사람을 경계함","fig":"본보기로 엄하게 벌해 다른 이를 경계함","origin":"","source":"","example":"일벌백계로 기강을 세웠다.","syn":["信賞必罰"],"reviewed":true},
+  {"id":"gs0322","hanja":"泣斬馬謖","reading":"읍참마속","len":4,"lit":"울며 마속을 벰","fig":"큰 목적을 위해 아끼는 사람도 법대로 처단함","origin":"제갈량이 군령을 어긴, 아끼던 장수 마속을 눈물을 흘리며 처형한 이야기에서 비롯","source":"삼국지","example":"읍참마속의 심정으로 결단했다.","syn":[],"reviewed":true},
+  {"id":"gs0323","hanja":"三人成虎","reading":"삼인성호","len":4,"lit":"세 사람이 호랑이를 만듦","fig":"거짓말도 여럿이 하면 사실처럼 믿게 됨","origin":"세 사람이 저자에 호랑이가 나타났다고 하면 믿게 된다는 데서 비롯","source":"전국책","example":"삼인성호라더니 헛소문이 사실처럼 퍼졌다.","syn":[],"reviewed":true},
+  {"id":"gs0324","hanja":"鳥足之血","reading":"조족지혈","len":4,"lit":"새 발의 피","fig":"매우 적은 분량","origin":"","source":"","example":"내 고생은 그에 비하면 조족지혈이다.","syn":["九牛一毛"],"reviewed":true},
+  {"id":"gs0325","hanja":"群盲撫象","reading":"군맹무상","len":4,"lit":"여러 장님이 코끼리를 만짐","fig":"사물의 일부만 보고 전체를 잘못 판단함","origin":"여러 장님이 코끼리의 한 부분씩만 만지고 제각기 다르게 말했다는 이야기에서 비롯","source":"","example":"전체를 못 보고 군맹무상으로 단정했다.","syn":[],"reviewed":true},
+  {"id":"gs0326","hanja":"望雲之情","reading":"망운지정","len":4,"lit":"구름을 바라보는 마음","fig":"타향에서 부모를 그리는 마음","origin":"","source":"","example":"객지에서 망운지정에 잠겼다.","syn":[],"reviewed":true},
+  {"id":"gs0327","hanja":"伯牙絶絃","reading":"백아절현","len":4,"lit":"백아가 거문고 줄을 끊음","fig":"자기를 알아주던 벗의 죽음을 슬퍼함","origin":"거문고 명인 백아가 소리를 알아주던 종자기가 죽자 거문고 줄을 끊고 다시는 타지 않았다는 이야기에서 비롯","source":"열자","example":"벗을 잃은 슬픔이 백아절현 같았다.","syn":[],"reviewed":true},
+  {"id":"gs0328","hanja":"管鮑之交","reading":"관포지교","len":4,"lit":"관중과 포숙의 사귐","fig":"서로 깊이 이해하는 변치 않는 우정","origin":"관중과 포숙아의 변함없는 우정에서 비롯","source":"사기","example":"관포지교 같은 벗을 두었다.","syn":["莫逆之友","金蘭之交"],"reviewed":true},
+  {"id":"gs0329","hanja":"門前薄待","reading":"문전박대","len":4,"lit":"문 앞에서 푸대접함","fig":"찾아온 이를 인정 없이 모질게 대함","origin":"","source":"","example":"도움을 청하러 갔다 문전박대를 당했다.","syn":[],"reviewed":true},
+  {"id":"gs0330","hanja":"老馬之智","reading":"노마지지","len":4,"lit":"늙은 말의 지혜","fig":"경험 많은 이의 지혜","origin":"길을 잃었을 때 늙은 말을 풀어 그 뒤를 따라 길을 찾았다는 이야기에서 비롯","source":"한비자","example":"노마지지라고, 선배의 조언이 큰 힘이 됐다.","syn":[],"reviewed":true},
+  {"id":"gs0331","hanja":"危機一髮","reading":"위기일발","len":4,"lit":"머리카락 한 올에 걸린 위기","fig":"조금도 여유가 없는 매우 위급한 순간","origin":"","source":"","example":"위기일발의 순간에 가까스로 피했다.","syn":["風前燈火","一觸卽發"],"reviewed":true},
+  {"id":"gs0332","hanja":"進退維谷","reading":"진퇴유곡","len":4,"lit":"나아가도 물러나도 골짜기","fig":"이러지도 저러지도 못하는 궁지","origin":"","source":"","example":"어느 쪽도 택할 수 없는 진퇴유곡이었다.","syn":["進退兩難","四面楚歌"],"reviewed":true},
+  {"id":"gs0333","hanja":"默默不答","reading":"묵묵부답","len":4,"lit":"잠잠히 답하지 않음","fig":"아무 대답도 하지 않음","origin":"","source":"","example":"이유를 물어도 묵묵부답이었다.","syn":["緘口無言"],"reviewed":true},
+  {"id":"gs0334","hanja":"不撓不屈","reading":"불요불굴","len":4,"lit":"휘지도 굽히지도 않음","fig":"어떤 어려움에도 결코 굽히지 않음","origin":"","source":"","example":"불요불굴의 의지로 끝까지 싸웠다.","syn":["百折不屈","七顚八起"],"reviewed":true},
+  {"id":"gs0335","hanja":"發憤忘食","reading":"발분망식","len":4,"lit":"분발하여 먹는 것도 잊음","fig":"끼니를 잊을 만큼 어떤 일에 열중함","origin":"","source":"논어","example":"발분망식하며 연구에 몰두했다.","syn":[],"reviewed":true},
+  {"id":"gs0336","hanja":"滅私奉公","reading":"멸사봉공","len":4,"lit":"사사로움을 버리고 공을 받듦","fig":"사욕을 버리고 공익을 위해 힘씀","origin":"","source":"","example":"멸사봉공의 정신으로 헌신했다.","syn":["先公後私"],"reviewed":true},
+  {"id":"gs0337","hanja":"意氣揚揚","reading":"의기양양","len":4,"lit":"뜻과 기운이 드높음","fig":"뜻한 바를 이뤄 우쭐하며 기운참","origin":"","source":"","example":"우승하고 의기양양하게 돌아왔다.","syn":[],"reviewed":true},
+  {"id":"gs0338","hanja":"意氣銷沈","reading":"의기소침","len":4,"lit":"뜻과 기운이 사그라듦","fig":"기운이 꺾여 풀이 죽음","origin":"","source":"","example":"거듭된 실패에 의기소침해졌다.","syn":[],"reviewed":true},
+  {"id":"gs0339","hanja":"魂飛魄散","reading":"혼비백산","len":4,"lit":"혼이 날고 넋이 흩어짐","fig":"몹시 놀라 정신이 없음","origin":"","source":"","example":"갑작스러운 소리에 혼비백산했다.","syn":[],"reviewed":true},
+  {"id":"gs0340","hanja":"憤氣撐天","reading":"분기탱천","len":4,"lit":"분한 기운이 하늘을 찌름","fig":"분한 마음이 하늘을 찌를 듯 북받침","origin":"","source":"","example":"억울함에 분기탱천했다.","syn":["切齒腐心"],"reviewed":true}
 ]
 export const BY_READING: Record<string, Idiom> = Object.fromEntries(IDIOMS.map(i => [i.reading, i]))
 
