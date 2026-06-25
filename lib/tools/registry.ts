@@ -63,6 +63,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'text-to-speech',category:'audio',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['text to speech','tts','음성 변환','텍스트 음성 변환','読み上げ','voice generator'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'daedarani',category:'classics',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['신묘장구대다라니','대다라니','대비주','108독','daedarani'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'banyasimgyeong',category:'classics',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['반야심경','반야심경 한글','반야심경 해석','반야심경 독송','한글 반야심경','heart sutra'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'cheonsugyeong',category:'classics',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['천수경','천수경 한글','천수경 해석','천수경 독송','한글 천수경','buddhist sutra'],maxFileSizeMB:{free:0,pro:0} },

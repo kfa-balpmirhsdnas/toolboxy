@@ -91,6 +91,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "text-to-speech": "Free text-to-speech tool that reads your text aloud in a natural voice. Choose a voice, adjust speed, pitch, and volume, and follow along with word highlighting — runs right in your browser, no install.",
     "daedarani": "Free Great Compassion Dharani (신묘장구대다라니) reciter — follow the reading aloud with a 7/21/108 repetition counter, current-line highlight, auto-scroll, and adjustable speed. Runs right in your browser, no install.",
     "banyasimgyeong": "Free Heart Sutra (Banya-simgyeong / 般若心経) viewer showing the Hanja original, reading, and meaning together, with auto-recitation — spoken aloud with the current line highlighted, auto-scroll, repeat, and adjustable speed. Runs right in your browser.",
     "cheonsugyeong": "Free Cheonsugyeong (Thousand-Hands Sutra) viewer showing the Hanja original, Korean reading, and meaning together, with auto-recitation — spoken aloud with the current line highlighted, auto-scroll, repeat, and adjustable speed. Runs right in your browser.",
@@ -723,6 +724,19 @@
     "continue": "Continue without signing up"
   },
   "langTools": {
+    "text-to-speech": {
+      "intro": "Type text and it reads it aloud. Choose a voice and adjust speed, pitch, and volume.",
+      "faq": [
+        {
+          "q": "No sound / the voice list is empty.",
+          "a": "It uses the text-to-speech voices installed on your browser/device. If the list is empty, add a voice in your system settings. Some mobile browsers only play sound after you tap the screen once."
+        },
+        {
+          "q": "Can I save the spoken audio as a file?",
+          "a": "No. Browser speech synthesis only supports live playback, not exporting an audio file. Everything runs on your device and your text is never sent anywhere."
+        }
+      ]
+    },
     "daedarani": {
       "intro": "Follow the Great Compassion Dharani by its reading and chant it with a 7/21/108 repetition counter.",
       "faq": [
@@ -1392,6 +1406,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "text-to-speech": "A text-to-speech (TTS) tool that reads your text aloud. It uses your browser's built-in speech synthesis: paste your text, press ▶, and it speaks immediately. Choose from the voices installed on your device (different languages and genders), adjust the speed, pitch, and volume, and the word being spoken is highlighted as it reads. Everything runs on your device, so your text is never sent anywhere, and it's free with no install. Available voices and languages depend on your device and browser, and because it's a live playback tool, there's no option to save the audio as a file.",
     "daedarani": "The Great Compassion Dharani (신묘장구대다라니 / 大悲呪) lifted out of the Cheonsugyeong as a focused tool for daily repeated chanting. It is a transliterated mantra invoking the great compassion of Avalokiteśvara (Gwaneum), so it is chanted for its sound rather than translated. Press ▶ and it recites line by line, highlighting the current line and auto-scrolling; each full pass adds one to the count and it stops when you reach your goal (7, 21, or 108). Tap +1 to count rounds you chant yourself, and adjust speed, text size, and dark mode. In Japanese it is recited with the Japanese 大悲呪 reading. Everything runs in your browser, so it works offline with no installation.",
     "banyasimgyeong": "A viewer for reading and reciting the Heart Sutra (Banya-simgyeong / 般若心経). Toggle the Hanja original, the reading, and the meaning on or off and read them side by side; press Recite and it reads the sutra aloud one line at a time, highlighting the current line and auto-scrolling. Adjust speed, text size, loop, and dark mode, and save favorite lines with ★. The meaning is ToolBoxy's own plain rendering. Everything runs in your browser, so it works offline with no installation.",
     "cheonsugyeong": "A viewer for reading and reciting the Cheonsugyeong (Thousand-Hands Sutra). Toggle the Hanja original, the Korean reading, and the meaning on or off and read them side by side; press Recite and it reads the sutra aloud one line at a time, highlighting the current line and auto-scrolling so it's easy to follow. Lines that are chanted several times show a repeat count, and you can adjust the recitation speed. The original Hanja and reading are public domain; the meaning is ToolBoxy's own plain rendering, so its wording differs from any standard translation, and mantras (진언/다라니) are kept as transliterations rather than translated. Everything runs in your browser, so it works offline with no installation.",
@@ -1635,6 +1650,11 @@
   },
   "howto": {
     "title": "How to use",
+    "text-to-speech": [
+      "Type or paste the text you want read aloud.",
+      "Pick a voice (language and gender) and adjust speed, pitch, and volume.",
+      "Press ▶ to play, and use pause/stop to control it. The word being spoken is highlighted."
+    ],
     "daedarani": [
       "Pick your goal (7, 21, 108, or ∞) and press ▶ to recite aloud and auto-repeat.",
       "Each full pass adds one to the count and it stops at your goal. Chanting yourself? Tap +1 to count and ↺ to reset.",
@@ -1890,6 +1910,20 @@
     "dd_count": "Recitations",
     "dd_target": "Goal",
     "dd_reset": "Reset",
+    "tts_title": "Text to Speech (TTS)",
+    "tts_subtitle": "Free tool that reads your text aloud in a natural voice. Adjust voice, speed, pitch, and volume — right in your browser, no install.",
+    "tts_text": "Text",
+    "tts_placeholder": "Type or paste text to read aloud…",
+    "tts_sample": "Hello! I'll read this text aloud for you. Try changing the voice and the speed.",
+    "tts_pitch": "Pitch",
+    "tts_volume": "Volume",
+    "tts_play": "Play",
+    "tts_pause": "Pause",
+    "tts_stop": "Stop",
+    "tts_resume": "Resume",
+    "tts_no_voice": "No voices available",
+    "tts_no_voice_hint": "No text-to-speech voices are installed on this device. Add a voice in your system settings to use this tool.",
+    "tts_note": "Uses your browser's built-in speech synthesis (Web Speech); everything runs on your device. Available voices and languages depend on your device/browser. This is a live playback tool and does not export audio files.",
     "dd_intro": "A dharani invoking the great compassion of Avalokiteśvara (Gwaneum). It is chanted for its sound rather than translated, repeated in rounds such as 7, 21, or 108. Press ▶ and each full pass adds one count; or tap +1 to count rounds you chant yourself.",
     "cs_size": "Size",
     "cs_voice": "Voice",
@@ -1912,11 +1946,13 @@
     "cs_top": "Back to top"
   },
   "toolTags": {
+    "text-to-speech": ["text to speech", "TTS", "voice generator", "read aloud", "speech synthesis"],
     "daedarani": ["Great Compassion Dharani", "Daedarani", "Nilakantha Dharani", "108 recitations", "dharani"],
     "banyasimgyeong": ["Heart Sutra", "Banya-simgyeong", "Prajnaparamita", "Buddhist sutra", "sutra recitation"],
     "cheonsugyeong": ["Cheonsugyeong", "Thousand-Hands Sutra", "Great Compassion Dharani", "Buddhist sutra", "sutra recitation"]
   },
   "toolNames": {
+    "text-to-speech": "Text to Speech (TTS)",
     "daedarani": "Great Compassion Dharani (108 Recitations)",
     "banyasimgyeong": "Heart Sutra (Banya-simgyeong)",
     "cheonsugyeong": "Cheonsugyeong (Thousand-Hands Sutra)",
