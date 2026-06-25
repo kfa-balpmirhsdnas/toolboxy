@@ -1,4 +1,4 @@
-// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 276).
+// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 300).
 // 성어·뜻은 공유 지식, 유래·예문은 자체 작성(저작권 클린). 확장은 gosaseongeo_확장_지시문.md 참고.
 export interface Idiom { id: string; hanja: string; reading: string; len: number; lit: string; fig: string; origin: string; source: string; example: string; syn: string[]; reviewed: boolean }
 export const IDIOMS: Idiom[] = [
@@ -277,7 +277,31 @@ export const IDIOMS: Idiom[] = [
   {"id":"gs0273","hanja":"快刀亂麻","reading":"쾌도난마","len":4,"lit":"잘 드는 칼로 엉킨 삼을 자름","fig":"복잡한 일을 단번에 시원하게 처리함","origin":"","source":"","example":"쾌도난마로 문제를 해결했다.","syn":["一刀兩斷"],"reviewed":true},
   {"id":"gs0274","hanja":"破顔大笑","reading":"파안대소","len":4,"lit":"얼굴을 활짝 펴고 크게 웃음","fig":"즐겁게 활짝 웃음","origin":"","source":"","example":"오랜만에 만나 파안대소했다.","syn":["拍掌大笑"],"reviewed":true},
   {"id":"gs0275","hanja":"虛心坦懷","reading":"허심탄회","len":4,"lit":"마음을 비우고 생각을 터놓음","fig":"거리낌 없이 솔직하게 마음을 터놓음","origin":"","source":"","example":"허심탄회하게 이야기를 나눴다.","syn":[],"reviewed":true},
-  {"id":"gs0276","hanja":"形形色色","reading":"형형색색","len":4,"lit":"모양과 빛깔이 갖가지","fig":"종류와 모양이 가지각색","origin":"","source":"","example":"형형색색의 등불이 거리를 밝혔다.","syn":[],"reviewed":true}
+  {"id":"gs0276","hanja":"形形色色","reading":"형형색색","len":4,"lit":"모양과 빛깔이 갖가지","fig":"종류와 모양이 가지각색","origin":"","source":"","example":"형형색색의 등불이 거리를 밝혔다.","syn":[],"reviewed":true},
+  {"id":"gs0277","hanja":"天生緣分","reading":"천생연분","len":4,"lit":"하늘이 정해 준 인연","fig":"하늘이 맺어 준 것처럼 잘 어울리는 인연","origin":"","source":"","example":"둘은 천생연분처럼 잘 맞는다.","syn":[],"reviewed":true},
+  {"id":"gs0278","hanja":"風飛雹散","reading":"풍비박산","len":4,"lit":"바람에 날리고 우박처럼 흩어짐","fig":"사방으로 산산이 흩어짐","origin":"","source":"","example":"사업이 망해 가족이 풍비박산 났다.","syn":[],"reviewed":true},
+  {"id":"gs0279","hanja":"百年大計","reading":"백년대계","len":4,"lit":"백 년의 큰 계획","fig":"먼 앞날을 내다본 큰 계획","origin":"","source":"","example":"교육은 나라의 백년대계다.","syn":[],"reviewed":true},
+  {"id":"gs0280","hanja":"白面書生","reading":"백면서생","len":4,"lit":"얼굴 흰 선비","fig":"글만 읽어 세상 물정에 어두운 사람","origin":"","source":"","example":"백면서생이라 실무는 서툴다.","syn":[],"reviewed":true},
+  {"id":"gs0281","hanja":"夫唱婦隨","reading":"부창부수","len":4,"lit":"남편이 부르면 아내가 따름","fig":"부부가 서로 화합함","origin":"","source":"","example":"부창부수로 금실이 좋다.","syn":["百年偕老"],"reviewed":true},
+  {"id":"gs0282","hanja":"正正堂堂","reading":"정정당당","len":4,"lit":"바르고 떳떳함","fig":"태도나 수단이 바르고 떳떳함","origin":"","source":"","example":"정정당당하게 겨루자.","syn":[],"reviewed":true},
+  {"id":"gs0283","hanja":"朝變夕改","reading":"조변석개","len":4,"lit":"아침에 바꾸고 저녁에 고침","fig":"계획이나 결정을 자주 뜯어고침","origin":"","source":"","example":"방침이 조변석개라 따르기 어렵다.","syn":[],"reviewed":true},
+  {"id":"gs0284","hanja":"前人未踏","reading":"전인미답","len":4,"lit":"앞선 사람이 밟지 않음","fig":"이제까지 아무도 가 보지 못함","origin":"","source":"","example":"전인미답의 기록을 세웠다.","syn":[],"reviewed":true},
+  {"id":"gs0285","hanja":"始終一貫","reading":"시종일관","len":4,"lit":"처음부터 끝까지 한결같음","fig":"처음의 자세를 끝까지 지킴","origin":"","source":"","example":"시종일관 침착함을 잃지 않았다.","syn":["初志一貫"],"reviewed":true},
+  {"id":"gs0286","hanja":"連戰連勝","reading":"연전연승","len":4,"lit":"싸울 때마다 잇따라 이김","fig":"싸우는 족족 모두 이김","origin":"","source":"","example":"올 시즌 연전연승 중이다.","syn":["百戰百勝"],"reviewed":true},
+  {"id":"gs0287","hanja":"四通八達","reading":"사통팔달","len":4,"lit":"사방으로 통하고 팔방으로 닿음","fig":"길이 여러 갈래로 막힘없이 통함","origin":"","source":"","example":"사통팔달의 교통 요지다.","syn":[],"reviewed":true},
+  {"id":"gs0288","hanja":"緘口無言","reading":"함구무언","len":4,"lit":"입을 봉하고 말이 없음","fig":"입을 다물고 아무 말도 하지 않음","origin":"","source":"","example":"그 일에 대해선 함구무언이었다.","syn":[],"reviewed":true},
+  {"id":"gs0289","hanja":"虛禮虛飾","reading":"허례허식","len":4,"lit":"헛된 예절과 겉치레","fig":"실속 없이 겉만 꾸미는 형식","origin":"","source":"","example":"허례허식을 줄이고 간소하게 치렀다.","syn":[],"reviewed":true},
+  {"id":"gs0290","hanja":"風餐露宿","reading":"풍찬노숙","len":4,"lit":"바람에 먹고 이슬에 잠","fig":"떠돌며 온갖 고생을 함","origin":"","source":"","example":"풍찬노숙하며 전국을 누볐다.","syn":[],"reviewed":true},
+  {"id":"gs0291","hanja":"糊口之策","reading":"호구지책","len":4,"lit":"입에 풀칠할 방책","fig":"겨우 끼니를 이어 가기 위한 방책","origin":"","source":"","example":"호구지책으로 막일을 시작했다.","syn":[],"reviewed":true},
+  {"id":"gs0292","hanja":"犬馬之勞","reading":"견마지로","len":4,"lit":"개와 말의 수고","fig":"윗사람을 위해 바치는 자신의 노력을 낮추어 이르는 말","origin":"","source":"","example":"견마지로를 다하겠습니다.","syn":[],"reviewed":true},
+  {"id":"gs0293","hanja":"金蘭之交","reading":"금란지교","len":4,"lit":"쇠처럼 굳고 난초처럼 향기로운 사귐","fig":"매우 두텁고 깊은 우정","origin":"","source":"","example":"두 사람은 금란지교를 맺었다.","syn":["莫逆之友"],"reviewed":true},
+  {"id":"gs0294","hanja":"同價紅裳","reading":"동가홍상","len":4,"lit":"같은 값이면 붉은 치마","fig":"같은 값이면 더 좋은 것을 택함","origin":"","source":"","example":"동가홍상이라고, 이왕이면 예쁜 걸 고른다.","syn":[],"reviewed":true},
+  {"id":"gs0295","hanja":"甲男乙女","reading":"갑남을녀","len":4,"lit":"갑이라는 남자와 을이라는 여자","fig":"평범한 보통 사람들","origin":"","source":"","example":"갑남을녀의 소박한 일상.","syn":[],"reviewed":true},
+  {"id":"gs0296","hanja":"天方地軸","reading":"천방지축","len":4,"lit":"하늘 방향과 땅의 축","fig":"종잡을 수 없이 덤벙대거나 몹시 급해 허둥댐","origin":"","source":"","example":"천방지축으로 뛰어다닌다.","syn":[],"reviewed":true},
+  {"id":"gs0297","hanja":"命在頃刻","reading":"명재경각","len":4,"lit":"목숨이 짧은 순간에 달림","fig":"거의 죽게 되어 곧 숨이 끊어질 지경","origin":"","source":"","example":"환자가 명재경각의 위태로운 상태다.","syn":["風前燈火"],"reviewed":true},
+  {"id":"gs0298","hanja":"一言半句","reading":"일언반구","len":4,"lit":"한 마디 말과 반 구절","fig":"아주 짧은 말","origin":"","source":"","example":"일언반구 사과도 없었다.","syn":[],"reviewed":true},
+  {"id":"gs0299","hanja":"萬古不變","reading":"만고불변","len":4,"lit":"오랜 세월 변하지 않음","fig":"아주 오랜 세월 동안 변함이 없음","origin":"","source":"","example":"우정만은 만고불변이길 바란다.","syn":[],"reviewed":true},
+  {"id":"gs0300","hanja":"格物致知","reading":"격물치지","len":4,"lit":"사물을 궁구해 앎에 이름","fig":"사물의 이치를 끝까지 따져 참된 앎에 이름","origin":"","source":"대학","example":"격물치지의 자세로 깊이 파고들었다.","syn":[],"reviewed":true}
 ]
 export const BY_READING: Record<string, Idiom> = Object.fromEntries(IDIOMS.map(i => [i.reading, i]))
 
