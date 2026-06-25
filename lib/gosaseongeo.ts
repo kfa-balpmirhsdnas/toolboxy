@@ -1,4 +1,4 @@
-// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 116).
+// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 156).
 // 성어·뜻은 공유 지식, 유래·예문은 자체 작성(저작권 클린). 확장은 gosaseongeo_확장_지시문.md 참고.
 export interface Idiom { id: string; hanja: string; reading: string; len: number; lit: string; fig: string; origin: string; source: string; example: string; syn: string[]; reviewed: boolean }
 export const IDIOMS: Idiom[] = [
@@ -117,7 +117,47 @@ export const IDIOMS: Idiom[] = [
   {"id":"gs0113","hanja":"甘言利說","reading":"감언이설","len":4,"lit":"달콤한 말과 이로운 말","fig":"남을 꾀려고 비위를 맞추는 달콤한 말","origin":"","source":"","example":"감언이설에 속아 큰돈을 잃었다.","syn":["巧言令色"],"reviewed":true},
   {"id":"gs0114","hanja":"巧言令色","reading":"교언영색","len":4,"lit":"교묘한 말과 꾸민 얼굴빛","fig":"남의 환심을 사려고 말을 꾸미고 표정을 지음","origin":"공자가 교언영색하는 자 중에 어진 이가 드물다고 한 말에서 비롯","source":"논어","example":"교언영색하는 사람보다 묵묵한 사람이 믿음직하다.","syn":["甘言利說"],"reviewed":true},
   {"id":"gs0115","hanja":"語不成說","reading":"어불성설","len":4,"lit":"말이 말을 이루지 못함","fig":"말이 조금도 사리에 맞지 않음","origin":"","source":"","example":"준비도 안 하고 일등 하겠다니 어불성설이다.","syn":[],"reviewed":true},
-  {"id":"gs0116","hanja":"橫說竪說","reading":"횡설수설","len":4,"lit":"가로로 말하고 세로로 말함","fig":"조리 없이 이러쿵저러쿵 마구 지껄임","origin":"","source":"","example":"긴장했는지 횡설수설하다 발표를 망쳤다.","syn":[],"reviewed":true}
+  {"id":"gs0116","hanja":"橫說竪說","reading":"횡설수설","len":4,"lit":"가로로 말하고 세로로 말함","fig":"조리 없이 이러쿵저러쿵 마구 지껄임","origin":"","source":"","example":"긴장했는지 횡설수설하다 발표를 망쳤다.","syn":[],"reviewed":true},
+  {"id":"gs0117","hanja":"自暴自棄","reading":"자포자기","len":4,"lit":"스스로 해치고 스스로 버림","fig":"절망에 빠져 자신을 돌보지 않고 마구 행동함","origin":"","source":"맹자","example":"한 번 실패했다고 자포자기하면 안 된다.","syn":[],"reviewed":true},
+  {"id":"gs0118","hanja":"適材適所","reading":"적재적소","len":4,"lit":"알맞은 인재를 알맞은 자리에","fig":"능력에 맞는 자리에 알맞게 씀","origin":"","source":"","example":"적재적소에 사람을 배치하니 일이 잘 돌아간다.","syn":[],"reviewed":true},
+  {"id":"gs0119","hanja":"九死一生","reading":"구사일생","len":4,"lit":"아홉 번 죽을 뻔하다 한 번 살아남","fig":"여러 차례 죽을 고비를 넘기고 겨우 살아남","origin":"","source":"","example":"사고에서 구사일생으로 살아났다.","syn":["起死回生"],"reviewed":true},
+  {"id":"gs0120","hanja":"起死回生","reading":"기사회생","len":4,"lit":"죽을 사람을 살려 일으킴","fig":"거의 죽을 지경에서 다시 살아남","origin":"","source":"","example":"역전골로 팀이 기사회생했다.","syn":["九死一生"],"reviewed":true},
+  {"id":"gs0121","hanja":"九牛一毛","reading":"구우일모","len":4,"lit":"아홉 마리 소 가운데 털 하나","fig":"매우 많은 것 가운데 극히 적은 부분","origin":"사마천이 자신의 처지를 아홉 마리 소 가운데 털 한 올에 빗댄 데서 비롯","source":"","example":"그 돈은 회사 예산에선 구우일모에 불과하다.","syn":[],"reviewed":true},
+  {"id":"gs0122","hanja":"氣高萬丈","reading":"기고만장","len":4,"lit":"기세가 만 길이나 높음","fig":"일이 뜻대로 되어 기세가 대단하거나 잔뜩 우쭐함","origin":"","source":"","example":"한 번 이기더니 기고만장해서 큰소리친다.","syn":[],"reviewed":true},
+  {"id":"gs0123","hanja":"勞心焦思","reading":"노심초사","len":4,"lit":"마음을 수고롭게 하고 애를 태움","fig":"몹시 마음을 쓰며 애를 태움","origin":"","source":"","example":"합격자 발표를 기다리며 노심초사했다.","syn":[],"reviewed":true},
+  {"id":"gs0124","hanja":"切齒腐心","reading":"절치부심","len":4,"lit":"이를 갈고 마음을 썩임","fig":"몹시 분하여 이를 갈며 속을 썩임","origin":"","source":"","example":"그는 패배를 절치부심하며 다음을 준비했다.","syn":[],"reviewed":true},
+  {"id":"gs0125","hanja":"捲土重來","reading":"권토중래","len":4,"lit":"흙먼지를 일으키며 다시 옴","fig":"한 번 실패한 사람이 힘을 길러 다시 도전함","origin":"싸움에 진 항우가 강동으로 돌아가 힘을 길렀다면 다시 일어설 수 있었으리라 읊은 시구에서 비롯","source":"","example":"이번엔 졌지만 권토중래를 노린다.","syn":[],"reviewed":true},
+  {"id":"gs0126","hanja":"晩時之歎","reading":"만시지탄","len":4,"lit":"때늦은 한탄","fig":"기회를 놓치고 뒤늦게 한탄함","origin":"","source":"","example":"미리 준비할걸, 만시지탄이 따로 없다.","syn":[],"reviewed":true},
+  {"id":"gs0127","hanja":"苦肉之策","reading":"고육지책","len":4,"lit":"제 몸을 상해 가며 꾸민 계책","fig":"어려운 처지를 벗어나려고 어쩔 수 없이 쓰는 방책","origin":"자기 몸을 상하게 해서까지 적을 속이는 계책에서 비롯","source":"","example":"빚을 갚으려 집을 판 건 고육지책이었다.","syn":[],"reviewed":true},
+  {"id":"gs0128","hanja":"孤立無援","reading":"고립무원","len":4,"lit":"외따로 떨어져 도움이 없음","fig":"홀로 떨어져 도움받을 데가 없음","origin":"","source":"","example":"지원이 끊겨 고립무원에 빠졌다.","syn":["四面楚歌"],"reviewed":true},
+  {"id":"gs0129","hanja":"孤軍奮鬪","reading":"고군분투","len":4,"lit":"외로운 군대가 힘껏 싸움","fig":"적은 힘으로 도움 없이 힘껏 노력함","origin":"","source":"","example":"혼자 고군분투해서 프로젝트를 끝냈다.","syn":[],"reviewed":true},
+  {"id":"gs0130","hanja":"刻骨難忘","reading":"각골난망","len":4,"lit":"뼈에 새겨 잊기 어려움","fig":"입은 은혜가 뼈에 사무쳐 잊히지 않음","origin":"","source":"","example":"베풀어 주신 은혜 각골난망입니다.","syn":["白骨難忘","結草報恩"],"reviewed":true},
+  {"id":"gs0131","hanja":"白骨難忘","reading":"백골난망","len":4,"lit":"백골이 되어도 잊기 어려움","fig":"죽어서도 잊지 못할 큰 은혜","origin":"","source":"","example":"도와주신 은혜는 백골난망이에요.","syn":["刻骨難忘","結草報恩"],"reviewed":true},
+  {"id":"gs0132","hanja":"百戰百勝","reading":"백전백승","len":4,"lit":"백 번 싸워 백 번 이김","fig":"싸울 때마다 모두 이김","origin":"적을 알고 나를 알면 백 번 싸워도 위태롭지 않다고 한 병법의 가르침과 통함","source":"손자병법","example":"준비를 철저히 하면 백전백승이다.","syn":[],"reviewed":true},
+  {"id":"gs0133","hanja":"百折不屈","reading":"백절불굴","len":4,"lit":"백 번 꺾여도 굽히지 않음","fig":"어떤 어려움에도 굽히지 않음","origin":"","source":"","example":"백절불굴의 의지로 끝내 성공했다.","syn":["七顚八起"],"reviewed":true},
+  {"id":"gs0134","hanja":"父傳子傳","reading":"부전자전","len":4,"lit":"아버지가 전하고 아들이 전함","fig":"대대로 아버지에서 아들로 이어짐","origin":"","source":"","example":"음악 재능은 부전자전인가 보다.","syn":[],"reviewed":true},
+  {"id":"gs0135","hanja":"粉骨碎身","reading":"분골쇄신","len":4,"lit":"뼈가 가루가 되고 몸이 부서짐","fig":"있는 힘을 다해 노력함","origin":"","source":"","example":"분골쇄신 노력해 회사를 일으켰다.","syn":[],"reviewed":true},
+  {"id":"gs0136","hanja":"非一非再","reading":"비일비재","len":4,"lit":"한 번도 두 번도 아님","fig":"같은 일이 한두 번이 아니고 매우 잦음","origin":"","source":"","example":"이런 실수가 비일비재해 신뢰를 잃었다.","syn":[],"reviewed":true},
+  {"id":"gs0137","hanja":"名實相符","reading":"명실상부","len":4,"lit":"이름과 실상이 서로 맞음","fig":"알려진 것과 실제가 일치함","origin":"","source":"","example":"그는 명실상부한 이 분야 일인자다.","syn":[],"reviewed":true},
+  {"id":"gs0138","hanja":"有名無實","reading":"유명무실","len":4,"lit":"이름만 있고 실속이 없음","fig":"겉으로는 그럴듯하나 실제 내용이 없음","origin":"","source":"","example":"규정이 유명무실해 아무도 지키지 않는다.","syn":[],"reviewed":true},
+  {"id":"gs0139","hanja":"有口無言","reading":"유구무언","len":4,"lit":"입은 있어도 할 말이 없음","fig":"잘못이 분명해 변명할 말이 없음","origin":"","source":"","example":"내 실수가 맞으니 유구무언입니다.","syn":[],"reviewed":true},
+  {"id":"gs0140","hanja":"異口同聲","reading":"이구동성","len":4,"lit":"다른 입에서 같은 소리","fig":"여러 사람의 말이 한결같음","origin":"","source":"","example":"모두 이구동성으로 그를 칭찬했다.","syn":[],"reviewed":true},
+  {"id":"gs0141","hanja":"人山人海","reading":"인산인해","len":4,"lit":"사람이 산을 이루고 바다를 이룸","fig":"헤아릴 수 없이 많은 사람이 모임","origin":"","source":"","example":"축제장은 인산인해를 이루었다.","syn":[],"reviewed":true},
+  {"id":"gs0142","hanja":"一瀉千里","reading":"일사천리","len":4,"lit":"물이 쏟아져 천 리를 흐름","fig":"일이 거침없이 빨리 진행됨","origin":"","source":"","example":"회의가 일사천리로 끝났다.","syn":[],"reviewed":true},
+  {"id":"gs0143","hanja":"一言之下","reading":"일언지하","len":4,"lit":"한마디 말 아래","fig":"두말할 것 없이 한마디로 잘라","origin":"","source":"","example":"제안은 일언지하에 거절당했다.","syn":[],"reviewed":true},
+  {"id":"gs0144","hanja":"一絲不亂","reading":"일사불란","len":4,"lit":"한 올 실도 흐트러지지 않음","fig":"질서가 정연해 조금도 어지럽지 않음","origin":"","source":"","example":"선수들이 일사불란하게 움직였다.","syn":[],"reviewed":true},
+  {"id":"gs0145","hanja":"一目瞭然","reading":"일목요연","len":4,"lit":"한 번 보아 환히 밝음","fig":"한눈에 환히 알 수 있을 만큼 분명함","origin":"","source":"","example":"표로 정리하니 일목요연하다.","syn":[],"reviewed":true},
+  {"id":"gs0146","hanja":"一脈相通","reading":"일맥상통","len":4,"lit":"한 줄기로 서로 통함","fig":"생각이나 상태가 서로 통하는 데가 있음","origin":"","source":"","example":"두 이론은 일맥상통하는 면이 있다.","syn":[],"reviewed":true},
+  {"id":"gs0147","hanja":"自初至終","reading":"자초지종","len":4,"lit":"처음부터 끝까지","fig":"일의 처음부터 끝까지의 모든 과정","origin":"","source":"","example":"자초지종을 차근차근 설명했다.","syn":[],"reviewed":true},
+  {"id":"gs0148","hanja":"去頭截尾","reading":"거두절미","len":4,"lit":"머리를 떼고 꼬리를 자름","fig":"군더더기를 빼고 핵심만 말함","origin":"","source":"","example":"거두절미하고 본론부터 말하겠다.","syn":[],"reviewed":true},
+  {"id":"gs0149","hanja":"單刀直入","reading":"단도직입","len":4,"lit":"한 자루 칼로 곧장 쳐들어감","fig":"여러 말 없이 곧바로 핵심을 말함","origin":"","source":"","example":"단도직입으로 묻겠다, 할 거냐 말 거냐.","syn":[],"reviewed":true},
+  {"id":"gs0150","hanja":"牽強附會","reading":"견강부회","len":4,"lit":"억지로 끌어다 갖다 붙임","fig":"말을 억지로 자기에게 유리하게 끌어 맞춤","origin":"","source":"","example":"근거도 없이 견강부회로 우긴다.","syn":[],"reviewed":true},
+  {"id":"gs0151","hanja":"甲論乙駁","reading":"갑론을박","len":4,"lit":"갑이 논하면 을이 반박함","fig":"서로 자기 주장을 내세우며 논박함","origin":"","source":"","example":"안건을 두고 갑론을박이 벌어졌다.","syn":[],"reviewed":true},
+  {"id":"gs0152","hanja":"輕擧妄動","reading":"경거망동","len":4,"lit":"가볍게 행동하고 망령되이 움직임","fig":"깊이 생각 없이 경솔하게 행동함","origin":"","source":"","example":"흥분해서 경거망동하지 말고 침착해라.","syn":[],"reviewed":true},
+  {"id":"gs0153","hanja":"誇大妄想","reading":"과대망상","len":4,"lit":"사실보다 부풀려 망령되이 생각함","fig":"자신을 실제보다 크게 평가하는 헛된 생각","origin":"","source":"","example":"근거 없는 자신감은 과대망상일 뿐이다.","syn":[],"reviewed":true},
+  {"id":"gs0154","hanja":"權謀術數","reading":"권모술수","len":4,"lit":"권세를 위한 꾀와 술수","fig":"목적을 위해 수단을 가리지 않는 온갖 꾀","origin":"","source":"","example":"그는 권모술수에 능한 사람이다.","syn":[],"reviewed":true},
+  {"id":"gs0155","hanja":"群雄割據","reading":"군웅할거","len":4,"lit":"여러 영웅이 땅을 나눠 차지함","fig":"여러 세력이 각지에서 맞서 세력을 떨침","origin":"","source":"","example":"초창기 시장은 군웅할거의 양상이었다.","syn":[],"reviewed":true},
+  {"id":"gs0156","hanja":"今時初聞","reading":"금시초문","len":4,"lit":"지금 처음 들음","fig":"이제야 비로소 처음 들음","origin":"","source":"","example":"그 소식은 금시초문인데?","syn":[],"reviewed":true}
 ]
 export const BY_READING: Record<string, Idiom> = Object.fromEntries(IDIOMS.map(i => [i.reading, i]))
 
