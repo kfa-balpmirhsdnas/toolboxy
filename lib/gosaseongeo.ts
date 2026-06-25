@@ -1,4 +1,4 @@
-// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 76).
+// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 116).
 // 성어·뜻은 공유 지식, 유래·예문은 자체 작성(저작권 클린). 확장은 gosaseongeo_확장_지시문.md 참고.
 export interface Idiom { id: string; hanja: string; reading: string; len: number; lit: string; fig: string; origin: string; source: string; example: string; syn: string[]; reviewed: boolean }
 export const IDIOMS: Idiom[] = [
@@ -77,7 +77,47 @@ export const IDIOMS: Idiom[] = [
   {"id":"gs0073","hanja":"浩然之氣","reading":"호연지기","len":4,"lit":"넓고 큰 기운","fig":"거침없이 떳떳하고 도덕적인 기상","origin":"","source":"맹자","example":"산에 올라 호연지기를 길렀다.","syn":[],"reviewed":true},
   {"id":"gs0074","hanja":"畵龍點睛","reading":"화룡점정","len":4,"lit":"용을 그리고 마지막에 눈동자를 찍음","fig":"가장 중요한 부분을 마무리해 일을 완성함","origin":"장승요가 용의 눈동자를 찍자 용이 날아올랐다는 고사","source":"역대명화기","example":"마지막 연설이 행사의 화룡점정이었다.","syn":[],"reviewed":true},
   {"id":"gs0075","hanja":"換骨奪胎","reading":"환골탈태","len":4,"lit":"뼈를 바꾸고 태를 빼앗음","fig":"사람이나 사물이 완전히 새롭게 변함","origin":"","source":"","example":"리모델링 후 가게가 환골탈태했다.","syn":[],"reviewed":true},
-  {"id":"gs0076","hanja":"興盡悲來","reading":"흥진비래","len":4,"lit":"즐거움이 다하면 슬픔이 옴","fig":"세상일은 돌고 돌아 기쁨과 슬픔이 갈마듦","origin":"","source":"","example":"흥진비래라더니 좋은 일 뒤에 시련이 왔다.","syn":["苦盡甘來"],"reviewed":true}
+  {"id":"gs0076","hanja":"興盡悲來","reading":"흥진비래","len":4,"lit":"즐거움이 다하면 슬픔이 옴","fig":"세상일은 돌고 돌아 기쁨과 슬픔이 갈마듦","origin":"","source":"","example":"흥진비래라더니 좋은 일 뒤에 시련이 왔다.","syn":["苦盡甘來"],"reviewed":true},
+  {"id":"gs0077","hanja":"愚公移山","reading":"우공이산","len":4,"lit":"우공이 산을 옮김","fig":"어떤 일이든 끊임없이 노력하면 결국 이룸","origin":"우공이라는 노인이 집을 가로막은 산을 자손 대대로 파내겠다고 하자 하늘이 감복해 산을 옮겨 주었다는 이야기","source":"열자","example":"느려도 우공이산이라고, 매일 조금씩 하다 보면 끝이 보인다.","syn":["磨斧作針"],"reviewed":true},
+  {"id":"gs0078","hanja":"勸善懲惡","reading":"권선징악","len":4,"lit":"착함을 권하고 악함을 징계함","fig":"선을 권장하고 악을 벌함","origin":"","source":"","example":"옛이야기는 대개 권선징악으로 끝난다.","syn":[],"reviewed":true},
+  {"id":"gs0079","hanja":"因果應報","reading":"인과응보","len":4,"lit":"원인과 결과가 서로 응해 갚음","fig":"좋고 나쁜 행동에는 반드시 그에 맞는 결과가 따름","origin":"","source":"","example":"남을 속이더니 결국 자기가 당하는 인과응보였다.","syn":["自業自得","事必歸正"],"reviewed":true},
+  {"id":"gs0080","hanja":"自業自得","reading":"자업자득","len":4,"lit":"자기가 한 일의 결과를 자기가 받음","fig":"자신이 저지른 일의 결과를 스스로 떠안음","origin":"","source":"","example":"공부 안 하고 놀더니 낙제한 건 자업자득이다.","syn":["因果應報","自繩自縛"],"reviewed":true},
+  {"id":"gs0081","hanja":"易地思之","reading":"역지사지","len":4,"lit":"처지를 바꾸어 생각함","fig":"상대의 입장에서 헤아려 봄","origin":"","source":"맹자","example":"싸우기 전에 역지사지로 한 번 생각해 보자.","syn":[],"reviewed":true},
+  {"id":"gs0082","hanja":"類類相從","reading":"유유상종","len":4,"lit":"같은 무리끼리 서로 좇음","fig":"비슷한 사람끼리 어울림","origin":"","source":"","example":"유유상종이라더니 취미 같은 사람끼리 모였다.","syn":["草綠同色"],"reviewed":true},
+  {"id":"gs0083","hanja":"結者解之","reading":"결자해지","len":4,"lit":"묶은 자가 풀어야 함","fig":"일을 저지른 사람이 그 일을 해결해야 함","origin":"","source":"","example":"네가 시작한 일이니 결자해지로 마무리해라.","syn":[],"reviewed":true},
+  {"id":"gs0084","hanja":"見物生心","reading":"견물생심","len":4,"lit":"물건을 보면 마음이 생김","fig":"좋은 것을 보면 가지고 싶은 욕심이 생김","origin":"","source":"","example":"견물생심이라고, 진열장을 보니 자꾸 사고 싶어진다.","syn":[],"reviewed":true},
+  {"id":"gs0085","hanja":"事必歸正","reading":"사필귀정","len":4,"lit":"일은 반드시 바른 데로 돌아감","fig":"모든 일은 결국 옳은 이치대로 풀림","origin":"","source":"","example":"억울했지만 사필귀정으로 진실이 밝혀졌다.","syn":["因果應報"],"reviewed":true},
+  {"id":"gs0086","hanja":"作心三日","reading":"작심삼일","len":4,"lit":"먹은 마음이 사흘을 감","fig":"결심이 오래가지 못함","origin":"","source":"","example":"새해 운동 결심은 늘 작심삼일로 끝난다.","syn":[],"reviewed":true},
+  {"id":"gs0087","hanja":"天高馬肥","reading":"천고마비","len":4,"lit":"하늘은 높고 말은 살찜","fig":"가을이 좋은 계절임을 이르는 말","origin":"옛 중국에서 가을이면 북방 말이 살쪄 침입을 경계한 데서 비롯했다고 전함","source":"","example":"천고마비의 계절, 독서하기 딱 좋다.","syn":[],"reviewed":true},
+  {"id":"gs0088","hanja":"改過遷善","reading":"개과천선","len":4,"lit":"잘못을 고치고 착함으로 옮김","fig":"지난 잘못을 뉘우치고 바르게 됨","origin":"젊은 날 방탕하던 진나라 주처가 잘못을 깨닫고 학문에 힘써 훌륭한 사람이 되었다는 이야기에서 비롯","source":"진서","example":"그는 개과천선해서 봉사하며 산다.","syn":[],"reviewed":true},
+  {"id":"gs0089","hanja":"殺身成仁","reading":"살신성인","len":4,"lit":"몸을 죽여 인을 이룸","fig":"옳은 일을 위해 자기 목숨을 바침","origin":"공자가 뜻있는 선비는 살기를 구해 인을 해치지 않고 몸을 바쳐 인을 이룬다고 한 말에서 비롯","source":"논어","example":"그 소방관은 살신성인의 정신으로 사람을 구했다.","syn":[],"reviewed":true},
+  {"id":"gs0090","hanja":"三顧草廬","reading":"삼고초려","len":4,"lit":"초가집을 세 번 찾아감","fig":"인재를 맞으려고 정성껏 거듭 찾아감","origin":"유비가 제갈량을 모시려고 그의 초가를 세 번이나 찾아갔다는 이야기","source":"출사표","example":"회사는 삼고초려 끝에 그 전문가를 영입했다.","syn":[],"reviewed":true},
+  {"id":"gs0091","hanja":"一石二鳥","reading":"일석이조","len":4,"lit":"돌 하나로 새 두 마리를 잡음","fig":"한 가지 일로 두 가지 이익을 얻음","origin":"","source":"","example":"걸어서 출근하니 운동도 되고 돈도 아껴 일석이조다.","syn":["一擧兩得"],"reviewed":true},
+  {"id":"gs0092","hanja":"十匙一飯","reading":"십시일반","len":4,"lit":"열 술이 한 그릇 밥이 됨","fig":"여럿이 조금씩 도우면 한 사람을 돕기 쉬움","origin":"","source":"","example":"십시일반으로 모은 성금이 큰 힘이 되었다.","syn":[],"reviewed":true},
+  {"id":"gs0093","hanja":"十中八九","reading":"십중팔구","len":4,"lit":"열 가운데 여덟이나 아홉","fig":"거의 대부분, 거의 틀림없이","origin":"","source":"","example":"이렇게 흐리면 십중팔구 비가 온다.","syn":[],"reviewed":true},
+  {"id":"gs0094","hanja":"錦衣還鄕","reading":"금의환향","len":4,"lit":"비단옷 입고 고향에 돌아옴","fig":"성공하여 고향에 떳떳이 돌아옴","origin":"출세하면 고향으로 돌아가야 한다며 항우가 한 말에서 비롯했다고 전함","source":"사기","example":"그는 금의환향해서 고향에 학교를 지었다.","syn":[],"reviewed":true},
+  {"id":"gs0095","hanja":"糟糠之妻","reading":"조강지처","len":4,"lit":"지게미와 쌀겨를 함께 먹은 아내","fig":"가난할 때 고생을 함께한 본처","origin":"후한의 송홍이 가난할 때 함께 고생한 아내는 버릴 수 없다고 한 말에서 비롯","source":"후한서","example":"성공해도 조강지처를 잊으면 안 된다.","syn":[],"reviewed":true},
+  {"id":"gs0096","hanja":"同床異夢","reading":"동상이몽","len":4,"lit":"같은 자리에서 다른 꿈을 꿈","fig":"겉으로 함께하나 속으로는 서로 다른 생각을 함","origin":"","source":"","example":"협력하는 척했지만 둘은 동상이몽이었다.","syn":[],"reviewed":true},
+  {"id":"gs0097","hanja":"山戰水戰","reading":"산전수전","len":4,"lit":"산에서 싸우고 물에서 싸움","fig":"세상의 온갖 고생과 어려움을 다 겪음","origin":"","source":"","example":"산전수전 다 겪은 사장님이라 위기에도 침착했다.","syn":[],"reviewed":true},
+  {"id":"gs0098","hanja":"靑天霹靂","reading":"청천벽력","len":4,"lit":"맑은 하늘에 날벼락","fig":"뜻밖에 갑자기 일어난 큰 변고","origin":"","source":"","example":"시험 취소 소식은 그야말로 청천벽력이었다.","syn":[],"reviewed":true},
+  {"id":"gs0099","hanja":"一片丹心","reading":"일편단심","len":4,"lit":"한 조각 붉은 마음","fig":"변치 않는 한결같은 마음","origin":"","source":"","example":"그는 첫사랑을 일편단심으로 기다렸다.","syn":[],"reviewed":true},
+  {"id":"gs0100","hanja":"臨機應變","reading":"임기응변","len":4,"lit":"그때그때 형편에 맞게 대응함","fig":"상황에 따라 알맞게 그 자리에서 대처함","origin":"","source":"","example":"돌발 질문에도 임기응변으로 잘 넘겼다.","syn":[],"reviewed":true},
+  {"id":"gs0101","hanja":"漸入佳境","reading":"점입가경","len":4,"lit":"점점 아름다운 경지로 들어감","fig":"갈수록 흥미롭거나, 반어적으로 꼴이 더해 감","origin":"화가 고개지가 사탕수수를 끝에서부터 먹으며 점점 단맛이 나는 경지로 들어간다고 한 데서 비롯","source":"진서","example":"이야기가 점입가경이라 눈을 뗄 수 없었다.","syn":[],"reviewed":true},
+  {"id":"gs0102","hanja":"莫上莫下","reading":"막상막하","len":4,"lit":"위도 없고 아래도 없음","fig":"실력 차이가 거의 없어 우열을 가리기 어려움","origin":"","source":"","example":"두 팀의 실력이 막상막하여서 끝까지 손에 땀을 쥐었다.","syn":["難兄難弟"],"reviewed":true},
+  {"id":"gs0103","hanja":"大同小異","reading":"대동소이","len":4,"lit":"크게는 같고 작게만 다름","fig":"거의 비슷하고 큰 차이가 없음","origin":"","source":"장자","example":"후보들 공약이 대동소이해서 고르기 어렵다.","syn":[],"reviewed":true},
+  {"id":"gs0104","hanja":"東奔西走","reading":"동분서주","len":4,"lit":"동으로 뛰고 서로 달림","fig":"이리저리 매우 바쁘게 돌아다님","origin":"","source":"","example":"행사 준비로 하루 종일 동분서주했다.","syn":[],"reviewed":true},
+  {"id":"gs0105","hanja":"日就月將","reading":"일취월장","len":4,"lit":"날로 나아가고 달로 발전함","fig":"실력이 빠르게 늘어 감","origin":"","source":"시경","example":"꾸준히 연습하더니 실력이 일취월장했다.","syn":[],"reviewed":true},
+  {"id":"gs0106","hanja":"眼下無人","reading":"안하무인","len":4,"lit":"눈 아래에 사람이 없음","fig":"잘난 체하며 남을 업신여김","origin":"","source":"","example":"상을 받더니 안하무인으로 굴어 친구들이 떠났다.","syn":["傍若無人"],"reviewed":true},
+  {"id":"gs0107","hanja":"厚顔無恥","reading":"후안무치","len":4,"lit":"낯이 두껍고 부끄러움이 없음","fig":"뻔뻔스러워 부끄러운 줄 모름","origin":"","source":"","example":"잘못을 해 놓고도 큰소리치다니 후안무치하다.","syn":[],"reviewed":true},
+  {"id":"gs0108","hanja":"狐假虎威","reading":"호가호위","len":4,"lit":"여우가 호랑이의 위세를 빌림","fig":"남의 권세를 빌려 위세를 부림","origin":"여우가 호랑이를 앞세워 걸으며 짐승들이 자기를 보고 달아난다고 속인 이야기에서 비롯","source":"전국책","example":"사장 친척이라며 호가호위하는 그가 얄밉다.","syn":[],"reviewed":true},
+  {"id":"gs0109","hanja":"羊頭狗肉","reading":"양두구육","len":4,"lit":"양 머리를 걸고 개고기를 팖","fig":"겉은 그럴듯하나 속은 변변치 못함","origin":"가게 앞엔 양 머리를 걸어 두고 실제로는 개고기를 판다는 데서 비롯","source":"","example":"광고와 딴판인 양두구육 상품에 속았다.","syn":["表裏不同"],"reviewed":true},
+  {"id":"gs0110","hanja":"他山之石","reading":"타산지석","len":4,"lit":"다른 산의 돌","fig":"남의 허물이나 실수도 자기를 갈고닦는 데 도움이 됨","origin":"다른 산의 거친 돌이라도 자기 옥을 가는 데 쓸 수 있다는 데서 비롯","source":"시경","example":"그의 실패를 타산지석으로 삼아 같은 실수를 피하자.","syn":[],"reviewed":true},
+  {"id":"gs0111","hanja":"犬猿之間","reading":"견원지간","len":4,"lit":"개와 원숭이 사이","fig":"서로 사이가 매우 나쁜 관계","origin":"","source":"","example":"두 사람은 견원지간이라 한자리에 두면 안 된다.","syn":[],"reviewed":true},
+  {"id":"gs0112","hanja":"難兄難弟","reading":"난형난제","len":4,"lit":"형이라 하기도 아우라 하기도 어려움","fig":"둘이 비슷해 우열을 가리기 어려움","origin":"","source":"세설신어","example":"두 작품 모두 뛰어나 난형난제다.","syn":["莫上莫下"],"reviewed":true},
+  {"id":"gs0113","hanja":"甘言利說","reading":"감언이설","len":4,"lit":"달콤한 말과 이로운 말","fig":"남을 꾀려고 비위를 맞추는 달콤한 말","origin":"","source":"","example":"감언이설에 속아 큰돈을 잃었다.","syn":["巧言令色"],"reviewed":true},
+  {"id":"gs0114","hanja":"巧言令色","reading":"교언영색","len":4,"lit":"교묘한 말과 꾸민 얼굴빛","fig":"남의 환심을 사려고 말을 꾸미고 표정을 지음","origin":"공자가 교언영색하는 자 중에 어진 이가 드물다고 한 말에서 비롯","source":"논어","example":"교언영색하는 사람보다 묵묵한 사람이 믿음직하다.","syn":["甘言利說"],"reviewed":true},
+  {"id":"gs0115","hanja":"語不成說","reading":"어불성설","len":4,"lit":"말이 말을 이루지 못함","fig":"말이 조금도 사리에 맞지 않음","origin":"","source":"","example":"준비도 안 하고 일등 하겠다니 어불성설이다.","syn":[],"reviewed":true},
+  {"id":"gs0116","hanja":"橫說竪說","reading":"횡설수설","len":4,"lit":"가로로 말하고 세로로 말함","fig":"조리 없이 이러쿵저러쿵 마구 지껄임","origin":"","source":"","example":"긴장했는지 횡설수설하다 발표를 망쳤다.","syn":[],"reviewed":true}
 ]
 export const BY_READING: Record<string, Idiom> = Object.fromEntries(IDIOMS.map(i => [i.reading, i]))
 
