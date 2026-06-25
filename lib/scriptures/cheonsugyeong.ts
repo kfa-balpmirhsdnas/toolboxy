@@ -1320,7 +1320,7 @@ export const CHEONSUGYEONG: SutraLine[] = [
     "translation": "삿된 음행의 무거운 죄를 오늘 참회합니다",
     "repeat": 1,
     "note": "열 가지 악업을 참회함 / 독송은 하지 않음",
-    "translationJa": "邪(よこしま)な淫らの重い罪を、今日懺悔します"
+    "translationJa": "邪淫(じゃいん)の重い罪を、今日懺悔します"
   },
   {
     "order": 101,
