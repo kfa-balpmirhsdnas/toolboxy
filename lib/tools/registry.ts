@@ -36,7 +36,7 @@ export const DICT_APP_TOOLS = new Set([
   'japanese-to-english', 'english-to-japanese', 'korean-antonyms', 'japanese-antonyms', 'english-antonyms',
 ])
 export const SINGLE_APP_TOOLS = new Set([
-  'elementary-japanese-words', 'elementary-english-words', 'white-noise-machine',
+  'elementary-japanese-words', 'elementary-english-words', 'white-noise-machine', 'cheonsugyeong',
 ])
 export const APP_TOOLS = new Set([...DICT_APP_TOOLS, ...SINGLE_APP_TOOLS])
 export function isAppTool(tool: ToolMeta): boolean {
