@@ -126,6 +126,8 @@ export const TOOLS: ToolMeta[] = [
   {slug:'circle-crop',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['circle crop','round image','circle crop ko','circle crop jp'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'blur-image',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['blur image','blur photo','image blur','image blur jp'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'image-filter',category:'image',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['사진 필터','이미지 밝기 대비','image filter','photo filter','brightness contrast'],maxFileSizeMB:{free:30,pro:120} },
+  {slug:'ocr',category:'image',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['ocr','이미지 텍스트 추출','image to text','글자 인식','사진 텍스트'],maxFileSizeMB:{free:20,pro:80} },
+  {slug:'video-to-gif',category:'video',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['영상 gif 변환','동영상 gif','video to gif','gif 만들기','mp4 to gif'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'compress-pdf',category:'pdf',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['pdf 압축','pdf 용량 줄이기','compress pdf','reduce pdf size','pdf compressor'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'reaction-time-test',category:'game',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['reaction time','reflex','game','test','leaderboard','반응속도','反応速度'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'mortgage-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['mortgage','home loan','calculator','住宅ローン','주택담보대출'],maxFileSizeMB:{free:0,pro:0} },
