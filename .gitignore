@@ -47,3 +47,19 @@ _gen_readja.py
 # furigana/jmdict source data (large, build-time only)
 jmdict-*.json
 _jm.tgz
+
+# scratch: vocab PDF extraction
+_high*
+_ext*.py
+_merge.py
+_mid*
+_midext.py
+_cov.js
+_cov*
+_gen_mid.js
+
+# user-provided vocab source files (analysis only)
+*.pdf
+중등 기본 900*
+1단계 QR*
+고등*

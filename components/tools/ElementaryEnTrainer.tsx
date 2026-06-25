@@ -7,8 +7,6 @@ import { getToolBySlug } from '@/lib/tools/registry'
 import { ELEMENTARY_WORDS, type Word } from '@/lib/elementary-words'
 import { trackToolUsed } from '@/lib/gtag'
 
-const tool = getToolBySlug('elementary-english-words')!
-const WORDS = ELEMENTARY_WORDS // English trainer uses every word (incl. grammar words)
 const INTERVALS = [1, 2, 3, 5, 7, 10, 15]
 const GAPS = [0, 1, 2, 3, 4, 5]
 const REPEATS = [1, 3, 5]
@@ -25,8 +23,11 @@ function shuffle(n: number): number[] {
 // Speak only the first/cleanest meaning, not the whole comma-separated gloss.
 const firstMeaning = (ko: string) => ko.split(/[,，/]/)[0].replace(/[~()]/g, '').trim() || ko
 
-export default function ElementaryEnTrainer({ params }: { params: { lang: string } }) {
+export default function ElementaryEnTrainer({ params, slug = 'elementary-english-words', words = ELEMENTARY_WORDS }: { params: { lang: string }; slug?: string; words?: Word[] }) {
   const t = useTranslations('toolui')
+  const tool = getToolBySlug(slug)!
+  const WORDS = words // English trainer uses every word (incl. grammar words)
+  const hasJa = WORDS.some((w) => !!w.ja)
   const [order] = useState<number[]>(() => shuffle(WORDS.length))
   const [idx, setIdx] = useState(0)
   const [running, setRunning] = useState(false)
@@ -200,10 +201,12 @@ export default function ElementaryEnTrainer({ params }: { params: { lang: string
             <input type="checkbox" checked={koVoice} onChange={(e) => setKoVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
             {t('ej_ko')}
           </label>
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" checked={jaVoice} onChange={(e) => setJaVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
-            {t('ej_ja')}
-          </label>
+          {hasJa && (
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" checked={jaVoice} onChange={(e) => setJaVoice(e.target.checked)} className="w-4 h-4 accent-brand-600" />
+              {t('ej_ja')}
+            </label>
+          )}
         </div>
 
         <p className="text-xs text-gray-400 text-center">{t('ej_note')}</p>
