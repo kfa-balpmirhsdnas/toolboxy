@@ -79,7 +79,6 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
           <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
           {isToolNew(tool) && <span className="badge-new">New</span>}
           {tool.isPro && <span className="badge-pro">Pro</span>}
-          {!tool.isPro && <span className="badge-free">Free</span>}
           {isAppTool(tool) && <span className="badge-app">App</span>}
         </div>
         <p className="text-gray-500 text-sm">

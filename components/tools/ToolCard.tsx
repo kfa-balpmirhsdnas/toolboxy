@@ -49,7 +49,6 @@ export default function ToolCard({ tool, lang }: ToolCardProps) {
             </h3>
             {isToolNew(tool) && <span className="badge-new">New</span>}
             {tool.isPro && <span className="badge-pro">Pro</span>}
-            {!tool.isPro && <span className="badge-free">Free</span>}
             {isAppTool(tool) && <span className="badge-app">App</span>}
           </div>
           <p className="text-xs text-gray-500 mt-1 truncate">
