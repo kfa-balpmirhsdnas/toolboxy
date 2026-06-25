@@ -13,12 +13,23 @@ export interface ToolMeta {
   maxFileSizeMB: { free: number; pro: number }
 }
 
-/** A tool is "new" for NEW_DAYS after its `added` date (auto-expires). */
-export const NEW_DAYS = 30
-export function isToolNew(tool: ToolMeta, days = NEW_DAYS): boolean {
-  if (!tool.added) return false
-  const ms = Date.now() - new Date(tool.added).getTime()
-  return ms >= 0 && ms <= days * 86_400_000
+/**
+ * Only the most-recently-added tools get a "New" badge — the latest NEW_COUNT by
+ * `added` date (ties broken by registry order, where newer tools are prepended).
+ * Computed lazily/memoised since TOOLS is declared below.
+ */
+export const NEW_COUNT = 12
+let _newSlugs: Set<string> | null = null
+export function isToolNew(tool: ToolMeta): boolean {
+  if (!_newSlugs) {
+    _newSlugs = new Set(
+      TOOLS.map((t, i) => ({ t, i }))
+        .sort((a, b) => (a.t.added === b.t.added ? a.i - b.i : (b.t.added || '').localeCompare(a.t.added || '')))
+        .slice(0, NEW_COUNT)
+        .map((x) => x.t.slug),
+    )
+  }
+  return _newSlugs.has(tool.slug)
 }
 
 /**
