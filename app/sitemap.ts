@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { TOOLS, CATEGORY_META, type ToolCategory } from '@/lib/tools/registry'
+import { IDIOMS } from '@/lib/gosaseongeo'
 
 const BASE_URL = 'https://www.toolboxy.net'
 const LANGS = ['en', 'ja', 'ko']
@@ -46,5 +47,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   )
 
-  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls]
+  // Each 고사성어 gets its own URL per language (page-count = traffic).
+  const idiomUrls = LANGS.flatMap((lang) =>
+    IDIOMS.map((i) => ({
+      url: `${BASE_URL}/${lang}/tools/gosaseongeo/${encodeURIComponent(i.reading)}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
+  )
+
+  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls]
 }
