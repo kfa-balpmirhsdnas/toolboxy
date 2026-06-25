@@ -38,10 +38,12 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   const [showTrans, setShowTrans] = useState(true)
   const [playing, setPlaying] = useState(false)
   const [curOrder, setCurOrder] = useState<number | null>(null)
-  const [rate, setRate] = useState(1)
+  const [rate, setRate] = useState(0.5)
   const [fontScale, setFontScale] = useState(1)
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
   const [voiceURI, setVoiceURI] = useState('off') // 'off' = silent follow-along (default)
+  const [currentSection, setCurrentSection] = useState(1)
+  const [repCountdown, setRepCountdown] = useState<number | null>(null) // which repeat of a repeated line (3→2→1)
 
   const genRef = useRef(0)
   const idxRef = useRef(0)
@@ -57,12 +59,10 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
     if (!synth) return
     const load = () => {
       // Match Korean only — `^ko` plus a separator/end so we don't catch e.g.
-      // Konkani (`kok-IN`), which `/ko/` did. Drop the device-default voice
-      // (already represented by the '기본' option) and de-dupe by name, so we
-      // don't list e.g. "한국어 (대한민국)" right next to "기본".
+      // Konkani (`kok-IN`), which `/ko/` did. De-dupe by name.
       const ko = synth.getVoices().filter((v) => /^ko([-_]|$)/i.test(v.lang))
       const seen = new Set<string>()
-      setVoices(ko.filter((v) => (v.default || seen.has(v.name)) ? false : (seen.add(v.name), true)))
+      setVoices(ko.filter((v) => (seen.has(v.name) ? false : (seen.add(v.name), true))))
     }
     load()
     synth.addEventListener?.('voiceschanged', load)
@@ -80,6 +80,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
     genRef.current++
     if (watchdog.current) { clearTimeout(watchdog.current); watchdog.current = null }
     if (typeof window !== 'undefined') window.speechSynthesis?.cancel()
+    setRepCountdown(null)
   }, [])
 
   const speakFrom = useCallback((startIdx: number) => {
@@ -101,6 +102,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
       let rep = 0
       const once = () => {
         if (!alive()) return
+        setRepCountdown(reps > 1 ? reps - rep : null) // 3, 2, 1 … for repeated lines
         let done = false
         const proceed = () => {
           if (done || !alive()) return
@@ -145,6 +147,25 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
     }
   }, [stopAll])
 
+  // Keep the table-of-contents select in sync with the section currently in view
+  // (updates as you scroll and as recitation auto-scrolls).
+  useEffect(() => {
+    const onScroll = () => {
+      const bar = document.querySelector('.sticky.top-14')
+      const threshold = 56 + (bar?.getBoundingClientRect().height ?? 60) + 16
+      const headers = document.querySelectorAll<HTMLElement>('[data-section]')
+      let cur = 1
+      for (const el of headers) {
+        if (el.getBoundingClientRect().top <= threshold) cur = Number(el.dataset.section)
+        else break
+      }
+      setCurrentSection(cur)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   const toggle = useCallback(() => {
     if (playing) { stopAll(); setPlaying(false); return }
     trackToolUsed(tool.slug)
@@ -171,6 +192,22 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   const jumpTo = (order: number) => goToIndex(LINES.findIndex((l) => l.order === order), true)
   // Floating ▲/▼ → move one line; keep reciting if already playing, else just move.
   const step = (delta: number) => goToIndex(idxRef.current + delta, false)
+  // Table of contents → jump to the chosen section (its header just below the bar).
+  function jumpToSection(no: number) {
+    const i = LINES.findIndex((l) => l.section === no)
+    if (i < 0) return
+    idxRef.current = i
+    setCurrentSection(no)
+    if (playingRef.current) { speakFrom(i); return } // reciting → continue from here
+    setCurOrder(LINES[i].order)
+    const sec = document.querySelector<HTMLElement>(`[data-section="${no}"]`)
+    const bar = document.querySelector<HTMLElement>('.sticky.top-14')
+    if (sec) {
+      const targetTop = 56 + (bar?.getBoundingClientRect().height ?? 0) + 8
+      const y = window.scrollY + sec.getBoundingClientRect().top - targetTop
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' })
+    }
+  }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -184,6 +221,13 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
             </button>
             <button onClick={reset} className="px-3 py-2.5 text-sm rounded-xl border border-gray-200 hover:bg-gray-50">↺ {t('cs_reset')}</button>
           </div>
+          <label className="flex items-center gap-2 text-sm text-gray-500">
+            <span className="whitespace-nowrap">{t('cs_toc')}</span>
+            <select value={currentSection} onChange={(e) => jumpToSection(Number(e.target.value))}
+              className="flex-1 min-w-0 rounded-lg border border-gray-200 px-2 py-1.5">
+              {SECTIONS.map((s) => <option key={s.no} value={s.no}>{s.no}. {s.ko}</option>)}
+            </select>
+          </label>
           <div className="flex items-center justify-between sm:justify-start sm:gap-4 text-sm text-gray-500">
             <label className="flex items-center gap-1 whitespace-nowrap">
               {t('cs_rate')}
@@ -201,7 +245,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
               {t('cs_voice')}
               <select value={voiceURI} onChange={(e) => setVoiceURI(e.target.value)} className="rounded-lg border border-gray-200 px-1 py-1.5 w-[3.6rem]">
                 <option value="off">{t('cs_voice_off')}</option>
-                <option value="">{t('cs_voice_default')}</option>
+                {voices.length === 0 && <option value="">{t('cs_voice_default')}</option>}
                 {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{genderHint(v)}{v.name}</option>)}
               </select>
             </label>
@@ -222,7 +266,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
         {/* Sutra body (font scales with the selected multiplier) */}
         <div className="space-y-7" style={{ fontSize: `${fontScale}rem` }}>
           {SECTIONS.map((sec) => (
-            <section key={sec.no}>
+            <section key={sec.no} data-section={sec.no} className="scroll-mt-40">
               <h2 className="text-base font-bold text-brand-700 mb-2">
                 {sec.no}. {sec.ko}
                 {sec.hanja && <span className="ml-2 text-sm font-normal text-gray-400">{sec.hanja}</span>}
@@ -232,7 +276,11 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
                   <div key={l.order} data-order={l.order} onClick={() => jumpTo(l.order)}
                     className={`scroll-mt-24 rounded-lg px-3 py-2 cursor-pointer transition-colors ${curOrder === l.order ? 'bg-brand-50 ring-1 ring-brand-200' : 'hover:bg-gray-50'}`}>
                     {showHanja && l.hanja && <p className="text-[0.9em] text-gray-400 leading-relaxed">{l.hanja}</p>}
-                    {showReading && <p className="text-[1.05em] text-gray-900 font-medium leading-relaxed">{l.reading}{l.repeat > 1 && <span className="ml-1.5 text-[0.7em] text-brand-400 align-middle">×{l.repeat}</span>}</p>}
+                    {showReading && <p className="text-[1.05em] text-gray-900 font-medium leading-relaxed">{l.reading}{l.repeat > 1 && (
+                      curOrder === l.order && repCountdown != null
+                        ? <span className="ml-2 inline-flex items-center justify-center w-[1.4em] h-[1.4em] rounded-full bg-brand-600 text-white text-[0.7em] font-bold align-middle">{repCountdown}</span>
+                        : <span className="ml-1.5 text-[0.7em] text-brand-400 align-middle">×{l.repeat}</span>
+                    )}</p>}
                     {showTrans && l.translation && <p className="text-[0.9em] text-gray-500 leading-relaxed">{l.translation}</p>}
                   </div>
                 ))}

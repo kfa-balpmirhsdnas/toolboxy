@@ -2044,7 +2044,8 @@
     "cs_voice_default": "既定",
     "cs_voice_off": "オフ",
     "cs_prev": "前の行",
-    "cs_next": "次の行"
+    "cs_next": "次の行",
+    "cs_toc": "目次"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
