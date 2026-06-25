@@ -74,6 +74,8 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
 
   const c = (light: string, darkCls: string) => (dark ? darkCls : light)
   const favSet = new Set(favorites)
+  // Meaning shown per locale (A-plan: Japanese gets its own translation; others fall back to Korean).
+  const trOf = (l: SutraLine) => (params.lang === 'ja' && l.translationJa ? l.translationJa : l.translation)
 
   // ── Persistence: load saved settings + last position on mount ──────────────
   useEffect(() => {
@@ -394,7 +396,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
                             ? <span className="ml-2 inline-flex items-center justify-center w-[1.4em] h-[1.4em] rounded-full bg-brand-600 text-white text-[0.7em] font-bold align-middle">{repCountdown}</span>
                             : <span className="ml-1.5 text-[0.7em] text-brand-400 align-middle">×{l.repeat}</span>
                         )}</p>}
-                        {showTrans && l.translation && <p className={`text-[0.9em] leading-relaxed ${c('text-gray-500', 'text-gray-400')}`}>{l.translation}</p>}
+                        {showTrans && trOf(l) && <p className={`text-[0.9em] leading-relaxed ${c('text-gray-500', 'text-gray-400')}`}>{trOf(l)}</p>}
                       </div>
                     )
                   })}

@@ -41,3 +41,4 @@ next-env.d.ts
 천수경_*.csv
 _gen_cheon.py
 _cheon_extract.txt
+_gen_ja.py
