@@ -271,7 +271,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
       if (!playingRef.current) { trackToolUsed(tool.slug); setPlaying(true) }
       speakFrom(i)
     } else {
-      setCurOrder(order); setCurrentSection(LINES[i].section); scrollToOrder(order)
+      setCurOrder(order); setCurrentSection(LINES[i].section); setReadChars(0); scrollToOrder(order)
     }
   }
   const jumpTo = (order: number) => goToIndex(LINES.findIndex((l) => l.order === order), true)
