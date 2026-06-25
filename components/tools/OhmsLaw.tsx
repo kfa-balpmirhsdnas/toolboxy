@@ -42,8 +42,8 @@ export default function OhmsLaw({ params }: { params: { lang: string } }) {
 
   const field = (k: keyof F, label: string) => (
     <label className="flex flex-col gap-1 text-sm text-gray-600">{label} ({UNITS[k]})
-      <input value={f[k]} onChange={(e) => setF((p) => ({ ...p, [k]: e.target.value }))} inputMode="decimal"
-        autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} data-1p-ignore data-lpignore="true"
+      <input value={f[k]} onChange={(e) => setF((p) => ({ ...p, [k]: e.target.value }))} type="search" inputMode="decimal" name={`tbx-${String(k)}`}
+        autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} data-1p-ignore data-lpignore="true" data-bwignore="true" data-form-type="other"
         className="rounded-xl border border-gray-200 px-3 py-2.5 text-lg focus:outline-none focus:ring-2 focus:ring-brand-400" />
     </label>
   )
