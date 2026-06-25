@@ -1,4 +1,4 @@
-// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 340).
+// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 380).
 // 성어·뜻은 공유 지식, 유래·예문은 자체 작성(저작권 클린). 확장은 gosaseongeo_확장_지시문.md 참고.
 export interface Idiom { id: string; hanja: string; reading: string; len: number; lit: string; fig: string; origin: string; source: string; example: string; syn: string[]; reviewed: boolean }
 export const IDIOMS: Idiom[] = [
@@ -341,7 +341,47 @@ export const IDIOMS: Idiom[] = [
   {"id":"gs0337","hanja":"意氣揚揚","reading":"의기양양","len":4,"lit":"뜻과 기운이 드높음","fig":"뜻한 바를 이뤄 우쭐하며 기운참","origin":"","source":"","example":"우승하고 의기양양하게 돌아왔다.","syn":[],"reviewed":true},
   {"id":"gs0338","hanja":"意氣銷沈","reading":"의기소침","len":4,"lit":"뜻과 기운이 사그라듦","fig":"기운이 꺾여 풀이 죽음","origin":"","source":"","example":"거듭된 실패에 의기소침해졌다.","syn":[],"reviewed":true},
   {"id":"gs0339","hanja":"魂飛魄散","reading":"혼비백산","len":4,"lit":"혼이 날고 넋이 흩어짐","fig":"몹시 놀라 정신이 없음","origin":"","source":"","example":"갑작스러운 소리에 혼비백산했다.","syn":[],"reviewed":true},
-  {"id":"gs0340","hanja":"憤氣撐天","reading":"분기탱천","len":4,"lit":"분한 기운이 하늘을 찌름","fig":"분한 마음이 하늘을 찌를 듯 북받침","origin":"","source":"","example":"억울함에 분기탱천했다.","syn":["切齒腐心"],"reviewed":true}
+  {"id":"gs0340","hanja":"憤氣撐天","reading":"분기탱천","len":4,"lit":"분한 기운이 하늘을 찌름","fig":"분한 마음이 하늘을 찌를 듯 북받침","origin":"","source":"","example":"억울함에 분기탱천했다.","syn":["切齒腐心"],"reviewed":true},
+  {"id":"gs0341","hanja":"苛斂誅求","reading":"가렴주구","len":4,"lit":"가혹하게 거두고 강제로 빼앗음","fig":"세금을 가혹하게 거두어 백성을 괴롭힘","origin":"","source":"","example":"가렴주구에 백성의 원성이 높았다.","syn":[],"reviewed":true},
+  {"id":"gs0342","hanja":"姑息之計","reading":"고식지계","len":4,"lit":"잠시 숨을 돌리는 계책","fig":"당장 편하려고 임시변통으로 꾸미는 방법","origin":"","source":"","example":"고식지계로 막다간 더 큰 화를 부른다.","syn":[],"reviewed":true},
+  {"id":"gs0343","hanja":"過恭非禮","reading":"과공비례","len":4,"lit":"지나친 공손은 예가 아님","fig":"정도가 지나친 공손은 오히려 예의에 어긋남","origin":"","source":"","example":"과공비례라고, 너무 굽실대도 결례다.","syn":["過猶不及"],"reviewed":true},
+  {"id":"gs0344","hanja":"狡兔三窟","reading":"교토삼굴","len":4,"lit":"영리한 토끼는 굴이 셋","fig":"위기에 대비해 여러 대비책을 마련해 둠","origin":"","source":"전국책","example":"교토삼굴이라고, 여러 대비책을 세워 뒀다.","syn":["有備無患"],"reviewed":true},
+  {"id":"gs0345","hanja":"九折羊腸","reading":"구절양장","len":4,"lit":"아홉 번 굽은 양의 창자","fig":"꼬불꼬불하고 험한 산길","origin":"","source":"","example":"구절양장 같은 고갯길을 넘었다.","syn":[],"reviewed":true},
+  {"id":"gs0346","hanja":"國士無雙","reading":"국사무쌍","len":4,"lit":"나라에 둘도 없는 인재","fig":"견줄 자가 없는 뛰어난 인물","origin":"한신을 두고 둘도 없는 국사라 천거한 데서 비롯","source":"사기","example":"그는 국사무쌍이라 불릴 인재다.","syn":["群鷄一鶴"],"reviewed":true},
+  {"id":"gs0347","hanja":"騎虎之勢","reading":"기호지세","len":4,"lit":"호랑이 등에 탄 형세","fig":"이미 시작해 중간에 그만둘 수 없는 형세","origin":"","source":"","example":"기호지세라 멈출 수도 없었다.","syn":[],"reviewed":true},
+  {"id":"gs0348","hanja":"多岐亡羊","reading":"다기망양","len":4,"lit":"갈림길이 많아 양을 잃음","fig":"방침이 많아 도리어 갈피를 못 잡음","origin":"달아난 양을 쫓다 갈림길이 많아 끝내 잃었다는 이야기에서 비롯","source":"열자","example":"선택지가 너무 많아 다기망양이다.","syn":[],"reviewed":true},
+  {"id":"gs0349","hanja":"簞食瓢飮","reading":"단사표음","len":4,"lit":"대그릇 밥과 표주박 물","fig":"청빈하고 소박한 생활","origin":"","source":"논어","example":"단사표음에도 마음은 넉넉했다.","syn":["安貧樂道"],"reviewed":true},
+  {"id":"gs0350","hanja":"堂狗風月","reading":"당구풍월","len":4,"lit":"서당 개가 풍월을 읊음","fig":"무식한 이도 오래 보고 들으면 흉내를 냄","origin":"","source":"","example":"당구풍월이라더니 어깨너머로 익혔다.","syn":[],"reviewed":true},
+  {"id":"gs0351","hanja":"大義名分","reading":"대의명분","len":4,"lit":"큰 의리와 떳떳한 명분","fig":"마땅히 지켜야 할 도리와 명분","origin":"","source":"","example":"대의명분 없는 싸움은 설득력이 약하다.","syn":[],"reviewed":true},
+  {"id":"gs0352","hanja":"道聽塗說","reading":"도청도설","len":4,"lit":"길에서 듣고 길에서 말함","fig":"근거 없이 떠도는 뜬소문","origin":"","source":"논어","example":"도청도설에 휘둘리지 말자.","syn":[],"reviewed":true},
+  {"id":"gs0353","hanja":"登高自卑","reading":"등고자비","len":4,"lit":"높이 오르려면 낮은 데서부터","fig":"무슨 일이든 차례와 기초를 밟아야 함","origin":"","source":"중용","example":"등고자비라고, 기초부터 다지자.","syn":[],"reviewed":true},
+  {"id":"gs0354","hanja":"無爲自然","reading":"무위자연","len":4,"lit":"함이 없이 절로 그러함","fig":"인위를 더하지 않고 자연 그대로 둠","origin":"","source":"","example":"무위자연의 삶을 동경했다.","syn":[],"reviewed":true},
+  {"id":"gs0355","hanja":"文房四友","reading":"문방사우","len":4,"lit":"글방의 네 벗","fig":"종이·붓·먹·벼루 네 가지 문구","origin":"","source":"","example":"문방사우를 갖춰 서예를 시작했다.","syn":[],"reviewed":true},
+  {"id":"gs0356","hanja":"美人薄命","reading":"미인박명","len":4,"lit":"미인은 명이 짧음","fig":"아름다운 사람은 흔히 운명이 기구함","origin":"","source":"","example":"미인박명이라더니 안타까운 사연이다.","syn":[],"reviewed":true},
+  {"id":"gs0357","hanja":"百家爭鳴","reading":"백가쟁명","len":4,"lit":"많은 학파가 다투어 울림","fig":"여러 사람이 자기 주장을 활발히 펼침","origin":"","source":"","example":"학계에 백가쟁명이 펼쳐졌다.","syn":[],"reviewed":true},
+  {"id":"gs0358","hanja":"附和雷同","reading":"부화뇌동","len":4,"lit":"우레에 맞춰 함께함","fig":"줏대 없이 남을 따라 함부로 동조함","origin":"","source":"","example":"부화뇌동하지 말고 소신을 가져라.","syn":[],"reviewed":true},
+  {"id":"gs0359","hanja":"焚書坑儒","reading":"분서갱유","len":4,"lit":"책을 불사르고 선비를 묻음","fig":"학문과 사상을 혹독하게 탄압함","origin":"진시황이 책을 불태우고 학자들을 생매장한 일에서 비롯","source":"사기","example":"분서갱유 같은 사상 탄압이었다.","syn":[],"reviewed":true},
+  {"id":"gs0360","hanja":"四顧無親","reading":"사고무친","len":4,"lit":"사방을 둘러봐도 친한 이가 없음","fig":"의지할 데가 전혀 없음","origin":"","source":"","example":"낯선 도시에서 사고무친이었다.","syn":["孤立無援"],"reviewed":true},
+  {"id":"gs0361","hanja":"先見之明","reading":"선견지명","len":4,"lit":"앞을 내다보는 밝음","fig":"닥쳐올 일을 미리 아는 지혜","origin":"","source":"","example":"선견지명으로 위기를 피했다.","syn":[],"reviewed":true},
+  {"id":"gs0362","hanja":"首鼠兩端","reading":"수서양단","len":4,"lit":"쥐가 구멍에서 양쪽을 살핌","fig":"결정을 못 하고 망설임","origin":"","source":"","example":"수서양단으로 기회를 놓쳤다.","syn":["進退兩難"],"reviewed":true},
+  {"id":"gs0363","hanja":"神出鬼沒","reading":"신출귀몰","len":4,"lit":"귀신같이 나타났다 사라짐","fig":"자유자재로 나타나고 숨어 헤아릴 수 없음","origin":"","source":"","example":"신출귀몰한 솜씨로 빠져나갔다.","syn":[],"reviewed":true},
+  {"id":"gs0364","hanja":"言中有骨","reading":"언중유골","len":4,"lit":"말 속에 뼈가 있음","fig":"예사로운 말 속에 단단한 속뜻이 있음","origin":"","source":"","example":"농담 같지만 언중유골이었다.","syn":[],"reviewed":true},
+  {"id":"gs0365","hanja":"如履薄氷","reading":"여리박빙","len":4,"lit":"살얼음을 밟는 듯","fig":"몹시 위태롭고 조심스러움","origin":"","source":"시경","example":"여리박빙의 심정으로 일을 처리했다.","syn":["累卵之危"],"reviewed":true},
+  {"id":"gs0366","hanja":"連理枝","reading":"연리지","len":3,"lit":"가지가 서로 이어진 나무","fig":"화목한 부부나 깊은 남녀의 사랑","origin":"","source":"","example":"두 사람은 연리지 같은 부부다.","syn":["百年偕老"],"reviewed":true},
+  {"id":"gs0367","hanja":"寤寐不忘","reading":"오매불망","len":4,"lit":"자나 깨나 잊지 못함","fig":"늘 마음에 두어 잊지 못함","origin":"","source":"시경","example":"고향을 오매불망 그리워했다.","syn":[],"reviewed":true},
+  {"id":"gs0368","hanja":"韋編三絶","reading":"위편삼절","len":4,"lit":"가죽끈이 세 번 끊어짐","fig":"책을 여러 번 읽어 닳도록 학문에 힘씀","origin":"공자가 주역을 즐겨 읽어 책을 맨 가죽끈이 세 번이나 끊어졌다는 데서 비롯","source":"사기","example":"위편삼절하듯 책을 읽고 또 읽었다.","syn":["手不釋卷"],"reviewed":true},
+  {"id":"gs0369","hanja":"唯我獨尊","reading":"유아독존","len":4,"lit":"오직 나 홀로 높음","fig":"세상에 자기만 잘났다고 여김","origin":"","source":"","example":"유아독존에 빠져 남의 말을 안 듣는다.","syn":["眼下無人"],"reviewed":true},
+  {"id":"gs0370","hanja":"隱忍自重","reading":"은인자중","len":4,"lit":"참고 견디며 몸가짐을 무겁게 함","fig":"마음속으로 참으며 신중히 행동함","origin":"","source":"","example":"때를 기다리며 은인자중했다.","syn":[],"reviewed":true},
+  {"id":"gs0371","hanja":"以實直告","reading":"이실직고","len":4,"lit":"사실대로 바로 고함","fig":"있는 그대로 솔직히 말함","origin":"","source":"","example":"거짓말 말고 이실직고해라.","syn":[],"reviewed":true},
+  {"id":"gs0372","hanja":"適者生存","reading":"적자생존","len":4,"lit":"적응하는 자가 살아남음","fig":"환경에 잘 적응하는 것만이 살아남음","origin":"","source":"","example":"적자생존의 치열한 경쟁.","syn":["弱肉强食"],"reviewed":true},
+  {"id":"gs0373","hanja":"輾轉反側","reading":"전전반측","len":4,"lit":"이리저리 뒤척임","fig":"걱정이나 생각으로 잠을 이루지 못함","origin":"","source":"시경","example":"걱정에 전전반측 밤을 새웠다.","syn":[],"reviewed":true},
+  {"id":"gs0374","hanja":"朝令暮改","reading":"조령모개","len":4,"lit":"아침에 명령하고 저녁에 고침","fig":"법령이나 방침을 자주 뜯어고침","origin":"","source":"","example":"조령모개라 따르기 힘들다.","syn":["朝變夕改"],"reviewed":true},
+  {"id":"gs0375","hanja":"芝蘭之交","reading":"지란지교","len":4,"lit":"지초와 난초의 사귐","fig":"맑고 향기로운 벗 사이의 교제","origin":"","source":"","example":"지란지교를 나눈 오랜 벗.","syn":["莫逆之友","金蘭之交"],"reviewed":true},
+  {"id":"gs0376","hanja":"千慮一失","reading":"천려일실","len":4,"lit":"천 번 생각에 한 번 실수","fig":"지혜로운 사람도 가끔 실수가 있음","origin":"","source":"사기","example":"천려일실로 사소한 걸 놓쳤다.","syn":[],"reviewed":true},
+  {"id":"gs0377","hanja":"焦眉之急","reading":"초미지급","len":4,"lit":"눈썹에 불이 붙은 급함","fig":"매우 급박한 일","origin":"","source":"","example":"초미지급의 현안부터 처리하자.","syn":["危機一髮"],"reviewed":true},
+  {"id":"gs0378","hanja":"虛張聲勢","reading":"허장성세","len":4,"lit":"헛되이 기세만 부풀림","fig":"실속 없이 큰소리치며 위세를 부림","origin":"","source":"","example":"허장성세일 뿐 실력은 없다.","syn":["豪言壯談"],"reviewed":true},
+  {"id":"gs0379","hanja":"後生可畏","reading":"후생가외","len":4,"lit":"뒤에 난 사람이 두려움","fig":"젊은 후배가 장차 큰 인물이 될 수 있어 두려움","origin":"공자가 젊은 후학을 두려워할 만하다고 한 말에서 비롯","source":"논어","example":"후생가외라더니 신입의 실력이 놀랍다.","syn":["靑出於藍"],"reviewed":true},
+  {"id":"gs0380","hanja":"吾鼻三尺","reading":"오비삼척","len":4,"lit":"내 코가 석 자","fig":"제 사정이 급해 남을 돌볼 겨를이 없음","origin":"","source":"","example":"오비삼척이라 남 도울 처지가 아니다.","syn":[],"reviewed":true}
 ]
 export const BY_READING: Record<string, Idiom> = Object.fromEntries(IDIOMS.map(i => [i.reading, i]))
 
