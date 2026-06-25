@@ -10,6 +10,7 @@ import { trackToolUsed } from '@/lib/gtag'
 const RATES = [0.3, 0.4, 0.5, 0.6, 0.7, 0.85, 1, 1.15, 1.3, 1.5]
 const FONT_SCALES = [0.8, 1, 1.2, 1.5, 2, 3]
 const SLEEPS = [0, 5, 10, 30, 60, 120]
+const TARGETS = [7, 21, 108, 0] // 0 = 무한(∞)
 type Loop = 'off' | 'section' | 'all'
 interface Section { no: number; ko: string; hanja: string; type: string; lines: SutraLine[] }
 
@@ -21,8 +22,8 @@ function genderHint(v: SpeechSynthesisVoice): string {
   return ''
 }
 
-/** Reusable scripture reader/reciter — powers 천수경, 반야심경, … from one component. */
-export default function SutraViewer({ lines, tool, lang }: { lines: SutraLine[]; tool: ToolMeta; lang: string }) {
+/** Reusable scripture reader/reciter — powers 천수경, 반야심경, 신묘장구대다라니, … from one component. */
+export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }: { lines: SutraLine[]; tool: ToolMeta; lang: string; intro?: string; reciteCounter?: boolean }) {
   const t = useTranslations('toolui')
   const LINES = lines
   const SECTIONS = useMemo<Section[]>(() => {
@@ -34,13 +35,21 @@ export default function SutraViewer({ lines, tool, lang }: { lines: SutraLine[];
     }
     return s
   }, [LINES])
+  const isJa = lang === 'ja'
+  // Hide toggles/TOC that have no content for this scripture (e.g. the dharani has
+  // no per-line 한자 and no 해석, and is a single section).
+  const hasHanja = useMemo(() => LINES.some((l) => !!l.hanja), [LINES])
+  const hasTrans = useMemo(() => LINES.some((l) => !!(isJa && l.translationJa ? l.translationJa : l.translation)), [LINES, isJa])
+  const showTocBar = SECTIONS.length > 1
 
   // Namespaced by locale: each installed app (/ko, /ja) keeps its own favorites,
   // settings and last position — two separate apps, two separate states.
   const PREFS_KEY = `${tool.slug}:${lang}:prefs`
   const FAVS_KEY = `${tool.slug}:${lang}:favs`
   const POS_KEY = `${tool.slug}:${lang}:pos`
+  const COUNT_KEY = `${tool.slug}:${lang}:count`
   const savePos = useCallback((i: number) => { try { localStorage.setItem(POS_KEY, String(i)) } catch { /* ignore */ } }, [POS_KEY])
+  const saveCount = useCallback((n: number) => { try { localStorage.setItem(COUNT_KEY, String(n)) } catch { /* ignore */ } }, [COUNT_KEY])
 
   const [showHanja, setShowHanja] = useState(false)
   const [showReading, setShowReading] = useState(true)
@@ -55,7 +64,9 @@ export default function SutraViewer({ lines, tool, lang }: { lines: SutraLine[];
   const [repCountdown, setRepCountdown] = useState<number | null>(null)
   const [karaoke, setKaraoke] = useState(true)
   const [readChars, setReadChars] = useState(0)
-  const [loop, setLoop] = useState<Loop>('off')
+  const [loop, setLoop] = useState<Loop>(reciteCounter ? 'all' : 'off')
+  const [reciteCount, setReciteCount] = useState(0)
+  const [reciteTarget, setReciteTarget] = useState(108)
   const [sleepMin, setSleepMin] = useState(0)
   const [dark, setDark] = useState(false)
   const [favorites, setFavorites] = useState<number[]>([])
@@ -70,13 +81,14 @@ export default function SutraViewer({ lines, tool, lang }: { lines: SutraLine[];
   const voiceOnRef = useRef(false); voiceOnRef.current = voiceURI !== 'off'
   const karaokeRef = useRef(karaoke); karaokeRef.current = karaoke
   const loopRef = useRef<Loop>('off'); loopRef.current = loop
+  const reciteCountRef = useRef(0); reciteCountRef.current = reciteCount
+  const reciteTargetRef = useRef(108); reciteTargetRef.current = reciteTarget
   const loopSectionRef = useRef(1)
   const watchdog = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
 
   const c = (light: string, darkCls: string) => (dark ? darkCls : light)
   const favSet = new Set(favorites)
-  const isJa = lang === 'ja'
   const trOf = (l: SutraLine) => (isJa && l.translationJa ? l.translationJa : l.translation)
   const readingOf = (l: SutraLine) => (isJa && l.readingJa ? l.readingJa : l.reading)
   const ttsLang = isJa ? 'ja-JP' : 'ko-KR'
@@ -95,6 +107,9 @@ export default function SutraViewer({ lines, tool, lang }: { lines: SutraLine[];
       if (typeof p.karaoke === 'boolean') setKaraoke(p.karaoke)
       if (typeof p.dark === 'boolean') setDark(p.dark)
       if (p.loop === 'section' || p.loop === 'all' || p.loop === 'off') setLoop(p.loop)
+      if (typeof p.reciteTarget === 'number') setReciteTarget(p.reciteTarget)
+      const cnt = Number(localStorage.getItem(COUNT_KEY))
+      if (cnt > 0) setReciteCount(cnt)
       const favs = JSON.parse(localStorage.getItem(FAVS_KEY) || '[]')
       if (Array.isArray(favs)) setFavorites(favs.filter((n) => typeof n === 'number'))
       const pos = Number(localStorage.getItem(POS_KEY))
@@ -109,8 +124,8 @@ export default function SutraViewer({ lines, tool, lang }: { lines: SutraLine[];
   }, [])
   useEffect(() => {
     if (!loaded) return
-    try { localStorage.setItem(PREFS_KEY, JSON.stringify({ rate, fontScale, voiceURI, showHanja, showReading, showTrans, karaoke, dark, loop })) } catch { /* ignore */ }
-  }, [loaded, PREFS_KEY, rate, fontScale, voiceURI, showHanja, showReading, showTrans, karaoke, dark, loop])
+    try { localStorage.setItem(PREFS_KEY, JSON.stringify({ rate, fontScale, voiceURI, showHanja, showReading, showTrans, karaoke, dark, loop, reciteTarget })) } catch { /* ignore */ }
+  }, [loaded, PREFS_KEY, rate, fontScale, voiceURI, showHanja, showReading, showTrans, karaoke, dark, loop, reciteTarget])
   useEffect(() => {
     if (!loaded) return
     try { localStorage.setItem(FAVS_KEY, JSON.stringify(favorites)) } catch { /* ignore */ }
@@ -157,7 +172,14 @@ export default function SutraViewer({ lines, tool, lang }: { lines: SutraLine[];
     const speakLine = (i: number) => {
       if (!alive()) return
       if (i >= LINES.length) {
-        if (loopRef.current === 'all') { speakLine(0); return }
+        if (loopRef.current === 'all') {
+          if (reciteCounter) {
+            const next = reciteCountRef.current + 1
+            reciteCountRef.current = next; setReciteCount(next); saveCount(next)
+            if (reciteTargetRef.current > 0 && next >= reciteTargetRef.current) { setPlaying(false); setCurOrder(null); return }
+          }
+          speakLine(0); return
+        }
         setPlaying(false); setCurOrder(null); return
       }
       if (loopRef.current === 'section' && LINES[i].section !== loopSectionRef.current) {
@@ -316,12 +338,29 @@ export default function SutraViewer({ lines, tool, lang }: { lines: SutraLine[];
               ★ {t('cs_favonly')}
             </button>
           </div>
-          <label className={`flex items-center gap-2 text-sm ${c('text-gray-500', 'text-gray-300')}`}>
-            <span className="whitespace-nowrap">{t('cs_toc')}</span>
-            <select value={currentSection} onChange={(e) => jumpToSection(Number(e.target.value))} className={`flex-1 min-w-0 ${wideSelCls}`}>
-              {SECTIONS.map((s) => <option key={s.no} value={s.no}>{s.no}. {secName(s)}</option>)}
-            </select>
-          </label>
+          {showTocBar && (
+            <label className={`flex items-center gap-2 text-sm ${c('text-gray-500', 'text-gray-300')}`}>
+              <span className="whitespace-nowrap">{t('cs_toc')}</span>
+              <select value={currentSection} onChange={(e) => jumpToSection(Number(e.target.value))} className={`flex-1 min-w-0 ${wideSelCls}`}>
+                {SECTIONS.map((s) => <option key={s.no} value={s.no}>{s.no}. {secName(s)}</option>)}
+              </select>
+            </label>
+          )}
+          {reciteCounter && (
+            <div className={`flex items-center gap-3 text-sm ${c('text-gray-600', 'text-gray-200')}`}>
+              <span className="whitespace-nowrap font-medium">{t('dd_count')}</span>
+              <span className={`font-bold text-xl tabular-nums ${c('text-brand-700', 'text-brand-300')}`}>{reciteCount}</span>
+              <span className="whitespace-nowrap">/ {reciteTarget === 0 ? '∞' : reciteTarget}</span>
+              <select aria-label={t('dd_target')} value={reciteTarget}
+                onChange={(e) => setReciteTarget(Number(e.target.value))} className={`${wideSelCls} w-16`}>
+                {TARGETS.map((n) => <option key={n} value={n}>{n === 0 ? '∞' : n}</option>)}
+              </select>
+              <button onClick={() => setReciteCount((n) => { const v = n + 1; saveCount(v); return v })}
+                className={`px-2.5 py-1 rounded-lg border whitespace-nowrap ${c('border-gray-300 text-gray-700 hover:bg-gray-50', 'border-gray-600 text-gray-200 hover:bg-gray-800')}`}>+1</button>
+              <button onClick={() => { setReciteCount(0); saveCount(0) }} aria-label={t('dd_reset')}
+                className={`ml-auto px-2.5 py-1 rounded-lg border whitespace-nowrap ${c('border-gray-300 text-gray-500 hover:bg-gray-50', 'border-gray-600 text-gray-300 hover:bg-gray-800')}`}>↺</button>
+            </div>
+          )}
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-6 sm:gap-y-2">
             <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 text-sm ${c('text-gray-500', 'text-gray-300')}`}>
               <label className="flex items-center gap-2 whitespace-nowrap">{t('cs_rate')}
@@ -355,13 +394,17 @@ export default function SutraViewer({ lines, tool, lang }: { lines: SutraLine[];
               </label>
             </div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
-              <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showHanja} onChange={(e) => setShowHanja(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_hanja')}</label>
+              {hasHanja && <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showHanja} onChange={(e) => setShowHanja(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_hanja')}</label>}
               <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showReading} onChange={(e) => setShowReading(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_reading')}</label>
-              <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showTrans} onChange={(e) => setShowTrans(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_translation')}</label>
+              {hasTrans && <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showTrans} onChange={(e) => setShowTrans(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_translation')}</label>}
               <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={karaoke} onChange={(e) => setKaraoke(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_karaoke')}</label>
             </div>
           </div>
         </div>
+
+        {intro && (
+          <p className={`text-sm leading-relaxed rounded-xl px-4 py-3 ${c('bg-brand-50 text-brand-800', 'bg-gray-800 text-brand-200')}`}>{intro}</p>
+        )}
 
         {favOnly && visibleSections.length === 0 ? (
           <p className={`text-center py-10 text-sm ${c('text-gray-400', 'text-gray-500')}`}>{t('cs_fav_empty')}</p>
