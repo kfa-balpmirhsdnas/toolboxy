@@ -1,4 +1,4 @@
-export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random'
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science'
 export type Phase = 1 | 2 | 3
 
 export interface ToolMeta {
@@ -63,6 +63,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'periodic-table',category:'science',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['주기율표','periodic table','원소','元素周期表','화학 원소'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'spinner-wheel',category:'random',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['spinner wheel','돌림판','룰렛','random picker','wheel of names','ルーレット'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'ladder-game',category:'random',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['사다리타기','ladder game','amidakuji','あみだくじ','random matching'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-to-speech',category:'audio',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['text to speech','tts','음성 변환','텍스트 음성 변환','読み上げ','voice generator'],maxFileSizeMB:{free:0,pro:0} },
@@ -401,4 +402,5 @@ export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; 
   file:      { label: 'File',      icon: String.fromCodePoint(0x1F4C1), color: 'orange' },
   classics:  { label: 'Classics',  icon: String.fromCodePoint(0x1F4DC), color: 'amber'  },
   random:    { label: 'Random',    icon: String.fromCodePoint(0x1F3B2), color: 'violet' },
+  science:   { label: 'Science',   icon: String.fromCodePoint(0x1F9EA), color: 'teal'   },
 };

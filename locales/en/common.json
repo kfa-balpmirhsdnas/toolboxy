@@ -33,7 +33,8 @@
     "seo": "SEO",
     "language": "Language",
     "classics": "Classics",
-    "random": "Random"
+    "random": "Random",
+    "science": "Science"
   },
   "home": {
     "hero_title": "Free Online Tools",
@@ -92,6 +93,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "periodic-table": "Interactive periodic table — tap an element for its atomic number, mass, group, period, and category. Shows all 118 elements with English/Korean/Japanese names and category colors. Free, no install.",
     "spinner-wheel": "Free spinner wheel — add options, spin, and pick one at random. Great for lunch, chores, and raffles, with an option to remove the winner. Runs right in your browser, no install.",
     "ladder-game": "Free ladder game (amidakuji) — add names and prizes and follow the ladder to match them at random, with an animated path. Great for deciding who does what. Runs right in your browser, no install.",
     "text-to-speech": "Free text-to-speech tool that reads your text aloud in a natural voice. Choose a voice, adjust speed, pitch, and volume, and follow along with word highlighting — runs right in your browser, no install.",
@@ -1425,6 +1427,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "periodic-table": "An interactive periodic table of all 118 chemical elements. Tap an element and a card shows its atomic number, mass, group, period, and category, with category colors and a legend to tell metals, nonmetals, halogens, noble gases, and more apart. Element names are shown in English, Korean, and Japanese (switch the site language and the card name follows); lanthanides and actinides sit in the two rows below the main table. Atomic masses are standard atomic weights, and everything runs in your browser, free with no install.",
     "spinner-wheel": "A spinner wheel that picks one option at random when you spin it. Use it to choose what's for lunch, decide who does the chores, or run a quick raffle — enter as many options as you like, one per line. Turn on 'Remove winner' and each pick is dropped from the wheel, which is handy for drawing several winners in a row. Everything runs in your browser, so it's free with no install.",
     "ladder-game": "A ladder game (amidakuji / ghost leg) that builds a random ladder to decide who gets what. Enter names and results, tap a number on top, and the path is drawn down the ladder with an animation to reveal the match. Reshuffle to build a new ladder, and keep the names and results the same count. Great for forfeits, assigning roles or chores, and seating — free with no install.",
     "text-to-speech": "A text-to-speech (TTS) tool that reads your text aloud. It uses your browser's built-in speech synthesis: paste your text, press ▶, and it speaks immediately. Choose from the voices installed on your device (different languages and genders), adjust the speed, pitch, and volume, and the word being spoken is highlighted as it reads. Everything runs on your device, so your text is never sent anywhere, and it's free with no install. Available voices and languages depend on your device and browser, and because it's a live playback tool, there's no option to save the audio as a file.",
@@ -1673,6 +1676,11 @@
   },
   "howto": {
     "title": "How to use",
+    "periodic-table": [
+      "Tap an element cell to see its details (atomic number, mass, group, period, category) in the card above.",
+      "Use the category colors and legend to tell metals, nonmetals, halogens, and noble gases apart.",
+      "Scroll sideways if the table is wide; lanthanides and actinides are in the two rows below."
+    ],
     "spinner-wheel": [
       "Enter your options, one per line.",
       "Press 'Spin!' and the wheel spins to a random winner.",
@@ -1988,6 +1996,24 @@
     "lg_shuffle": "Reshuffle ladder",
     "lg_hint": "Tap a number on top to trace the ladder down to its result. Names and results must be the same count.",
     "lg_mismatch": "Enter at least 2 names and results, with equal counts.",
+    "pt_title": "Periodic Table",
+    "pt_subtitle": "Tap an element to see its atomic number, mass, group, period, and category.",
+    "pt_number": "Atomic number",
+    "pt_mass": "Atomic mass",
+    "pt_group": "Group",
+    "pt_period": "Period",
+    "pt_category": "Category",
+    "pt_note": "Atomic masses are standard atomic weights; for elements with no stable isotope, the mass number of the most stable isotope is shown.",
+    "pt_c_nonmetal": "Nonmetal",
+    "pt_c_noble": "Noble gas",
+    "pt_c_alkali": "Alkali metal",
+    "pt_c_alkaline": "Alkaline earth",
+    "pt_c_metalloid": "Metalloid",
+    "pt_c_halogen": "Halogen",
+    "pt_c_transition": "Transition metal",
+    "pt_c_post_transition": "Post-transition",
+    "pt_c_lanthanide": "Lanthanide",
+    "pt_c_actinide": "Actinide",
     "dd_intro": "A dharani invoking the great compassion of Avalokiteśvara (Gwaneum). It is chanted for its sound rather than translated, repeated in rounds such as 7, 21, or 108. Press ▶ and each full pass adds one count; or tap +1 to count rounds you chant yourself.",
     "cs_size": "Size",
     "cs_voice": "Voice",
@@ -2018,6 +2044,7 @@
     "cheonsugyeong": ["Cheonsugyeong", "Thousand-Hands Sutra", "Great Compassion Dharani", "Buddhist sutra", "sutra recitation"]
   },
   "toolNames": {
+    "periodic-table": "Periodic Table",
     "spinner-wheel": "Spinner Wheel",
     "ladder-game": "Ladder Game (Amidakuji)",
     "text-to-speech": "Text to Speech (TTS)",
