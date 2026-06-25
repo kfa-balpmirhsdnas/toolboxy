@@ -29,8 +29,9 @@ export default function ToolCard({ tool, lang }: ToolCardProps) {
   const { guard } = useSignupGate()
   const href = `/${lang}/tools/${tool.slug}`
   // Localized name (opt-in via `toolNames`), else the English name.
-  const messages = useMessages() as { toolNames?: Record<string, string> }
+  const messages = useMessages() as { toolNames?: Record<string, string>; toolTags?: Record<string, string[]> }
   const name = messages?.toolNames?.[tool.slug] ?? slugToName(tool.slug)
+  const tags = messages?.toolTags?.[tool.slug] ?? tool.tags ?? []
 
   // Guests reaching a tool via internal navigation (Home / Tools listing) hit
   // the sign-up gate; direct URL entries never go through this onClick.
@@ -52,7 +53,7 @@ export default function ToolCard({ tool, lang }: ToolCardProps) {
             {isAppTool(tool) && <span className="badge-app">App</span>}
           </div>
           <p className="text-xs text-gray-500 mt-1 truncate">
-            {(tool.tags ?? []).slice(0, 3).join(' · ')}
+            {tags.slice(0, 3).join(' · ')}
           </p>
         </div>
       </div>

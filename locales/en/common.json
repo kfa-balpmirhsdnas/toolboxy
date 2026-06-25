@@ -1867,6 +1867,9 @@
     "cs_fav_empty": "No saved lines yet. Tap the ☆ next to a line to save it.",
     "cs_top": "Back to top"
   },
+  "toolTags": {
+    "cheonsugyeong": ["Cheonsugyeong", "Thousand-Hands Sutra", "Great Compassion Dharani", "Buddhist sutra", "sutra recitation"]
+  },
   "toolNames": {
     "cheonsugyeong": "Cheonsugyeong (Thousand-Hands Sutra)",
     "white-noise-machine": "White Noise Machine",

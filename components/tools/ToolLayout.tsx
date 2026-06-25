@@ -39,9 +39,10 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
 
   const catMeta = CATEGORY_META[tool.category]
   // Localized name (opt-in via the `toolNames` namespace), else the English name.
-  const messages = useMessages() as { toolNames?: Record<string, string>; categories?: Record<string, string> }
+  const messages = useMessages() as { toolNames?: Record<string, string>; categories?: Record<string, string>; toolTags?: Record<string, string[]> }
   const name = messages?.toolNames?.[tool.slug] ?? slugToName(tool.slug)
   const catLabel = messages?.categories?.[tool.category] ?? catMeta.label
+  const tags = messages?.toolTags?.[tool.slug] ?? tool.tags ?? []
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -82,7 +83,7 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
           {isAppTool(tool) && <span className="badge-app">App</span>}
         </div>
         <p className="text-gray-500 text-sm">
-          {(tool.tags ?? []).slice(0, 5).join(' · ')}
+          {tags.slice(0, 5).join(' · ')}
         </p>
         {/* App-install is an explicit per-tool decision: only show it once a tool
             is added to APP_TOOLS (after its feature set is settled). */}

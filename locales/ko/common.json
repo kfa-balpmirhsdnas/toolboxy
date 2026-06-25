@@ -1363,6 +1363,9 @@
     "uploadPrivacyQ": "업로드한 파일이 서버로 전송되나요?",
     "uploadPrivacyA": "아니요. 모든 작업은 사용자의 컴퓨터에서만 처리되며, 파일은 서버나 외부로 전송되지 않습니다. 따라서 파일 내용이 외부로 유출될 걱정 없이 안심하고 이용하실 수 있습니다."
   },
+  "toolTags": {
+    "cheonsugyeong": ["천수경", "천수경 한글", "천수경 해석", "천수경 독송", "한글 천수경"]
+  },
   "toolNames": {
     "cheonsugyeong": "천수경 (한글 독송)",
     "white-noise-machine": "백색 소음기",
