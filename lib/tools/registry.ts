@@ -1,4 +1,4 @@
-export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science' | 'time' | 'device'
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science' | 'time' | 'device' | 'world'
 export type Phase = 1 | 2 | 3
 
 export interface ToolMeta {
@@ -125,6 +125,11 @@ export const TOOLS: ToolMeta[] = [
   {slug:'mic-test',category:'device',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['마이크 테스트','마이크 점검','mic test','microphone test','audio input'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'keyboard-test',category:'device',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['키보드 테스트','키 눌림 점검','keyboard test','key tester','stuck key'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'mouse-test',category:'device',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['마우스 테스트','마우스 점검','mouse test','mouse button test','polling rate'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'country-calling-codes',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['국가번호','국가 전화번호','country calling code','dialing code','국제전화 번호'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'flag-quiz',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['국기 퀴즈','세계 국기','flag quiz','guess the flag','나라 국기'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'capital-quiz',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['수도 퀴즈','나라 수도','capital quiz','world capitals','수도 맞히기'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'country-compare',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['나라 정보 비교','국가 비교','country compare','compare countries','나라 비교'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'capital-distance',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['두 도시 거리','수도 간 거리','distance between cities','capital distance','도시 거리 계산'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'voice-recorder',category:'audio',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['voice recorder','audio','microphone','record','ボイスレコーダー','음성 녹음'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'tone-generator',category:'audio',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['tone','frequency','hz','sound','test','トーン','주파수'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'merge-pdf',category:'pdf',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['pdf','merge','combine','join','結合','병합'],maxFileSizeMB:{free:0,pro:0} },
@@ -430,4 +435,5 @@ export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; 
   science:   { label: 'Science',   icon: String.fromCodePoint(0x1F9EA), color: 'teal'   },
   time:      { label: 'Time',      icon: String.fromCodePoint(0x23F0), color: 'sky'    },
   device:    { label: 'Device Test', icon: String.fromCodePoint(0x1F5A5, 0xFE0F), color: 'slate' },
+  world:     { label: 'World',      icon: String.fromCodePoint(0x1F30F), color: 'cyan' },
 };
