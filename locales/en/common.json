@@ -94,6 +94,7 @@
   },
   "toolDescriptions": {
     "periodic-table": "Interactive periodic table — tap an element for its atomic number, mass, group, period, and category. Shows all 118 elements with English/Korean/Japanese names and category colors. Free, no install.",
+    "molar-mass-calculator": "Free tool that computes the molar mass (g/mol) of a chemical formula. Supports parentheses and hydrates, shows a per-element breakdown, and uses standard atomic weights.",
     "spinner-wheel": "Free spinner wheel — add options, spin, and pick one at random. Great for lunch, chores, and raffles, with an option to remove the winner. Runs right in your browser, no install.",
     "ladder-game": "Free ladder game (amidakuji) — add names and prizes and follow the ladder to match them at random, with an animated path. Great for deciding who does what. Runs right in your browser, no install.",
     "text-to-speech": "Free text-to-speech tool that reads your text aloud in a natural voice. Choose a voice, adjust speed, pitch, and volume, and follow along with word highlighting — runs right in your browser, no install.",
@@ -1427,6 +1428,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "molar-mass-calculator": "Enter a chemical formula and this tool computes its molar mass (molecular weight, g/mol). Type something like H2SO4 or C6H12O6 and it shows the total along with each element's count, atomic mass, and subtotal in a table. Parentheses (Ca(OH)2) and hydrate dots (CuSO4·5H2O) are recognized, and atomic masses are the standard atomic weights from the periodic table. Element symbols are case-sensitive (Na, Cl), and everything runs in your browser, free with no install.",
     "periodic-table": "An interactive periodic table of all 118 chemical elements. Tap an element and a card shows its atomic number, mass, group, period, and category, with category colors and a legend to tell metals, nonmetals, halogens, noble gases, and more apart. Element names are shown in English, Korean, and Japanese (switch the site language and the card name follows); lanthanides and actinides sit in the two rows below the main table. Atomic masses are standard atomic weights, and everything runs in your browser, free with no install.",
     "spinner-wheel": "A spinner wheel that picks one option at random when you spin it. Use it to choose what's for lunch, decide who does the chores, or run a quick raffle — enter as many options as you like, one per line. Turn on 'Remove winner' and each pick is dropped from the wheel, which is handy for drawing several winners in a row. Everything runs in your browser, so it's free with no install.",
     "ladder-game": "A ladder game (amidakuji / ghost leg) that builds a random ladder to decide who gets what. Enter names and results, tap a number on top, and the path is drawn down the ladder with an animation to reveal the match. Reshuffle to build a new ladder, and keep the names and results the same count. Great for forfeits, assigning roles or chores, and seating — free with no install.",
@@ -1680,6 +1682,11 @@
       "Tap an element cell to see its details (atomic number, mass, group, period, category) in the card above.",
       "Use the category colors and legend to tell metals, nonmetals, halogens, and noble gases apart.",
       "Scroll sideways if the table is wide; lanthanides and actinides are in the two rows below."
+    ],
+    "molar-mass-calculator": [
+      "Type a chemical formula. Element symbols are case-sensitive (Na, Cl).",
+      "The total molar mass and a per-element breakdown appear instantly.",
+      "Use the example buttons, or enter parentheses Ca(OH)2 and hydrates CuSO4·5H2O."
     ],
     "spinner-wheel": [
       "Enter your options, one per line.",
@@ -2014,6 +2021,15 @@
     "pt_c_post_transition": "Post-transition",
     "pt_c_lanthanide": "Lanthanide",
     "pt_c_actinide": "Actinide",
+    "mm_title": "Molar Mass Calculator",
+    "mm_subtitle": "Enter a chemical formula to compute its molar mass (g/mol).",
+    "mm_placeholder": "Enter a formula (e.g. H2SO4)",
+    "mm_result": "Molar mass",
+    "mm_element": "Element",
+    "mm_count": "Count",
+    "mm_subtotal": "Subtotal",
+    "mm_error": "That formula isn't valid. Check element symbols (case-sensitive), numbers, and parentheses.",
+    "mm_note": "Atomic masses are standard atomic weights. Parentheses and hydrate dots (·) are supported (e.g. CuSO4·5H2O).",
     "dd_intro": "A dharani invoking the great compassion of Avalokiteśvara (Gwaneum). It is chanted for its sound rather than translated, repeated in rounds such as 7, 21, or 108. Press ▶ and each full pass adds one count; or tap +1 to count rounds you chant yourself.",
     "cs_size": "Size",
     "cs_voice": "Voice",
@@ -2045,6 +2061,7 @@
   },
   "toolNames": {
     "periodic-table": "Periodic Table",
+    "molar-mass-calculator": "Molar Mass Calculator",
     "spinner-wheel": "Spinner Wheel",
     "ladder-game": "Ladder Game (Amidakuji)",
     "text-to-speech": "Text to Speech (TTS)",

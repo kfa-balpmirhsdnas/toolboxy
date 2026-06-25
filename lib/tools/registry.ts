@@ -64,6 +64,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 
 export const TOOLS: ToolMeta[] = [
   {slug:'periodic-table',category:'science',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['주기율표','periodic table','원소','元素周期表','화학 원소'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'molar-mass-calculator',category:'science',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['분자량 계산기','몰질량','molar mass calculator','molecular weight','화학식 계산'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'spinner-wheel',category:'random',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['spinner wheel','돌림판','룰렛','random picker','wheel of names','ルーレット'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'ladder-game',category:'random',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['사다리타기','ladder game','amidakuji','あみだくじ','random matching'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-to-speech',category:'audio',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['text to speech','tts','음성 변환','텍스트 음성 변환','読み上げ','voice generator'],maxFileSizeMB:{free:0,pro:0} },
