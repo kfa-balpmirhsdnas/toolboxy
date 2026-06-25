@@ -1,4 +1,4 @@
-// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 236).
+// 고사성어 사전 — generated from gosaseongeo_master.csv (seed 276).
 // 성어·뜻은 공유 지식, 유래·예문은 자체 작성(저작권 클린). 확장은 gosaseongeo_확장_지시문.md 참고.
 export interface Idiom { id: string; hanja: string; reading: string; len: number; lit: string; fig: string; origin: string; source: string; example: string; syn: string[]; reviewed: boolean }
 export const IDIOMS: Idiom[] = [
@@ -237,7 +237,47 @@ export const IDIOMS: Idiom[] = [
   {"id":"gs0233","hanja":"好衣好食","reading":"호의호식","len":4,"lit":"좋은 옷과 좋은 음식","fig":"잘 입고 잘 먹으며 넉넉히 지냄","origin":"","source":"","example":"호의호식하며 부족함 없이 자랐다.","syn":[],"reviewed":true},
   {"id":"gs0234","hanja":"曲學阿世","reading":"곡학아세","len":4,"lit":"학문을 굽혀 세상에 아첨함","fig":"바른 학문을 굽혀 권력이나 세속에 영합함","origin":"","source":"사기","example":"곡학아세하지 말고 소신을 지켜라.","syn":[],"reviewed":true},
   {"id":"gs0235","hanja":"瓜田李下","reading":"과전이하","len":4,"lit":"오이밭과 자두나무 아래","fig":"의심받기 쉬운 행동은 피해야 함","origin":"오이밭에서 신을 고쳐 신지 말고 자두나무 아래서 갓을 고쳐 쓰지 말라는 데서 비롯","source":"","example":"과전이하라고, 오해 살 자리는 피하자.","syn":[],"reviewed":true},
-  {"id":"gs0236","hanja":"矯角殺牛","reading":"교각살우","len":4,"lit":"뿔을 바로잡으려다 소를 죽임","fig":"작은 흠을 고치려다 도리어 일을 그르침","origin":"","source":"","example":"사소한 걸 고치려다 교각살우가 됐다.","syn":["小貪大失"],"reviewed":true}
+  {"id":"gs0236","hanja":"矯角殺牛","reading":"교각살우","len":4,"lit":"뿔을 바로잡으려다 소를 죽임","fig":"작은 흠을 고치려다 도리어 일을 그르침","origin":"","source":"","example":"사소한 걸 고치려다 교각살우가 됐다.","syn":["小貪大失"],"reviewed":true},
+  {"id":"gs0237","hanja":"肝膽相照","reading":"간담상조","len":4,"lit":"간과 쓸개를 서로 비춤","fig":"서로 마음을 터놓고 친하게 사귐","origin":"","source":"","example":"둘은 간담상조하는 막역한 사이다.","syn":["莫逆之友"],"reviewed":true},
+  {"id":"gs0238","hanja":"感慨無量","reading":"감개무량","len":4,"lit":"느낌과 한탄이 헤아릴 수 없음","fig":"마음에 사무치는 느낌이 더없이 큼","origin":"","source":"","example":"졸업식에서 감개무량한 표정을 지었다.","syn":[],"reviewed":true},
+  {"id":"gs0239","hanja":"甘呑苦吐","reading":"감탄고토","len":4,"lit":"달면 삼키고 쓰면 뱉음","fig":"제 비위에 맞으면 좋아하고 안 맞으면 싫어하는 이기적 태도","origin":"","source":"","example":"필요할 땐 찾고 아니면 외면하니 감탄고토다.","syn":[],"reviewed":true},
+  {"id":"gs0240","hanja":"居安思危","reading":"거안사위","len":4,"lit":"편안할 때 위태로움을 생각함","fig":"평안할 때에도 위기에 대비함","origin":"","source":"춘추좌씨전","example":"거안사위라고, 잘될 때 더 조심해야 한다.","syn":["有備無患"],"reviewed":true},
+  {"id":"gs0241","hanja":"見蚊拔劍","reading":"견문발검","len":4,"lit":"모기를 보고 칼을 뺌","fig":"사소한 일에 크게 화내거나 지나치게 대응함","origin":"","source":"","example":"그 정도 일에 견문발검할 필요 없다.","syn":["矯角殺牛"],"reviewed":true},
+  {"id":"gs0242","hanja":"傾國之色","reading":"경국지색","len":4,"lit":"나라를 기울게 할 미모","fig":"임금이 빠져 나라가 위태로울 만큼 아름다운 미인","origin":"","source":"","example":"경국지색이라 불릴 만한 미모였다.","syn":[],"reviewed":true},
+  {"id":"gs0243","hanja":"鷄鳴狗盜","reading":"계명구도","len":4,"lit":"닭 울음과 개 도둑질","fig":"하찮은 재주도 때로 쓸모가 있음","origin":"맹상군이 닭 울음 흉내와 좀도둑 재주를 지닌 식객 덕에 위기를 벗어났다는 이야기에서 비롯","source":"사기","example":"계명구도라더니 그 재주가 결정적이었다.","syn":[],"reviewed":true},
+  {"id":"gs0244","hanja":"孤掌難鳴","reading":"고장난명","len":4,"lit":"외손뼉은 울리지 못함","fig":"혼자서는 일을 이루기 어려움","origin":"","source":"","example":"고장난명이니 함께 힘을 모으자.","syn":[],"reviewed":true},
+  {"id":"gs0245","hanja":"骨肉相爭","reading":"골육상쟁","len":4,"lit":"뼈와 살이 서로 다툼","fig":"가까운 혈육끼리 서로 싸움","origin":"","source":"","example":"재산을 두고 골육상쟁이 벌어졌다.","syn":[],"reviewed":true},
+  {"id":"gs0246","hanja":"口蜜腹劍","reading":"구밀복검","len":4,"lit":"입에는 꿀, 배에는 칼","fig":"겉으로는 친한 척하나 속으로는 해칠 마음을 품음","origin":"","source":"","example":"구밀복검하는 사람을 조심하라.","syn":["表裏不同"],"reviewed":true},
+  {"id":"gs0247","hanja":"口尙乳臭","reading":"구상유취","len":4,"lit":"입에서 아직 젖내가 남","fig":"말과 행동이 어리고 미숙함","origin":"","source":"","example":"구상유취인 신입이 큰소리친다.","syn":[],"reviewed":true},
+  {"id":"gs0248","hanja":"權不十年","reading":"권불십년","len":4,"lit":"권세는 십 년을 못 감","fig":"아무리 높은 권세도 오래가지 못함","origin":"","source":"","example":"권불십년이라더니 그도 자리에서 물러났다.","syn":[],"reviewed":true},
+  {"id":"gs0249","hanja":"近墨者黑","reading":"근묵자흑","len":4,"lit":"먹을 가까이하면 검어짐","fig":"나쁜 사람과 가까이하면 물들기 쉬움","origin":"","source":"","example":"근묵자흑이니 친구를 잘 사귀어라.","syn":["類類相從","草綠同色"],"reviewed":true},
+  {"id":"gs0250","hanja":"金科玉條","reading":"금과옥조","len":4,"lit":"금과 옥 같은 법조문","fig":"더없이 소중히 여기는 규칙이나 교훈","origin":"","source":"","example":"그 가르침을 금과옥조로 삼았다.","syn":[],"reviewed":true},
+  {"id":"gs0251","hanja":"氣盡脈盡","reading":"기진맥진","len":4,"lit":"기운과 맥이 다함","fig":"힘이 다 빠져 지칠 대로 지침","origin":"","source":"","example":"마라톤을 완주하고 기진맥진했다.","syn":[],"reviewed":true},
+  {"id":"gs0252","hanja":"難攻不落","reading":"난공불락","len":4,"lit":"공격하기 어려워 함락되지 않음","fig":"공격하기 어렵고 좀처럼 무너지지 않음","origin":"","source":"","example":"난공불락의 요새로 알려졌다.","syn":[],"reviewed":true},
+  {"id":"gs0253","hanja":"怒發大發","reading":"노발대발","len":4,"lit":"성을 크게 냄","fig":"몹시 화를 냄","origin":"","source":"","example":"사실을 알고 노발대발했다.","syn":[],"reviewed":true},
+  {"id":"gs0254","hanja":"多才多能","reading":"다재다능","len":4,"lit":"재주도 능력도 많음","fig":"여러 방면에 재주와 능력이 많음","origin":"","source":"","example":"그림·음악·운동까지 다재다능하다.","syn":["八方美人"],"reviewed":true},
+  {"id":"gs0255","hanja":"斷機之戒","reading":"단기지계","len":4,"lit":"베틀의 실을 끊어 보인 경계","fig":"학업을 중도에 그만두면 쓸모없음을 일깨우는 가르침","origin":"맹자의 어머니가 베 짜던 실을 끊어 학업 중단의 잘못을 깨우쳤다는 이야기에서 비롯","source":"","example":"단기지계를 새겨 끝까지 공부했다.","syn":["孟母三遷"],"reviewed":true},
+  {"id":"gs0256","hanja":"讀書三昧","reading":"독서삼매","len":4,"lit":"책 읽기에 흠뻑 빠짐","fig":"다른 생각 없이 오로지 책에만 골몰함","origin":"","source":"","example":"주말 내내 독서삼매에 빠졌다.","syn":[],"reviewed":true},
+  {"id":"gs0257","hanja":"燈下不明","reading":"등하불명","len":4,"lit":"등잔 밑이 어두움","fig":"가까이 있는 것을 도리어 잘 모름","origin":"","source":"","example":"등하불명이라고, 답이 바로 옆에 있었다.","syn":[],"reviewed":true},
+  {"id":"gs0258","hanja":"莫無可奈","reading":"막무가내","len":4,"lit":"도무지 어찌할 수 없음","fig":"고집이 세어 어떻게도 통하지 않음","origin":"","source":"","example":"아무리 말려도 막무가내였다.","syn":[],"reviewed":true},
+  {"id":"gs0259","hanja":"目不忍見","reading":"목불인견","len":4,"lit":"차마 눈 뜨고 볼 수 없음","fig":"딱하거나 끔찍해 차마 볼 수 없음","origin":"","source":"","example":"사고 현장은 목불인견이었다.","syn":[],"reviewed":true},
+  {"id":"gs0260","hanja":"無所不爲","reading":"무소불위","len":4,"lit":"하지 못하는 일이 없음","fig":"못 하는 것이 없이 다 함, 또는 권세가 대단함","origin":"","source":"","example":"무소불위의 권력을 휘둘렀다.","syn":[],"reviewed":true},
+  {"id":"gs0261","hanja":"聞一知十","reading":"문일지십","len":4,"lit":"하나를 들으면 열을 앎","fig":"매우 총명함","origin":"공자가 제자 안회를 두고 하나를 들으면 열을 안다고 평한 데서 비롯","source":"논어","example":"문일지십이라 가르치기 수월하다.","syn":[],"reviewed":true},
+  {"id":"gs0262","hanja":"不知其數","reading":"부지기수","len":4,"lit":"그 수를 알지 못함","fig":"헤아릴 수 없을 만큼 많음","origin":"","source":"","example":"비슷한 사례가 부지기수다.","syn":[],"reviewed":true},
+  {"id":"gs0263","hanja":"悲憤慷慨","reading":"비분강개","len":4,"lit":"슬프고 분해 의기가 북받침","fig":"옳지 못한 것에 슬퍼하고 분개함","origin":"","source":"","example":"부조리에 비분강개했다.","syn":[],"reviewed":true},
+  {"id":"gs0264","hanja":"先公後私","reading":"선공후사","len":4,"lit":"공적인 일을 먼저, 사적인 일을 뒤로","fig":"사사로움보다 공익을 앞세움","origin":"","source":"","example":"선공후사하는 자세가 신뢰를 얻는다.","syn":["見利思義"],"reviewed":true},
+  {"id":"gs0265","hanja":"送舊迎新","reading":"송구영신","len":4,"lit":"묵은해를 보내고 새해를 맞음","fig":"지난해를 보내고 새해를 맞이함","origin":"","source":"","example":"송구영신, 새해 복 많이 받으세요.","syn":[],"reviewed":true},
+  {"id":"gs0266","hanja":"手不釋卷","reading":"수불석권","len":4,"lit":"손에서 책을 놓지 않음","fig":"늘 부지런히 글을 읽고 공부함","origin":"","source":"","example":"그는 바빠도 수불석권이다.","syn":["晝耕夜讀"],"reviewed":true},
+  {"id":"gs0267","hanja":"梁上君子","reading":"양상군자","len":4,"lit":"들보 위의 군자","fig":"도둑을 점잖게 이르는 말","origin":"들보 위에 숨은 도둑을 양상의 군자라 일러 스스로 뉘우치게 했다는 이야기에서 비롯","source":"후한서","example":"밤사이 양상군자가 다녀갔다.","syn":[],"reviewed":true},
+  {"id":"gs0268","hanja":"焉敢生心","reading":"언감생심","len":4,"lit":"어찌 감히 그런 마음을","fig":"감히 그런 마음을 품을 수도 없음","origin":"","source":"","example":"언감생심 욕심낼 처지가 아니다.","syn":[],"reviewed":true},
+  {"id":"gs0269","hanja":"言語道斷","reading":"언어도단","len":4,"lit":"말로 표현할 길이 끊김","fig":"어이없어 말로 나타낼 수 없음","origin":"","source":"","example":"그 변명은 언어도단이다.","syn":[],"reviewed":true},
+  {"id":"gs0270","hanja":"泥田鬪狗","reading":"이전투구","len":4,"lit":"진흙탕에서 싸우는 개","fig":"자기 이익을 위해 볼썽사납게 다툼","origin":"","source":"","example":"양측이 이전투구를 벌였다.","syn":[],"reviewed":true},
+  {"id":"gs0271","hanja":"一字無識","reading":"일자무식","len":4,"lit":"글자 한 자도 모름","fig":"아주 무식함","origin":"","source":"","example":"그 분야엔 일자무식이다.","syn":[],"reviewed":true},
+  {"id":"gs0272","hanja":"千篇一律","reading":"천편일률","len":4,"lit":"천 편의 글이 한 가락","fig":"여럿이 모두 비슷비슷해 변화가 없음","origin":"","source":"","example":"광고가 천편일률이라 지루하다.","syn":["大同小異"],"reviewed":true},
+  {"id":"gs0273","hanja":"快刀亂麻","reading":"쾌도난마","len":4,"lit":"잘 드는 칼로 엉킨 삼을 자름","fig":"복잡한 일을 단번에 시원하게 처리함","origin":"","source":"","example":"쾌도난마로 문제를 해결했다.","syn":["一刀兩斷"],"reviewed":true},
+  {"id":"gs0274","hanja":"破顔大笑","reading":"파안대소","len":4,"lit":"얼굴을 활짝 펴고 크게 웃음","fig":"즐겁게 활짝 웃음","origin":"","source":"","example":"오랜만에 만나 파안대소했다.","syn":["拍掌大笑"],"reviewed":true},
+  {"id":"gs0275","hanja":"虛心坦懷","reading":"허심탄회","len":4,"lit":"마음을 비우고 생각을 터놓음","fig":"거리낌 없이 솔직하게 마음을 터놓음","origin":"","source":"","example":"허심탄회하게 이야기를 나눴다.","syn":[],"reviewed":true},
+  {"id":"gs0276","hanja":"形形色色","reading":"형형색색","len":4,"lit":"모양과 빛깔이 갖가지","fig":"종류와 모양이 가지각색","origin":"","source":"","example":"형형색색의 등불이 거리를 밝혔다.","syn":[],"reviewed":true}
 ]
 export const BY_READING: Record<string, Idiom> = Object.fromEntries(IDIOMS.map(i => [i.reading, i]))
 
