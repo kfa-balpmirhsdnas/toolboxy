@@ -1,0 +1,79 @@
+'use client'
+
+import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
+import ToolLayout from '@/components/tools/ToolLayout'
+import { getToolBySlug } from '@/lib/tools/registry'
+import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
+
+const tool = getToolBySlug('unzip')!
+const fmt = (b: number) => (b < 1024 ? b + ' B' : b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(2) + ' MB')
+
+type Entry = { name: string; data: Uint8Array; size: number }
+
+export default function UnzipPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
+  const [name, setName] = useState('')
+  const [entries, setEntries] = useState<Entry[]>([])
+  const [error, setError] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  async function load(f: File) {
+    setName(f.name); setError(''); setEntries([]); trackToolUsed('unzip')
+    try {
+      const { unzipSync } = await import('fflate')
+      const buf = new Uint8Array(await f.arrayBuffer())
+      const un = unzipSync(buf)
+      const list: Entry[] = Object.entries(un)
+        .filter(([n, d]) => !n.endsWith('/') && (d as Uint8Array).length >= 0)
+        .map(([n, d]) => ({ name: n, data: d as Uint8Array, size: (d as Uint8Array).length }))
+        .sort((a, b) => a.name.localeCompare(b.name))
+      if (!list.length) setError(t('uz_empty')); else setEntries(list)
+    } catch (e) { console.error(e); setError(t('uz_error')) }
+  }
+
+  function download(e: Entry) {
+    const blob = new Blob([e.data])
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = e.name.split('/').pop() || e.name; a.click()
+    trackToolDownload('unzip', 'file')
+  }
+  function downloadAll() { entries.forEach((e, i) => setTimeout(() => download(e), i * 200)) }
+
+  return (
+    <ToolLayout tool={tool} lang={params.lang}>
+      <div className="max-w-lg mx-auto space-y-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">{t('uz_title')}</h1>
+          <p className="text-gray-500 text-sm mt-1">{t('uz_subtitle')}</p>
+        </div>
+
+        <div onClick={() => inputRef.current?.click()} onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
+          className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
+          <input ref={inputRef} type="file" accept=".zip,application/zip" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+          <p className="text-4xl mb-2">📦</p><p className="text-sm font-medium text-gray-600">{name || t('uz_drop')}</p>
+        </div>
+
+        {error && <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-3">{error}</p>}
+
+        {entries.length > 0 && (
+          <>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-gray-400">{t('uz_entries', { n: entries.length })}</p>
+              <button onClick={downloadAll} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">⬇ {t('uz_downloadall')}</button>
+            </div>
+            <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-72 overflow-auto">
+              {entries.map((e, i) => (
+                <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
+                  <span className="flex-1 truncate text-gray-700">{e.name}</span>
+                  <span className="text-gray-400 shrink-0">{fmt(e.size)}</span>
+                  <button onClick={() => download(e)} className="shrink-0 px-2.5 py-1 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">⬇</button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+        <p className="text-xs text-gray-400">{t('uz_note')}</p>
+      </div>
+    </ToolLayout>
+  )
+}

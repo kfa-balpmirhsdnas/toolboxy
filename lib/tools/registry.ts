@@ -129,6 +129,8 @@ export const TOOLS: ToolMeta[] = [
   {slug:'ocr',category:'image',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['ocr','이미지 텍스트 추출','image to text','글자 인식','사진 텍스트'],maxFileSizeMB:{free:20,pro:80} },
   {slug:'video-to-gif',category:'video',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['영상 gif 변환','동영상 gif','video to gif','gif 만들기','mp4 to gif'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'compress-pdf',category:'pdf',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['pdf 압축','pdf 용량 줄이기','compress pdf','reduce pdf size','pdf compressor'],maxFileSizeMB:{free:50,pro:200} },
+  {slug:'zip-files',category:'file',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['파일 압축','zip 만들기','zip files','create zip','파일 묶기'],maxFileSizeMB:{free:100,pro:500} },
+  {slug:'unzip',category:'file',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['압축 풀기','압축 해제','unzip','extract zip','zip 파일 열기'],maxFileSizeMB:{free:100,pro:500} },
   {slug:'reaction-time-test',category:'game',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['reaction time','reflex','game','test','leaderboard','반응속도','反応速度'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'mortgage-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['mortgage','home loan','calculator','住宅ローン','주택담보대출'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'auto-loan-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['auto loan','car loan','calculator','自動車ローン','자동차 대출'],maxFileSizeMB:{free:0,pro:0} },
