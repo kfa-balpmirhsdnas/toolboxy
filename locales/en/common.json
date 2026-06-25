@@ -1864,7 +1864,8 @@
     "cs_dark": "Dark",
     "cs_favonly": "Saved",
     "cs_fav": "Save",
-    "cs_fav_empty": "No saved lines yet. Tap the ☆ next to a line to save it."
+    "cs_fav_empty": "No saved lines yet. Tap the ☆ next to a line to save it.",
+    "cs_top": "Back to top"
   },
   "toolNames": {
     "cheonsugyeong": "Cheonsugyeong (Thousand-Hands Sutra)",

@@ -326,31 +326,31 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
           </label>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-6 sm:gap-y-2">
             <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 text-sm ${c('text-gray-500', 'text-gray-300')}`}>
-              <label className="flex items-center gap-1 whitespace-nowrap">{t('cs_rate')}
+              <label className="flex items-center gap-2 whitespace-nowrap">{t('cs_rate')}
                 <select value={rate} onChange={(e) => setRate(Number(e.target.value))} className={selCls}>
                   {RATES.map((r) => <option key={r} value={r}>{r}×</option>)}
                 </select>
               </label>
-              <label className="flex items-center gap-1 whitespace-nowrap">{t('cs_size')}
+              <label className="flex items-center gap-2 whitespace-nowrap">{t('cs_size')}
                 <select value={fontScale} onChange={(e) => setFontScale(Number(e.target.value))} className={selCls}>
                   {FONT_SCALES.map((f) => <option key={f} value={f}>{f}×</option>)}
                 </select>
               </label>
-              <label className="flex items-center gap-1 whitespace-nowrap">{t('cs_voice')}
+              <label className="flex items-center gap-2 whitespace-nowrap">{t('cs_voice')}
                 <select value={voiceURI} onChange={(e) => setVoiceURI(e.target.value)} className={selCls}>
                   <option value="off">{t('cs_voice_off')}</option>
                   {voices.length === 0 && <option value="">{t('cs_voice_default')}</option>}
                   {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{genderHint(v)}{v.name}</option>)}
                 </select>
               </label>
-              <label className="flex items-center gap-1 whitespace-nowrap">{t('cs_loop')}
+              <label className="flex items-center gap-2 whitespace-nowrap">{t('cs_loop')}
                 <select value={loop} onChange={(e) => setLoop(e.target.value as Loop)} className={`${wideSelCls} w-16`}>
                   <option value="off">{t('cs_loop_off')}</option>
                   <option value="section">{t('cs_loop_section')}</option>
                   <option value="all">{t('cs_loop_all')}</option>
                 </select>
               </label>
-              <label className="flex items-center gap-1 whitespace-nowrap">{t('cs_timer')}
+              <label className="flex items-center gap-2 whitespace-nowrap">{t('cs_timer')}
                 <select value={sleepMin} onChange={(e) => setSleepMin(Number(e.target.value))} className={`${wideSelCls} w-16`}>
                   {SLEEPS.map((m) => <option key={m} value={m}>{m === 0 ? t('cs_loop_off') : `${m}${t('cs_min')}`}</option>)}
                 </select>
@@ -381,9 +381,9 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
                     const fav = favSet.has(l.order)
                     return (
                       <div key={l.order} data-order={l.order} onClick={() => jumpTo(l.order)}
-                        className={`relative scroll-mt-24 rounded-lg pl-3 pr-[1.9em] py-2 cursor-pointer transition-colors ${curOrder === l.order ? c('bg-brand-50 ring-1 ring-brand-200', 'bg-gray-800 ring-1 ring-brand-700') : c('hover:bg-gray-50', 'hover:bg-gray-800')}`}>
+                        className={`relative scroll-mt-24 rounded-lg pl-3 pr-[1.9em] py-[0.45em] cursor-pointer transition-colors ${curOrder === l.order ? c('bg-brand-50 ring-1 ring-brand-200', 'bg-gray-800 ring-1 ring-brand-700') : c('hover:bg-gray-50', 'hover:bg-gray-800')}`}>
                         <button onClick={(e) => { e.stopPropagation(); toggleFav(l.order) }} aria-label={t('cs_fav')}
-                          className={`absolute top-[0.15em] right-[0.25em] text-[1.5em] leading-none ${fav ? 'text-amber-400' : c('text-gray-300 hover:text-amber-400', 'text-gray-600 hover:text-amber-400')}`}>{fav ? '★' : '☆'}</button>
+                          className={`absolute top-[0.5em] right-[0.3em] text-[1.35em] leading-none ${fav ? 'text-amber-400' : c('text-gray-300 hover:text-amber-400', 'text-gray-600 hover:text-amber-400')}`}>{fav ? '★' : '☆'}</button>
                         {showHanja && l.hanja && <p className={`text-[0.9em] leading-relaxed ${c('text-gray-400', 'text-gray-500')}`}>{l.hanja}</p>}
                         {showReading && <p className={`text-[1.05em] font-medium leading-relaxed ${c('text-gray-900', 'text-gray-100')}`}>{
                           karaoke && curOrder === l.order
@@ -404,6 +404,10 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
           </div>
         )}
 
+        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className={`w-full py-3.5 text-base font-semibold rounded-xl border transition-colors ${c('border-gray-300 text-gray-700 hover:bg-gray-50', 'border-gray-600 text-gray-200 hover:bg-gray-800')}`}>
+          ↑ {t('cs_top')}
+        </button>
         <p className={`text-xs leading-relaxed border-t pt-4 ${c('text-gray-400 border-gray-100', 'text-gray-500 border-gray-700')}`}>{t('cs_source')}</p>
       </div>
 
