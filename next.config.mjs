@@ -38,14 +38,34 @@ const nextConfig = {
     ]
   },
   async redirects() {
-    return [
-      // Deduped: flip-a-coin merged into the better coin-flip tool.
-      {
-        source: '/:lang/tools/flip-a-coin',
-        destination: '/:lang/tools/coin-flip',
-        permanent: true,
-      },
+    // Deduped tools — [from, to]. Merged to kill keyword cannibalization; old URLs
+    // 301 (permanent) to the canonical so ranking signals consolidate.
+    const DEDUPES = [
+      ['flip-a-coin', 'coin-flip'],
+      // text batch
+      ['character-counter', 'word-counter'],
+      ['string-length-counter', 'word-counter'],
+      ['text-counter-advanced', 'word-counter'],
+      ['text-statistics', 'word-counter'],
+      ['text-diff-checker', 'text-diff'],
+      ['text-compare', 'text-diff'],
+      ['text-diff-inline', 'text-diff'],
+      ['markdown-previewer', 'markdown-preview'],
+      ['reading-time-estimator', 'reading-time-calculator'],
+      ['word-frequency', 'word-frequency-counter'],
+      ['text-case-converter', 'case-converter'],
+      ['text-line-sorter', 'line-sort'],
+      ['list-sorter', 'line-sort'],
+      ['duplicate-line-remover', 'list-deduplicator'],
+      ['string-padding-tool', 'text-padder'],
+      ['morse-code-converter', 'morse-code-translator'],
+      ['text-to-morse-code', 'morse-code-translator'],
     ]
+    return DEDUPES.map(([from, to]) => ({
+      source: `/:lang/tools/${from}`,
+      destination: `/:lang/tools/${to}`,
+      permanent: true,
+    }))
   },
 }
 
