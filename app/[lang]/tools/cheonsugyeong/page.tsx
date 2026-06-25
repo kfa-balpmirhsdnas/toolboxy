@@ -256,10 +256,11 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
 
   const toggle = useCallback(() => {
     if (playing) { stopAll(); setPlaying(false); return }
+    if (favOnly) setFavOnly(false) // leave the saved-only view and resume the full sutra
     trackToolUsed(tool.slug)
     setPlaying(true)
     speakFrom(idxRef.current)
-  }, [playing, stopAll, speakFrom])
+  }, [playing, favOnly, stopAll, speakFrom])
 
   function goToIndex(i: number, autoplay: boolean) {
     i = Math.min(LINES.length - 1, Math.max(0, i))
@@ -284,6 +285,12 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   function toggleFav(order: number) {
     setFavorites((f) => (f.includes(order) ? f.filter((x) => x !== order) : [...f, order]))
   }
+  // Switching the saved-only view: stop reciting and jump to the top.
+  function toggleFavOnly() {
+    stopAll(); setPlaying(false)
+    setFavOnly((v) => !v)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const selCls = `rounded-lg border px-1 py-1.5 w-[3.6rem] ${c('border-gray-200', 'bg-gray-800 text-gray-100 border-gray-600')}`
   const wideSelCls = `rounded-lg border px-1.5 py-1.5 ${c('border-gray-200', 'bg-gray-800 text-gray-100 border-gray-600')}`
@@ -306,7 +313,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
               className={`px-3 py-2.5 text-sm rounded-xl border transition-colors whitespace-nowrap ${dark ? 'bg-gray-700 text-white border-gray-600' : c('border-gray-300 text-gray-600 hover:bg-gray-50', 'border-gray-600 text-gray-200 hover:bg-gray-800')}`}>
               🌙 {t('cs_dark')}
             </button>
-            <button onClick={() => setFavOnly((v) => !v)} aria-pressed={favOnly}
+            <button onClick={toggleFavOnly} aria-pressed={favOnly}
               className={`px-3 py-2.5 text-sm rounded-xl border transition-colors whitespace-nowrap ${favOnly ? 'bg-amber-100 text-amber-700 border-amber-300' : c('border-gray-300 text-gray-600 hover:bg-gray-50', 'border-gray-600 text-gray-200 hover:bg-gray-800')}`}>
               ★ {t('cs_favonly')}
             </button>
