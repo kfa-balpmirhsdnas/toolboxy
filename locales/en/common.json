@@ -95,6 +95,7 @@
   "toolDescriptions": {
     "periodic-table": "Interactive periodic table — tap an element for its atomic number, mass, group, period, and category. Shows all 118 elements with English/Korean/Japanese names and category colors. Free, no install.",
     "molar-mass-calculator": "Free tool that computes the molar mass (g/mol) of a chemical formula. Supports parentheses and hydrates, shows a per-element breakdown, and uses standard atomic weights.",
+    "element-quiz": "Free 4-choice quiz to match element symbols and names. Both directions (symbol↔name), range 1–20/54/118, and score tracking. Great for memorizing the periodic table.",
     "spinner-wheel": "Free spinner wheel — add options, spin, and pick one at random. Great for lunch, chores, and raffles, with an option to remove the winner. Runs right in your browser, no install.",
     "ladder-game": "Free ladder game (amidakuji) — add names and prizes and follow the ladder to match them at random, with an animated path. Great for deciding who does what. Runs right in your browser, no install.",
     "text-to-speech": "Free text-to-speech tool that reads your text aloud in a natural voice. Choose a voice, adjust speed, pitch, and volume, and follow along with word highlighting — runs right in your browser, no install.",
@@ -1428,6 +1429,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "element-quiz": "Memorize the periodic table's element symbols and names with a 4-choice quiz. Pick a direction — symbol→name (S→Sulfur) or name→symbol (Sulfur→S) — and a range of 1–20 (basics), 1–54, or 1–118 (all). Choose an answer and it tells you right or wrong immediately while your score adds up. Element names appear in the current language (English/Korean/Japanese), and everything runs in your browser, free with no install.",
     "molar-mass-calculator": "Enter a chemical formula and this tool computes its molar mass (molecular weight, g/mol). Type something like H2SO4 or C6H12O6 and it shows the total along with each element's count, atomic mass, and subtotal in a table. Parentheses (Ca(OH)2) and hydrate dots (CuSO4·5H2O) are recognized, and atomic masses are the standard atomic weights from the periodic table. Element symbols are case-sensitive (Na, Cl), and everything runs in your browser, free with no install.",
     "periodic-table": "An interactive periodic table of all 118 chemical elements. Tap an element and a card shows its atomic number, mass, group, period, and category, with category colors and a legend to tell metals, nonmetals, halogens, noble gases, and more apart. Element names are shown in English, Korean, and Japanese (switch the site language and the card name follows); lanthanides and actinides sit in the two rows below the main table. Atomic masses are standard atomic weights, and everything runs in your browser, free with no install.",
     "spinner-wheel": "A spinner wheel that picks one option at random when you spin it. Use it to choose what's for lunch, decide who does the chores, or run a quick raffle — enter as many options as you like, one per line. Turn on 'Remove winner' and each pick is dropped from the wheel, which is handy for drawing several winners in a row. Everything runs in your browser, so it's free with no install.",
@@ -1687,6 +1689,11 @@
       "Type a chemical formula. Element symbols are case-sensitive (Na, Cl).",
       "The total molar mass and a per-element breakdown appear instantly.",
       "Use the example buttons, or enter parentheses Ca(OH)2 and hydrates CuSO4·5H2O."
+    ],
+    "element-quiz": [
+      "Pick a direction (symbol→name / name→symbol) and a range (1–20, 54, 118).",
+      "Tap the correct answer of the four and it's scored instantly, raising your score.",
+      "Press Next to keep going; if you miss, it shows the correct answer too."
     ],
     "spinner-wheel": [
       "Enter your options, one per line.",
@@ -2030,6 +2037,17 @@
     "mm_subtotal": "Subtotal",
     "mm_error": "That formula isn't valid. Check element symbols (case-sensitive), numbers, and parentheses.",
     "mm_note": "Atomic masses are standard atomic weights. Parentheses and hydrate dots (·) are supported (e.g. CuSO4·5H2O).",
+    "eq_title": "Element Symbol Quiz",
+    "eq_subtitle": "Match element symbols and names in a 4-choice quiz.",
+    "eq_mode_sym": "Symbol → Name",
+    "eq_mode_name": "Name → Symbol",
+    "eq_range": "Range",
+    "eq_score": "Score",
+    "eq_correct": "Correct!",
+    "eq_prompt_sym": "Which element is this symbol?",
+    "eq_prompt_name": "What's this element's symbol?",
+    "eq_next": "Next",
+    "eq_note": "Range is by atomic number (1–20 basics, 1–118 all).",
     "dd_intro": "A dharani invoking the great compassion of Avalokiteśvara (Gwaneum). It is chanted for its sound rather than translated, repeated in rounds such as 7, 21, or 108. Press ▶ and each full pass adds one count; or tap +1 to count rounds you chant yourself.",
     "cs_size": "Size",
     "cs_voice": "Voice",
@@ -2062,6 +2080,7 @@
   "toolNames": {
     "periodic-table": "Periodic Table",
     "molar-mass-calculator": "Molar Mass Calculator",
+    "element-quiz": "Element Symbol Quiz",
     "spinner-wheel": "Spinner Wheel",
     "ladder-game": "Ladder Game (Amidakuji)",
     "text-to-speech": "Text to Speech (TTS)",
