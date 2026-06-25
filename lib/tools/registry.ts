@@ -1,4 +1,4 @@
-export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics'
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random'
 export type Phase = 1 | 2 | 3
 
 export interface ToolMeta {
@@ -63,6 +63,8 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'spinner-wheel',category:'random',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['spinner wheel','돌림판','룰렛','random picker','wheel of names','ルーレット'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'ladder-game',category:'random',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['사다리타기','ladder game','amidakuji','あみだくじ','random matching'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-to-speech',category:'audio',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['text to speech','tts','음성 변환','텍스트 음성 변환','読み上げ','voice generator'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'daedarani',category:'classics',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['신묘장구대다라니','대다라니','대비주','108독','daedarani'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'banyasimgyeong',category:'classics',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['반야심경','반야심경 한글','반야심경 해석','반야심경 독송','한글 반야심경','heart sutra'],maxFileSizeMB:{free:0,pro:0} },
@@ -136,7 +138,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'fullwidth-halfwidth-converter',category:'language',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['fullwidth','halfwidth','全角','半角','変換','zenkaku','hankaku'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'hiragana-katakana-converter',category:'language',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['hiragana','katakana','ひらがな','カタカナ','変換','japanese'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'hangul-romaja-converter',category:'language',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['hangul','romaja','한글','로마자','korean','romanization'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'dice-roller',category:'game',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['dice','roller','random','d6','rpg'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'dice-roller',category:'random',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['dice','roller','random','d6','rpg'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'tip-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['tip','restaurant','split','bill'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'loan-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['loan','mortgage','payment','interest','amortization'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'hash-generator',category:'security',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['hash generator'],maxFileSizeMB:{free:0,pro:0} },
@@ -176,8 +178,8 @@ export const TOOLS: ToolMeta[] = [
   {slug:'prime-number-checker',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['prime','number','sieve','factor','math'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'color-to-tailwind',category:'design',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['color to tailwind'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'unit-converter',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['unit','convert','measurement','metric','imperial'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'random-team-generator',category:'game',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['random team generator','random team'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'random-name-generator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['random name generator','random name'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'random-team-generator',category:'random',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['random team generator','random team'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'random-name-generator',category:'random',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['random name generator','random name'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'investment-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['investment calculator','roi','compound returns','investment growth','투자 계산'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'discount-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['discount','sale','price','percent'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'electricity-cost-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['electricity cost','power bill','energy cost','kwh cost','전기요금 계산'],maxFileSizeMB:{free:0,pro:0} },
@@ -193,7 +195,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'aspect-ratio-calculator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['aspect','ratio','width','height','resize'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'budget-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['budget calculator','monthly budget','expense planner','50 30 20 rule','예산 계산'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'age-calculator',category:'health',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['age','birthday','date','calculate','years'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'coin-flip',category:'game',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['coin','flip','random','heads','tails'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'coin-flip',category:'random',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['coin','flip','random','heads','tails'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'uuid-generator',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['uuid generator'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-diff',category:'text',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['text diff'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'csv-to-json',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['csv to json'],maxFileSizeMB:{free:0,pro:0} },
@@ -221,7 +223,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'color-contrast-checker',category:'design',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['color','contrast','wcag','accessibility','a11y'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'password-strength-checker',category:'security',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['password','strength','security','checker'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'html-color-names',category:'design',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['html color names'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'random-number-generator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['random','number','generate','dice'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'random-number-generator',category:'random',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['random','number','generate','dice'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'ip-address-lookup',category:'developer',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['ip','address','geolocation','whois','lookup'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'url-parser',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['url','parse','query','path','decode'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'html-minifier',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['html','minify','compress','optimize','whitespace'],maxFileSizeMB:{free:0,pro:0} },
@@ -271,7 +273,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'xml-formatter',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['xml','format','beautify','indent','parse'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-to-ascii-art',category:'funny',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['ascii','art','text','banner','figlet'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'number-sorter',category:'utility',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['number','sort','order','list','rank'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'list-randomizer',category:'utility',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['list','random','shuffle','order','pick'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'list-randomizer',category:'random',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['list','random','shuffle','order','pick'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'interest-calculator',category:'finance',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['interest','compound','simple','loan','finance'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'currency-formatter',category:'finance',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['currency','format','money','locale','number'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'json-tree-viewer',category:'developer',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['json','tree','viewer','parse','explore'],maxFileSizeMB:{free:0,pro:0} },
@@ -396,4 +398,5 @@ export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; 
   game:      { label: 'Game',      icon: String.fromCodePoint(0x1F3AE), color: 'indigo' },
   file:      { label: 'File',      icon: String.fromCodePoint(0x1F4C1), color: 'orange' },
   classics:  { label: 'Classics',  icon: String.fromCodePoint(0x1F4DC), color: 'amber'  },
+  random:    { label: 'Random',    icon: String.fromCodePoint(0x1F3B2), color: 'violet' },
 };

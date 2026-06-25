@@ -32,7 +32,8 @@
     "design": "Color & Design",
     "seo": "SEO",
     "language": "Language",
-    "classics": "Classics"
+    "classics": "Classics",
+    "random": "Random"
   },
   "home": {
     "hero_title": "Free Online Tools",
@@ -91,6 +92,8 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "spinner-wheel": "Free spinner wheel — add options, spin, and pick one at random. Great for lunch, chores, and raffles, with an option to remove the winner. Runs right in your browser, no install.",
+    "ladder-game": "Free ladder game (amidakuji) — add names and prizes and follow the ladder to match them at random, with an animated path. Great for deciding who does what. Runs right in your browser, no install.",
     "text-to-speech": "Free text-to-speech tool that reads your text aloud in a natural voice. Choose a voice, adjust speed, pitch, and volume, and follow along with word highlighting — runs right in your browser, no install.",
     "daedarani": "Free Great Compassion Dharani (신묘장구대다라니) reciter — follow the reading aloud with a 7/21/108 repetition counter, current-line highlight, auto-scroll, and adjustable speed. Runs right in your browser, no install.",
     "banyasimgyeong": "Free Heart Sutra (Banya-simgyeong / 般若心経) viewer showing the Hanja original, reading, and meaning together, with auto-recitation — spoken aloud with the current line highlighted, auto-scroll, repeat, and adjustable speed. Runs right in your browser.",
@@ -724,6 +727,20 @@
     "continue": "Continue without signing up"
   },
   "langTools": {
+    "spinner-wheel": {
+      "intro": "Enter options and spin the wheel to pick one at random.",
+      "faq": [
+        { "q": "How many options can I add?", "a": "There's no hard limit, but with too many the labels get small, so around 12 reads best." },
+        { "q": "Is the result predetermined?", "a": "No. It's chosen at random in your browser each spin, and every option has an equal chance." }
+      ]
+    },
+    "ladder-game": {
+      "intro": "Enter names and results and follow the ladder to match them at random.",
+      "faq": [
+        { "q": "Can the names and results counts differ?", "a": "No, they must be equal. If the counts differ, the ladder won't be shown." },
+        { "q": "Are the results rigged?", "a": "No. The ladder is generated at random each time, and you can rebuild it with 'Reshuffle ladder'." }
+      ]
+    },
     "text-to-speech": {
       "intro": "Type text and it reads it aloud. Choose a voice and adjust speed, pitch, and volume.",
       "faq": [
@@ -1406,6 +1423,8 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "spinner-wheel": "A spinner wheel that picks one option at random when you spin it. Use it to choose what's for lunch, decide who does the chores, or run a quick raffle — enter as many options as you like, one per line. Turn on 'Remove winner' and each pick is dropped from the wheel, which is handy for drawing several winners in a row. Everything runs in your browser, so it's free with no install.",
+    "ladder-game": "A ladder game (amidakuji / ghost leg) that builds a random ladder to decide who gets what. Enter names and results, tap a number on top, and the path is drawn down the ladder with an animation to reveal the match. Reshuffle to build a new ladder, and keep the names and results the same count. Great for forfeits, assigning roles or chores, and seating — free with no install.",
     "text-to-speech": "A text-to-speech (TTS) tool that reads your text aloud. It uses your browser's built-in speech synthesis: paste your text, press ▶, and it speaks immediately. Choose from the voices installed on your device (different languages and genders), adjust the speed, pitch, and volume, and the word being spoken is highlighted as it reads. Everything runs on your device, so your text is never sent anywhere, and it's free with no install. Available voices and languages depend on your device and browser, and because it's a live playback tool, there's no option to save the audio as a file.",
     "daedarani": "The Great Compassion Dharani (신묘장구대다라니 / 大悲呪) lifted out of the Cheonsugyeong as a focused tool for daily repeated chanting. It is a transliterated mantra invoking the great compassion of Avalokiteśvara (Gwaneum), so it is chanted for its sound rather than translated. Press ▶ and it recites line by line, highlighting the current line and auto-scrolling; each full pass adds one to the count and it stops when you reach your goal (7, 21, or 108). Tap +1 to count rounds you chant yourself, and adjust speed, text size, and dark mode. In Japanese it is recited with the Japanese 大悲呪 reading. Everything runs in your browser, so it works offline with no installation.",
     "banyasimgyeong": "A viewer for reading and reciting the Heart Sutra (Banya-simgyeong / 般若心経). Toggle the Hanja original, the reading, and the meaning on or off and read them side by side; press Recite and it reads the sutra aloud one line at a time, highlighting the current line and auto-scrolling. Adjust speed, text size, loop, and dark mode, and save favorite lines with ★. The meaning is ToolBoxy's own plain rendering. Everything runs in your browser, so it works offline with no installation.",
@@ -1650,6 +1669,16 @@
   },
   "howto": {
     "title": "How to use",
+    "spinner-wheel": [
+      "Enter your options, one per line.",
+      "Press 'Spin!' and the wheel spins to a random winner.",
+      "Optionally turn on 'Remove winner' to draw several in a row."
+    ],
+    "ladder-game": [
+      "Enter names and results with the same count.",
+      "Tap a number on top to trace the ladder down to its result.",
+      "Use 'Reshuffle ladder' to build a new ladder."
+    ],
     "text-to-speech": [
       "Type or paste the text you want read aloud.",
       "Pick a voice (language and gender) and adjust speed, pitch, and volume.",
@@ -1924,6 +1953,25 @@
     "tts_no_voice": "No voices available",
     "tts_no_voice_hint": "No text-to-speech voices are installed on this device. Add a voice in your system settings to use this tool.",
     "tts_note": "Uses your browser's built-in speech synthesis (Web Speech); everything runs on your device. Available voices and languages depend on your device/browser. This is a live playback tool and does not export audio files.",
+    "sw_title": "Spinner Wheel",
+    "sw_subtitle": "Add options, spin, and pick one at random. Great for lunch, chores, and raffles.",
+    "sw_sample": "Pizza\nSushi\nTacos\nSalad\nBurger\nRamen",
+    "sw_spin": "Spin!",
+    "sw_spinning": "Spinning…",
+    "sw_winner": "Winner",
+    "sw_entries": "Options",
+    "sw_placeholder": "One option per line",
+    "sw_min": "Enter at least 2 options.",
+    "sw_remove_winner": "Remove winner after spin (for raffles)",
+    "lg_title": "Ladder Game (Amidakuji)",
+    "lg_subtitle": "Add names and prizes, then follow the ladder to match them at random. Great for deciding who does what.",
+    "lg_sample_names": "Alex\nSam\nJordan\nTaylor",
+    "lg_sample_results": "Coffee\nDishes\nNothing\nSnacks",
+    "lg_names": "Names",
+    "lg_results": "Results",
+    "lg_shuffle": "Reshuffle ladder",
+    "lg_hint": "Tap a number on top to trace the ladder down to its result. Names and results must be the same count.",
+    "lg_mismatch": "Enter at least 2 names and results, with equal counts.",
     "dd_intro": "A dharani invoking the great compassion of Avalokiteśvara (Gwaneum). It is chanted for its sound rather than translated, repeated in rounds such as 7, 21, or 108. Press ▶ and each full pass adds one count; or tap +1 to count rounds you chant yourself.",
     "cs_size": "Size",
     "cs_voice": "Voice",
@@ -1946,12 +1994,16 @@
     "cs_top": "Back to top"
   },
   "toolTags": {
+    "spinner-wheel": ["spinner wheel", "wheel of names", "random picker", "wheel spinner", "decision wheel"],
+    "ladder-game": ["ladder game", "amidakuji", "ghost leg", "random matching", "name picker"],
     "text-to-speech": ["text to speech", "TTS", "voice generator", "read aloud", "speech synthesis"],
     "daedarani": ["Great Compassion Dharani", "Daedarani", "Nilakantha Dharani", "108 recitations", "dharani"],
     "banyasimgyeong": ["Heart Sutra", "Banya-simgyeong", "Prajnaparamita", "Buddhist sutra", "sutra recitation"],
     "cheonsugyeong": ["Cheonsugyeong", "Thousand-Hands Sutra", "Great Compassion Dharani", "Buddhist sutra", "sutra recitation"]
   },
   "toolNames": {
+    "spinner-wheel": "Spinner Wheel",
+    "ladder-game": "Ladder Game (Amidakuji)",
     "text-to-speech": "Text to Speech (TTS)",
     "daedarani": "Great Compassion Dharani (108 Recitations)",
     "banyasimgyeong": "Heart Sutra (Banya-simgyeong)",
