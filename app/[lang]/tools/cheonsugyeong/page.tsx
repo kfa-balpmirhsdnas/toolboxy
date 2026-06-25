@@ -156,19 +156,21 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
     stopAll(); setPlaying(false); idxRef.current = 0; setCurOrder(null)
     window.scrollTo({ top: 0, behavior: 'smooth' }) // all the way to the page top, above the sticky bar
   }
-  // Tap any line to jump there — if reciting, continue from that line.
-  function jumpTo(order: number) {
-    const i = LINES.findIndex((l) => l.order === order)
-    if (i < 0) return
+  function goToIndex(i: number, autoplay: boolean) {
+    i = Math.min(LINES.length - 1, Math.max(0, i))
     idxRef.current = i
-    if (playing) speakFrom(i)
-    else { setCurOrder(order); scrollToOrder(order) }
+    const order = LINES[i].order
+    if (autoplay || playingRef.current) {
+      if (!playingRef.current) { trackToolUsed(tool.slug); setPlaying(true) }
+      speakFrom(i)
+    } else {
+      setCurOrder(order); scrollToOrder(order)
+    }
   }
-  // Move one line at a time (floating ▲/▼).
-  function step(delta: number) {
-    const ni = Math.min(LINES.length - 1, Math.max(0, idxRef.current + delta))
-    jumpTo(LINES[ni].order)
-  }
+  // Tap a line → start (or continue) recitation from that line.
+  const jumpTo = (order: number) => goToIndex(LINES.findIndex((l) => l.order === order), true)
+  // Floating ▲/▼ → move one line; keep reciting if already playing, else just move.
+  const step = (delta: number) => goToIndex(idxRef.current + delta, false)
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
