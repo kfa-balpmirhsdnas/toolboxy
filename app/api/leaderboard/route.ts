@@ -20,6 +20,8 @@ const GAMES: Record<string, { order: 'asc' | 'desc'; min: number; max: number }>
   'memory-6': { order: 'asc', min: 6, max: 1000 },
   'memory-8': { order: 'asc', min: 8, max: 1000 },
   'memory-10': { order: 'asc', min: 10, max: 1000 },
+  'idiom-quiz': { order: 'desc', min: 5, max: 100 },
+  'choseong-quiz': { order: 'desc', min: 5, max: 100 },
 }
 
 function clean(name: string): string {

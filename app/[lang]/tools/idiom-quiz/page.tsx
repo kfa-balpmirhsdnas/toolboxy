@@ -3,28 +3,38 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { IDIOMS, type Idiom } from '@/lib/gosaseongeo'
 
 const tool = getToolBySlug('idiom-quiz')!
-const pick = <T,>(a: T[], n: number) => [...a].sort(() => Math.random() - 0.5).slice(0, n)
+const N = 20, PTS = 5
+const sample = <T,>(a: T[], n: number) => [...a].sort(() => Math.random() - 0.5).slice(0, n)
+
+type Q = { answer: Idiom; choices: Idiom[] }
 
 export default function IdiomQuizPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
-  const [q, setQ] = useState<{ answer: Idiom; choices: Idiom[] } | null>(null)
+  const [quiz, setQuiz] = useState<Q[]>([])
+  const [idx, setIdx] = useState(0)
   const [picked, setPicked] = useState<string | null>(null)
   const [score, setScore] = useState(0)
-  const [total, setTotal] = useState(0)
 
-  function next() {
-    const answer = pick(IDIOMS, 1)[0]
-    setQ({ answer, choices: pick([answer, ...pick(IDIOMS.filter((i) => i.id !== answer.id), 3)], 4) })
-    setPicked(null)
+  function start() {
+    const qs = sample(IDIOMS, N).map((answer) => ({
+      answer,
+      choices: sample([answer, ...sample(IDIOMS.filter((i) => i.id !== answer.id), 3)], 4),
+    }))
+    setQuiz(qs); setIdx(0); setScore(0); setPicked(null)
   }
-  useEffect(() => { next() }, [])
-  function choose(i: Idiom) { if (picked) return; setPicked(i.id); setTotal((n) => n + 1); if (i.id === q!.answer.id) setScore((n) => n + 1) }
+  useEffect(() => { start() }, [])
 
-  if (!q) return null
+  function choose(i: Idiom) { if (picked) return; setPicked(i.id); if (i.id === quiz[idx].answer.id) setScore((n) => n + PTS) }
+  function next() { setPicked(null); setIdx((n) => n + 1) }
+
+  if (!quiz.length) return null
+  const finished = idx >= quiz.length
+
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="max-w-md mx-auto space-y-5 text-center">
@@ -33,26 +43,44 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
           <p className="text-gray-500 text-sm mt-1">{t('iq_subtitle')}</p>
         </div>
 
-        <div className="rounded-2xl border-2 border-gray-100 py-7 px-4">
-          <div className="text-xs text-gray-400">{t('iq_ask')}</div>
-          <div className="text-lg font-medium text-gray-800 mt-2">{q.answer.fig}</div>
-        </div>
+        {finished ? (
+          <>
+            <div className="rounded-2xl border-2 border-brand-100 bg-brand-50 py-8 px-4">
+              <div className="text-sm text-brand-700">{t('quiz_done')}</div>
+              <div className="text-4xl font-extrabold text-brand-700 mt-2">{score} <span className="text-xl text-brand-400">/ {N * PTS}</span></div>
+              <div className="text-xs text-gray-500 mt-2">{score / PTS} / {N}</div>
+            </div>
+            <button onClick={start} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">↻ {t('quiz_again')}</button>
+            <Leaderboard game="idiom-quiz" score={score > 0 ? score : null} better="higher" />
+          </>
+        ) : (
+          <>
+            <div className="flex items-center justify-between text-sm text-gray-500">
+              <span>{idx + 1} / {N}</span>
+              <span>{t('quiz_total')} <b className="text-gray-800">{score}</b></span>
+            </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          {q.choices.map((c) => {
-            const right = c.id === q.answer.id
-            const cls = !picked ? 'border-gray-200 hover:border-brand-400' : right ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : c.id === picked ? 'bg-rose-100 border-rose-400 text-rose-800' : 'opacity-60 border-gray-200'
-            return (
-              <button key={c.id} onClick={() => choose(c)} disabled={!!picked} className={`px-3 py-3 rounded-xl border-2 ${cls}`}>
-                <div className="text-xl font-bold" style={{ fontFamily: 'serif' }}>{c.hanja}</div>
-                <div className="text-xs text-gray-500 mt-0.5">{c.reading}</div>
-              </button>
-            )
-          })}
-        </div>
+            <div className="rounded-2xl border-2 border-gray-100 py-7 px-4">
+              <div className="text-xs text-gray-400">{t('iq_ask')}</div>
+              <div className="text-lg font-medium text-gray-800 mt-2">{quiz[idx].answer.fig}</div>
+            </div>
 
-        {picked && <button onClick={next} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{t('iq_next')} →</button>}
-        <p className="text-sm text-gray-500">{t('iq_score')}: <b className="text-gray-800">{score} / {total}</b></p>
+            <div className="grid grid-cols-2 gap-2">
+              {quiz[idx].choices.map((c) => {
+                const right = c.id === quiz[idx].answer.id
+                const cls = !picked ? 'border-gray-200 hover:border-brand-400' : right ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : c.id === picked ? 'bg-rose-100 border-rose-400 text-rose-800' : 'opacity-60 border-gray-200'
+                return (
+                  <button key={c.id} onClick={() => choose(c)} disabled={!!picked} className={`px-3 py-3 rounded-xl border-2 ${cls}`}>
+                    <div className="text-xl font-bold" style={{ fontFamily: 'serif' }}>{c.hanja}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{c.reading}</div>
+                  </button>
+                )
+              })}
+            </div>
+
+            {picked && <button onClick={next} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{idx + 1 < N ? `${t('iq_next')} →` : `${t('quiz_finish')} →`}</button>}
+          </>
+        )}
       </div>
     </ToolLayout>
   )

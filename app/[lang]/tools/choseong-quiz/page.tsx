@@ -1,12 +1,15 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { choseong } from '@/lib/gosaseongeo'
 
 const tool = getToolBySlug('choseong-quiz')!
+const N = 20, PTS = 5
+const sample = <T,>(a: T[], n: number) => [...a].sort(() => Math.random() - 0.5).slice(0, n)
 const WORDS: [string, string][] = [
   ['김치', '음식'], ['비빔밥', '음식'], ['떡볶이', '음식'], ['불고기', '음식'], ['라면', '음식'], ['삼겹살', '음식'],
   ['호랑이', '동물'], ['코끼리', '동물'], ['강아지', '동물'], ['고양이', '동물'], ['기린', '동물'], ['펭귄', '동물'],
@@ -17,24 +20,26 @@ const WORDS: [string, string][] = [
   ['축구', '스포츠'], ['야구', '스포츠'], ['농구', '스포츠'], ['수영', '스포츠'], ['태권도', '스포츠'], ['마라톤', '스포츠'],
   ['지하철', '일상'], ['도서관', '일상'], ['우산', '일상'], ['안경', '일상'], ['시계', '일상'], ['컴퓨터', '일상'],
 ]
-const pick = () => WORDS[Math.floor(Math.random() * WORDS.length)]
 
 export default function ChoseongQuizPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
-  const [q, setQ] = useState<[string, string]>(WORDS[0])
+  const [quiz, setQuiz] = useState<[string, string][]>([])
+  const [idx, setIdx] = useState(0)
   const [input, setInput] = useState('')
   const [result, setResult] = useState<'' | 'ok' | 'no'>('')
   const [score, setScore] = useState(0)
-  const [total, setTotal] = useState(0)
 
-  const next = useCallback(() => { setQ(pick()); setInput(''); setResult('') }, [])
-  useEffect(() => { next() }, [next])
+  function start() { setQuiz(sample(WORDS, Math.min(N, WORDS.length))); setIdx(0); setInput(''); setResult(''); setScore(0) }
+  useEffect(() => { start() }, [])
 
   function submit() {
-    if (result) { next(); return }
-    const ok = input.trim() === q[0]
-    setResult(ok ? 'ok' : 'no'); setTotal((n) => n + 1); if (ok) setScore((n) => n + 1)
+    if (result) { setIdx((n) => n + 1); setInput(''); setResult(''); return }
+    const ok = input.trim() === quiz[idx][0]
+    setResult(ok ? 'ok' : 'no'); if (ok) setScore((n) => n + PTS)
   }
+
+  if (!quiz.length) return null
+  const finished = idx >= quiz.length
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -44,21 +49,39 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
           <p className="text-gray-500 text-sm mt-1">{t('cq_subtitle')}</p>
         </div>
 
-        <div className="rounded-2xl border-2 border-gray-100 py-7">
-          <div className="text-xs text-brand-600">{q[1]}</div>
-          <div className="text-5xl font-bold text-gray-900 tracking-[0.2em] mt-2">{choseong(q[0])}</div>
-        </div>
+        {finished ? (
+          <>
+            <div className="rounded-2xl border-2 border-brand-100 bg-brand-50 py-8 px-4">
+              <div className="text-sm text-brand-700">{t('quiz_done')}</div>
+              <div className="text-4xl font-extrabold text-brand-700 mt-2">{score} <span className="text-xl text-brand-400">/ {N * PTS}</span></div>
+              <div className="text-xs text-gray-500 mt-2">{score / PTS} / {N}</div>
+            </div>
+            <button onClick={start} className="w-full px-5 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">↻ {t('quiz_again')}</button>
+            <Leaderboard game="choseong-quiz" score={score > 0 ? score : null} better="higher" />
+          </>
+        ) : (
+          <>
+            <div className="flex items-center justify-between text-sm text-gray-500">
+              <span>{idx + 1} / {N}</span>
+              <span>{t('quiz_total')} <b className="text-gray-800">{score}</b></span>
+            </div>
 
-        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} type="search" autoFocus
-          autoComplete="off" data-1p-ignore data-lpignore="true" placeholder={t('cq_ph')} disabled={!!result}
-          className="w-full text-center rounded-xl border border-gray-200 px-4 py-2.5 text-lg focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            <div className="rounded-2xl border-2 border-gray-100 py-7">
+              <div className="text-xs text-brand-600">{quiz[idx][1]}</div>
+              <div className="text-5xl font-bold text-gray-900 tracking-[0.2em] mt-2">{choseong(quiz[idx][0])}</div>
+            </div>
 
-        {result === 'ok' && <p className="text-emerald-600 font-semibold">{t('cq_correct')}</p>}
-        {result === 'no' && <p className="text-rose-600 font-semibold">{t('cq_wrong', { a: q[0] })}</p>}
+            <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} type="search" autoFocus
+              autoComplete="off" data-1p-ignore data-lpignore="true" placeholder={t('cq_ph')} disabled={!!result}
+              className="w-full text-center rounded-xl border border-gray-200 px-4 py-2.5 text-lg focus:outline-none focus:ring-2 focus:ring-brand-400" />
 
-        <button onClick={submit} className="w-full px-5 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{result ? `${t('cq_next')} →` : t('cq_check')}</button>
-        <p className="text-sm text-gray-500">{t('cq_score')}: <b className="text-gray-800">{score} / {total}</b></p>
-        <p className="text-xs text-gray-400">{t('cq_note')}</p>
+            {result === 'ok' && <p className="text-emerald-600 font-semibold">{t('cq_correct')}</p>}
+            {result === 'no' && <p className="text-rose-600 font-semibold">{t('cq_wrong', { a: quiz[idx][0] })}</p>}
+
+            <button onClick={submit} className="w-full px-5 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{result ? (idx + 1 < N ? `${t('cq_next')} →` : `${t('quiz_finish')} →`) : t('cq_check')}</button>
+            <p className="text-xs text-gray-400">{t('cq_note')}</p>
+          </>
+        )}
       </div>
     </ToolLayout>
   )
