@@ -110,6 +110,8 @@ export const TOOLS: ToolMeta[] = [
   {slug:'meme-generator',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['meme generator','meme maker','meme make','meme jp'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'circle-crop',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['circle crop','round image','circle crop ko','circle crop jp'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'blur-image',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['blur image','blur photo','image blur','image blur jp'],maxFileSizeMB:{free:30,pro:120} },
+  {slug:'image-filter',category:'image',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['사진 필터','이미지 밝기 대비','image filter','photo filter','brightness contrast'],maxFileSizeMB:{free:30,pro:120} },
+  {slug:'compress-pdf',category:'pdf',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['pdf 압축','pdf 용량 줄이기','compress pdf','reduce pdf size','pdf compressor'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'reaction-time-test',category:'game',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['reaction time','reflex','game','test','leaderboard','반응속도','反応速度'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'mortgage-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['mortgage','home loan','calculator','住宅ローン','주택담보대출'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'auto-loan-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['auto loan','car loan','calculator','自動車ローン','자동차 대출'],maxFileSizeMB:{free:0,pro:0} },
