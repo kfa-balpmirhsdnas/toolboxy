@@ -2035,7 +2035,7 @@
     "cs_reading": "読み",
     "cs_translation": "解釈",
     "cs_play": "読誦",
-    "cs_pause": "停止",
+    "cs_pause": "一時停止",
     "cs_reset": "最初から",
     "cs_rate": "速度",
     "cs_source": "原文（漢字）と読みはパブリックドメインで、解釈はToolBoxy独自の平易な訳であり、特定の宗派・出版社の標準訳とは表現が異なります。真言・陀羅尼は音写のため訳しません。",
@@ -2046,7 +2046,17 @@
     "cs_prev": "前の行",
     "cs_next": "次の行",
     "cs_toc": "目次",
-    "cs_karaoke": "追い読み"
+    "cs_karaoke": "追い読み",
+    "cs_loop": "繰返",
+    "cs_loop_off": "オフ",
+    "cs_loop_section": "区間",
+    "cs_loop_all": "全体",
+    "cs_timer": "タイマー",
+    "cs_min": "分",
+    "cs_dark": "夜",
+    "cs_favonly": "保存",
+    "cs_fav": "保存",
+    "cs_fav_empty": "保存した行はありません。行の横の☆をタップして保存できます。"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

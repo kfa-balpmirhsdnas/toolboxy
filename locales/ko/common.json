@@ -2068,7 +2068,7 @@
     "cs_reading": "독음",
     "cs_translation": "해석",
     "cs_play": "독송",
-    "cs_pause": "멈춤",
+    "cs_pause": "일시정지",
     "cs_reset": "처음부터",
     "cs_rate": "속도",
     "cs_source": "원문(한자)과 독음은 공유저작물이며, 해석은 ToolBoxy가 직접 옮긴 평이한 우리말로 특정 종단·출판사의 표준 번역과는 문구가 다릅니다. 진언·다라니는 음역이라 번역하지 않습니다.",
@@ -2079,7 +2079,17 @@
     "cs_prev": "이전 줄",
     "cs_next": "다음 줄",
     "cs_toc": "목차",
-    "cs_karaoke": "따라읽기"
+    "cs_karaoke": "따라읽기",
+    "cs_loop": "반복",
+    "cs_loop_off": "끄기",
+    "cs_loop_section": "구간",
+    "cs_loop_all": "전체",
+    "cs_timer": "타이머",
+    "cs_min": "분",
+    "cs_dark": "밤",
+    "cs_favonly": "내 구절",
+    "cs_fav": "저장",
+    "cs_fav_empty": "저장한 구절이 없습니다. 구절 옆 ☆를 눌러 저장하세요."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
