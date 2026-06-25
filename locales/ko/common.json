@@ -2078,7 +2078,8 @@
     "cs_voice_off": "끄기",
     "cs_prev": "이전 줄",
     "cs_next": "다음 줄",
-    "cs_toc": "목차"
+    "cs_toc": "목차",
+    "cs_karaoke": "따라읽기"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

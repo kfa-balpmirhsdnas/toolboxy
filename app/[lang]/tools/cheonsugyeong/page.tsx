@@ -44,6 +44,8 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   const [voiceURI, setVoiceURI] = useState('off') // 'off' = silent follow-along (default)
   const [currentSection, setCurrentSection] = useState(1)
   const [repCountdown, setRepCountdown] = useState<number | null>(null) // which repeat of a repeated line (3→2→1)
+  const [karaoke, setKaraoke] = useState(true) // colour the text up to the spot being read
+  const [readChars, setReadChars] = useState(0) // chars coloured in the current line
 
   const genRef = useRef(0)
   const idxRef = useRef(0)
@@ -51,7 +53,9 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   const rateRef = useRef(rate); rateRef.current = rate
   const voiceRef = useRef<SpeechSynthesisVoice | null>(null)
   const voiceOnRef = useRef(false); voiceOnRef.current = voiceURI !== 'off'
+  const karaokeRef = useRef(karaoke); karaokeRef.current = karaoke
   const watchdog = useRef<number | null>(null)
+  const rafRef = useRef<number | null>(null)
 
   // Load available Korean voices (populates asynchronously on some browsers).
   useEffect(() => {
@@ -80,6 +84,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
     genRef.current++
     if (watchdog.current) { clearTimeout(watchdog.current); watchdog.current = null }
     if (typeof window !== 'undefined') window.speechSynthesis?.cancel()
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null }
     setRepCountdown(null)
   }, [])
 
@@ -97,12 +102,35 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
       if (!line.reading) { speakLine(i + 1); return }
       idxRef.current = i
       setCurOrder(line.order)
+      setCurrentSection(line.section)
       scrollToOrder(line.order)
       const reps = Math.max(1, line.repeat)
       let rep = 0
       const once = () => {
         if (!alive()) return
         setRepCountdown(reps > 1 ? reps - rep : null) // 3, 2, 1 … for repeated lines
+
+        // Karaoke fill: colour the reading up to the spot being read, paced by the
+        // line's (estimated) duration — works in silent mode too (exact there).
+        if (rafRef.current) cancelAnimationFrame(rafRef.current)
+        setReadChars(0)
+        if (karaokeRef.current) {
+          const len = line.reading.length
+          const dur = voiceOnRef.current && synth
+            ? Math.max(900, (len * 150) / rateRef.current)
+            : Math.max(1100, (len * 170) / rateRef.current)
+          const startT = performance.now()
+          let last = -1
+          const animate = () => {
+            if (!alive() || !karaokeRef.current) return
+            const p = Math.min(1, (performance.now() - startT) / dur)
+            const rc = Math.round(p * len)
+            if (rc !== last) { last = rc; setReadChars(rc) }
+            if (p < 1) rafRef.current = requestAnimationFrame(animate)
+          }
+          rafRef.current = requestAnimationFrame(animate)
+        }
+
         let done = false
         const proceed = () => {
           if (done || !alive()) return
@@ -151,6 +179,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   // (updates as you scroll and as recitation auto-scrolls).
   useEffect(() => {
     const onScroll = () => {
+      if (playingRef.current) return // while reciting, the current line drives the section
       const bar = document.querySelector('.sticky.top-14')
       const threshold = 56 + (bar?.getBoundingClientRect().height ?? 60) + 16
       const headers = document.querySelectorAll<HTMLElement>('[data-section]')
@@ -192,21 +221,12 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   const jumpTo = (order: number) => goToIndex(LINES.findIndex((l) => l.order === order), true)
   // Floating ▲/▼ → move one line; keep reciting if already playing, else just move.
   const step = (delta: number) => goToIndex(idxRef.current + delta, false)
-  // Table of contents → jump to the chosen section (its header just below the bar).
+  // Table of contents → start reciting from the chosen section's first line.
   function jumpToSection(no: number) {
     const i = LINES.findIndex((l) => l.section === no)
     if (i < 0) return
-    idxRef.current = i
     setCurrentSection(no)
-    if (playingRef.current) { speakFrom(i); return } // reciting → continue from here
-    setCurOrder(LINES[i].order)
-    const sec = document.querySelector<HTMLElement>(`[data-section="${no}"]`)
-    const bar = document.querySelector<HTMLElement>('.sticky.top-14')
-    if (sec) {
-      const targetTop = 56 + (bar?.getBoundingClientRect().height ?? 0) + 8
-      const y = window.scrollY + sec.getBoundingClientRect().top - targetTop
-      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' })
-    }
+    goToIndex(i, true)
   }
 
   return (
@@ -260,6 +280,9 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
             <label className="flex items-center gap-1.5 cursor-pointer">
               <input type="checkbox" checked={showTrans} onChange={(e) => setShowTrans(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_translation')}
             </label>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" checked={karaoke} onChange={(e) => setKaraoke(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_karaoke')}
+            </label>
           </div>
         </div>
 
@@ -276,7 +299,11 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
                   <div key={l.order} data-order={l.order} onClick={() => jumpTo(l.order)}
                     className={`scroll-mt-24 rounded-lg px-3 py-2 cursor-pointer transition-colors ${curOrder === l.order ? 'bg-brand-50 ring-1 ring-brand-200' : 'hover:bg-gray-50'}`}>
                     {showHanja && l.hanja && <p className="text-[0.9em] text-gray-400 leading-relaxed">{l.hanja}</p>}
-                    {showReading && <p className="text-[1.05em] text-gray-900 font-medium leading-relaxed">{l.reading}{l.repeat > 1 && (
+                    {showReading && <p className="text-[1.05em] text-gray-900 font-medium leading-relaxed">{
+                      karaoke && curOrder === l.order
+                        ? <>{<span className="text-brand-600">{l.reading.slice(0, readChars)}</span>}{l.reading.slice(readChars)}</>
+                        : l.reading
+                    }{l.repeat > 1 && (
                       curOrder === l.order && repCountdown != null
                         ? <span className="ml-2 inline-flex items-center justify-center w-[1.4em] h-[1.4em] rounded-full bg-brand-600 text-white text-[0.7em] font-bold align-middle">{repCountdown}</span>
                         : <span className="ml-1.5 text-[0.7em] text-brand-400 align-middle">×{l.repeat}</span>

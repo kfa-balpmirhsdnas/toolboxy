@@ -1853,7 +1853,8 @@
     "cs_voice_off": "Off",
     "cs_prev": "Previous line",
     "cs_next": "Next line",
-    "cs_toc": "Contents"
+    "cs_toc": "Contents",
+    "cs_karaoke": "Follow"
   },
   "toolNames": {
     "cheonsugyeong": "Cheonsugyeong (Thousand-Hands Sutra)",
