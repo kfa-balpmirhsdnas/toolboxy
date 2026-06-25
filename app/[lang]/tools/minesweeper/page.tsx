@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('minesweeper')!
@@ -30,9 +31,28 @@ export default function MinesweeperPage({ params }: { params: { lang: string } }
   const [started, setStarted] = useState(false)
   const [dead, setDead] = useState(false)
   const [flagMode, setFlagMode] = useState(false)
+  const [time, setTime] = useState(0)
+  const [best, setBest] = useState<Record<string, number>>({})
 
-  const reset = useCallback((l: string) => { setLvl(l); setCells([]); setStarted(false); setDead(false) }, [])
+  const reset = useCallback((l: string) => { setLvl(l); setCells([]); setStarted(false); setDead(false); setTime(0) }, [])
   const won = started && !dead && cells.length > 0 && cells.every((c) => c.mine || c.rev)
+
+  useEffect(() => { try { setBest(JSON.parse(localStorage.getItem('mines-best') || '{}')) } catch { /* ignore */ } }, [])
+  useEffect(() => {
+    if (!started || dead || won) return
+    const id = setInterval(() => setTime((t) => t + 0.1), 100)
+    return () => clearInterval(id)
+  }, [started, dead, won])
+  useEffect(() => {
+    if (!won) return
+    setBest((b) => {
+      const cur = b[lvl]
+      if (cur != null && cur <= time) return b
+      const nb = { ...b, [lvl]: time }
+      localStorage.setItem('mines-best', JSON.stringify(nb))
+      return nb
+    })
+  }, [won]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function reveal(cells: Cell[], i: number, size: number) {
     const stack = [i]
@@ -62,7 +82,7 @@ export default function MinesweeperPage({ params }: { params: { lang: string } }
         <div className="flex justify-center gap-2 text-sm">
           {Object.keys(LEVELS).map((l) => <button key={l} onClick={() => reset(l)} className={`px-3 py-1 rounded-full border ${lvl === l ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{t(l)}</button>)}
         </div>
-        <div className="text-sm text-gray-600">💣 {mines} · {dead ? `💥 ${t('ms_dead')}` : won ? `🎉 ${t('ms_won')}` : ''}</div>
+        <div className="text-sm text-gray-600">💣 {mines} · ⏱ {time.toFixed(1)}s{best[lvl] != null ? ` · ${t('ms_best')} ${best[lvl].toFixed(1)}s` : ''} {dead ? `💥 ${t('ms_dead')}` : won ? `🎉 ${t('ms_won')}` : ''}</div>
 
         <div className="grid gap-0.5 mx-auto w-fit" style={{ gridTemplateColumns: `repeat(${size}, minmax(0,1fr))` }}>
           {(cells.length ? cells : Array.from({ length: size * size }, () => ({ mine: false, rev: false, flag: false, n: 0 }))).map((c, i) => (
@@ -80,6 +100,7 @@ export default function MinesweeperPage({ params }: { params: { lang: string } }
         </div>
         <p className="text-xs text-gray-400">{t('ms_note')}</p>
       </div>
+      <Leaderboard game={`minesweeper-${lvl.replace('ms_', '')}`} score={best[lvl] != null ? Math.round(best[lvl] * 10) / 10 : null} unit=" s" better="lower" />
     </ToolLayout>
   )
 }

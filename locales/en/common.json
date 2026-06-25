@@ -2845,6 +2845,7 @@
     "ms_hard": "Hard",
     "ms_dead": "You hit a mine!",
     "ms_won": "All clear!",
+    "ms_best": "Best",
     "ms_flagmode": "Flag mode",
     "ms_new": "New game",
     "ms_note": "Tap to reveal a square; numbers show nearby mines. Use flag mode (or right-click) to mark mines.",

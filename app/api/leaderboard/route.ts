@@ -10,6 +10,9 @@ const GAMES: Record<string, { order: 'asc' | 'desc'; min: number; max: number }>
   'number-order': { order: 'asc', min: 5, max: 300 },
   'aim-trainer': { order: 'desc', min: 1, max: 250 },
   'color-find': { order: 'desc', min: 1, max: 300 },
+  'minesweeper-easy': { order: 'asc', min: 1, max: 3600 },
+  'minesweeper-medium': { order: 'asc', min: 1, max: 3600 },
+  'minesweeper-hard': { order: 'asc', min: 1, max: 3600 },
 }
 
 function clean(name: string): string {
