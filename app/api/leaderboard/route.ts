@@ -6,6 +6,10 @@ import { FieldValue } from 'firebase-admin/firestore'
 const GAMES: Record<string, { order: 'asc' | 'desc'; min: number; max: number }> = {
   'reaction-time-test': { order: 'asc', min: 80, max: 2000 },
   'click-speed-test': { order: 'desc', min: 1, max: 25 },
+  'game-2048': { order: 'desc', min: 4, max: 500000 },
+  'number-order': { order: 'asc', min: 5, max: 300 },
+  'aim-trainer': { order: 'desc', min: 1, max: 250 },
+  'color-find': { order: 'desc', min: 1, max: 300 },
 }
 
 function clean(name: string): string {
