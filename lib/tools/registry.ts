@@ -1,4 +1,4 @@
-export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science' | 'time'
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science' | 'time' | 'device'
 export type Phase = 1 | 2 | 3
 
 export interface ToolMeta {
@@ -118,7 +118,13 @@ export const TOOLS: ToolMeta[] = [
   {slug:'retirement-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['retirement','savings','nest egg','老後資金','은퇴 자금'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'inflation-calculator',category:'finance',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['inflation','purchasing power','calculator','インフレ','인플레이션'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'screen-recorder',category:'video',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['screen recorder','record','capture','webm','画面録画','화면 녹화'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'webcam-test',category:'video',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['webcam','camera','test','check','ウェブカメラ','웹캠'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'webcam-test',category:'device',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['webcam','camera','test','check','ウェブカメラ','웹캠'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'refresh-rate-test',category:'device',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['주사율 테스트','모니터 주사율','refresh rate test','monitor hz','fps test'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'screen-test',category:'device',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['화면 테스트','죽은 픽셀','dead pixel test','screen test','monitor test'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'speaker-test',category:'device',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['스피커 테스트','좌우 소리','speaker test','left right audio','stereo test'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'mic-test',category:'device',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['마이크 테스트','마이크 점검','mic test','microphone test','audio input'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'keyboard-test',category:'device',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['키보드 테스트','키 눌림 점검','keyboard test','key tester','stuck key'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'mouse-test',category:'device',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['마우스 테스트','마우스 점검','mouse test','mouse button test','polling rate'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'voice-recorder',category:'audio',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['voice recorder','audio','microphone','record','ボイスレコーダー','음성 녹음'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'tone-generator',category:'audio',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['tone','frequency','hz','sound','test','トーン','주파수'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'merge-pdf',category:'pdf',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['pdf','merge','combine','join','結合','병합'],maxFileSizeMB:{free:0,pro:0} },
@@ -420,4 +426,5 @@ export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; 
   random:    { label: 'Random',    icon: String.fromCodePoint(0x1F3B2), color: 'violet' },
   science:   { label: 'Science',   icon: String.fromCodePoint(0x1F9EA), color: 'teal'   },
   time:      { label: 'Time',      icon: String.fromCodePoint(0x23F0), color: 'sky'    },
+  device:    { label: 'Device Test', icon: String.fromCodePoint(0x1F5A5, 0xFE0F), color: 'slate' },
 };
