@@ -11,7 +11,7 @@ const tool = getToolBySlug('cheonsugyeong')!
 const LINES = CHEONSUGYEONG
 const RATES = [0.3, 0.4, 0.5, 0.6, 0.7, 0.85, 1, 1.15, 1.3, 1.5]
 const FONT_SCALES = [0.8, 1, 1.5, 2, 3]
-const SLEEPS = [0, 5, 10, 15, 30, 60]
+const SLEEPS = [0, 5, 10, 30, 60, 120]
 type Loop = 'off' | 'section' | 'all'
 
 const PREFS_KEY = 'cheonsugyeong:prefs'
