@@ -80,6 +80,8 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   const isJa = params.lang === 'ja'
   const readingOf = (l: SutraLine) => (isJa && l.readingJa ? l.readingJa : l.reading)
   const ttsLang = isJa ? 'ja-JP' : 'ko-KR'
+  // Section name: Japanese reads the hanja (開經偈…); Korean shows the 한글 name.
+  const secName = (s: { ko: string; hanja: string }) => (isJa && s.hanja ? s.hanja : s.ko)
 
   // ── Persistence: load saved settings + last position on mount ──────────────
   useEffect(() => {
@@ -329,7 +331,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
           <label className={`flex items-center gap-2 text-sm ${c('text-gray-500', 'text-gray-300')}`}>
             <span className="whitespace-nowrap">{t('cs_toc')}</span>
             <select value={currentSection} onChange={(e) => jumpToSection(Number(e.target.value))} className={`flex-1 min-w-0 ${wideSelCls}`}>
-              {SECTIONS.map((s) => <option key={s.no} value={s.no}>{s.no}. {s.ko}</option>)}
+              {SECTIONS.map((s) => <option key={s.no} value={s.no}>{s.no}. {secName(s)}</option>)}
             </select>
           </label>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-6 sm:gap-y-2">
@@ -381,8 +383,8 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
             {visibleSections.map((sec) => (
               <section key={sec.no} data-section={sec.no} className="scroll-mt-40">
                 <h2 className={`text-base font-bold mb-2 ${c('text-brand-700', 'text-brand-300')}`}>
-                  {sec.no}. {sec.ko}
-                  {sec.hanja && <span className={`ml-2 text-sm font-normal ${c('text-gray-400', 'text-gray-500')}`}>{sec.hanja}</span>}
+                  {sec.no}. {secName(sec)}
+                  {!isJa && sec.hanja && <span className={`ml-2 text-sm font-normal ${c('text-gray-400', 'text-gray-500')}`}>{sec.hanja}</span>}
                 </h2>
                 <div className="space-y-3">
                   {sec.lines.map((l) => {
