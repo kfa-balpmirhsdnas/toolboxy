@@ -68,7 +68,7 @@ export default function WordTranslator({ slug, from, to, lang }: { slug: string;
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4">
         <input value={input} onChange={(e) => onChange(e.target.value)} autoFocus
-          type="text" name="tbx-word" inputMode="text" enterKeyHint="search"
+          type="search" name="tbx-word" inputMode="text" enterKeyHint="search"
           autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
           data-1p-ignore data-lpignore="true" data-bwignore="true" data-form-type="other"
           onFocus={loadDict}

@@ -56,7 +56,7 @@ export default function ScientificNotation({ params }: { params: { lang: string 
         </div>
 
         <input value={input} onChange={(e) => setInput(e.target.value)} autoFocus
-          type="text" name="tbx-number" inputMode="text"
+          type="search" name="tbx-number" inputMode="text"
           autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
           data-1p-ignore data-lpignore="true" data-bwignore="true" data-form-type="other"
           placeholder={t('sn_placeholder')}
