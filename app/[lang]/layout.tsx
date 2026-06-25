@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
 import SignupGateProvider from '@/components/auth/SignupGate'
 import SelectSampleOnFocus from '@/components/SelectSampleOnFocus'
+import ScrollInputOnFocus from '@/components/ScrollInputOnFocus'
 import StandaloneRefresh from '@/components/StandaloneRefresh'
 
 const SUPPORTED_LOCALES = ['en', 'ja', 'ko']
@@ -71,6 +72,7 @@ export default async function LangLayout({
       <NextIntlClientProvider locale={lang} messages={messages}>
         <SignupGateProvider>
           <SelectSampleOnFocus />
+          <ScrollInputOnFocus />
           <StandaloneRefresh />
           <Header />
           <main className="min-h-screen">{children}</main>

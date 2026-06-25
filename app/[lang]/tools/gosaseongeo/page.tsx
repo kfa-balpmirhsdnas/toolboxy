@@ -33,7 +33,6 @@ export default function GosaseongeoPage({ params }: { params: { lang: string } }
 
         <input value={q} onChange={(e) => setQ(e.target.value)} type="search" name="tbx-gosa" autoFocus
           autoComplete="off" data-1p-ignore data-lpignore="true" placeholder={t('gs_search')}
-          onFocus={(e) => { const el = e.currentTarget; setTimeout(() => window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 64, behavior: 'smooth' }), 100) }}
           className="w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-400" />
 
         <div className="flex flex-wrap gap-1.5">
