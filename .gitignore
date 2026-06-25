@@ -64,3 +64,21 @@ _gen_mid.js
 1단계 QR*
 고등*
 _gen_high.js
+_ja_mid_batch.js
+_ja_*.js
+_ja_high*
+_high_remaining.txt
+_dump_rem.js
+_cmp.js
+_fu_enrich.js
+lib/furigana.ts.bak
+_chk.js
+_chk2.js
+_krja_add.js
+lib/kr-ja-dict.ts.bak
+_gen_elements.js
+
+# classics source data + scratch (own-translation rule)
+cheonjamun.csv
+sajasohak.csv
+_gen_classics.js

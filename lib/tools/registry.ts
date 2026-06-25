@@ -77,6 +77,8 @@ export const TOOLS: ToolMeta[] = [
   {slug:'ladder-game',category:'random',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['사다리타기','ladder game','amidakuji','あみだくじ','random matching'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-to-speech',category:'audio',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['text to speech','tts','음성 변환','텍스트 음성 변환','読み上げ','voice generator'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'daedarani',category:'classics',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['신묘장구대다라니','대다라니','대비주','108독','daedarani'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'cheonjamun',category:'classics',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['천자문','천자문 뜻','천자문 한자','천자문 따라쓰기','thousand character classic'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'sajasohak',category:'classics',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['사자소학','사자소학 뜻','한문 교육','효행','sajasohak'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'banyasimgyeong',category:'classics',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['반야심경','반야심경 한글','반야심경 해석','반야심경 독송','한글 반야심경','heart sutra'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'cheonsugyeong',category:'classics',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['천수경','천수경 한글','천수경 해석','천수경 독송','한글 천수경','buddhist sutra'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'white-noise-machine',category:'audio',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['white noise machine','white noise','백색소음','rain fire ocean sounds','focus sleep sounds'],maxFileSizeMB:{free:0,pro:0} },
