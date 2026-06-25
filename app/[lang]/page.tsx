@@ -1,19 +1,32 @@
 'use client'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { TOOLS, CATEGORY_META, type ToolCategory } from '@/lib/tools/registry'
+import { TOOLS, CATEGORY_META, type ToolCategory, type ToolMeta } from '@/lib/tools/registry'
 import ToolCard from '@/components/tools/ToolCard'
 
-// Popular Tools: phase1 우선, 최대 80개
-const popularTools = [
+// Round-robin interleave by category so no category clusters at the front
+// (deterministic → SSR-safe). A light client-side shuffle adds per-visit variety.
+function interleaveByCategory(tools: ToolMeta[]): ToolMeta[] {
+  const groups = new Map<string, ToolMeta[]>()
+  for (const t of tools) { const g = groups.get(t.category) ?? []; g.push(t); groups.set(t.category, g) }
+  const lists = [...groups.values()]
+  const out: ToolMeta[] = []
+  for (let i = 0; out.length < tools.length; i++) for (const l of lists) if (l[i]) out.push(l[i])
+  return out
+}
+const basePopular = interleaveByCategory([
   ...TOOLS.filter(t => t.phase === 1),
-  ...TOOLS.filter(t => (t.phase ?? 99) > 1)
-].slice(0, 80)
+  ...TOOLS.filter(t => (t.phase ?? 99) > 1),
+]).slice(0, 80)
 
 export default function HomePage({ params }: { params: { lang: string } }) {
   const t = useTranslations('home')
   const tc = useTranslations('categories')
   const tg = useTranslations('gate')
+  // SSR renders the deterministic interleaved order; after mount, shuffle for variety.
+  const [popular, setPopular] = useState(basePopular)
+  useEffect(() => { setPopular((p) => [...p].sort(() => Math.random() - 0.5)) }, [])
   // Only show categories that actually have tools (skip empty ones).
   const categories = (Object.keys(CATEGORY_META) as ToolCategory[]).filter((cat) =>
     TOOLS.some((t) => t.category === cat),
@@ -89,7 +102,7 @@ export default function HomePage({ params }: { params: { lang: string } }) {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {popularTools.map((tool) => (
+          {popular.map((tool) => (
             <ToolCard key={tool.slug} tool={tool} lang={params.lang} />
           ))}
         </div>
