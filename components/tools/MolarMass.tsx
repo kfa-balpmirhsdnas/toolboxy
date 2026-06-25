@@ -56,7 +56,9 @@ export default function MolarMass({ params }: { params: { lang: string } }) {
         </div>
 
         <input value={formula} onChange={(e) => setFormula(e.target.value)} autoFocus
-          autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} data-1p-ignore data-lpignore="true"
+          type="text" name="tbx-formula" inputMode="text"
+          autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
+          data-1p-ignore data-lpignore="true" data-bwignore="true" data-form-type="other"
           placeholder={t('mm_placeholder')}
           className="w-full rounded-xl border border-gray-200 px-4 py-3 text-lg font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
 

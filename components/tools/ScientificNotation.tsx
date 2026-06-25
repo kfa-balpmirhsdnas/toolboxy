@@ -56,7 +56,9 @@ export default function ScientificNotation({ params }: { params: { lang: string 
         </div>
 
         <input value={input} onChange={(e) => setInput(e.target.value)} autoFocus
-          autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} data-1p-ignore data-lpignore="true"
+          type="text" name="tbx-number" inputMode="text"
+          autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
+          data-1p-ignore data-lpignore="true" data-bwignore="true" data-form-type="other"
           placeholder={t('sn_placeholder')}
           className="w-full rounded-xl border border-gray-200 px-4 py-3 text-lg font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
 
