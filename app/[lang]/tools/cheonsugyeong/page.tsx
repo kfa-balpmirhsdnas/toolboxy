@@ -76,6 +76,10 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   const favSet = new Set(favorites)
   // Meaning shown per locale (A-plan: Japanese gets its own translation; others fall back to Korean).
   const trOf = (l: SutraLine) => (params.lang === 'ja' && l.translationJa ? l.translationJa : l.translation)
+  // B-plan: on /ja recite the Japanese-style reading (TTS ja-JP); elsewhere the Korean 독음 (ko-KR).
+  const isJa = params.lang === 'ja'
+  const readingOf = (l: SutraLine) => (isJa && l.readingJa ? l.readingJa : l.reading)
+  const ttsLang = isJa ? 'ja-JP' : 'ko-KR'
 
   // ── Persistence: load saved settings + last position on mount ──────────────
   useEffect(() => {
@@ -114,10 +118,11 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
   useEffect(() => {
     const synth = window.speechSynthesis
     if (!synth) return
+    const re = new RegExp('^' + (isJa ? 'ja' : 'ko') + '([-_]|$)', 'i')
     const load = () => {
-      const ko = synth.getVoices().filter((v) => /^ko([-_]|$)/i.test(v.lang))
+      const matched = synth.getVoices().filter((v) => re.test(v.lang))
       const seen = new Set<string>()
-      setVoices(ko.filter((v) => (seen.has(v.name) ? false : (seen.add(v.name), true))))
+      setVoices(matched.filter((v) => (seen.has(v.name) ? false : (seen.add(v.name), true))))
     }
     load()
     synth.addEventListener?.('voiceschanged', load)
@@ -158,7 +163,8 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
         if (start >= 0) { speakLine(start); return }
       }
       const line = LINES[i]
-      if (!line.reading) { speakLine(i + 1); return }
+      const text = readingOf(line)
+      if (!text) { speakLine(i + 1); return }
       idxRef.current = i
       savePos(i)
       setCurOrder(line.order)
@@ -174,7 +180,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
         if (rafRef.current) cancelAnimationFrame(rafRef.current)
         setReadChars(0)
         if (karaokeRef.current) {
-          const len = line.reading.length
+          const len = text.length
           const dur = voiceOnRef.current && synth
             ? Math.max(900, (len * 150) / rateRef.current)
             : Math.max(1100, (len * 170) / rateRef.current)
@@ -201,16 +207,16 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
         }
         // Voice off → silent follow-along, paced by estimated reading time.
         if (!voiceOnRef.current || !synth) {
-          watchdog.current = window.setTimeout(proceed, Math.max(1100, (line.reading.length * 170) / rateRef.current))
+          watchdog.current = window.setTimeout(proceed, Math.max(1100, (text.length * 170) / rateRef.current))
           return
         }
-        const u = new SpeechSynthesisUtterance(line.reading)
-        u.lang = 'ko-KR'; u.rate = rateRef.current
+        const u = new SpeechSynthesisUtterance(text)
+        u.lang = ttsLang; u.rate = rateRef.current
         if (voiceRef.current) u.voice = voiceRef.current
         u.onend = proceed; u.onerror = proceed
         synth.speak(u)
-        // Advance even if the device has no Korean TTS voice (onend never fires).
-        watchdog.current = window.setTimeout(proceed, Math.min(15000, line.reading.length * 220 + 2500))
+        // Advance even if the device has no matching TTS voice (onend never fires).
+        watchdog.current = window.setTimeout(proceed, Math.min(15000, text.length * 220 + 2500))
       }
       once()
     }
@@ -389,8 +395,8 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
                         {showHanja && l.hanja && <p className={`text-[0.9em] leading-relaxed ${c('text-gray-400', 'text-gray-500')}`}>{l.hanja}</p>}
                         {showReading && <p className={`text-[1.05em] font-medium leading-relaxed ${c('text-gray-900', 'text-gray-100')}`}>{
                           karaoke && curOrder === l.order
-                            ? <>{<span className="text-rose-500 font-semibold">{l.reading.slice(0, readChars)}</span>}{l.reading.slice(readChars)}</>
-                            : l.reading
+                            ? <>{<span className="text-rose-500 font-semibold">{readingOf(l).slice(0, readChars)}</span>}{readingOf(l).slice(readChars)}</>
+                            : readingOf(l)
                         }{l.repeat > 1 && (
                           curOrder === l.order && repCountdown != null
                             ? <span className="ml-2 inline-flex items-center justify-center w-[1.4em] h-[1.4em] rounded-full bg-brand-600 text-white text-[0.7em] font-bold align-middle">{repCountdown}</span>
