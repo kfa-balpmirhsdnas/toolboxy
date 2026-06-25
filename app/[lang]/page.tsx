@@ -10,7 +10,7 @@ import ToolCard from '@/components/tools/ToolCard'
 function interleaveByCategory(tools: ToolMeta[]): ToolMeta[] {
   const groups = new Map<string, ToolMeta[]>()
   for (const t of tools) { const g = groups.get(t.category) ?? []; g.push(t); groups.set(t.category, g) }
-  const lists = [...groups.values()]
+  const lists = Array.from(groups.values())
   const out: ToolMeta[] = []
   for (let i = 0; out.length < tools.length; i++) for (const l of lists) if (l[i]) out.push(l[i])
   return out
