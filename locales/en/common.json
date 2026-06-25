@@ -718,7 +718,8 @@
     "english-antonyms": "Type a English word and instantly get its opposite. Free English antonym dictionary that works offline in your browser.",
     "elementary-japanese-words": "Learn essential elementary Japanese words hands-free: a new word appears every few seconds with Japanese and Korean audio you can toggle. Free flashcard trainer with a study timer.",
     "elementary-english-words": "Learn the ~800 essential elementary English words hands-free: a new word appears every few seconds with English and Korean audio you can toggle. Free flashcard trainer with a study timer.",
-    "middle-english-words": "Learn the 900 essential middle-school English words hands-free: a new word appears every few seconds with English and Korean audio you can toggle. Free flashcard trainer with a study timer."
+    "middle-english-words": "Learn the 900 essential middle-school English words hands-free: a new word appears every few seconds with English and Korean audio you can toggle. Free flashcard trainer with a study timer.",
+    "high-english-words": "Learn the ~1300 essential high-school English words hands-free: a new word appears every few seconds with English and Korean audio you can toggle. Free flashcard trainer with a study timer."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1667,7 +1668,8 @@
     "english-antonyms": "This tool gives you the opposite of a common English word the moment you type it. It uses a built-in dictionary of everyday antonym pairs, so it's instant and works even offline. It's great for studying, word games, and writing. Nothing you type leaves your browser.",
     "elementary-japanese-words": "This flashcard trainer plays through ~150 essential elementary Japanese words on a timer you control (3–20 seconds). Each card shows the Japanese word with its reading and the Korean meaning, and can read both aloud (toggle Japanese and Korean audio independently). A study timer tracks how long you practice. Everything runs in your browser; nothing you do is uploaded.",
     "elementary-english-words": "This flashcard trainer plays through ~800 essential elementary English words on a timer you control. Each card shows the English word and its Korean meaning, and reads them aloud (toggle English and Korean audio independently, set the gap between them and a repeat count). A study timer tracks how long you practice. Everything runs in your browser; nothing you do is uploaded.",
-    "middle-english-words": "This flashcard trainer plays through 900 essential middle-school English words on a timer you control. Each card shows the English word and its Korean meaning, and reads them aloud (toggle English and Korean audio independently, set the gap between them and a repeat count). A study timer tracks how long you practice. Everything runs in your browser; nothing you do is uploaded."
+    "middle-english-words": "This flashcard trainer plays through 900 essential middle-school English words on a timer you control. Each card shows the English word and its Korean meaning, and reads them aloud (toggle English and Korean audio independently, set the gap between them and a repeat count). A study timer tracks how long you practice. Everything runs in your browser; nothing you do is uploaded.",
+    "high-english-words": "This flashcard trainer plays through ~1300 essential high-school English words on a timer you control. Each card shows the English word and its Korean meaning, and reads them aloud (toggle English and Korean audio independently, set the gap between them and a repeat count). A study timer tracks how long you practice. Everything runs in your browser; nothing you do is uploaded."
   },
   "howto": {
     "title": "How to use",
@@ -1749,6 +1751,12 @@
       "Use ‹ › to step through words by hand; a study timer tracks how long you practice."
     ],
     "middle-english-words": [
+      "Press ▶ Start and the word cards advance automatically at the interval you set.",
+      "Each card plays the English audio, then after the voice gap reads the Korean meaning.",
+      "Adjust the interval, voice gap, repeat count, and the English / Korean audio toggles.",
+      "Use ‹ › to step through words by hand; a study timer tracks how long you practice."
+    ],
+    "high-english-words": [
       "Press ▶ Start and the word cards advance automatically at the interval you set.",
       "Each card plays the English audio, then after the voice gap reads the Korean meaning.",
       "Adjust the interval, voice gap, repeat count, and the English / Korean audio toggles.",
@@ -2028,7 +2036,8 @@
     "english-antonyms": "English Antonym Dictionary",
     "elementary-japanese-words": "Elementary Japanese Words Trainer",
     "elementary-english-words": "Elementary English Words Trainer",
-    "middle-english-words": "Middle School English Words Trainer"
+    "middle-english-words": "Middle School English Words Trainer",
+    "high-english-words": "High School English Words Trainer"
   },
   "howtoNote": {
     "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",
