@@ -248,6 +248,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
               {SECTIONS.map((s) => <option key={s.no} value={s.no}>{s.no}. {s.ko}</option>)}
             </select>
           </label>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-6 sm:gap-y-2">
           <div className="flex items-center justify-between sm:justify-start sm:gap-4 text-sm text-gray-500">
             <label className="flex items-center gap-1 whitespace-nowrap">
               {t('cs_rate')}
@@ -284,6 +285,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
               <input type="checkbox" checked={karaoke} onChange={(e) => setKaraoke(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_karaoke')}
             </label>
           </div>
+          </div>
         </div>
 
         {/* Sutra body (font scales with the selected multiplier) */}
@@ -301,7 +303,7 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
                     {showHanja && l.hanja && <p className="text-[0.9em] text-gray-400 leading-relaxed">{l.hanja}</p>}
                     {showReading && <p className="text-[1.05em] text-gray-900 font-medium leading-relaxed">{
                       karaoke && curOrder === l.order
-                        ? <>{<span className="text-brand-600">{l.reading.slice(0, readChars)}</span>}{l.reading.slice(readChars)}</>
+                        ? <>{<span className="text-rose-500 font-semibold">{l.reading.slice(0, readChars)}</span>}{l.reading.slice(readChars)}</>
                         : l.reading
                     }{l.repeat > 1 && (
                       curOrder === l.order && repCountdown != null
