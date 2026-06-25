@@ -63,6 +63,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'banyasimgyeong',category:'classics',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['반야심경','반야심경 한글','반야심경 해석','반야심경 독송','한글 반야심경','heart sutra'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'cheonsugyeong',category:'classics',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['천수경','천수경 한글','천수경 해석','천수경 독송','한글 천수경','buddhist sutra'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'white-noise-machine',category:'audio',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['white noise machine','white noise','백색소음','rain fire ocean sounds','focus sleep sounds'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'elementary-english-words',category:'language',added:'2026-06-25',phase:1,isPro:false,isNew:true,tags:['elementary english words','english vocabulary trainer','초등 영어 단어','교육부 영단어','english flashcards'],maxFileSizeMB:{free:0,pro:0} },
