@@ -51,6 +51,7 @@ export default function KoreanToJapanesePage({ params }: { params: { lang: strin
       <div className="space-y-4">
         <input value={input} onChange={(e) => onChange(e.target.value)} autoFocus
           onFocus={loadDict}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); setInput(''); setCopied(false) } }}
           onPointerDown={(e) => {
             const el = e.currentTarget
             setInput(''); setCopied(false); loadDict()
