@@ -261,10 +261,6 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
     speakFrom(idxRef.current)
   }, [playing, stopAll, speakFrom])
 
-  function reset() {
-    stopAll(); setPlaying(false); idxRef.current = 0; setCurOrder(null); savePos(0)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
   function goToIndex(i: number, autoplay: boolean) {
     i = Math.min(LINES.length - 1, Math.max(0, i))
     idxRef.current = i
@@ -302,23 +298,18 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
         {/* Controls — pinned below the site header */}
         <div className={`sticky top-14 z-30 -mx-6 px-6 pt-4 pb-3 backdrop-blur border-b space-y-3 ${c('bg-white/95 border-gray-200', 'bg-gray-900/95 border-gray-700')}`}>
           <div className="flex items-center gap-2">
-            {!playing ? (
-              <button onClick={toggle}
-                className="flex-1 py-2.5 text-sm font-semibold rounded-xl text-white bg-brand-600 hover:bg-brand-700 transition-colors">
-                ▶ {t('cs_play')}
-              </button>
-            ) : (
-              <>
-                <button onClick={toggle}
-                  className="flex-1 py-2.5 text-sm font-semibold rounded-xl text-white bg-red-600 hover:bg-red-700 transition-colors">
-                  ⏸ {t('cs_pause')}
-                </button>
-                <button onClick={reset}
-                  className={`flex-1 py-2.5 text-sm font-semibold rounded-xl border transition-colors ${c('border-gray-300 text-gray-700 hover:bg-gray-50', 'border-gray-600 text-gray-200 hover:bg-gray-800')}`}>
-                  ↺ {t('cs_reset')}
-                </button>
-              </>
-            )}
+            <button onClick={toggle}
+              className={`flex-1 py-2.5 text-sm font-semibold rounded-xl text-white transition-colors ${playing ? 'bg-red-600 hover:bg-red-700' : 'bg-brand-600 hover:bg-brand-700'}`}>
+              {playing ? `⏸ ${t('cs_pause')}` : `▶ ${t('cs_play')}`}
+            </button>
+            <button onClick={() => setDark((v) => !v)} aria-pressed={dark}
+              className={`px-3 py-2.5 text-sm rounded-xl border transition-colors whitespace-nowrap ${dark ? 'bg-gray-700 text-white border-gray-600' : c('border-gray-300 text-gray-600 hover:bg-gray-50', 'border-gray-600 text-gray-200 hover:bg-gray-800')}`}>
+              🌙 {t('cs_dark')}
+            </button>
+            <button onClick={() => setFavOnly((v) => !v)} aria-pressed={favOnly}
+              className={`px-3 py-2.5 text-sm rounded-xl border transition-colors whitespace-nowrap ${favOnly ? 'bg-amber-100 text-amber-700 border-amber-300' : c('border-gray-300 text-gray-600 hover:bg-gray-50', 'border-gray-600 text-gray-200 hover:bg-gray-800')}`}>
+              ★ {t('cs_favonly')}
+            </button>
           </div>
           <label className={`flex items-center gap-2 text-sm ${c('text-gray-500', 'text-gray-300')}`}>
             <span className="whitespace-nowrap">{t('cs_toc')}</span>
@@ -363,8 +354,6 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
               <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showReading} onChange={(e) => setShowReading(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_reading')}</label>
               <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showTrans} onChange={(e) => setShowTrans(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_translation')}</label>
               <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={karaoke} onChange={(e) => setKaraoke(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_karaoke')}</label>
-              <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={dark} onChange={(e) => setDark(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_dark')}</label>
-              <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={favOnly} onChange={(e) => setFavOnly(e.target.checked)} className="w-4 h-4 accent-amber-500" />★ {t('cs_favonly')}</label>
             </div>
           </div>
         </div>
@@ -385,9 +374,9 @@ export default function CheonsugyeongPage({ params }: { params: { lang: string }
                     const fav = favSet.has(l.order)
                     return (
                       <div key={l.order} data-order={l.order} onClick={() => jumpTo(l.order)}
-                        className={`relative scroll-mt-24 rounded-lg pl-3 pr-8 py-2 cursor-pointer transition-colors ${curOrder === l.order ? c('bg-brand-50 ring-1 ring-brand-200', 'bg-gray-800 ring-1 ring-brand-700') : c('hover:bg-gray-50', 'hover:bg-gray-800')}`}>
+                        className={`relative scroll-mt-24 rounded-lg pl-3 pr-[1.9em] py-2 cursor-pointer transition-colors ${curOrder === l.order ? c('bg-brand-50 ring-1 ring-brand-200', 'bg-gray-800 ring-1 ring-brand-700') : c('hover:bg-gray-50', 'hover:bg-gray-800')}`}>
                         <button onClick={(e) => { e.stopPropagation(); toggleFav(l.order) }} aria-label={t('cs_fav')}
-                          className={`absolute top-1.5 right-1.5 text-[1em] leading-none ${fav ? 'text-amber-400' : c('text-gray-300 hover:text-amber-400', 'text-gray-600 hover:text-amber-400')}`}>{fav ? '★' : '☆'}</button>
+                          className={`absolute top-[0.15em] right-[0.25em] text-[1.5em] leading-none ${fav ? 'text-amber-400' : c('text-gray-300 hover:text-amber-400', 'text-gray-600 hover:text-amber-400')}`}>{fav ? '★' : '☆'}</button>
                         {showHanja && l.hanja && <p className={`text-[0.9em] leading-relaxed ${c('text-gray-400', 'text-gray-500')}`}>{l.hanja}</p>}
                         {showReading && <p className={`text-[1.05em] font-medium leading-relaxed ${c('text-gray-900', 'text-gray-100')}`}>{
                           karaoke && curOrder === l.order
