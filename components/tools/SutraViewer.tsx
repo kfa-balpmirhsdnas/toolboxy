@@ -70,7 +70,6 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
   const [loop, setLoop] = useState<Loop>(reciteCounter ? 'all' : 'off')
   const [reciteCount, setReciteCount] = useState(0)
   const [reciteTarget, setReciteTarget] = useState(108)
-  const [moktakMs, setMoktakMs] = useState(0) // 0 = off; else beat interval (ms)
   const [sleepMin, setSleepMin] = useState(0)
   const [dark, setDark] = useState(false)
   const [favorites, setFavorites] = useState<number[]>([])
@@ -90,7 +89,6 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
   const loopSectionRef = useRef(1)
   const watchdog = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
-  const audioCtxRef = useRef<AudioContext | null>(null)
 
   const c = (light: string, darkCls: string) => (dark ? darkCls : light)
   const favSet = new Set(favorites)
@@ -113,7 +111,6 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
       if (typeof p.dark === 'boolean') setDark(p.dark)
       if (p.loop === 'section' || p.loop === 'all' || p.loop === 'off') setLoop(p.loop)
       if (typeof p.reciteTarget === 'number') setReciteTarget(p.reciteTarget)
-      if (typeof p.moktakMs === 'number') setMoktakMs(p.moktakMs)
       const cnt = Number(localStorage.getItem(COUNT_KEY))
       if (cnt > 0) setReciteCount(cnt)
       const favs = JSON.parse(localStorage.getItem(FAVS_KEY) || '[]')
@@ -130,8 +127,8 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
   }, [])
   useEffect(() => {
     if (!loaded) return
-    try { localStorage.setItem(PREFS_KEY, JSON.stringify({ rate, fontScale, voiceURI, showHanja, showReading, showTrans, karaoke, dark, loop, reciteTarget, moktakMs })) } catch { /* ignore */ }
-  }, [loaded, PREFS_KEY, rate, fontScale, voiceURI, showHanja, showReading, showTrans, karaoke, dark, loop, reciteTarget, moktakMs])
+    try { localStorage.setItem(PREFS_KEY, JSON.stringify({ rate, fontScale, voiceURI, showHanja, showReading, showTrans, karaoke, dark, loop, reciteTarget })) } catch { /* ignore */ }
+  }, [loaded, PREFS_KEY, rate, fontScale, voiceURI, showHanja, showReading, showTrans, karaoke, dark, loop, reciteTarget])
   useEffect(() => {
     if (!loaded) return
     try { localStorage.setItem(FAVS_KEY, JSON.stringify(favorites)) } catch { /* ignore */ }
@@ -166,46 +163,6 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null }
     setRepCountdown(null)
   }, [])
-
-  // Procedurally-synthesised 목탁 (木魚) "톡" — a short hollow wooden knock, so no
-  // audio file is shipped. Played on a steady beat as a 봉독 backing rhythm.
-  const playMoktak = useCallback(() => {
-    let ctx = audioCtxRef.current
-    if (!ctx) { const AC = (window as unknown as { AudioContext: typeof AudioContext; webkitAudioContext: typeof AudioContext }); ctx = audioCtxRef.current = new (AC.AudioContext || AC.webkitAudioContext)() }
-    if (ctx.state === 'suspended') ctx.resume()
-    const now = ctx.currentTime
-    // woody tonal body: quick pitch drop + bandpass for the hollow "tok"
-    const osc = ctx.createOscillator()
-    osc.type = 'triangle'
-    osc.frequency.setValueAtTime(920, now)
-    osc.frequency.exponentialRampToValueAtTime(560, now + 0.06)
-    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1100; bp.Q.value = 3
-    const g = ctx.createGain()
-    g.gain.setValueAtTime(0.0001, now)
-    g.gain.exponentialRampToValueAtTime(0.4, now + 0.004)
-    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.11)
-    osc.connect(bp).connect(g).connect(ctx.destination)
-    osc.start(now); osc.stop(now + 0.13)
-    // attack "knock" transient: a tiny high-passed noise burst
-    const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.02), ctx.sampleRate)
-    const d = buf.getChannelData(0)
-    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length)
-    const noise = ctx.createBufferSource(); noise.buffer = buf
-    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1500
-    const ng = ctx.createGain(); ng.gain.value = 0.22
-    noise.connect(hp).connect(ng).connect(ctx.destination)
-    noise.start(now); noise.stop(now + 0.02)
-  }, [])
-
-  // Run the 목탁 beat while playing, at the chosen interval. Tied to playback so it
-  // stops on pause / sleep-timer / scroll-pause along with the recitation.
-  useEffect(() => {
-    if (!playing || moktakMs === 0) return
-    playMoktak()
-    const id = window.setInterval(playMoktak, moktakMs)
-    return () => window.clearInterval(id)
-  }, [playing, moktakMs, playMoktak])
-  useEffect(() => () => { audioCtxRef.current?.close?.() }, [])
 
   const speakFrom = useCallback((startIdx: number) => {
     if (typeof window === 'undefined') return
@@ -424,14 +381,6 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
                   <option value="off">{t('cs_voice_off')}</option>
                   {voices.length === 0 && <option value="">{t('cs_voice_default')}</option>}
                   {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{genderHint(v)}{v.name}</option>)}
-                </select>
-              </label>
-              <label className="flex items-center gap-2 whitespace-nowrap">🪵 {t('cs_moktak')}
-                <select value={moktakMs} onChange={(e) => setMoktakMs(Number(e.target.value))} className={`${wideSelCls} w-16`}>
-                  <option value={0}>{t('cs_loop_off')}</option>
-                  <option value={900}>{t('cs_slow')}</option>
-                  <option value={600}>{t('cs_mid')}</option>
-                  <option value={400}>{t('cs_fast')}</option>
                 </select>
               </label>
               <label className="flex items-center gap-2 whitespace-nowrap">{t('cs_loop')}
