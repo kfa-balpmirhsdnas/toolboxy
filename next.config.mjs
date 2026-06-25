@@ -60,6 +60,39 @@ const nextConfig = {
       ['string-padding-tool', 'text-padder'],
       ['morse-code-converter', 'morse-code-translator'],
       ['text-to-morse-code', 'morse-code-translator'],
+      // dev batch
+      ['cron-expression-builder', 'cron-expression-generator'],
+      ['cron-expression-parser', 'cron-parser'],
+      ['unix-timestamp-converter', 'unix-timestamp'],
+      ['epoch-timestamp-converter', 'unix-timestamp'],
+      ['epoch-converter', 'unix-timestamp'],
+      ['text-to-binary', 'binary-text-converter'],
+      ['binary-to-text', 'binary-text-converter'],
+      ['json-diff-checker', 'json-diff'],
+      ['html-entities-encoder', 'html-entity-encoder'],
+      ['html-entity-converter', 'html-entity-encoder'],
+      ['json-beautifier', 'json-formatter'],
+      // design batch
+      ['gradient-generator', 'css-gradient-generator'],
+      ['color-gradient-generator', 'css-gradient-generator'],
+      ['css-border-radius-generator', 'border-radius-generator'],
+      ['color-codes-converter', 'color-converter'],
+      ['css-flexbox-generator', 'css-flexbox-playground'],
+      // security batch
+      ['password-generator-pro', 'password-generator'],
+      ['text-encrypt-decrypt', 'text-encryption'],
+      ['text-encryptor', 'text-encryption'],
+      ['sha-hash-generator', 'hash-generator'],
+      ['passphrase-strength', 'password-strength-checker'],
+      // utility batch
+      ['stopwatch-timer', 'stopwatch'],
+      ['time-zone-converter', 'timezone-converter'],
+      ['speed-distance-time-calculator', 'speed-calculator'],
+      ['date-difference-calculator', 'date-calculator'],
+      ['number-converter', 'number-base-converter'],
+      // image batch
+      ['image-base64-converter', 'image-to-base64'],
+      ['base64-image-encoder', 'image-to-base64'],
     ]
     return DEDUPES.map(([from, to]) => ({
       source: `/:lang/tools/${from}`,
