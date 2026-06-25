@@ -33,8 +33,8 @@ export async function GET(req: NextRequest) {
 
     const snap = await scoresRef(game).orderBy('score', cfg.order).limit(limit).get()
     const top = snap.docs.map((d) => {
-      const v = d.data() as { name?: string; score?: number }
-      return { name: v.name ?? 'Anonymous', score: v.score ?? 0 }
+      const v = d.data() as { name?: string; score?: number; country?: string }
+      return { name: v.name ?? 'Anonymous', score: v.score ?? 0, country: v.country ?? '' }
     })
     return NextResponse.json({ top })
   } catch (err) {
@@ -68,11 +68,14 @@ export async function POST(req: NextRequest) {
     }
 
     const displayName = clean(name ?? '')
+    // Coarse country (ISO-2) from Vercel's edge geo header — no user input needed.
+    const ipc = (req.headers.get('x-vercel-ip-country') || '').toUpperCase()
+    const country = /^[A-Z]{2}$/.test(ipc) && ipc !== 'XX' ? ipc : ''
     const ref = scoresRef(game)
-    await ref.add({ name: displayName, score, uid, createdAt: FieldValue.serverTimestamp() })
+    await ref.add({ name: displayName, score, uid, country, createdAt: FieldValue.serverTimestamp() })
     // Also keep a per-user record so the player can see their history.
     await adminDb.collection('users').doc(uid).collection('gameRecords').add({
-      game, score, name: displayName, createdAt: FieldValue.serverTimestamp(),
+      game, score, name: displayName, country, createdAt: FieldValue.serverTimestamp(),
     })
 
     // Rank = (# of strictly better scores) + 1

@@ -10,9 +10,14 @@ import { auth } from '@/lib/firebase/client'
 interface Entry {
   name: string
   score: number
+  country?: string
 }
 
 const LOCALES = ['en', 'ja', 'ko']
+
+// ISO-3166 alpha-2 -> regional-indicator flag emoji (🇰🇷). Empty when unknown.
+const flagOf = (cc?: string) =>
+  cc && /^[A-Z]{2}$/.test(cc) ? cc.replace(/./g, (c) => String.fromCodePoint(127397 + c.charCodeAt(0))) : ''
 
 /**
  * Opt-in leaderboard for score-based games. Shows the top scores and, when a
@@ -118,7 +123,10 @@ export default function Leaderboard({
           top.map((e, i) => (
             <div key={i} className={`flex items-center gap-3 px-4 py-2.5 text-sm ${i === 0 ? 'bg-amber-50' : ''}`}>
               <span className={`w-6 font-bold ${i === 0 ? 'text-amber-500' : 'text-gray-400'}`}>{i + 1}</span>
-              <span className="flex-1 truncate text-gray-800">{e.name}</span>
+              <span className="flex-1 truncate text-gray-800">
+                {e.country && <span className="mr-1.5" title={e.country}>{flagOf(e.country)}</span>}
+                {e.name}
+              </span>
               <span className="font-semibold text-gray-900">{e.score}{unit}</span>
             </div>
           ))
