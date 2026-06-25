@@ -40,6 +40,9 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
   // no per-line 한자 and no 해석, and is a single section).
   const hasHanja = useMemo(() => LINES.some((l) => !!l.hanja), [LINES])
   const hasTrans = useMemo(() => LINES.some((l) => !!(isJa && l.translationJa ? l.translationJa : l.translation)), [LINES, isJa])
+  // When 독음 is the only field (e.g. the dharani), don't let it be toggled off —
+  // that would leave the line empty. Hide its checkbox and always render it.
+  const readingOnly = !hasHanja && !hasTrans
   const showTocBar = SECTIONS.length > 1
 
   // Namespaced by locale: each installed app (/ko, /ja) keeps its own favorites,
@@ -395,7 +398,7 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
             </div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
               {hasHanja && <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showHanja} onChange={(e) => setShowHanja(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_hanja')}</label>}
-              <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showReading} onChange={(e) => setShowReading(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_reading')}</label>
+              {!readingOnly && <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showReading} onChange={(e) => setShowReading(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_reading')}</label>}
               {hasTrans && <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showTrans} onChange={(e) => setShowTrans(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_translation')}</label>}
               <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={karaoke} onChange={(e) => setKaraoke(e.target.checked)} className="w-4 h-4 accent-brand-600" />{t('cs_karaoke')}</label>
             </div>
@@ -425,7 +428,7 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
                         <button onClick={(e) => { e.stopPropagation(); toggleFav(l.order) }} aria-label={t('cs_fav')}
                           className={`absolute top-[0.5em] right-[0.3em] text-[1.35em] leading-none ${fav ? 'text-amber-400' : c('text-gray-300 hover:text-amber-400', 'text-gray-600 hover:text-amber-400')}`}>{fav ? '★' : '☆'}</button>
                         {showHanja && l.hanja && <p className={`text-[0.9em] leading-relaxed ${c('text-gray-400', 'text-gray-500')}`}>{l.hanja}</p>}
-                        {showReading && <p className={`text-[1.05em] font-medium leading-relaxed ${c('text-gray-900', 'text-gray-100')}`}>{
+                        {(showReading || readingOnly) && <p className={`text-[1.05em] font-medium leading-relaxed ${c('text-gray-900', 'text-gray-100')}`}>{
                           karaoke && curOrder === l.order
                             ? <>{<span className="text-rose-500 font-semibold">{readingOf(l).slice(0, readChars)}</span>}{readingOf(l).slice(readChars)}</>
                             : readingOf(l)
