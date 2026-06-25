@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('sliding-puzzle')!
@@ -19,10 +20,16 @@ export default function SlidingPuzzlePage({ params }: { params: { lang: string }
   const t = useTranslations('toolui')
   const [board, setBoard] = useState<number[]>(SOLVED)
   const [moves, setMoves] = useState(0)
+  const [best, setBest] = useState<number | null>(null)
   const reset = useCallback(() => { setBoard(shuffled()); setMoves(0) }, [])
   useEffect(() => { reset() }, [reset])
+  useEffect(() => { const v = localStorage.getItem('sliding-best'); if (v) setBest(+v) }, [])
 
   const solved = board.every((v, i) => v === SOLVED[i])
+  useEffect(() => {
+    if (!solved || moves === 0) return
+    setBest((b) => { const nb = b == null || moves < b ? moves : b; localStorage.setItem('sliding-best', String(nb)); return nb })
+  }, [solved]) // eslint-disable-line react-hooks/exhaustive-deps
   function click(i: number) {
     const z = board.indexOf(0)
     if (!adj(i, z)) return
@@ -37,7 +44,7 @@ export default function SlidingPuzzlePage({ params }: { params: { lang: string }
           <p className="text-gray-500 text-sm mt-1">{t('sp2_subtitle')}</p>
         </div>
 
-        <div className="text-sm text-gray-600">{t('sp2_moves')}: <b>{moves}</b></div>
+        <div className="text-sm text-gray-600">{t('sp2_moves')}: <b>{moves}</b>{best != null ? ` · ${t('lb_best')} ${best}` : ''}</div>
 
         <div className="grid grid-cols-4 gap-1.5 mx-auto" style={{ width: 280, height: 280 }}>
           {board.map((v, i) => (
@@ -49,6 +56,7 @@ export default function SlidingPuzzlePage({ params }: { params: { lang: string }
         {solved && moves > 0 && <div className="rounded-xl bg-emerald-50 text-emerald-700 py-3 font-semibold">{t('sp2_done', { moves })}</div>}
         <button onClick={reset} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('sp2_new')}</button>
       </div>
+      <Leaderboard game="sliding-puzzle" score={best} better="lower" />
     </ToolLayout>
   )
 }

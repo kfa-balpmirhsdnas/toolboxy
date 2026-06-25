@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('memory-game')!
@@ -22,13 +23,25 @@ export default function MemoryGamePage({ params }: { params: { lang: string } })
   const [moves, setMoves] = useState(0)
   const [time, setTime] = useState(0)
   const [running, setRunning] = useState(false)
+  const [best, setBest] = useState<Record<number, number>>({})
 
   const reset = useCallback((p: number) => { setCards(deal(p)); setOpen([]); setMoves(0); setTime(0); setRunning(false) }, [])
   useEffect(() => { reset(pairs) }, [pairs, reset])
   useEffect(() => { if (!running) return; const id = setInterval(() => setTime((t) => t + 1), 1000); return () => clearInterval(id) }, [running])
+  useEffect(() => { try { setBest(JSON.parse(localStorage.getItem('memory-best') || '{}')) } catch { /* ignore */ } }, [])
 
   const won = cards.length > 0 && cards.every((c) => c.matched)
   useEffect(() => { if (won) setRunning(false) }, [won])
+  useEffect(() => {
+    if (!won) return
+    setBest((b) => {
+      const cur = b[pairs]
+      if (cur != null && cur <= moves) return b
+      const nb = { ...b, [pairs]: moves }
+      localStorage.setItem('memory-best', JSON.stringify(nb))
+      return nb
+    })
+  }, [won]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function flip(idx: number) {
     if (open.length === 2 || cards[idx].flipped || cards[idx].matched) return
@@ -55,7 +68,7 @@ export default function MemoryGamePage({ params }: { params: { lang: string } })
         <div className="flex items-center justify-center gap-2 text-sm">
           {[6, 8, 10].map((p) => <button key={p} onClick={() => setPairs(p)} className={`px-3 py-1 rounded-full border ${pairs === p ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{p * 2}{t('mg2_cards')}</button>)}
         </div>
-        <div className="flex justify-center gap-6 text-sm text-gray-600"><span>{t('mg2_moves')}: <b>{moves}</b></span><span>{t('mg2_time')}: <b>{time}s</b></span></div>
+        <div className="flex justify-center gap-6 text-sm text-gray-600"><span>{t('mg2_moves')}: <b>{moves}</b></span><span>{t('mg2_time')}: <b>{time}s</b></span>{best[pairs] != null && <span>{t('lb_best')}: <b>{best[pairs]}</b></span>}</div>
 
         <div className={`grid gap-2 ${pairs <= 6 ? 'grid-cols-4' : 'grid-cols-4'}`}>
           {cards.map((c, i) => (
@@ -69,6 +82,7 @@ export default function MemoryGamePage({ params }: { params: { lang: string } })
         {won && <div className="rounded-xl bg-emerald-50 text-emerald-700 py-3 font-semibold">{t('mg2_won', { moves, time })}</div>}
         <button onClick={() => reset(pairs)} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('mg2_new')}</button>
       </div>
+      <Leaderboard game={`memory-${pairs}`} score={best[pairs] ?? null} better="lower" />
     </ToolLayout>
   )
 }

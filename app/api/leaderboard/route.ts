@@ -13,6 +13,13 @@ const GAMES: Record<string, { order: 'asc' | 'desc'; min: number; max: number }>
   'minesweeper-easy': { order: 'asc', min: 1, max: 3600 },
   'minesweeper-medium': { order: 'asc', min: 1, max: 3600 },
   'minesweeper-hard': { order: 'asc', min: 1, max: 3600 },
+  'sudoku-easy': { order: 'asc', min: 10, max: 3600 },
+  'sudoku-medium': { order: 'asc', min: 10, max: 3600 },
+  'sudoku-hard': { order: 'asc', min: 10, max: 3600 },
+  'sliding-puzzle': { order: 'asc', min: 1, max: 100000 },
+  'memory-6': { order: 'asc', min: 6, max: 1000 },
+  'memory-8': { order: 'asc', min: 8, max: 1000 },
+  'memory-10': { order: 'asc', min: 10, max: 1000 },
 }
 
 function clean(name: string): string {

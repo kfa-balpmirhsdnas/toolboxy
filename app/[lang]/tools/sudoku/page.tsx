@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('sudoku')!
@@ -47,16 +48,35 @@ export default function SudokuPage({ params }: { params: { lang: string } }) {
   const [grid, setGrid] = useState<number[]>([])
   const [given, setGiven] = useState<boolean[]>([])
   const [sel, setSel] = useState(-1)
+  const [time, setTime] = useState(0)
+  const [best, setBest] = useState<Record<string, number>>({})
 
   const make = useCallback((d: string) => {
     const { puzzle } = generate(GIVENS[d])
-    setDiff(d); setPuzzle(puzzle); setGrid([...puzzle]); setGiven(puzzle.map((v) => v !== 0)); setSel(-1)
+    setDiff(d); setPuzzle(puzzle); setGrid([...puzzle]); setGiven(puzzle.map((v) => v !== 0)); setSel(-1); setTime(0)
   }, [])
   useEffect(() => { make('sd_easy') }, [make])
+  useEffect(() => { try { setBest(JSON.parse(localStorage.getItem('sudoku-best') || '{}')) } catch { /* ignore */ } }, [])
 
   function put(v: number) { if (sel < 0 || given[sel]) return; setGrid((g) => g.map((x, i) => (i === sel ? v : x))) }
   const conflict = (i: number) => { const v = grid[i]; if (!v) return false; return [...Array(9)].some((_, k) => (k !== i % 9 && grid[Math.floor(i / 9) * 9 + k] === v) || (k !== Math.floor(i / 9) && grid[k * 9 + (i % 9)] === v)) }
   const solved = grid.length === 81 && grid.every((v, i) => v !== 0 && !conflict(i))
+
+  useEffect(() => {
+    if (grid.length !== 81 || solved) return
+    const id = setInterval(() => setTime((t) => t + 0.1), 100)
+    return () => clearInterval(id)
+  }, [grid.length, solved])
+  useEffect(() => {
+    if (!solved) return
+    setBest((b) => {
+      const cur = b[diff]
+      if (cur != null && cur <= time) return b
+      const nb = { ...b, [diff]: time }
+      localStorage.setItem('sudoku-best', JSON.stringify(nb))
+      return nb
+    })
+  }, [solved]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -69,6 +89,7 @@ export default function SudokuPage({ params }: { params: { lang: string } }) {
         <div className="flex justify-center gap-2 text-sm">
           {Object.keys(GIVENS).map((d) => <button key={d} onClick={() => make(d)} className={`px-3 py-1 rounded-full border ${diff === d ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{t(d)}</button>)}
         </div>
+        <div className="text-sm text-gray-600">⏱ {time.toFixed(1)}s{best[diff] != null ? ` · ${t('lb_best')} ${best[diff].toFixed(1)}s` : ''}</div>
 
         <div className="grid grid-cols-9 mx-auto w-fit border-2 border-gray-800">
           {grid.map((v, i) => {
@@ -91,6 +112,7 @@ export default function SudokuPage({ params }: { params: { lang: string } }) {
         </div>
         <button onClick={() => make(diff)} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('sd_new')}</button>
       </div>
+      <Leaderboard game={`sudoku-${diff.replace('sd_', '')}`} score={best[diff] != null ? Math.round(best[diff] * 10) / 10 : null} unit=" s" better="lower" />
     </ToolLayout>
   )
 }
