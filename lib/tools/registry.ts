@@ -1,4 +1,4 @@
-export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science'
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science' | 'time'
 export type Phase = 1 | 2 | 3
 
 export interface ToolMeta {
@@ -168,7 +168,12 @@ export const TOOLS: ToolMeta[] = [
   {slug:'date-calculator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['date','calculator','difference','days','duration'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-to-slug',category:'seo',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['slug','url','text','convert','seo'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'number-formatter',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['number','format','thousand','locale','separator'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'countdown-timer',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['countdown','timer','alarm','event','date'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'countdown-timer',category:'time',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['countdown','timer','alarm','event','date'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'online-alarm',category:'time',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['온라인 알람','알람 맞추기','online alarm','alarm clock','set alarm'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'dday-calculator',category:'time',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['디데이','디데이 계산기','d-day calculator','days until','남은 날짜'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'man-age-calculator',category:'time',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['만 나이','만 나이 계산기','korean age','만나이 계산','age in korea'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'world-clock',category:'time',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['세계 시계','월드클락','world clock','time zones','도시 시간'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'metronome',category:'time',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['메트로놈','온라인 메트로놈','metronome','bpm','tempo'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'roman-numeral-converter',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['roman','numeral','convert','number','latin'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'morse-code-translator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['morse','code','translate','audio','signal'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'pixel-to-rem-converter',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['pixel to rem converter','pixel to rem'],maxFileSizeMB:{free:0,pro:0} },
@@ -183,9 +188,9 @@ export const TOOLS: ToolMeta[] = [
   {slug:'bmi-calculator',category:'health',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['bmi','body','mass','index','health'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'speed-converter',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['speed converter'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'calorie-calculator',category:'health',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['calorie','tdee','bmr','diet','health'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'pomodoro-timer',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['pomodoro','timer','focus','work','productivity'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'pomodoro-timer',category:'time',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['pomodoro','timer','focus','work','productivity'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'binary-text-converter',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['binary text converter','binary text'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'stopwatch',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['stopwatch','timer','lap','clock','measure'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'stopwatch',category:'time',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['stopwatch','timer','lap','clock','measure'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'fraction-calculator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['fraction calculator'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'fuel-economy-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['fuel economy','mpg calculator','gas mileage','fuel cost','연비 계산'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'zodiac-sign',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['zodiac sign'],maxFileSizeMB:{free:0,pro:0} },
@@ -414,4 +419,5 @@ export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; 
   classics:  { label: 'Classics',  icon: String.fromCodePoint(0x1F4DC), color: 'amber'  },
   random:    { label: 'Random',    icon: String.fromCodePoint(0x1F3B2), color: 'violet' },
   science:   { label: 'Science',   icon: String.fromCodePoint(0x1F9EA), color: 'teal'   },
+  time:      { label: 'Time',      icon: String.fromCodePoint(0x23F0), color: 'sky'    },
 };
