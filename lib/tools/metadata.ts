@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { TOOLS } from './registry'
+import { TOOLS, APP_LOCALES } from './registry'
 
 const BASE = 'https://www.toolboxy.net'
 const LANGS = ['en', 'ja', 'ko'] as const
@@ -85,8 +85,12 @@ export async function buildToolMetadata(slug: string, lang: string): Promise<Met
   // Android's WebAPK minting fail (it can't rasterise the text), so it falls back
   // to a Chrome shortcut and separate installs break. Distinct icons come back as
   // pre-rendered PNGs later.
-  const manifest =
-    `/api/manifest?start=${encodeURIComponent(`/${safeLang}/tools/${slug}`)}&name=${encodeURIComponent(name)}`
+  // Don't offer install where the app isn't ready in this locale (e.g. /en
+  // cheonsugyeong) — omit the manifest so the browser can't install it either.
+  const appLocs = APP_LOCALES[slug]
+  const manifest = appLocs && !appLocs.includes(safeLang)
+    ? undefined
+    : `/api/manifest?start=${encodeURIComponent(`/${safeLang}/tools/${slug}`)}&name=${encodeURIComponent(name)}`
 
   return {
     title: { absolute: title },

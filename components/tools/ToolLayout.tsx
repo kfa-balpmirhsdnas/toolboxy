@@ -80,14 +80,14 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
           <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
           {isToolNew(tool) && <span className="badge-new">New</span>}
           {tool.isPro && <span className="badge-pro">Pro</span>}
-          {isAppTool(tool) && <span className="badge-app">App</span>}
+          {isAppTool(tool, lang) && <span className="badge-app">App</span>}
         </div>
         <p className="text-gray-500 text-sm">
           {tags.slice(0, 5).join(' · ')}
         </p>
         {/* App-install is an explicit per-tool decision: only show it once a tool
             is added to APP_TOOLS (after its feature set is settled). */}
-        {isAppTool(tool) && <div className="mt-3"><InstallButton /></div>}
+        {isAppTool(tool, lang) && <div className="mt-3"><InstallButton /></div>}
       </div>
 
       {/* Usage limit banner (logged-in users only, near/at limit) */}

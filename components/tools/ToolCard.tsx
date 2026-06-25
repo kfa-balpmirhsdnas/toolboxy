@@ -50,7 +50,7 @@ export default function ToolCard({ tool, lang }: ToolCardProps) {
             </h3>
             {isToolNew(tool) && <span className="badge-new">New</span>}
             {tool.isPro && <span className="badge-pro">Pro</span>}
-            {isAppTool(tool) && <span className="badge-app">App</span>}
+            {isAppTool(tool, lang) && <span className="badge-app">App</span>}
           </div>
           <p className="text-xs text-gray-500 mt-1 truncate">
             {tags.slice(0, 3).join(' · ')}

@@ -50,8 +50,16 @@ export const SINGLE_APP_TOOLS = new Set([
   'elementary-japanese-words', 'elementary-english-words', 'white-noise-machine', 'cheonsugyeong',
 ])
 export const APP_TOOLS = new Set([...DICT_APP_TOOLS, ...SINGLE_APP_TOOLS])
-export function isAppTool(tool: ToolMeta): boolean {
-  return APP_TOOLS.has(tool.slug)
+// Tools whose installable-app experience is only ready in some locales (others
+// fall back to "not an app" until that locale's content is built). Tools not
+// listed here are app-ready in every locale.
+export const APP_LOCALES: Record<string, readonly string[]> = {
+  cheonsugyeong: ['ko', 'ja'], // English recitation/meaning not built yet
+}
+export function isAppTool(tool: ToolMeta, lang?: string): boolean {
+  if (!APP_TOOLS.has(tool.slug)) return false
+  const locs = APP_LOCALES[tool.slug]
+  return !locs || !lang || locs.includes(lang)
 }
 
 export const TOOLS: ToolMeta[] = [
