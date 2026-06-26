@@ -2600,6 +2600,16 @@
       "비밀번호를 입력하세요.",
       "강도와 충족 조건을 확인하세요.",
       "해독 예상 시간도 볼 수 있어요."
+    ],
+    "aspect-ratio-calculator": [
+      "모드(크기로/비율로)를 고르세요.",
+      "값을 입력하세요.",
+      "화면비와 일반 크기를 확인하세요."
+    ],
+    "file-size-converter": [
+      "값과 단위를 입력하세요.",
+      "10진법·2진법 단위로 변환된 결과를 확인하세요.",
+      "참고 크기로 빠르게 비교하세요."
     ]
   },
   "games": {
@@ -3549,7 +3559,40 @@
     "ps_crack_days": "일",
     "ps_crack_months": "개월",
     "ps_crack_years": "년",
-    "ps_crack_cent": "수백 년"
+    "ps_crack_cent": "수백 년",
+    "ui_example": "예시 불러오기",
+    "ui_chars": "자",
+    "ui_output_ph": "결과가 여기에 표시됩니다...",
+    "ui_width": "너비",
+    "ui_height": "높이",
+    "hts_title": "HTML 태그 제거기",
+    "hts_subtitle": "HTML에서 모든 태그를 제거해 깨끗한 일반 텍스트를 추출합니다.",
+    "hts_keepbreaks": "줄바꿈 유지 (br, p, div)",
+    "hts_decode": "HTML 엔티티 디코딩",
+    "hts_input": "HTML 입력",
+    "hts_output": "일반 텍스트 출력",
+    "hts_ph": "여기에 HTML을 붙여넣으세요...",
+    "hts_s_html": "HTML 글자",
+    "hts_s_plain": "일반 글자",
+    "hts_s_reduction": "감소율",
+    "ar_from_dim": "크기로",
+    "ar_from_ratio": "비율로",
+    "ar_ratw": "비율 W",
+    "ar_rath": "비율 H",
+    "ar_lockw": "너비 고정 (px)",
+    "ar_aspect": "화면비",
+    "ar_common": "이 비율의 일반 크기",
+    "ar_wide": "너비",
+    "fs_decimal": "10진법 (SI)",
+    "fs_binary": "2진법 (IEC)",
+    "fs_refs": "참고 크기",
+    "fs_r_floppy": "플로피 디스크",
+    "fs_r_cd": "CD-ROM",
+    "fs_r_dvd": "DVD",
+    "fs_r_bluray": "블루레이",
+    "fs_r_photo": "사진(JPEG)",
+    "fs_r_mp3": "MP3 노래",
+    "fs_r_4k": "4K 영화"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

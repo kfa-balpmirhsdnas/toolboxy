@@ -2567,6 +2567,16 @@
       "パスワードを入力します。",
       "強度と満たした条件を確認します。",
       "解読の推定時間も見られます。"
+    ],
+    "aspect-ratio-calculator": [
+      "モード（サイズから／比率から）を選びます。",
+      "値を入力します。",
+      "アスペクト比と一般的なサイズを確認します。"
+    ],
+    "file-size-converter": [
+      "値と単位を入力します。",
+      "10進法・2進法の単位での結果を確認します。",
+      "参考サイズで素早く比較します。"
     ]
   },
   "games": {
@@ -3516,7 +3526,40 @@
     "ps_crack_days": "日",
     "ps_crack_months": "ヶ月",
     "ps_crack_years": "年",
-    "ps_crack_cent": "数百年"
+    "ps_crack_cent": "数百年",
+    "ui_example": "例を読み込む",
+    "ui_chars": "文字",
+    "ui_output_ph": "結果がここに表示されます...",
+    "ui_width": "幅",
+    "ui_height": "高さ",
+    "hts_title": "HTMLタグ除去",
+    "hts_subtitle": "HTMLからすべてのタグを除去し、きれいなプレーンテキストを抽出します。",
+    "hts_keepbreaks": "改行を保持 (br, p, div)",
+    "hts_decode": "HTMLエンティティをデコード",
+    "hts_input": "HTML入力",
+    "hts_output": "プレーンテキスト出力",
+    "hts_ph": "ここにHTMLを貼り付け...",
+    "hts_s_html": "HTML文字",
+    "hts_s_plain": "プレーン文字",
+    "hts_s_reduction": "削減率",
+    "ar_from_dim": "サイズから",
+    "ar_from_ratio": "比率から",
+    "ar_ratw": "比率 W",
+    "ar_rath": "比率 H",
+    "ar_lockw": "幅を固定 (px)",
+    "ar_aspect": "アスペクト比",
+    "ar_common": "この比率の一般的なサイズ",
+    "ar_wide": "幅",
+    "fs_decimal": "10進法 (SI)",
+    "fs_binary": "2進法 (IEC)",
+    "fs_refs": "参考サイズ",
+    "fs_r_floppy": "フロッピー",
+    "fs_r_cd": "CD-ROM",
+    "fs_r_dvd": "DVD",
+    "fs_r_bluray": "ブルーレイ",
+    "fs_r_photo": "写真(JPEG)",
+    "fs_r_mp3": "MP3曲",
+    "fs_r_4k": "4K映画"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

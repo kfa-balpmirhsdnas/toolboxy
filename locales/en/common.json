@@ -2262,6 +2262,16 @@
       "Type a password.",
       "See its strength and which rules it meets.",
       "Check the estimated time to crack it."
+    ],
+    "aspect-ratio-calculator": [
+      "Choose a mode (from dimensions or ratio).",
+      "Enter your values.",
+      "See the aspect ratio and common sizes."
+    ],
+    "file-size-converter": [
+      "Enter a value and unit.",
+      "See the result in decimal and binary units.",
+      "Use reference sizes for a quick compare."
     ]
   },
   "games": {
@@ -3211,7 +3221,40 @@
     "ps_crack_days": " days",
     "ps_crack_months": " months",
     "ps_crack_years": " years",
-    "ps_crack_cent": "Centuries"
+    "ps_crack_cent": "Centuries",
+    "ui_example": "Load Example",
+    "ui_chars": "chars",
+    "ui_output_ph": "Output will appear here...",
+    "ui_width": "Width",
+    "ui_height": "Height",
+    "hts_title": "HTML Tag Stripper",
+    "hts_subtitle": "Remove all HTML tags from text. Extract clean plain text from HTML.",
+    "hts_keepbreaks": "Preserve line breaks (br, p, div)",
+    "hts_decode": "Decode HTML entities",
+    "hts_input": "HTML Input",
+    "hts_output": "Plain Text Output",
+    "hts_ph": "Paste HTML here...",
+    "hts_s_html": "HTML chars",
+    "hts_s_plain": "Plain chars",
+    "hts_s_reduction": "Reduction",
+    "ar_from_dim": "From dimensions",
+    "ar_from_ratio": "From ratio",
+    "ar_ratw": "Ratio W",
+    "ar_rath": "Ratio H",
+    "ar_lockw": "Lock width to (px)",
+    "ar_aspect": "Aspect ratio",
+    "ar_common": "Common sizes at this ratio",
+    "ar_wide": "wide",
+    "fs_decimal": "Decimal (SI)",
+    "fs_binary": "Binary (IEC)",
+    "fs_refs": "Common reference sizes",
+    "fs_r_floppy": "Floppy disk",
+    "fs_r_cd": "CD-ROM",
+    "fs_r_dvd": "DVD",
+    "fs_r_bluray": "Blu-ray",
+    "fs_r_photo": "Photo (JPEG)",
+    "fs_r_mp3": "MP3 song",
+    "fs_r_4k": "4K movie"
   },
   "toolTags": {
     "spinner-wheel": [
