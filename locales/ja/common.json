@@ -2627,6 +2627,21 @@
       "色覚タイプを選びます。",
       "色を選ぶと元の色とシミュレーションを比較します。",
       "パレットで複数の色の変化を確認します。"
+    ],
+    "ip-address-lookup": [
+      "IPを入力するか「自分のIPアドレス」を押します。",
+      "検索すると位置・ISP情報が表示されます。",
+      "地図で位置を確認できます。"
+    ],
+    "subnet-calculator": [
+      "IPアドレスを入力します。",
+      "CIDR（/24など）を選びます。",
+      "ネットワーク・ブロードキャスト・ホスト範囲を確認します。"
+    ],
+    "regex-tester": [
+      "正規表現パターンとフラグを入力します。",
+      "テスト文字列を入れると一致がハイライトされます。",
+      "プリセットでよく使うパターンを適用します。"
     ]
   },
   "games": {
@@ -3702,7 +3717,40 @@
     "cb_tritanopia": "青色弱 (Tritanopia)",
     "cb_tritanopia_d": "青が見えにくい（まれ、0.001%）",
     "cb_achromatopsia": "全色盲 (Achromatopsia)",
-    "cb_achromatopsia_d": "完全な色覚異常（非常にまれ）"
+    "cb_achromatopsia_d": "完全な色覚異常（非常にまれ）",
+    "ipl_ph": "IPアドレスを入力 (例: 8.8.8.8)",
+    "ipl_lookup": "検索",
+    "ipl_myip": "自分のIPアドレス",
+    "ui_loading": "読み込み中...",
+    "ipl_notfound": "見つかりません",
+    "ipl_failed": "リクエスト失敗",
+    "ipl_f_ip": "IPアドレス",
+    "ipl_f_city": "都市",
+    "ipl_f_region": "地域",
+    "ipl_f_country": "国",
+    "ipl_f_postal": "郵便番号",
+    "ipl_f_lat": "緯度",
+    "ipl_f_lon": "経度",
+    "ipl_f_org": "ISP / 組織",
+    "ipl_f_tz": "タイムゾーン",
+    "ipl_map": "地図で見る",
+    "ipl_credit": "データ提供: ipapi.co",
+    "sn_invalid": "無効なIP",
+    "sn_mask": "サブネットマスク",
+    "sn_network": "ネットワークアドレス",
+    "sn_broadcast": "ブロードキャストアドレス",
+    "sn_first": "最初のホスト",
+    "sn_last": "最後のホスト",
+    "sn_hosts": "利用可能ホスト",
+    "sn_class": "IPクラス",
+    "sn_type": "IPタイプ",
+    "sn_private": "プライベート",
+    "sn_public": "パブリック",
+    "rx_pattern": "パターン",
+    "rx_test": "テスト文字列",
+    "rx_highlight": "一致をハイライト",
+    "rx_matches": "件一致",
+    "rx_more": "件"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

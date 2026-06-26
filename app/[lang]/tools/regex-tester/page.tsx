@@ -1,10 +1,12 @@
 'use client'
 import { useState, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('regex-tester')!
 const PRESETS=[{label:'Email',pattern:'[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}',flags:'g'},{label:'URL',pattern:'https?:\/\/[^\\s]+',flags:'g'},{label:'IPv4',pattern:'\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b',flags:'g'},{label:'Phone',pattern:'[+]?[(]?\\d{3}[)]?[-\\s.]?\\d{3}[-\\s.]?\\d{4}',flags:'g'},{label:'Date (YYYY-MM-DD)',pattern:'\\d{4}-\\d{2}-\\d{2}',flags:'g'},{label:'Hex color',pattern:'#[0-9a-fA-F]{3,6}\\b',flags:'g'},{label:'HTML tags',pattern:'<[^>]+>',flags:'g'},{label:'Numbers',pattern:'\\d+\\.?\\d*',flags:'g'}]
 export default function RegexTesterPage() {
+  const t = useTranslations('toolui')
   const [pattern,setPattern]=useState('[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}')
   const [flags,setFlags]=useState('g')
   const [text,setText]=useState('Contact us at hello@example.com or support@toolboxy.net for assistance. Invalid: not-an-email, also@, @nodomain')
@@ -42,7 +44,7 @@ export default function RegexTesterPage() {
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Pattern</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('rx_pattern')}</label>
           <div className="flex gap-2">
             <div className={'flex-1 flex items-center rounded-xl border px-3 '+(result.error?'border-red-300':'border-gray-300')}>
               <span className="text-gray-400 font-mono mr-1">/</span>
@@ -68,24 +70,24 @@ export default function RegexTesterPage() {
           ))}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Test string</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('rx_test')}</label>
           <textarea value={text} onChange={e=>setText(e.target.value)} rows={4}
             className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-sm resize-none focus:outline-none focus:border-blue-400"/>
         </div>
         <div className="bg-amber-50 rounded-xl p-3 border border-amber-200">
-          <p className="text-xs font-medium text-amber-700 mb-2">Matches highlighted</p>
+          <p className="text-xs font-medium text-amber-700 mb-2">{t('rx_highlight')}</p>
           <p className="font-mono text-sm leading-relaxed" dangerouslySetInnerHTML={{__html:highlight()}}/>
         </div>
         <div className="flex items-center gap-3">
           <div className={'px-4 py-2 rounded-lg text-sm font-bold '+(result.count>0?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500')}>
-            {result.count} match{result.count!==1?'es':''}
+            {result.count} {t('rx_matches')}
           </div>
           {result.matches.length>0&&(
             <div className="flex flex-wrap gap-1.5">
               {result.matches.slice(0,8).map((m,i)=>(
                 <span key={i} className="px-2 py-0.5 bg-yellow-100 rounded font-mono text-xs text-yellow-800">"{m.match}"</span>
               ))}
-              {result.matches.length>8&&<span className="text-xs text-gray-400">+{result.matches.length-8} more</span>}
+              {result.matches.length>8&&<span className="text-xs text-gray-400">+{result.matches.length-8} {t('rx_more')}</span>}
             </div>
           )}
         </div>

@@ -2322,6 +2322,21 @@
       "Choose a color-vision type.",
       "Pick a color to compare original vs simulated.",
       "Use the palette to see how many colors shift."
+    ],
+    "ip-address-lookup": [
+      "Enter an IP or tap 'My IP Address'.",
+      "Press Lookup to see location and ISP info.",
+      "Open the map to view the location."
+    ],
+    "subnet-calculator": [
+      "Enter an IP address.",
+      "Choose a CIDR prefix (e.g. /24).",
+      "See the network, broadcast and host range."
+    ],
+    "regex-tester": [
+      "Enter a regex pattern and flags.",
+      "Type a test string to highlight matches.",
+      "Use presets for common patterns."
     ]
   },
   "games": {
@@ -3397,7 +3412,40 @@
     "cb_tritanopia": "Tritanopia",
     "cb_tritanopia_d": "Blue-blind (rare, 0.001%)",
     "cb_achromatopsia": "Achromatopsia",
-    "cb_achromatopsia_d": "Complete color blindness (very rare)"
+    "cb_achromatopsia_d": "Complete color blindness (very rare)",
+    "ipl_ph": "Enter IP address (e.g. 8.8.8.8)",
+    "ipl_lookup": "Lookup",
+    "ipl_myip": "My IP Address",
+    "ui_loading": "Loading...",
+    "ipl_notfound": "Not found",
+    "ipl_failed": "Request failed",
+    "ipl_f_ip": "IP Address",
+    "ipl_f_city": "City",
+    "ipl_f_region": "Region",
+    "ipl_f_country": "Country",
+    "ipl_f_postal": "Postal",
+    "ipl_f_lat": "Latitude",
+    "ipl_f_lon": "Longitude",
+    "ipl_f_org": "ISP / Org",
+    "ipl_f_tz": "Timezone",
+    "ipl_map": "View on Map",
+    "ipl_credit": "Data provided by ipapi.co",
+    "sn_invalid": "Invalid IP",
+    "sn_mask": "Subnet Mask",
+    "sn_network": "Network Address",
+    "sn_broadcast": "Broadcast Address",
+    "sn_first": "First Host",
+    "sn_last": "Last Host",
+    "sn_hosts": "Usable Hosts",
+    "sn_class": "IP Class",
+    "sn_type": "IP Type",
+    "sn_private": "Private",
+    "sn_public": "Public",
+    "rx_pattern": "Pattern",
+    "rx_test": "Test string",
+    "rx_highlight": "Matches highlighted",
+    "rx_matches": "matches",
+    "rx_more": "more"
   },
   "toolTags": {
     "spinner-wheel": [
