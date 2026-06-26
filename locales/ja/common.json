@@ -3112,6 +3112,16 @@
       "反転／逆順モードを選びます。",
       "テキストを入力します。",
       "変換された出力をコピーします。"
+    ],
+    "fibonacci-generator": [
+      "数列生成または数判定モードを選びます。",
+      "個数・インデックスまたは判定する数を入力します。",
+      "数列・黄金比または結果を確認します。"
+    ],
+    "currency-formatter": [
+      "数値を入力します。",
+      "通貨・ロケール・小数桁を選びます。",
+      "書式化された通貨文字列をコピーします。"
     ]
   },
   "games": {
@@ -4942,7 +4952,28 @@
     "ui_copy_all": "すべてコピー",
     "trot_flip": "上下反転",
     "trot_reverse": "逆順",
-    "trot_copyout": "出力をコピー"
+    "trot_copyout": "出力をコピー",
+    "fib_gen": "数列を生成",
+    "fib_check": "数を判定",
+    "fib_count": "個数 (最大200)",
+    "fib_start": "開始インデックス",
+    "fib_showing": "F({a})からF({b})まで",
+    "fib_copyall": "すべてコピー",
+    "fib_golden": "黄金比 (F(n)/F(n-1))",
+    "fib_converges": "(1.6180339887...に収束)",
+    "fib_enter": "判定する数を入力",
+    "fib_yes": "はい",
+    "fib_no": "いいえ",
+    "fib_is": "はフィボナッチ数です",
+    "fib_isnot": "はフィボナッチ数ではありません",
+    "fib_factors": "{n}の約数",
+    "fib_also": "* フィボナッチ数でもある",
+    "cur_rub": "ロシアルーブル",
+    "cuf_currency": "通貨",
+    "cuf_locale": "ロケール",
+    "cuf_withsym": "通貨記号付き",
+    "cuf_numonly": "数値のみ",
+    "cuf_raw": "生の数値"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

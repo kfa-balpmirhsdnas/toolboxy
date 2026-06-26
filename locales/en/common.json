@@ -2807,6 +2807,16 @@
       "Choose flip or reverse mode.",
       "Enter your text.",
       "Copy the transformed output."
+    ],
+    "fibonacci-generator": [
+      "Choose generate or check mode.",
+      "Enter count/index or a number to check.",
+      "See the sequence, golden ratio or result."
+    ],
+    "currency-formatter": [
+      "Enter a number.",
+      "Choose currency, locale and decimals.",
+      "Copy the formatted currency string."
     ]
   },
   "games": {
@@ -4637,7 +4647,28 @@
     "ui_copy_all": "Copy All",
     "trot_flip": "Flip Upside Down",
     "trot_reverse": "Reverse",
-    "trot_copyout": "Copy Output"
+    "trot_copyout": "Copy Output",
+    "fib_gen": "Generate Sequence",
+    "fib_check": "Check Number",
+    "fib_count": "Count (max 200)",
+    "fib_start": "Start from index",
+    "fib_showing": "Showing F({a}) to F({b})",
+    "fib_copyall": "Copy all",
+    "fib_golden": "Golden ratio (F(n)/F(n-1))",
+    "fib_converges": "(converges to 1.6180339887...)",
+    "fib_enter": "Enter a number to check",
+    "fib_yes": "YES",
+    "fib_no": "NO",
+    "fib_is": " is a Fibonacci number",
+    "fib_isnot": " is NOT a Fibonacci number",
+    "fib_factors": "Factors of {n}",
+    "fib_also": "* also a Fibonacci number",
+    "cur_rub": "Russian Ruble",
+    "cuf_currency": "Currency",
+    "cuf_locale": "Locale",
+    "cuf_withsym": "With currency symbol",
+    "cuf_numonly": "Number only",
+    "cuf_raw": "Raw number"
   },
   "toolTags": {
     "spinner-wheel": [

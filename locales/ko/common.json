@@ -3145,6 +3145,16 @@
       "뒤집기/거꾸로 모드를 고르세요.",
       "텍스트를 입력하세요.",
       "변환된 출력을 복사하세요."
+    ],
+    "fibonacci-generator": [
+      "수열 생성 또는 숫자 확인 모드를 고르세요.",
+      "개수·인덱스 또는 확인할 숫자를 입력하세요.",
+      "수열·황금비 또는 피보나치 여부를 확인하세요."
+    ],
+    "currency-formatter": [
+      "숫자를 입력하세요.",
+      "통화·지역·소수 자릿수를 고르세요.",
+      "서식화된 통화 문자열을 복사하세요."
     ]
   },
   "games": {
@@ -4975,7 +4985,28 @@
     "ui_copy_all": "전체 복사",
     "trot_flip": "위아래 뒤집기",
     "trot_reverse": "거꾸로",
-    "trot_copyout": "출력 복사"
+    "trot_copyout": "출력 복사",
+    "fib_gen": "수열 생성",
+    "fib_check": "숫자 확인",
+    "fib_count": "개수 (최대 200)",
+    "fib_start": "시작 인덱스",
+    "fib_showing": "F({a})부터 F({b})까지",
+    "fib_copyall": "전체 복사",
+    "fib_golden": "황금비 (F(n)/F(n-1))",
+    "fib_converges": "(1.6180339887...에 수렴)",
+    "fib_enter": "확인할 숫자 입력",
+    "fib_yes": "예",
+    "fib_no": "아니오",
+    "fib_is": "는 피보나치 수입니다",
+    "fib_isnot": "는 피보나치 수가 아닙니다",
+    "fib_factors": "{n}의 약수",
+    "fib_also": "* 피보나치 수이기도 함",
+    "cur_rub": "러시아 루블",
+    "cuf_currency": "통화",
+    "cuf_locale": "지역",
+    "cuf_withsym": "통화 기호 포함",
+    "cuf_numonly": "숫자만",
+    "cuf_raw": "원시 숫자"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
