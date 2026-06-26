@@ -2529,12 +2529,12 @@
     "cp_error": "This PDF couldn't be compressed. Please check the file.",
     "cp_note": "Each page is rasterized and re-compressed as an image. Best for scanned or image-heavy PDFs; text becomes part of the image, so it won't be selectable or searchable.",
     "zf_title": "Zip Files (Create ZIP)",
-    "zf_subtitle": "Combine several files into a single ZIP.",
+    "zf_subtitle": "Combine several files or folders into a single ZIP.",
     "zf_drop": "Drop files or folders, or click to add",
     "zf_files": "{n} files",
     "zf_make": "Create ZIP",
     "zf_making": "Zipping…",
-    "zf_download": "Save ZIP",
+    "zf_download": "Download ZIP",
     "zf_clear": "Clear",
     "zf_note": "Pick several files or a whole folder and bundle them into one ZIP, downloaded automatically. Everything is processed in your browser — your files are never uploaded.",
     "uz_title": "Unzip (Extract ZIP)",
@@ -2929,7 +2929,8 @@
     "uz_entries_some": "{shown} of {total} files",
     "uz_more": "Show {n} more",
     "uz_less": "Show less",
-    "uz_extracted": "✓ Extracted {n} files into the “{folder}” folder."
+    "uz_extracted": "✓ Extracted {n} files into the “{folder}” folder.",
+    "zf_done": "✓ Compressed {n} files into “{name}” and downloaded it."
   },
   "toolTags": {
     "spinner-wheel": [

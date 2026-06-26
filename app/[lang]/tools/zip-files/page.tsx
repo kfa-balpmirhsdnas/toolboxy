@@ -10,13 +10,15 @@ const tool = getToolBySlug('zip-files')!
 const fmt = (b: number) => (b < 1024 ? b + ' B' : b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(2) + ' MB')
 const relPath = (f: File) => (f as File & { __path?: string; webkitRelativePath?: string }).__path || (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name
 const baseName = (s: string) => s.replace(/\.[^./\\]+$/, '')
+const LIMIT = 10
 
 export default function ZipFilesPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const [files, setFiles] = useState<File[]>([])
   const [zipName, setZipName] = useState('')
-  const [out, setOut] = useState<{ url: string; size: number } | null>(null)
+  const [out, setOut] = useState<{ url: string; size: number; n: number; name: string } | null>(null)
   const [busy, setBusy] = useState(false)
+  const [showAll, setShowAll] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   function defaultName(arr: File[]): string {
@@ -36,12 +38,12 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
   // with its relative path so nested structure is preserved in the zip.
   /* eslint-disable @typescript-eslint/no-explicit-any */
   async function addEntries(entries: any[]) {
-    const out: File[] = []
+    const collected: File[] = []
     const walk = async (entry: any, prefix: string) => {
       if (entry.isFile) {
         const file: File = await new Promise((res, rej) => entry.file(res, rej))
         try { (file as any).__path = prefix + entry.name } catch { /* read-only on some engines */ }
-        out.push(file)
+        collected.push(file)
       } else if (entry.isDirectory) {
         const reader = entry.createReader()
         const readAll = () => new Promise<any[]>((res) => reader.readEntries((r: any[]) => res(r), () => res([])))
@@ -50,7 +52,7 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
       }
     }
     for (const e of entries) await walk(e, '')
-    if (out.length) add(out)
+    if (collected.length) add(collected)
   }
   function onDrop(e: React.DragEvent) {
     e.preventDefault()
@@ -63,10 +65,10 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
     add(e.dataTransfer.files)
   }
   /* eslint-enable @typescript-eslint/no-explicit-any */
-  function clearAll() { setFiles([]); setZipName(''); setOut(null) }
+  function clearAll() { setFiles([]); setZipName(''); setOut(null); setShowAll(false) }
 
   const fileName = () => `${(zipName || 'archive').replace(/[\\/:*?"<>|]+/g, '').trim() || 'archive'}.zip`
-  function triggerDownload(url: string) { const a = document.createElement('a'); a.href = url; a.download = fileName(); a.click(); trackToolDownload('zip-files', 'zip') }
+  function downloadUrl(url: string, name: string) { const a = document.createElement('a'); a.href = url; a.download = name; a.click(); trackToolDownload('zip-files', 'zip') }
 
   async function make() {
     if (!files.length) return
@@ -80,13 +82,14 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
         data[key] = new Uint8Array(await f.arrayBuffer())
       }
       const blob = new Blob([zipSync(data, { level: 6 })], { type: 'application/zip' })
-      const url = URL.createObjectURL(blob)
-      setOut({ url, size: blob.size })
-      triggerDownload(url) // auto-download once it's ready
+      const url = URL.createObjectURL(blob), name = fileName()
+      setOut({ url, size: blob.size, n: files.length, name })
+      downloadUrl(url, name) // auto-download once it's ready
     } catch (e) { console.error(e) } finally { setBusy(false) }
   }
 
   const totalSize = files.reduce((s, f) => s + f.size, 0)
+  const shown = showAll ? files : files.slice(0, LIMIT)
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -104,8 +107,8 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
 
         {files.length > 0 && (
           <>
-            <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-60 overflow-auto">
-              {files.map((f, i) => (
+            <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-72 overflow-auto">
+              {shown.map((f, i) => (
                 <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
                   <span className="flex-1 truncate text-gray-700">{relPath(f)}</span>
                   <span className="text-gray-400 shrink-0">{fmt(f.size)}</span>
@@ -113,7 +116,12 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-400">{t('zf_files', { n: files.length })} · {fmt(totalSize)}</p>
+            {files.length > LIMIT && (
+              <button onClick={() => setShowAll((v) => !v)} className="w-full text-center text-xs text-brand-600 hover:underline py-0.5">
+                {showAll ? t('uz_less') : t('uz_more', { n: files.length - LIMIT })}
+              </button>
+            )}
+            <p className="text-xs text-gray-400">{!showAll && files.length > LIMIT ? t('uz_entries_some', { shown: LIMIT, total: files.length }) : t('zf_files', { n: files.length })} · {fmt(totalSize)}</p>
 
             <div>
               <label className="block text-xs text-gray-500 mb-1">{t('zf_name')}</label>
@@ -132,9 +140,9 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
         )}
 
         {out && (
-          <div className="rounded-xl border-2 border-green-200 bg-green-50 p-3 flex items-center justify-between">
-            <span className="text-sm text-gray-600 truncate">{fileName()} · {fmt(out.size)}</span>
-            <button onClick={() => triggerDownload(out.url)} className="shrink-0 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('zf_download')}</button>
+          <div className="rounded-xl border-2 border-green-200 bg-green-50 p-3 flex items-center justify-between gap-2">
+            <span className="text-sm text-green-700 truncate">{t('zf_done', { n: out.n, name: out.name })}</span>
+            <button onClick={() => downloadUrl(out.url, out.name)} className="shrink-0 px-3 py-1.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('zf_download')}</button>
           </div>
         )}
         <p className="text-xs text-gray-400">{t('zf_note')}</p>

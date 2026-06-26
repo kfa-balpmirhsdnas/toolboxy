@@ -2862,13 +2862,13 @@
     "cp_error": "이 PDF는 압축할 수 없습니다. 파일을 확인해 주세요.",
     "cp_note": "각 페이지를 이미지로 변환해 다시 압축합니다. 스캔본·이미지 위주 PDF에 효과적이며, 글자는 이미지로 바뀌어 텍스트 선택·검색은 되지 않습니다.",
     "zf_title": "파일 압축 (ZIP 만들기)",
-    "zf_subtitle": "여러 파일을 하나의 ZIP으로 묶습니다.",
-    "zf_drop": "파일·폴더를 끌어다 놓거나 클릭하세요",
+    "zf_subtitle": "여러 파일 또는 폴더를 하나의 ZIP으로 묶습니다.",
+    "zf_drop": "파일 또는 폴더를 끌어다 놓거나 클릭하세요.",
     "zf_files": "파일 {n}개",
-    "zf_make": "ZIP 만들기",
+    "zf_make": "압축하기",
     "zf_making": "압축 중…",
-    "zf_download": "ZIP 저장",
-    "zf_clear": "비우기",
+    "zf_download": "ZIP 다운로드",
+    "zf_clear": "초기화",
     "zf_note": "여러 파일이나 폴더째 골라 하나의 ZIP으로 묶어 자동으로 내려받습니다. 모든 처리는 브라우저에서 이뤄지며 파일은 서버로 전송되지 않습니다.",
     "uz_title": "압축 풀기 (ZIP 해제)",
     "uz_subtitle": "ZIP 파일을 열어 안의 파일을 꺼냅니다.",
@@ -3262,7 +3262,8 @@
     "uz_entries_some": "파일 {shown}개 (총 파일 {total}개)",
     "uz_more": "…외 {n}개 더 보기",
     "uz_less": "접기",
-    "uz_extracted": "✓ ‘{folder}’ 폴더에 {n}개 파일을 풀었어요."
+    "uz_extracted": "✓ ‘{folder}’ 폴더에 {n}개 파일을 풀었어요.",
+    "zf_done": "✓ {n}개 파일을 ‘{name}’(으)로 압축해 내려받았어요."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
