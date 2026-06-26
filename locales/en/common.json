@@ -2647,6 +2647,16 @@
       "Set the number of rows and columns.",
       "Choose header, borders and striped options.",
       "Copy the generated HTML table."
+    ],
+    "gradient-text-generator": [
+      "Enter text and pick 2-3 colors.",
+      "Adjust angle, size and weight.",
+      "Copy the generated CSS."
+    ],
+    "css-clip-path-generator": [
+      "Pick a shape preset or type your own.",
+      "Set the background color.",
+      "Copy the generated clip-path CSS."
     ]
   },
   "games": {
@@ -4262,7 +4272,26 @@
     "htg_borders": "Borders",
     "htg_striped": "Striped",
     "htg_preview": "Preview",
-    "htg_copyhtml": "Copy HTML"
+    "htg_copyhtml": "Copy HTML",
+    "gtg_c3": "Color 3 (opt)",
+    "gtg_fontsize": "Font Size",
+    "gtg_weight": "Weight",
+    "ccp_p_triangle": "Triangle",
+    "ccp_p_diamond": "Diamond",
+    "ccp_p_pentagon": "Pentagon",
+    "ccp_p_hexagon": "Hexagon",
+    "ccp_p_arrow": "Arrow Right",
+    "ccp_p_star": "Star",
+    "ccp_p_parallelogram": "Parallelogram",
+    "ccp_p_cross": "Cross",
+    "ccp_p_circle": "Circle",
+    "ccp_p_ellipse": "Ellipse",
+    "ccp_p_inset": "Inset",
+    "ccp_custom": "Custom clip-path value",
+    "ccp_d_polygon": "custom polygon with x y point pairs",
+    "ccp_d_circle": "circular clip",
+    "ccp_d_ellipse": "elliptical clip",
+    "ccp_d_inset": "rectangular with optional rounding"
   },
   "toolTags": {
     "spinner-wheel": [

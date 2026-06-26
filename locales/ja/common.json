@@ -2952,6 +2952,16 @@
       "行数・列数を設定します。",
       "ヘッダー・枠線・ストライプを選びます。",
       "生成されたHTML表をコピーします。"
+    ],
+    "gradient-text-generator": [
+      "テキストと2〜3色を選びます。",
+      "角度・サイズ・太さを調整します。",
+      "生成されたCSSをコピーします。"
+    ],
+    "css-clip-path-generator": [
+      "図形プリセットを選ぶか自分で入力します。",
+      "背景色を設定します。",
+      "生成された clip-path CSS をコピーします。"
     ]
   },
   "games": {
@@ -4567,7 +4577,26 @@
     "htg_borders": "枠線",
     "htg_striped": "ストライプ",
     "htg_preview": "プレビュー",
-    "htg_copyhtml": "HTMLをコピー"
+    "htg_copyhtml": "HTMLをコピー",
+    "gtg_c3": "色 3 (任意)",
+    "gtg_fontsize": "フォントサイズ",
+    "gtg_weight": "太さ",
+    "ccp_p_triangle": "三角形",
+    "ccp_p_diamond": "ひし形",
+    "ccp_p_pentagon": "五角形",
+    "ccp_p_hexagon": "六角形",
+    "ccp_p_arrow": "右矢印",
+    "ccp_p_star": "星",
+    "ccp_p_parallelogram": "平行四辺形",
+    "ccp_p_cross": "十字",
+    "ccp_p_circle": "円",
+    "ccp_p_ellipse": "楕円",
+    "ccp_p_inset": "矩形(inset)",
+    "ccp_custom": "カスタム clip-path 値",
+    "ccp_d_polygon": "x y 座標ペアで作る多角形",
+    "ccp_d_circle": "円形クリップ",
+    "ccp_d_ellipse": "楕円形クリップ",
+    "ccp_d_inset": "任意の角丸付き矩形"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

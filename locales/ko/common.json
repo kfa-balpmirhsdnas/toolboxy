@@ -2985,6 +2985,16 @@
       "행·열 수를 설정하세요.",
       "헤더·테두리·줄무늬 옵션을 고르세요.",
       "생성된 HTML 표를 복사하세요."
+    ],
+    "gradient-text-generator": [
+      "텍스트와 두세 가지 색을 고르세요.",
+      "각도·크기·굵기를 조절하세요.",
+      "생성된 CSS를 복사하세요."
+    ],
+    "css-clip-path-generator": [
+      "도형 프리셋을 고르거나 직접 입력하세요.",
+      "배경색을 설정하세요.",
+      "생성된 clip-path CSS를 복사하세요."
     ]
   },
   "games": {
@@ -4600,7 +4610,26 @@
     "htg_borders": "테두리",
     "htg_striped": "줄무늬",
     "htg_preview": "미리보기",
-    "htg_copyhtml": "HTML 복사"
+    "htg_copyhtml": "HTML 복사",
+    "gtg_c3": "색상 3 (선택)",
+    "gtg_fontsize": "글자 크기",
+    "gtg_weight": "굵기",
+    "ccp_p_triangle": "삼각형",
+    "ccp_p_diamond": "다이아몬드",
+    "ccp_p_pentagon": "오각형",
+    "ccp_p_hexagon": "육각형",
+    "ccp_p_arrow": "오른쪽 화살표",
+    "ccp_p_star": "별",
+    "ccp_p_parallelogram": "평행사변형",
+    "ccp_p_cross": "십자",
+    "ccp_p_circle": "원",
+    "ccp_p_ellipse": "타원",
+    "ccp_p_inset": "사각(inset)",
+    "ccp_custom": "사용자 지정 clip-path 값",
+    "ccp_d_polygon": "x y 좌표 쌍으로 만드는 다각형",
+    "ccp_d_circle": "원형 클립",
+    "ccp_d_ellipse": "타원형 클립",
+    "ccp_d_inset": "선택적 둥글기가 있는 사각형"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
