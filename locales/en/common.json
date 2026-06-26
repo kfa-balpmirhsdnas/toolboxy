@@ -2777,6 +2777,16 @@
       "Enter your numbers.",
       "Choose separator and order.",
       "Press Sort to see the result."
+    ],
+    "list-randomizer": [
+      "Enter items, one per line.",
+      "Press Shuffle.",
+      "Copy the randomized result."
+    ],
+    "dice-roller": [
+      "Choose a die type (d6, d20, etc.).",
+      "Set how many dice.",
+      "Press Roll to see the results and total."
     ]
   },
   "games": {
@@ -4577,7 +4587,14 @@
     "ns_desc": "Descending",
     "ns_numbers": "Numbers",
     "ns_sorted": "Sorted",
-    "ns_sort": "Sort"
+    "ns_sort": "Sort",
+    "lr_items": "Items",
+    "lr_ph": "One item per line",
+    "lr_randomized": "Randomized",
+    "lr_shuffle": "Shuffle",
+    "dr_count": "Dice",
+    "dr_rolling": "Rolling...",
+    "dr_roll": "Roll"
   },
   "toolTags": {
     "spinner-wheel": [
