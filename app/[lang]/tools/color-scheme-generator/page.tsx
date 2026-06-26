@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -46,6 +47,7 @@ function generateScheme(hex: string, scheme: Scheme): string[] {
 }
 
 export default function ColorSchemeGeneratorPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [base, setBase] = useState('#6366f1')
   const [scheme, setScheme] = useState<Scheme>('analogous')
   const [copied, setCopied] = useState<string|null>(null)
@@ -69,14 +71,14 @@ export default function ColorSchemeGeneratorPage({ params }: { params: { lang: s
     setCopied('all'); setTimeout(()=>setCopied(null),1500)
   }
 
-  const SCHEMES: [Scheme,string][] = [['analogous','Analogous'],['complementary','Complementary'],['triadic','Triadic'],['tetradic','Tetradic'],['monochromatic','Monochromatic'],['split-complementary','Split Comp.']]
+  const SCHEMES: [Scheme,string][] = [['analogous','cpg_analogous'],['complementary','cpg_complementary'],['triadic','cpg_triadic'],['tetradic','csm_tetradic'],['monochromatic','csm_mono'],['split-complementary','csm_split']]
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-5">
         <div className="flex items-center gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Base color</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">{t('csg_base')}</label>
             <div className="flex items-center gap-2">
               <input type="color" value={base} onChange={e=>{setBase(e.target.value);track()}} className="w-10 h-10 rounded-xl cursor-pointer border border-gray-200" />
               <input value={base} onChange={e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value)){setBase(e.target.value);track()}}} 
@@ -88,7 +90,7 @@ export default function ColorSchemeGeneratorPage({ params }: { params: { lang: s
           {SCHEMES.map(([s,label])=>(
             <button key={s} onClick={()=>{ setScheme(s); track() }}
               className={'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (scheme===s?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {label}
+              {t(label)}
             </button>
           ))}
         </div>
@@ -106,11 +108,11 @@ export default function ColorSchemeGeneratorPage({ params }: { params: { lang: s
             <div key={i} onClick={()=>copy(c,c+'_'+i)} className="cursor-pointer group">
               <div className="h-12 rounded-xl mb-1 transition-transform group-hover:scale-105" style={{ background: c }} />
               <p className="text-xs font-mono text-center text-gray-600">{c}</p>
-              <p className="text-xs text-center text-brand-400 opacity-0 group-hover:opacity-100">{copied===c+'_'+i?'\u2713':'copy'}</p>
+              <p className="text-xs text-center text-brand-400 opacity-0 group-hover:opacity-100">{copied===c+'_'+i?'\u2713':t('ui_copy')}</p>
             </div>
           ))}
         </div>
-        <button onClick={copyAll} className="text-xs text-brand-600 hover:underline">{copied==='all'?'\u2713 Copied all':'Copy all colors'}</button>
+        <button onClick={copyAll} className="text-xs text-brand-600 hover:underline">{copied==='all'?'\u2713 '+t('cpg_copied'):t('csm_copyall')}</button>
       </div>
     </ToolLayout>
   )

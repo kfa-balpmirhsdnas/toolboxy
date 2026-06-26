@@ -2472,6 +2472,21 @@
       "Pick a color or type a hex.",
       "Click any HEX/RGB/HSL/HSV value to copy.",
       "Search CSS named colors to pick one."
+    ],
+    "color-scheme-generator": [
+      "Pick a base color.",
+      "Choose a scheme type.",
+      "Click any color to copy it."
+    ],
+    "css-gradient-generator": [
+      "Pick a preset or build your own.",
+      "Adjust type, angle and color stops.",
+      "Copy the generated CSS."
+    ],
+    "css-minifier": [
+      "Paste your CSS.",
+      "Choose which optimizations to apply.",
+      "Copy the minified CSS."
     ]
   },
   "games": {
@@ -3874,7 +3889,27 @@
     "ctw_top5": "Top 5 Closest Colors",
     "hcp_white": "White text",
     "hcp_black": "Black text",
-    "hcp_search": "Search named colors..."
+    "hcp_search": "Search named colors...",
+    "csm_tetradic": "Tetradic",
+    "csm_mono": "Monochromatic",
+    "csm_split": "Split Comp.",
+    "csm_copyall": "Copy all colors",
+    "cgg_p_sunset": "Sunset",
+    "cgg_p_ocean": "Ocean",
+    "cgg_p_forest": "Forest",
+    "cgg_p_fire": "Fire",
+    "cgg_p_mono": "Monochrome",
+    "cgg_angle": "Angle",
+    "cgg_stops": "Color stops",
+    "cm_comments": "Remove comments",
+    "cm_whitespace": "Remove whitespace",
+    "cm_zeros": "Shorten zeros",
+    "cm_colors": "Shorten hex colors",
+    "cm_input": "CSS input",
+    "cm_original": "Original",
+    "cm_minified": "Minified",
+    "cm_savings": "Savings",
+    "cm_minified_css": "Minified CSS"
   },
   "toolTags": {
     "spinner-wheel": [

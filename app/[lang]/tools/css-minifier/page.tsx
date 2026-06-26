@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('css-minifier')!
@@ -33,6 +34,7 @@ const SAMPLE=`.container {
   box-shadow: 0 0px 10px rgba(0, 0, 0, 0.2);
 }`
 export default function CssMinifierPage() {
+  const t = useTranslations('toolui')
   const [input,setInput]=useState(SAMPLE)
   const [rmComments,setRmComments]=useState(true)
   const [rmWhitespace,setRmWhitespace]=useState(true)
@@ -47,27 +49,27 @@ export default function CssMinifierPage() {
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4 space-y-3">
         <div className="flex flex-wrap gap-3">
-          {[['Remove comments',rmComments,setRmComments],['Remove whitespace',rmWhitespace,setRmWhitespace],['Shorten zeros',optZeros,setOptZeros],['Shorten hex colors',optColors,setOptColors]].map(([l,v,s])=>(
+          {[['cm_comments',rmComments,setRmComments],['cm_whitespace',rmWhitespace,setRmWhitespace],['cm_zeros',optZeros,setOptZeros],['cm_colors',optColors,setOptColors]].map(([l,v,s])=>(
             <label key={l as string} className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-600">
-              <input type="checkbox" checked={v as boolean} onChange={e=>(s as Function)(e.target.checked)} className="rounded"/>{l as string}
+              <input type="checkbox" checked={v as boolean} onChange={e=>(s as Function)(e.target.checked)} className="rounded"/>{t(l as string)}
             </label>
           ))}
         </div>
-        <div><label className="block text-xs font-medium text-gray-600 mb-1">CSS input</label>
+        <div><label className="block text-xs font-medium text-gray-600 mb-1">{t('cm_input')}</label>
           <textarea value={input} onChange={e=>setInput(e.target.value)} rows={10}
             className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-xs resize-none focus:outline-none focus:border-blue-400"/></div>
         <div className="flex gap-3 text-sm text-center">
-          {[['Original',origB+' B'],['Minified',minB+' B'],['Savings',savings+'%']].map(([l,v])=>(
-            <div key={l} className={'flex-1 rounded-xl py-2.5 '+(l==='Savings'?'bg-green-50':'bg-gray-50')}>
-              <p className={'font-bold '+(l==='Savings'?'text-green-700':'text-gray-800')}>{v}</p>
-              <p className="text-xs text-gray-500">{l}</p>
+          {[{k:'cm_original',v:origB+' B'},{k:'cm_minified',v:minB+' B'},{k:'cm_savings',v:savings+'%',hl:true}].map(({k,v,hl})=>(
+            <div key={k} className={'flex-1 rounded-xl py-2.5 '+(hl?'bg-green-50':'bg-gray-50')}>
+              <p className={'font-bold '+(hl?'text-green-700':'text-gray-800')}>{v}</p>
+              <p className="text-xs text-gray-500">{t(k)}</p>
             </div>
           ))}
         </div>
         <div className="bg-gray-900 rounded-xl overflow-hidden">
           <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
-            <span className="text-xs text-gray-400">Minified CSS</span>
-            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
+            <span className="text-xs text-gray-400">{t('cm_minified_css')}</span>
+            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?t('ui_copied'):t('ui_copy')}</button>
           </div>
           <pre className="px-4 py-3 text-green-400 font-mono text-xs overflow-x-auto whitespace-pre-wrap max-h-36">{minified}</pre>
         </div>

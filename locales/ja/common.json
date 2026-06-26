@@ -2777,6 +2777,21 @@
       "色を選ぶかHEXを入力します。",
       "HEX/RGB/HSL/HSV値をクリックしてコピーします。",
       "CSS色名を検索して選びます。"
+    ],
+    "color-scheme-generator": [
+      "ベースカラーを選びます。",
+      "配色タイプを選びます。",
+      "色をクリックしてコピーします。"
+    ],
+    "css-gradient-generator": [
+      "プリセットを選ぶか自分で作成します。",
+      "タイプ・角度・カラーストップを調整します。",
+      "生成されたCSSをコピーします。"
+    ],
+    "css-minifier": [
+      "CSSを貼り付けます。",
+      "適用する最適化を選びます。",
+      "圧縮されたCSSをコピーします。"
     ]
   },
   "games": {
@@ -4179,7 +4194,27 @@
     "ctw_top5": "近い色 上位5",
     "hcp_white": "白文字",
     "hcp_black": "黒文字",
-    "hcp_search": "色名を検索..."
+    "hcp_search": "色名を検索...",
+    "csm_tetradic": "テトラード",
+    "csm_mono": "モノクロ",
+    "csm_split": "スプリット補色",
+    "csm_copyall": "全色をコピー",
+    "cgg_p_sunset": "夕焼け",
+    "cgg_p_ocean": "海",
+    "cgg_p_forest": "森",
+    "cgg_p_fire": "炎",
+    "cgg_p_mono": "モノクロ",
+    "cgg_angle": "角度",
+    "cgg_stops": "カラーストップ",
+    "cm_comments": "コメント削除",
+    "cm_whitespace": "空白削除",
+    "cm_zeros": "ゼロ短縮",
+    "cm_colors": "HEX色短縮",
+    "cm_input": "CSS入力",
+    "cm_original": "元",
+    "cm_minified": "圧縮後",
+    "cm_savings": "削減",
+    "cm_minified_css": "圧縮されたCSS"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

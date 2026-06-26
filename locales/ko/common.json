@@ -2810,6 +2810,21 @@
       "색을 고르거나 HEX를 입력하세요.",
       "HEX·RGB·HSL·HSV 값을 클릭해 복사하세요.",
       "CSS 색 이름을 검색해 선택하세요."
+    ],
+    "color-scheme-generator": [
+      "기준 색을 고르세요.",
+      "배색 유형을 선택하세요.",
+      "생성된 색을 클릭해 복사하세요."
+    ],
+    "css-gradient-generator": [
+      "프리셋을 고르거나 직접 설정하세요.",
+      "유형·각도·색상 정지점을 조절하세요.",
+      "생성된 CSS를 복사하세요."
+    ],
+    "css-minifier": [
+      "CSS를 붙여넣으세요.",
+      "적용할 최적화 옵션을 고르세요.",
+      "압축된 CSS를 복사하세요."
     ]
   },
   "games": {
@@ -4212,7 +4227,27 @@
     "ctw_top5": "가장 가까운 색상 5개",
     "hcp_white": "흰색 글자",
     "hcp_black": "검은색 글자",
-    "hcp_search": "색 이름 검색..."
+    "hcp_search": "색 이름 검색...",
+    "csm_tetradic": "사색",
+    "csm_mono": "단색",
+    "csm_split": "분할 보색",
+    "csm_copyall": "전체 색 복사",
+    "cgg_p_sunset": "노을",
+    "cgg_p_ocean": "바다",
+    "cgg_p_forest": "숲",
+    "cgg_p_fire": "불꽃",
+    "cgg_p_mono": "모노크롬",
+    "cgg_angle": "각도",
+    "cgg_stops": "색상 정지점",
+    "cm_comments": "주석 제거",
+    "cm_whitespace": "공백 제거",
+    "cm_zeros": "0 단축",
+    "cm_colors": "HEX 색상 단축",
+    "cm_input": "CSS 입력",
+    "cm_original": "원본",
+    "cm_minified": "압축본",
+    "cm_savings": "절약",
+    "cm_minified_css": "압축된 CSS"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
