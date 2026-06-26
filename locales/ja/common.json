@@ -3230,7 +3230,8 @@
     "uz_more": "他{n}件を表示",
     "uz_less": "閉じる",
     "uz_extracted": "✓ 「{folder}」フォルダに{n}件を展開しました。",
-    "zf_done": "✓ {n}件を「{name}」に圧縮してダウンロードしました。"
+    "zf_done": "✓ {n}件を「{name}」に圧縮してダウンロードしました。",
+    "uz_makefolder": "選択フォルダ内にZIP名のフォルダを作成"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

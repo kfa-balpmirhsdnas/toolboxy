@@ -17,6 +17,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
   const [entries, setEntries] = useState<Entry[]>([])
   const [error, setError] = useState('')
   const [showAll, setShowAll] = useState(false)
+  const [makeFolder, setMakeFolder] = useState(true)
   const [done, setDone] = useState<{ folder: string; n: number } | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const LIMIT = 10
@@ -58,10 +59,14 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
     if (picker) {
       try {
         const root = await picker({ mode: 'readwrite' })
-        const folder = (name.replace(/\.zip$/i, '') || 'extracted').replace(/[\\/:*?"<>|]+/g, '_')
-        const dir = await root.getDirectoryHandle(folder, { create: true })
-        for (const e of entries) await writeInto(dir, e.name, e.data)
-        setDone({ folder: `${root.name}/${folder}`, n: entries.length }) // include the picked parent so it's easy to locate
+        let target = root, label = root.name
+        if (makeFolder) {
+          const folder = (name.replace(/\.zip$/i, '') || 'extracted').replace(/[\\/:*?"<>|]+/g, '_')
+          target = await root.getDirectoryHandle(folder, { create: true })
+          label = `${root.name}/${folder}`
+        }
+        for (const e of entries) await writeInto(target, e.name, e.data)
+        setDone({ folder: label, n: entries.length }) // include the picked parent so it's easy to locate
         trackToolDownload('unzip', 'folder')
         return
       } catch (err) {
@@ -96,11 +101,16 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
               <button onClick={extractAll} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">📂 {t('uz_downloadall')}</button>
             </div>
 
+            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+              <input type="checkbox" checked={makeFolder} onChange={(e) => setMakeFolder(e.target.checked)} className="w-4 h-4 accent-brand-600" />
+              {t('uz_makefolder')}
+            </label>
+
             {done && <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-xl p-3">{t('uz_extracted', { folder: done.folder, n: done.n })}</p>}
             <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-72 overflow-auto">
               {(showAll ? entries : entries.slice(0, LIMIT)).map((e, i) => (
                 <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
-                  <span className="flex-1 truncate text-gray-700"><span className="text-gray-400">{(name.replace(/\.zip$/i, '') || 'extracted')}/</span>{e.name}</span>
+                  <span className="flex-1 truncate text-gray-700">{makeFolder && <span className="text-gray-400">{(name.replace(/\.zip$/i, '') || 'extracted')}/</span>}{e.name}</span>
                   <span className="text-gray-400 shrink-0">{fmt(e.size)}</span>
                   <button onClick={() => download(e)} className="shrink-0 px-2.5 py-1 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">⬇</button>
                 </div>
