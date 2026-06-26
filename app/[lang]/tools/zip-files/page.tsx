@@ -125,6 +125,15 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
             <p className="text-xs text-gray-400">{!showAll && files.length > LIMIT ? t('uz_entries_some', { shown: LIMIT, total: files.length }) : t('zf_files', { n: files.length })} · {fmt(totalSize)}</p>
 
             <div>
+              <label className="block text-xs text-gray-500 mb-1">{t('zf_name')}</label>
+              <div className="flex items-center gap-1">
+                <input value={zipName} onChange={(e) => setZipName(e.target.value)} placeholder="archive" type="text"
+                  className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                <span className="text-sm text-gray-400">.zip</span>
+              </div>
+            </div>
+
+            <div>
               <label className="block text-xs text-gray-500 mb-1">{t('zf_method')}</label>
               <select value={level} onChange={(e) => setLevel(Number(e.target.value))}
                 className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
@@ -132,15 +141,6 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
                 <option value={9}>{t('zf_method_max')}</option>
                 <option value={0}>{t('zf_method_min')}</option>
               </select>
-            </div>
-
-            <div>
-              <label className="block text-xs text-gray-500 mb-1">{t('zf_name')}</label>
-              <div className="flex items-center gap-1">
-                <input value={zipName} onChange={(e) => setZipName(e.target.value)} placeholder="archive" type="text"
-                  className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-                <span className="text-sm text-gray-400">.zip</span>
-              </div>
             </div>
 
             <div className="flex gap-2">
