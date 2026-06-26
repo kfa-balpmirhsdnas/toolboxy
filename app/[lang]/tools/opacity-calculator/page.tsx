@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -14,6 +15,7 @@ function toHex(n:number){return n.toString(16).padStart(2,'0').toUpperCase()}
 const tool = getToolBySlug('opacity-calculator')!
 
 export default function OpacityCalculatorPage() {
+  const t = useTranslations('toolui')
   const [color,setColor]=useState('#3B82F6')
   const [bg,setBg]=useState('#FFFFFF')
   const [opacity,setOpacity]=useState(100)
@@ -35,19 +37,19 @@ export default function OpacityCalculatorPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Opacity Calculator</h1>
-        <p className="text-gray-500 mb-8">Preview colors at different opacity levels and get the blended hex value</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('oc_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('oc_subtitle')}</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-5">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Foreground Color</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('oc_fg')}</label>
               <div className="flex gap-2">
                 <input type="color" value={color} onChange={e=>setColor(e.target.value)} className="w-10 h-10 rounded border border-gray-300 cursor-pointer" />
                 <input type="text" value={color} onChange={e=>setColor(e.target.value)} className="flex-1 border border-gray-300 rounded-lg px-3 font-mono text-sm" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('oc_bg')}</label>
               <div className="flex gap-2">
                 <input type="color" value={bg} onChange={e=>setBg(e.target.value)} className="w-10 h-10 rounded border border-gray-300 cursor-pointer" />
                 <input type="text" value={bg} onChange={e=>setBg(e.target.value)} className="flex-1 border border-gray-300 rounded-lg px-3 font-mono text-sm" />
@@ -56,7 +58,7 @@ export default function OpacityCalculatorPage() {
           </div>
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-sm font-medium text-gray-700">Opacity</label>
+              <label className="text-sm font-medium text-gray-700">{t('oc_opacity')}</label>
               <span className="text-brand-600 font-bold">{opacity}%</span>
             </div>
             <input type="range" min={0} max={100} value={opacity} onChange={e=>setOpacity(parseInt(e.target.value))} className="w-full" />
@@ -65,7 +67,7 @@ export default function OpacityCalculatorPage() {
             <div className="flex items-center gap-4 p-4 rounded-xl border border-gray-200" style={{background:bg}}>
               <div className="w-16 h-16 rounded-xl border border-white/20" style={{background:color,opacity:alpha}} />
               <div>
-                <p className="text-xs text-gray-500 mb-1">Blended result on {bg}</p>
+                <p className="text-xs text-gray-500 mb-1">{t('oc_blended',{bg})}</p>
                 <p className="text-xl font-bold font-mono" style={{color:blended.hex}}>{blended.hex}</p>
                 <p className="text-sm text-gray-500">rgb({blended.r}, {blended.g}, {blended.b})</p>
               </div>
@@ -73,7 +75,7 @@ export default function OpacityCalculatorPage() {
           )}
         </div>
         <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5">
-          <h2 className="font-semibold text-gray-800 mb-3">Opacity Scale</h2>
+          <h2 className="font-semibold text-gray-800 mb-3">{t('oc_scale')}</h2>
           <div className="grid grid-cols-5 gap-2">
             {steps.map(pct=>{
               const a=pct/100

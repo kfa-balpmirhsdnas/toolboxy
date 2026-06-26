@@ -3315,6 +3315,16 @@
       "기준 폰트 크기를 설정하세요.",
       "px 또는 rem 값을 입력하세요.",
       "변환된 값을 복사하세요."
+    ],
+    "opacity-calculator": [
+      "전경색과 배경색을 고르세요.",
+      "불투명도를 조절하세요.",
+      "혼합된 hex 값을 확인하세요."
+    ],
+    "random-name-generator": [
+      "이름 유형을 고르세요.",
+      "개수와 옵션을 설정하세요.",
+      "생성된 이름을 복사하세요."
     ]
   },
   "games": {
@@ -5375,7 +5385,24 @@
     "ua_invalid": "잘못된 URL 형식",
     "ua_note_label": "참고:",
     "ua_note_text": "이 도구는 URL 구조만 분석합니다. URL의 내용을 방문하거나 검증하지 않습니다. 낯선 링크를 클릭하기 전에 항상 주의하세요.",
-    "ptr_quickref": "빠른 참조 (기준 {b}px)"
+    "ptr_quickref": "빠른 참조 (기준 {b}px)",
+    "oc_title": "불투명도 계산기",
+    "oc_subtitle": "다양한 불투명도에서 색상을 미리보고 혼합된 hex 값을 얻으세요",
+    "oc_fg": "전경색",
+    "oc_bg": "배경색",
+    "oc_opacity": "불투명도",
+    "oc_blended": "{bg} 위에 혼합된 결과",
+    "oc_scale": "불투명도 단계",
+    "rng_title": "랜덤 이름 생성기",
+    "rng_subtitle": "사실적인 이름, 판타지 캐릭터 이름, 비즈니스 이름을 즉시 생성합니다",
+    "rng_realistic": "사실적",
+    "rng_fantasy": "판타지",
+    "rng_business": "비즈니스",
+    "rng_random": "랜덤",
+    "rng_middle": "가운데 이니셜",
+    "rng_gennames": "이름 생성",
+    "rng_generated": "{n}개 이름 생성됨",
+    "rng_regen": "다시 생성"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

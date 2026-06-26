@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -36,6 +37,7 @@ function genBusiness():string{
 const tool = getToolBySlug('random-name-generator')!
 
 export default function RandomNameGeneratorPage() {
+  const t = useTranslations('toolui')
   const [type,setType]=useState<GenType>('realistic')
   const [sex,setSex]=useState<'male'|'female'|'random'>('random')
   const [middle,setMiddle]=useState(false)
@@ -55,43 +57,43 @@ export default function RandomNameGeneratorPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Random Name Generator</h1>
-        <p className="text-gray-500 mb-8">Generate realistic names, fantasy character names, or business names instantly</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('rng_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('rng_subtitle')}</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
           <div className="flex gap-2">
-            {([['realistic','Realistic'],['fantasy','Fantasy'],['business','Business']] as [GenType,string][]).map(([t,l])=>(
-              <button key={t} onClick={()=>setType(t)} className={'flex-1 py-2 text-sm rounded-lg font-medium transition-colors '+(type===t?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>{l}</button>
+            {([['realistic','rng_realistic'],['fantasy','rng_fantasy'],['business','rng_business']] as [GenType,string][]).map(([ty,l])=>(
+              <button key={ty} onClick={()=>setType(ty)} className={'flex-1 py-2 text-sm rounded-lg font-medium transition-colors '+(type===ty?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>{t(l)}</button>
             ))}
           </div>
           {type==='realistic'&&(
             <div className="flex items-center gap-4 flex-wrap">
               <div className="flex gap-1">
                 {(['random','male','female'] as const).map(s=>(
-                  <button key={s} onClick={()=>setSex(s)} className={'px-3 py-1.5 text-sm rounded-lg capitalize font-medium transition-colors '+(sex===s?'bg-purple-500 text-white':'bg-gray-100 text-gray-700')}>{s}</button>
+                  <button key={s} onClick={()=>setSex(s)} className={'px-3 py-1.5 text-sm rounded-lg capitalize font-medium transition-colors '+(sex===s?'bg-purple-500 text-white':'bg-gray-100 text-gray-700')}>{t(s==='random'?'rng_random':s==='male'?'cal_male':'cal_female')}</button>
                 ))}
               </div>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={middle} onChange={e=>setMiddle(e.target.checked)} className="rounded" />
-                <span className="text-sm">Middle initial</span>
+                <span className="text-sm">{t('rng_middle')}</span>
               </label>
             </div>
           )}
           <div className="flex items-center gap-3">
-            <label className="text-sm font-medium text-gray-700">Count</label>
+            <label className="text-sm font-medium text-gray-700">{t('ubg_count')}</label>
             <input type="range" min={1} max={50} value={count} onChange={e=>setCount(parseInt(e.target.value))} className="flex-1" />
             <span className="text-brand-600 font-bold w-6 text-right">{count}</span>
           </div>
           <button onClick={generate} className="w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-colors">
-            Generate Names
+            {t('rng_gennames')}
           </button>
         </div>
         {names.length>0&&(
           <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5">
             <div className="flex items-center justify-between mb-3">
-              <span className="font-semibold text-gray-800">{names.length} names generated</span>
+              <span className="font-semibold text-gray-800">{t('rng_generated',{n:names.length})}</span>
               <div className="flex gap-2">
-                <button onClick={generate} className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg">Regenerate</button>
-                <button onClick={copy} className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg">{copied?'\u2713 Copied':'Copy All'}</button>
+                <button onClick={generate} className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg">{t('rng_regen')}</button>
+                <button onClick={copy} className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg">{copied?'\u2713 '+t('ui_copied'):t('ui_copy_all')}</button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-1.5">

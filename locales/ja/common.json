@@ -3282,6 +3282,16 @@
       "基準フォントサイズを設定します。",
       "pxまたはrem値を入力します。",
       "変換された値をコピーします。"
+    ],
+    "opacity-calculator": [
+      "前景色と背景色を選びます。",
+      "不透明度を調整します。",
+      "合成されたhex値を確認します。"
+    ],
+    "random-name-generator": [
+      "名前の種類を選びます。",
+      "個数とオプションを設定します。",
+      "生成された名前をコピーします。"
     ]
   },
   "games": {
@@ -5342,7 +5352,24 @@
     "ua_invalid": "無効なURL形式",
     "ua_note_label": "注:",
     "ua_note_text": "このツールはURL構造のみを分析します。URLの内容にアクセスや検証は行いません。見慣れないリンクをクリックする前に常に注意してください。",
-    "ptr_quickref": "クイック参照 (基準 {b}px)"
+    "ptr_quickref": "クイック参照 (基準 {b}px)",
+    "oc_title": "不透明度計算機",
+    "oc_subtitle": "さまざまな不透明度で色をプレビューし、合成hex値を取得します",
+    "oc_fg": "前景色",
+    "oc_bg": "背景色",
+    "oc_opacity": "不透明度",
+    "oc_blended": "{bg} 上の合成結果",
+    "oc_scale": "不透明度スケール",
+    "rng_title": "ランダム名前ジェネレーター",
+    "rng_subtitle": "リアルな名前、ファンタジーのキャラクター名、ビジネス名を即座に生成します",
+    "rng_realistic": "リアル",
+    "rng_fantasy": "ファンタジー",
+    "rng_business": "ビジネス",
+    "rng_random": "ランダム",
+    "rng_middle": "ミドルネームの頭文字",
+    "rng_gennames": "名前を生成",
+    "rng_generated": "{n}個の名前を生成",
+    "rng_regen": "再生成"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

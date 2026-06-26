@@ -2977,6 +2977,16 @@
       "Set the base font size.",
       "Enter a px or rem value.",
       "Copy the converted value."
+    ],
+    "opacity-calculator": [
+      "Choose foreground and background colors.",
+      "Adjust the opacity.",
+      "See the blended hex value."
+    ],
+    "random-name-generator": [
+      "Choose a name type.",
+      "Set the count and options.",
+      "Copy the generated names."
     ]
   },
   "games": {
@@ -5037,7 +5047,24 @@
     "ua_invalid": "Invalid URL format",
     "ua_note_label": "Note:",
     "ua_note_text": "This tool analyzes URL structure only. It does not visit or verify the content of the URL. Always exercise caution before clicking unfamiliar links.",
-    "ptr_quickref": "Quick reference (base {b}px)"
+    "ptr_quickref": "Quick reference (base {b}px)",
+    "oc_title": "Opacity Calculator",
+    "oc_subtitle": "Preview colors at different opacity levels and get the blended hex value",
+    "oc_fg": "Foreground Color",
+    "oc_bg": "Background Color",
+    "oc_opacity": "Opacity",
+    "oc_blended": "Blended result on {bg}",
+    "oc_scale": "Opacity Scale",
+    "rng_title": "Random Name Generator",
+    "rng_subtitle": "Generate realistic names, fantasy character names, or business names instantly",
+    "rng_realistic": "Realistic",
+    "rng_fantasy": "Fantasy",
+    "rng_business": "Business",
+    "rng_random": "Random",
+    "rng_middle": "Middle initial",
+    "rng_gennames": "Generate Names",
+    "rng_generated": "{n} names generated",
+    "rng_regen": "Regenerate"
   },
   "toolTags": {
     "spinner-wheel": [
