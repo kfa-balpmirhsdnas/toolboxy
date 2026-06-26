@@ -17,11 +17,12 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
   const [entries, setEntries] = useState<Entry[]>([])
   const [error, setError] = useState('')
   const [showAll, setShowAll] = useState(false)
+  const [done, setDone] = useState<{ folder: string; n: number } | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const LIMIT = 10
 
   async function load(f: File) {
-    setName(f.name); setError(''); setEntries([]); setShowAll(false); trackToolUsed('unzip')
+    setName(f.name); setError(''); setEntries([]); setShowAll(false); setDone(null); trackToolUsed('unzip')
     try {
       const { unzipSync } = await import('fflate')
       const buf = new Uint8Array(await f.arrayBuffer())
@@ -60,6 +61,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
         const folder = (name.replace(/\.zip$/i, '') || 'extracted').replace(/[\\/:*?"<>|]+/g, '_')
         const dir = await root.getDirectoryHandle(folder, { create: true })
         for (const e of entries) await writeInto(dir, e.name, e.data)
+        setDone({ folder, n: entries.length })
         trackToolDownload('unzip', 'folder')
         return
       } catch (err) {
@@ -93,6 +95,8 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
               <p className="text-xs text-gray-400">{!showAll && entries.length > LIMIT ? t('uz_entries_some', { shown: LIMIT, total: entries.length }) : t('uz_entries', { n: entries.length })}</p>
               <button onClick={extractAll} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">📂 {t('uz_downloadall')}</button>
             </div>
+
+            {done && <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-xl p-3">{t('uz_extracted', { folder: done.folder, n: done.n })}</p>}
             <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-72 overflow-auto">
               {(showAll ? entries : entries.slice(0, LIMIT)).map((e, i) => (
                 <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">

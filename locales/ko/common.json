@@ -3261,7 +3261,8 @@
     "zf_name": "압축 파일 이름",
     "uz_entries_some": "파일 {shown}개 (총 파일 {total}개)",
     "uz_more": "…외 {n}개 더 보기",
-    "uz_less": "접기"
+    "uz_less": "접기",
+    "uz_extracted": "✓ ‘{folder}’ 폴더에 {n}개 파일을 풀었어요."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

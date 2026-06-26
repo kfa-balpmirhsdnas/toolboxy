@@ -3228,7 +3228,8 @@
     "zf_name": "ZIPファイル名",
     "uz_entries_some": "{shown}件（全{total}件）",
     "uz_more": "他{n}件を表示",
-    "uz_less": "閉じる"
+    "uz_less": "閉じる",
+    "uz_extracted": "✓ 「{folder}」フォルダに{n}件を展開しました。"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

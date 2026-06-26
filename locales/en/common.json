@@ -2928,7 +2928,8 @@
     "zf_name": "Zip file name",
     "uz_entries_some": "{shown} of {total} files",
     "uz_more": "Show {n} more",
-    "uz_less": "Show less"
+    "uz_less": "Show less",
+    "uz_extracted": "✓ Extracted {n} files into the “{folder}” folder."
   },
   "toolTags": {
     "spinner-wheel": [
