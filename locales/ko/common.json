@@ -2995,6 +2995,16 @@
       "도형 프리셋을 고르거나 직접 입력하세요.",
       "배경색을 설정하세요.",
       "생성된 clip-path CSS를 복사하세요."
+    ],
+    "css-flexbox-playground": [
+      "flex 속성들을 조절하세요.",
+      "미리보기에서 정렬을 확인하세요.",
+      "생성된 CSS를 복사하세요."
+    ],
+    "css-grid-generator": [
+      "열·행 수와 간격을 설정하세요.",
+      "grid-template 값을 직접 조정할 수도 있어요.",
+      "생성된 CSS Grid 코드를 복사하세요."
     ]
   },
   "games": {
@@ -4629,7 +4639,12 @@
     "ccp_d_polygon": "x y 좌표 쌍으로 만드는 다각형",
     "ccp_d_circle": "원형 클립",
     "ccp_d_ellipse": "타원형 클립",
-    "ccp_d_inset": "선택적 둥글기가 있는 사각형"
+    "ccp_d_inset": "선택적 둥글기가 있는 사각형",
+    "fbx_items": "아이템 수:",
+    "cgr_columns": "열",
+    "cgr_rows": "행",
+    "cgr_colgap": "열 간격",
+    "cgr_rowgap": "행 간격"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

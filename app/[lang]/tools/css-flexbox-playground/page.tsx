@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -15,6 +16,7 @@ type AlignContent = 'normal'|'flex-start'|'flex-end'|'center'|'space-between'|'s
 const COLORS = ['#6366f1','#ec4899','#f97316','#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6']
 
 export default function CssFlexboxPlaygroundPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [flexDirection, setFlexDirection] = useState<FlexDir>('row')
   const [flexWrap, setFlexWrap] = useState<FlexWrap>('wrap')
   const [justifyContent, setJustifyContent] = useState<JustifyContent>('flex-start')
@@ -70,7 +72,7 @@ export default function CssFlexboxPlaygroundPage({ params }: { params: { lang: s
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-xs font-medium text-gray-600">Items: {itemCount}</label>
+          <label className="text-xs font-medium text-gray-600">{t('fbx_items')} {itemCount}</label>
           <input type="range" min={1} max={12} value={itemCount} onChange={e=>{setItemCount(parseInt(e.target.value));track()}} className="flex-1 accent-brand-600" />
         </div>
         <div className="border-2 border-dashed border-gray-300 rounded-2xl p-3 min-h-40"
@@ -85,7 +87,7 @@ export default function CssFlexboxPlaygroundPage({ params }: { params: { lang: s
         <div>
           <div className="flex items-center justify-between mb-1">
             <label className="text-xs font-medium text-gray-600">CSS</label>
-            <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
+            <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?t('ui_copied'):t('ui_copy')}</button>
           </div>
           <pre className="p-4 bg-gray-900 text-green-400 text-xs rounded-xl font-mono">{css}</pre>
         </div>

@@ -2657,6 +2657,16 @@
       "Pick a shape preset or type your own.",
       "Set the background color.",
       "Copy the generated clip-path CSS."
+    ],
+    "css-flexbox-playground": [
+      "Adjust the flex properties.",
+      "Watch the live preview update.",
+      "Copy the generated CSS."
+    ],
+    "css-grid-generator": [
+      "Set columns, rows and gaps.",
+      "Fine-tune the grid-template values.",
+      "Copy the generated CSS Grid code."
     ]
   },
   "games": {
@@ -4291,7 +4301,12 @@
     "ccp_d_polygon": "custom polygon with x y point pairs",
     "ccp_d_circle": "circular clip",
     "ccp_d_ellipse": "elliptical clip",
-    "ccp_d_inset": "rectangular with optional rounding"
+    "ccp_d_inset": "rectangular with optional rounding",
+    "fbx_items": "Items:",
+    "cgr_columns": "Columns",
+    "cgr_rows": "Rows",
+    "cgr_colgap": "Column Gap",
+    "cgr_rowgap": "Row Gap"
   },
   "toolTags": {
     "spinner-wheel": [

@@ -2962,6 +2962,16 @@
       "図形プリセットを選ぶか自分で入力します。",
       "背景色を設定します。",
       "生成された clip-path CSS をコピーします。"
+    ],
+    "css-flexbox-playground": [
+      "flexプロパティを調整します。",
+      "プレビューで配置を確認します。",
+      "生成されたCSSをコピーします。"
+    ],
+    "css-grid-generator": [
+      "列・行数と間隔を設定します。",
+      "grid-template値を直接調整できます。",
+      "生成されたCSS Gridコードをコピーします。"
     ]
   },
   "games": {
@@ -4596,7 +4606,12 @@
     "ccp_d_polygon": "x y 座標ペアで作る多角形",
     "ccp_d_circle": "円形クリップ",
     "ccp_d_ellipse": "楕円形クリップ",
-    "ccp_d_inset": "任意の角丸付き矩形"
+    "ccp_d_inset": "任意の角丸付き矩形",
+    "fbx_items": "アイテム数:",
+    "cgr_columns": "列",
+    "cgr_rows": "行",
+    "cgr_colgap": "列の間隔",
+    "cgr_rowgap": "行の間隔"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
