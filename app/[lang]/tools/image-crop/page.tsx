@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -12,6 +13,7 @@ function fmtBytes(b: number) {
 }
 
 export default function ImageCropPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [imgSrc, setImgSrc] = useState('')
   const [naturalW, setNaturalW] = useState(0)
   const [naturalH, setNaturalH] = useState(0)
@@ -96,15 +98,15 @@ export default function ImageCropPage({ params }: { params: { lang: string } }) 
           ) : (
             <>
               <p className="text-3xl mb-1">✂️</p>
-              <p className="text-sm font-medium text-gray-600">Drop image or click to select</p>
+              <p className="text-sm font-medium text-gray-600">{t('wc_drop')}</p>
             </>
           )}
         </div>
         {naturalW > 0 && (
           <div className="grid grid-cols-2 gap-3">
-            {([['X (left)', x, setX, 0, naturalW-1], ['Y (top)', y, setY, 0, naturalH-1], ['Width', w, setW, 1, naturalW-x], ['Height', h, setH, 1, naturalH-y]] as [string,number,(v:number)=>void,number,number][]).map(([label, val, setter, min, max]) => (
+            {([['ic_x', x, setX, 0, naturalW-1], ['ic_y', y, setY, 0, naturalH-1], ['ui_width', w, setW, 1, naturalW-x], ['ui_height', h, setH, 1, naturalH-y]] as [string,number,(v:number)=>void,number,number][]).map(([label, val, setter, min, max]) => (
               <div key={label as string}>
-                <label className="block text-xs font-medium text-gray-600 mb-1">{label as string}: {val as number}px</label>
+                <label className="block text-xs font-medium text-gray-600 mb-1">{t(label as string)}: {val as number}px</label>
                 <input type="number" min={min as number} max={max as number} value={val as number}
                   onChange={e => (setter as (v:number)=>void)(clamp(parseInt(e.target.value)||0, min as number, max as number))}
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
@@ -114,9 +116,9 @@ export default function ImageCropPage({ params }: { params: { lang: string } }) 
         )}
         {naturalW > 0 && (
           <div className="flex items-center gap-3">
-            <p className="text-xs text-gray-500">Output: <span className="font-mono font-semibold text-gray-700">{w}x{h}px</span></p>
+            <p className="text-xs text-gray-500">{t('ic_output')}: <span className="font-mono font-semibold text-gray-700">{w}x{h}px</span></p>
             <button onClick={() => { setX(0); setY(0); setW(naturalW); setH(naturalH) }}
-              className="text-xs text-brand-600 hover:underline">Reset</button>
+              className="text-xs text-brand-600 hover:underline">{t('ic_reset')}</button>
           </div>
         )}
         {imgSrc && (
@@ -133,7 +135,7 @@ export default function ImageCropPage({ params }: { params: { lang: string } }) 
         )}
         <button onClick={crop} disabled={!imgSrc || w <= 0 || h <= 0}
           className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors">
-          Crop Image
+          {t('ic_crop')}
         </button>
         {resultUrl && (
           <div className="space-y-3">
@@ -141,7 +143,7 @@ export default function ImageCropPage({ params }: { params: { lang: string } }) 
             <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-xl">
               <span className="text-sm text-green-800 font-medium">{w}x{h}px — {fmtBytes(resultSize)}</span>
               <button onClick={download} className="px-4 py-1.5 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700">
-                &#x2B07; Download
+                &#x2B07; {t('ui_download')}
               </button>
             </div>
           </div>

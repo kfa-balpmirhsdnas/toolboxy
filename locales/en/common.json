@@ -3077,6 +3077,16 @@
       "Set the unit and DPI.",
       "Move the mouse over the ruler.",
       "Read the px, cm or inch measurement."
+    ],
+    "image-crop": [
+      "Upload an image.",
+      "Set the crop area (X, Y, width, height).",
+      "Crop and download."
+    ],
+    "number-sequence-generator": [
+      "Set start, end and step.",
+      "Choose separator, prefix and suffix.",
+      "Copy or download the sequence."
     ]
   },
   "games": {
@@ -5293,7 +5303,23 @@
     "ati_changeimg": "Change image",
     "ati_note": "Drag any text or emoji to position it. Processed entirely in your browser.",
     "pr_length": "Length",
-    "pr_note": "Move mouse over the ruler to measure. Screen DPI auto-detected: {dpi}px/in."
+    "pr_note": "Move mouse over the ruler to measure. Screen DPI auto-detected: {dpi}px/in.",
+    "ic_x": "X (left)",
+    "ic_y": "Y (top)",
+    "ic_output": "Output",
+    "ic_reset": "Reset",
+    "ic_crop": "Crop Image",
+    "nsg_toomany": "Too many numbers (max 10,000)",
+    "nsg_start": "Start",
+    "nsg_end": "End",
+    "nsg_step": "Step",
+    "nsg_sep": "Separator",
+    "nsg_newline": "New line",
+    "nsg_prefix": "Prefix",
+    "nsg_suffix": "Suffix",
+    "nsg_zeropad": "Zero-pad numbers",
+    "nsg_generated": "{n} numbers generated",
+    "nsg_toomany2": "Too many numbers (max 10,000). Adjust range or step."
   },
   "toolTags": {
     "spinner-wheel": [
