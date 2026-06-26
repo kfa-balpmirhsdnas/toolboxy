@@ -2837,6 +2837,16 @@
       "Enter the header and payload JSON.",
       "Enter a secret.",
       "Copy the encoded token."
+    ],
+    "sql-formatter": [
+      "Paste your SQL.",
+      "It's auto-formatted by keywords.",
+      "Copy the formatted SQL."
+    ],
+    "xml-formatter": [
+      "Paste your XML.",
+      "Choose the indent size.",
+      "Format or minify, then copy."
     ]
   },
   "games": {
@@ -4707,7 +4717,11 @@
     "jwt_payload": "Payload (JSON)",
     "jwt_secret": "Secret",
     "jwt_token": "Encoded Token",
-    "jwt_copytoken": "Copy Token"
+    "jwt_copytoken": "Copy Token",
+    "sql_input": "SQL Input",
+    "xf_indent": "Indent spaces:",
+    "xf_input": "XML Input",
+    "ui_format": "Format"
   },
   "toolTags": {
     "spinner-wheel": [

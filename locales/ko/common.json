@@ -3175,6 +3175,16 @@
       "헤더와 페이로드 JSON을 입력하세요.",
       "시크릿을 입력하세요.",
       "인코딩된 토큰을 복사하세요."
+    ],
+    "sql-formatter": [
+      "SQL을 붙여넣으세요.",
+      "자동으로 키워드 단위로 정렬됩니다.",
+      "정렬된 SQL을 복사하세요."
+    ],
+    "xml-formatter": [
+      "XML을 붙여넣으세요.",
+      "들여쓰기 칸 수를 고르세요.",
+      "'포맷' 또는 '압축'한 결과를 복사하세요."
     ]
   },
   "games": {
@@ -5045,7 +5055,11 @@
     "jwt_payload": "페이로드 (JSON)",
     "jwt_secret": "시크릿",
     "jwt_token": "인코딩된 토큰",
-    "jwt_copytoken": "토큰 복사"
+    "jwt_copytoken": "토큰 복사",
+    "sql_input": "SQL 입력",
+    "xf_indent": "들여쓰기 칸:",
+    "xf_input": "XML 입력",
+    "ui_format": "포맷"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
