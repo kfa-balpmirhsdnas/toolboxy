@@ -2827,6 +2827,16 @@
       "Enter a pixel value.",
       "Set the base font size.",
       "See rem, em, pt, vw and more."
+    ],
+    "unicode-converter": [
+      "Choose a conversion direction.",
+      "Enter text or U+ codes.",
+      "Copy the converted result."
+    ],
+    "jwt-encoder": [
+      "Enter the header and payload JSON.",
+      "Enter a secret.",
+      "Copy the encoded token."
     ]
   },
   "games": {
@@ -4690,7 +4700,14 @@
     "px_d_mm": "1mm = 3.7795px",
     "px_d_in": "1in = 96px",
     "px_d_vw": "Based on 1920px viewport",
-    "px_d_vh": "Based on 1080px viewport"
+    "px_d_vh": "Based on 1080px viewport",
+    "uc_to": "Text to Unicode",
+    "uc_from": "Unicode to Text",
+    "jwt_header": "Header (JSON)",
+    "jwt_payload": "Payload (JSON)",
+    "jwt_secret": "Secret",
+    "jwt_token": "Encoded Token",
+    "jwt_copytoken": "Copy Token"
   },
   "toolTags": {
     "spinner-wheel": [
