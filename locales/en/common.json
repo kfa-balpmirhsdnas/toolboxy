@@ -2237,6 +2237,21 @@
       "Enter your text.",
       "Find the case you want (camelCase, snake_case, etc.).",
       "Copy the converted result."
+    ],
+    "discount-calculator": [
+      "Pick a mode (sale price, % off, or original).",
+      "Enter the values you know.",
+      "Read the calculated results."
+    ],
+    "calorie-calculator": [
+      "Enter unit, sex, age, height and weight.",
+      "Choose your activity level and goal.",
+      "See your daily calories and macros."
+    ],
+    "tax-calculator": [
+      "Choose tax-exclusive or tax-inclusive mode.",
+      "Enter the amount and tax rate.",
+      "See the pre-tax, tax and total."
     ]
   },
   "games": {
@@ -3104,7 +3119,50 @@
     "nf_l_se": "Swedish",
     "ui_text_ph": "Type or paste your text here...",
     "cc_input": "Input Text",
-    "cc_result_ph": "result appears here"
+    "cc_result_ph": "result appears here",
+    "dc_orig": "Original",
+    "dc_disc": "Discount",
+    "dc_final": "Final Price",
+    "dc_sale": "Sale Price",
+    "dc_save": "You Save",
+    "dc_m_sale": "Find sale price",
+    "dc_m_pct": "Find % off",
+    "dc_m_orig": "Find original",
+    "cal_metric": "Metric",
+    "cal_imperial": "Imperial",
+    "cal_sex": "Sex",
+    "cal_male": "Male",
+    "cal_female": "Female",
+    "cal_age": "Age (years)",
+    "cal_activity": "Activity level",
+    "cal_goal": "Goal",
+    "cal_bmr": "BMR (Base)",
+    "cal_tdee": "TDEE (Maintenance)",
+    "cal_target": "Daily Target",
+    "cal_macros": "Suggested macros (30/45/25)",
+    "cal_protein": "Protein",
+    "cal_carbs": "Carbs",
+    "cal_fat": "Fat",
+    "cal_disclaimer": "Based on Mifflin-St Jeor equation. Consult a professional for medical advice.",
+    "cal_act0": "Sedentary (little/no exercise)",
+    "cal_act1": "Light (1-3 days/week)",
+    "cal_act2": "Moderate (3-5 days/week)",
+    "cal_act3": "Active (6-7 days/week)",
+    "cal_act4": "Very active (hard exercise daily)",
+    "cal_goal0": "Lose weight (−0.5 kg/week)",
+    "cal_goal1": "Lose weight (−0.25 kg/week)",
+    "cal_goal2": "Maintain weight",
+    "cal_goal3": "Gain weight (+0.25 kg/week)",
+    "cal_goal4": "Gain weight (+0.5 kg/week)",
+    "tx_excl": "Tax Exclusive",
+    "tx_incl": "Tax Inclusive",
+    "tx_hint_excl": "Enter price before tax",
+    "tx_hint_incl": "Enter price including tax — tax portion extracted",
+    "tx_amount": "Amount",
+    "tx_rate": "Tax rate",
+    "tx_pretax": "Pre-tax amount",
+    "tx_tax": "Tax",
+    "tx_total": "Total"
   },
   "toolTags": {
     "spinner-wheel": [

@@ -2575,6 +2575,21 @@
       "텍스트를 입력하세요.",
       "원하는 표기(camelCase·snake_case 등)를 찾으세요.",
       "변환 결과를 복사하세요."
+    ],
+    "discount-calculator": [
+      "모드(판매가·할인율·원가 구하기)를 고르세요.",
+      "아는 값을 입력하세요.",
+      "계산 결과를 확인하세요."
+    ],
+    "calorie-calculator": [
+      "단위·성별·나이·키·몸무게를 입력하세요.",
+      "활동량과 목표를 고르세요.",
+      "하루 권장 칼로리와 영양소를 확인하세요."
+    ],
+    "tax-calculator": [
+      "세금 별도/포함 모드를 고르세요.",
+      "금액과 세율을 입력하세요.",
+      "세전·세금·합계를 확인하세요."
     ]
   },
   "games": {
@@ -3442,7 +3457,50 @@
     "nf_l_se": "스웨덴어",
     "ui_text_ph": "여기에 텍스트를 입력하거나 붙여넣으세요...",
     "cc_input": "입력 텍스트",
-    "cc_result_ph": "결과가 여기에 표시됩니다"
+    "cc_result_ph": "결과가 여기에 표시됩니다",
+    "dc_orig": "원가",
+    "dc_disc": "할인율",
+    "dc_final": "최종 가격",
+    "dc_sale": "판매가",
+    "dc_save": "절약액",
+    "dc_m_sale": "판매가 구하기",
+    "dc_m_pct": "할인율 구하기",
+    "dc_m_orig": "원가 구하기",
+    "cal_metric": "미터법",
+    "cal_imperial": "야드파운드",
+    "cal_sex": "성별",
+    "cal_male": "남성",
+    "cal_female": "여성",
+    "cal_age": "나이 (세)",
+    "cal_activity": "활동량",
+    "cal_goal": "목표",
+    "cal_bmr": "기초대사량(BMR)",
+    "cal_tdee": "유지 칼로리(TDEE)",
+    "cal_target": "하루 목표",
+    "cal_macros": "권장 영양소 비율 (30/45/25)",
+    "cal_protein": "단백질",
+    "cal_carbs": "탄수화물",
+    "cal_fat": "지방",
+    "cal_disclaimer": "Mifflin-St Jeor 공식 기반. 의학적 조언은 전문가와 상담하세요.",
+    "cal_act0": "거의 안 함 (운동 거의 없음)",
+    "cal_act1": "가벼움 (주 1-3일)",
+    "cal_act2": "보통 (주 3-5일)",
+    "cal_act3": "활발 (주 6-7일)",
+    "cal_act4": "매우 활발 (매일 강한 운동)",
+    "cal_goal0": "감량 (−0.5 kg/주)",
+    "cal_goal1": "감량 (−0.25 kg/주)",
+    "cal_goal2": "체중 유지",
+    "cal_goal3": "증량 (+0.25 kg/주)",
+    "cal_goal4": "증량 (+0.5 kg/주)",
+    "tx_excl": "세금 별도",
+    "tx_incl": "세금 포함",
+    "tx_hint_excl": "세금 전 가격을 입력하세요",
+    "tx_hint_incl": "세금 포함 가격을 입력하면 세금을 분리합니다",
+    "tx_amount": "금액",
+    "tx_rate": "세율",
+    "tx_pretax": "세전 금액",
+    "tx_tax": "세금",
+    "tx_total": "합계"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

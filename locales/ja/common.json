@@ -2542,6 +2542,21 @@
       "テキストを入力します。",
       "目的のケース（camelCase・snake_caseなど）を探します。",
       "変換結果をコピーします。"
+    ],
+    "discount-calculator": [
+      "モード（販売価格・割引率・元の価格）を選びます。",
+      "分かっている値を入力します。",
+      "計算結果を確認します。"
+    ],
+    "calorie-calculator": [
+      "単位・性別・年齢・身長・体重を入力します。",
+      "活動量と目標を選びます。",
+      "1日のカロリーとマクロを確認します。"
+    ],
+    "tax-calculator": [
+      "税抜／税込モードを選びます。",
+      "金額と税率を入力します。",
+      "税抜・税額・合計を確認します。"
     ]
   },
   "games": {
@@ -3409,7 +3424,50 @@
     "nf_l_se": "スウェーデン語",
     "ui_text_ph": "ここにテキストを入力または貼り付け...",
     "cc_input": "入力テキスト",
-    "cc_result_ph": "結果がここに表示されます"
+    "cc_result_ph": "結果がここに表示されます",
+    "dc_orig": "元の価格",
+    "dc_disc": "割引率",
+    "dc_final": "最終価格",
+    "dc_sale": "販売価格",
+    "dc_save": "節約額",
+    "dc_m_sale": "販売価格を計算",
+    "dc_m_pct": "割引率を計算",
+    "dc_m_orig": "元の価格を計算",
+    "cal_metric": "メートル法",
+    "cal_imperial": "ヤード・ポンド",
+    "cal_sex": "性別",
+    "cal_male": "男性",
+    "cal_female": "女性",
+    "cal_age": "年齢（歳）",
+    "cal_activity": "活動量",
+    "cal_goal": "目標",
+    "cal_bmr": "基礎代謝量(BMR)",
+    "cal_tdee": "維持カロリー(TDEE)",
+    "cal_target": "1日の目標",
+    "cal_macros": "推奨マクロ (30/45/25)",
+    "cal_protein": "タンパク質",
+    "cal_carbs": "炭水化物",
+    "cal_fat": "脂質",
+    "cal_disclaimer": "Mifflin-St Jeor式に基づく。医学的助言は専門家にご相談ください。",
+    "cal_act0": "ほとんど運動なし",
+    "cal_act1": "軽い（週1-3日）",
+    "cal_act2": "普通（週3-5日）",
+    "cal_act3": "活発（週6-7日）",
+    "cal_act4": "非常に活発（毎日激しい運動）",
+    "cal_goal0": "減量（−0.5 kg/週）",
+    "cal_goal1": "減量（−0.25 kg/週）",
+    "cal_goal2": "体重維持",
+    "cal_goal3": "増量（+0.25 kg/週）",
+    "cal_goal4": "増量（+0.5 kg/週）",
+    "tx_excl": "税抜",
+    "tx_incl": "税込",
+    "tx_hint_excl": "税抜価格を入力",
+    "tx_hint_incl": "税込価格を入力すると税額を分離します",
+    "tx_amount": "金額",
+    "tx_rate": "税率",
+    "tx_pretax": "税抜金額",
+    "tx_tax": "税",
+    "tx_total": "合計"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
