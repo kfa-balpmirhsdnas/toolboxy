@@ -787,7 +787,12 @@
     "engagement-rate-calculator": "Free calculator for social media engagement rate from followers, likes and comments.",
     "encoding-converter": "Free tool to fix garbled text by converting files between EUC-KR/CP949, UTF-8, Shift_JIS and more — in your browser.",
     "csv-to-excel": "Free tool to convert CSV to Excel (.xlsx) and Excel back to CSV, right in your browser.",
-    "online-notepad": "A simple online notepad that autosaves to your browser. Write notes, count words, and download as a text file — no login, nothing uploaded."
+    "online-notepad": "A simple online notepad that autosaves to your browser. Write notes, count words, and download as a text file — no login, nothing uploaded.",
+    "batch-image-resizer": "Batch image resize — resize many images at once by width/height, percentage, or longest side. Free, fast, and private: everything runs in your browser, nothing is uploaded.",
+    "batch-image-converter": "Bulk image converter — convert many images at once between JPG, PNG, and WebP with a quality slider. Free and private: all conversion happens in your browser, no uploads.",
+    "batch-image-compressor": "Batch compress images — shrink many photos at once with a quality slider or a target file size, and see how much each one saved. Free and private, all in your browser.",
+    "batch-image-watermark": "Batch watermark images — add a text or logo watermark to many images at once, with position, size, and opacity control. Free and private, all in your browser, no uploads.",
+    "batch-image-rename": "Batch rename images — rename many image files by rule (prefix, numbering, find & replace, case, date…) with a live preview, then download them as a zip. Free and private, in your browser."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1492,6 +1497,71 @@
         {
           "q": "Can I move the text around?",
           "a": "Yes - drag any text or emoji to position it, and resize or recolor it."
+        }
+      ]
+    },
+    "batch-image-resizer": {
+      "intro": "Add images, set your options, and process them all at once — right in your browser.",
+      "faq": [
+        {
+          "q": "How many images can I process at once?",
+          "a": "There's no fixed limit — it runs in your browser, so it depends on your device's memory. Dozens to a few hundred images work smoothly; very large batches may take a little longer."
+        },
+        {
+          "q": "Is the original quality kept?",
+          "a": "Yes — only the pixel dimensions change. JPEG/WebP are re-encoded at high quality, and PNG stays lossless."
+        }
+      ]
+    },
+    "batch-image-converter": {
+      "intro": "Add images, set your options, and process them all at once — right in your browser.",
+      "faq": [
+        {
+          "q": "How many images can I process at once?",
+          "a": "There's no fixed limit — it runs in your browser, so it depends on your device's memory. Dozens to a few hundred images work smoothly; very large batches may take a little longer."
+        },
+        {
+          "q": "Is the original quality kept?",
+          "a": "At high quality the difference is hard to notice. PNG output is lossless; JPEG and WebP use the quality you choose."
+        }
+      ]
+    },
+    "batch-image-compressor": {
+      "intro": "Add images, set your options, and process them all at once — right in your browser.",
+      "faq": [
+        {
+          "q": "How many images can I process at once?",
+          "a": "There's no fixed limit — it runs in your browser, so it depends on your device's memory. Dozens to a few hundred images work smoothly; very large batches may take a little longer."
+        },
+        {
+          "q": "Is the original quality kept?",
+          "a": "Compression trades some quality for smaller files — that's the point — but you control the quality level, and the preview shows the size saved."
+        }
+      ]
+    },
+    "batch-image-watermark": {
+      "intro": "Add images, set your options, and process them all at once — right in your browser.",
+      "faq": [
+        {
+          "q": "How many images can I process at once?",
+          "a": "There's no fixed limit — it runs in your browser, so it depends on your device's memory. Dozens to a few hundred images work smoothly; very large batches may take a little longer."
+        },
+        {
+          "q": "Is the original quality kept?",
+          "a": "Only the watermark is added on top — the rest of the image is re-encoded at high quality, keeping the original size."
+        }
+      ]
+    },
+    "batch-image-rename": {
+      "intro": "Add images, set your options, and process them all at once — right in your browser.",
+      "faq": [
+        {
+          "q": "How many images can I process at once?",
+          "a": "There's no fixed limit — it runs in your browser, so it depends on your device's memory. Dozens to a few hundred images work smoothly; very large batches may take a little longer."
+        },
+        {
+          "q": "Are my photos altered?",
+          "a": "No — the image data is untouched. Only the filename changes, and the renamed copies are packed into a zip (browsers can't rename your originals in place)."
         }
       ]
     }
@@ -3488,6 +3558,31 @@
       "Type or paste your notes in the editor.",
       "Everything saves automatically in your browser as you type.",
       "Download as a .txt file or copy when you are done."
+    ],
+    "batch-image-resizer": [
+      "Drag & drop your images (or click to select).",
+      "Pick a resize mode and set the size or percentage.",
+      "Process, then download each image or all as a zip."
+    ],
+    "batch-image-converter": [
+      "Add your images.",
+      "Choose the output format (JPG/PNG/WebP) and quality.",
+      "Convert, then download all as a zip."
+    ],
+    "batch-image-compressor": [
+      "Add your images.",
+      "Set a quality level or a target file size.",
+      "Compress and download — see how much each file shrank."
+    ],
+    "batch-image-watermark": [
+      "Add your images.",
+      "Choose a text or logo watermark and set position/opacity.",
+      "Apply and download all watermarked images as a zip."
+    ],
+    "batch-image-rename": [
+      "Add your images.",
+      "Turn on rename rules (prefix, numbering, find & replace…).",
+      "Check the live name preview, then download as a zip."
     ]
   },
   "games": {
@@ -6219,7 +6314,69 @@
     "bip_skipped_n": "{n} file(s) skipped",
     "bip_done_n": "{n} images ready",
     "bip_download_all": "Download all (.zip)",
-    "bip_zipping": "Zipping…"
+    "bip_zipping": "Zipping…",
+    "bir_mode_maxside": "Max size (longest side)",
+    "bir_mode_dimensions": "Width / Height",
+    "bir_mode_percent": "Percentage",
+    "bir_longest_side": "Longest side",
+    "bir_downscale_only": "(downscale only)",
+    "bir_auto": "auto",
+    "bir_keep_ratio": "Keep aspect ratio",
+    "bir_scale": "Scale",
+    "bcv_output_format": "Output format",
+    "bcv_quality": "Quality",
+    "bcv_lossless": "lossless (PNG)",
+    "bcp_quality": "Quality",
+    "bcp_quality_hint": "Lower quality = smaller files. JPEG/WebP only; PNG stays lossless.",
+    "bcp_target_size": "Target file size",
+    "bcp_aim_under": "Aim for under",
+    "bcp_kb_each": "KB each",
+    "bwm_text": "Text",
+    "bwm_logo": "Logo image",
+    "bwm_text_ph": "Watermark text",
+    "bwm_color": "Color",
+    "bwm_size": "Size",
+    "bwm_change_logo": "Change logo",
+    "bwm_upload_logo": "Upload logo",
+    "bwm_no_logo": "No logo selected",
+    "bwm_logo_size": "Logo size",
+    "bwm_opacity": "Opacity",
+    "bwm_position": "Position",
+    "brn_browser_notice": "Browsers can't rename your original files in place. This tool packages the renamed copies into a .zip for you to download.",
+    "brn_affix": "Prefix / Suffix",
+    "brn_prefix": "Prefix",
+    "brn_suffix": "Suffix",
+    "brn_sequence": "Sequence number",
+    "brn_start": "Start",
+    "brn_digits": "Digits",
+    "brn_step": "Step",
+    "brn_at_front": "at front",
+    "brn_at_back": "at back",
+    "brn_find_replace": "Find & replace",
+    "brn_find": "Find",
+    "brn_replace": "Replace",
+    "brn_advanced": "Advanced options",
+    "brn_n_on": "({n} on)",
+    "brn_spaces": "Spaces",
+    "brn_to_underscore": "→ underscore (_)",
+    "brn_to_hyphen": "→ hyphen (-)",
+    "brn_remove": "remove",
+    "brn_strip": "Strip special / non-English characters",
+    "brn_strip_hint": "Removes / \\ : * ? \" < > | and Hangul/emoji",
+    "brn_case": "Letter case",
+    "brn_lower": "lowercase",
+    "brn_upper": "UPPERCASE",
+    "brn_capitalize": "Capitalize",
+    "brn_ext_lower": "Lowercase extension (.JPG → .jpg)",
+    "brn_date": "Insert date",
+    "brn_truncate": "Truncate name",
+    "brn_keep": "keep",
+    "brn_first": "first",
+    "brn_last": "last",
+    "brn_chars": "chars",
+    "brn_cta": "Rename & zip",
+    "bnav_continue": "Continue with these {n} results in:",
+    "bnav_related": "Related batch tools"
   },
   "toolTags": {
     "spinner-wheel": [
@@ -6270,6 +6427,41 @@
       "notes",
       "text editor",
       "autosave"
+    ],
+    "batch-image-resizer": [
+      "batch image resize",
+      "bulk resize images",
+      "resize multiple images",
+      "image resizer",
+      "in browser"
+    ],
+    "batch-image-converter": [
+      "bulk image converter",
+      "batch convert images",
+      "jpg to webp",
+      "png to jpg",
+      "in browser"
+    ],
+    "batch-image-compressor": [
+      "batch compress images",
+      "bulk image compressor",
+      "reduce image size",
+      "compress photos",
+      "in browser"
+    ],
+    "batch-image-watermark": [
+      "batch watermark images",
+      "bulk watermark",
+      "add logo to images",
+      "text watermark",
+      "in browser"
+    ],
+    "batch-image-rename": [
+      "batch rename images",
+      "bulk rename files",
+      "sequential file names",
+      "add prefix suffix",
+      "in browser"
     ]
   },
   "toolNames": {
@@ -6355,7 +6547,12 @@
     "engagement-rate-calculator": "Engagement Rate Calculator",
     "encoding-converter": "Text Encoding Converter",
     "csv-to-excel": "CSV ↔ Excel Converter",
-    "online-notepad": "Online Notepad"
+    "online-notepad": "Online Notepad",
+    "batch-image-resizer": "Batch Image Resizer",
+    "batch-image-converter": "Bulk Image Converter",
+    "batch-image-compressor": "Batch Image Compressor",
+    "batch-image-watermark": "Batch Image Watermark",
+    "batch-image-rename": "Batch Image Rename"
   },
   "howtoNote": {
     "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",

@@ -66,6 +66,11 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 
 export const TOOLS: ToolMeta[] = [
   {slug:'online-notepad',category:'text',also:['utility'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['온라인 메모장','메모장','notepad','online notepad','notes','메모','text editor','자동 저장'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'batch-image-resizer',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 리사이즈','일괄 크기 변경','batch image resize','bulk resize images','画像一括リサイズ'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'batch-image-converter',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 변환','일괄 포맷 변환','bulk image converter','batch convert images','画像一括変換'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'batch-image-compressor',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 압축','일괄 용량 줄이기','batch compress images','bulk image compressor','画像一括圧縮'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'batch-image-watermark',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 워터마크','일괄 워터마크','batch watermark images','bulk watermark','画像一括透かし'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'batch-image-rename',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 이름변경','일괄 파일명 변경','batch rename images','bulk rename','画像一括リネーム'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'encoding-converter',category:'file',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['인코딩 변환','euc-kr utf-8','한글 깨짐','text encoding converter','charset converter'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'csv-to-excel',category:'file',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['csv to excel','엑셀 변환','csv xlsx','excel to csv','csv 엑셀 변환'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'nickname-generator',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['닉네임 생성기','아이디 추천','아이디 만들기','username generator','nickname generator'],maxFileSizeMB:{free:0,pro:0} },

@@ -62,6 +62,16 @@ interface Props {
   accept?: string
   /** Optional override for the process button label (else "Process N images"). */
   ctaLabel?: string
+  /**
+   * Optional live name preview. When provided, each input thumbnail's caption
+   * shows the computed output name (updating as the function identity changes),
+   * with the original name in the tooltip. Used by the rename tool.
+   */
+  previewName?: (file: File, index: number) => string
+  /** Optional files to seed the queue with on mount (used for tool-to-tool handoff). */
+  initialFiles?: File[] | null
+  /** Called with the produced files when a run finishes (used for handoff). */
+  onComplete?: (files: File[]) => void
 }
 
 let _seq = 0
@@ -69,6 +79,16 @@ const uid = () => `${Date.now()}-${_seq++}`
 
 const fmtBytes = (b: number) =>
   b < 1024 ? `${b} B` : b < 1024 * 1024 ? `${(b / 1024).toFixed(0)} KB` : `${(b / 1024 / 1024).toFixed(2)} MB`
+
+/** Size delta as a percent badge: green "−NN%" when smaller, gray "+NN%" when larger. */
+function SavingsBadge({ inB, outB }: { inB: number; outB: number }) {
+  if (inB <= 0) return null
+  const pct = Math.round((1 - outB / inB) * 100)
+  if (pct === 0) return null
+  return pct > 0
+    ? <span className="text-green-600 font-medium"> (−{pct}%)</span>
+    : <span className="text-gray-400"> (+{Math.abs(pct)}%)</span>
+}
 
 /** Ensure unique names inside the zip (foo.png, foo (1).png, …). */
 function dedupeName(name: string, used: Set<string>): string {
@@ -83,7 +103,7 @@ function dedupeName(name: string, used: Set<string>): string {
   return candidate
 }
 
-export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel }: Props) {
+export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete }: Props) {
   const t = useTranslations('toolui')
   const [items, setItems] = useState<InputItem[]>([])
   const [results, setResults] = useState<OutItem[]>([])
@@ -107,6 +127,14 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
     itemsRef.current.forEach((it) => URL.revokeObjectURL(it.url))
     resultsRef.current.forEach((r) => URL.revokeObjectURL(r.url))
   }, [])
+
+  // Seed the queue once from handed-off files (e.g. "continue in another tool").
+  const seeded = useRef(false)
+  useEffect(() => {
+    if (seeded.current || !initialFiles?.length) return
+    seeded.current = true
+    setItems(initialFiles.map((file) => ({ id: uid(), file, url: URL.createObjectURL(file) })))
+  }, [initialFiles])
 
   const acceptsFile = useCallback((f: File) => f.type.startsWith('image/') || f.type === '', [])
 
@@ -181,7 +209,10 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
     setResults(out)
     setSkipped(skip)
     setStatus('done')
-    if (out.length) trackToolUsed(slug)
+    if (out.length) {
+      trackToolUsed(slug)
+      onComplete?.(out.map((o) => new File([o.blob], o.name, { type: o.blob.type })))
+    }
   }
 
   function downloadOne(r: OutItem) {
@@ -257,8 +288,9 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
             </button>
           </div>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-            {items.map((it) => (
-              <div key={it.id} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+            {items.map((it, idx) => (
+              <div key={it.id} title={previewName ? `${it.file.name} → ${previewName(it.file, idx)}` : it.file.name}
+                className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={it.url} alt={it.file.name} className="w-full h-full object-cover" />
                 <button
@@ -269,7 +301,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
                   ✕
                 </button>
                 <span className="absolute bottom-0 inset-x-0 px-1 py-0.5 bg-black/45 text-white text-[10px] truncate">
-                  {it.file.name}
+                  {previewName ? previewName(it.file, idx) : it.file.name}
                 </span>
               </div>
             ))}
@@ -314,7 +346,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
           <div className="flex items-center justify-between flex-wrap gap-2">
             <p className="text-sm font-semibold text-gray-700">
               {t('bip_done_n', { n: results.length })}
-              <span className="ml-2 font-normal text-gray-400">{fmtBytes(totalIn)} → {fmtBytes(totalOut)}</span>
+              <span className="ml-2 font-normal text-gray-400">{fmtBytes(totalIn)} → {fmtBytes(totalOut)}<SavingsBadge inB={totalIn} outB={totalOut} /></span>
             </p>
             <button onClick={downloadZip} disabled={zipping}
               className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 transition-colors">
@@ -328,7 +360,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
                 <img src={r.url} alt={r.name} className="w-10 h-10 rounded object-cover border border-gray-200 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-gray-800 truncate">{r.name}</p>
-                  <p className="text-xs text-gray-400">{fmtBytes(r.inSize)} → {fmtBytes(r.outSize)}</p>
+                  <p className="text-xs text-gray-400">{fmtBytes(r.inSize)} → {fmtBytes(r.outSize)}<SavingsBadge inB={r.inSize} outB={r.outSize} /></p>
                 </div>
                 <button onClick={() => downloadOne(r)}
                   className="shrink-0 text-xs px-2.5 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
