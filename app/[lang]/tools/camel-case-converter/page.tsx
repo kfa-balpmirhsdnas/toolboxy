@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -32,6 +33,7 @@ const CONVERSIONS = [
 ]
 
 export default function CamelCaseConverterPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('helloWorldThisIsATest')
   const [copied, setCopied] = useState<string|null>(null)
   const tracked = useRef(false)
@@ -51,7 +53,7 @@ export default function CamelCaseConverterPage({ params }: { params: { lang: str
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Input (any case)</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1">{t('cam_input')}</label>
           <input value={input} onChange={e=>{setInput(e.target.value);track()}} placeholder="myVariableName or my-variable-name"
             className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
         </div>
@@ -62,7 +64,7 @@ export default function CamelCaseConverterPage({ params }: { params: { lang: str
                 className="p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:border-brand-300 transition-colors group">
                 <p className="text-xs text-gray-400 mb-0.5">{r.label}</p>
                 <p className="text-sm font-mono text-gray-800 truncate">{r.output}</p>
-                <p className="text-xs text-brand-400 opacity-0 group-hover:opacity-100 transition-opacity">{copied===r.id?'\u2713':'Click to copy'}</p>
+                <p className="text-xs text-brand-400 opacity-0 group-hover:opacity-100 transition-opacity">{copied===r.id?'\u2713':t('ui_click_copy')}</p>
               </div>
             ))}
           </div>

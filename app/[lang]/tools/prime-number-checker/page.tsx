@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('prime-number-checker')!
@@ -25,6 +26,7 @@ function sieve(limit:number):number[]{
 function nextPrime(n:number):number{let m=n+1;while(!isPrime(m))m++;return m}
 function prevPrime(n:number):number{let m=n-1;while(m>1&&!isPrime(m))m--;return m>1?m:-1}
 export default function PrimeNumberCheckerPage() {
+  const t = useTranslations('toolui')
   const [num,setNum]=useState(17)
   const [mode,setMode]=useState<'check'|'list'>('check')
   const [limit,setLimit]=useState(100)
@@ -37,20 +39,20 @@ export default function PrimeNumberCheckerPage() {
     <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4 space-y-4">
         <div className="flex rounded-lg overflow-hidden border border-gray-300">
-          <button onClick={()=>setMode('check')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='check'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Check Number</button>
-          <button onClick={()=>setMode('list')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='list'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>List Primes</button>
+          <button onClick={()=>setMode('check')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='check'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>{t('pn_check')}</button>
+          <button onClick={()=>setMode('list')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='list'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>{t('pn_list')}</button>
         </div>
         {mode==='check'?(
           <div className="space-y-4">
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Enter a number</label>
+            <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('pn_enter')}</label>
               <input type="number" value={num} onChange={e=>setNum(Number(e.target.value))} min="0" className="w-full rounded border border-gray-300 px-3 py-3 text-2xl font-mono text-center"/></div>
             <div className={'text-center p-6 rounded-xl '+(prime?'bg-green-50 border-2 border-green-300':'bg-gray-50 border-2 border-gray-200')}>
-              <p className="text-4xl font-bold mb-1" style={{color:prime?'#16a34a':'#374151'}}>{prime?'PRIME':'COMPOSITE'}</p>
-              <p className="text-sm" style={{color:prime?'#15803d':'#6b7280'}}>{num} is {prime?'a prime number':'not a prime number'}</p>
+              <p className="text-4xl font-bold mb-1" style={{color:prime?'#16a34a':'#374151'}}>{prime?t('pn_prime'):t('pn_composite')}</p>
+              <p className="text-sm" style={{color:prime?'#15803d':'#6b7280'}}>{num}{prime?t('pn_is_prime'):t('pn_not_prime')}</p>
             </div>
             {!prime&&num>1&&(
               <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-xs font-medium text-gray-600 mb-2">Prime factorization</p>
+                <p className="text-xs font-medium text-gray-600 mb-2">{t('pn_factor')}</p>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   {factors.map((f,i)=>(
                     <span key={i} className="flex items-center gap-1.5">
@@ -64,23 +66,23 @@ export default function PrimeNumberCheckerPage() {
             )}
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <p className="text-xs text-gray-500">Previous prime</p>
+                <p className="text-xs text-gray-500">{t('pn_prev')}</p>
                 <p className="text-xl font-bold text-gray-800 font-mono">{prevPrime(num)>1?prevPrime(num):'—'}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <p className="text-xs text-gray-500">Next prime</p>
+                <p className="text-xs text-gray-500">{t('pn_next')}</p>
                 <p className="text-xl font-bold text-gray-800 font-mono">{nextPrime(num)}</p>
               </div>
             </div>
           </div>
         ):(
           <div className="space-y-3">
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">List primes up to (max 1000)</label>
+            <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('pn_listup')}</label>
               <div className="flex gap-2">
                 <input type="number" value={limit} onChange={e=>setLimit(Math.min(1000,Math.max(2,Number(e.target.value))))} className="flex-1 rounded border border-gray-300 px-3 py-2 font-mono text-xl text-center"/>
-                <button onClick={copy} className="px-3 py-2 rounded border border-gray-300 text-sm hover:bg-gray-50">{copied?'Copied!':'Copy'}</button>
+                <button onClick={copy} className="px-3 py-2 rounded border border-gray-300 text-sm hover:bg-gray-50">{copied?t('ui_copied'):t('ui_copy')}</button>
               </div></div>
-            <p className="text-xs text-gray-500">{primes.length} primes found</p>
+            <p className="text-xs text-gray-500">{primes.length} {t('pn_found')}</p>
             <div className="bg-gray-50 rounded-xl p-3 max-h-64 overflow-y-auto">
               <div className="flex flex-wrap gap-1.5">
                 {primes.map(p=>(

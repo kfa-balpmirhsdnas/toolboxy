@@ -2272,6 +2272,21 @@
       "Enter a value and unit.",
       "See the result in decimal and binary units.",
       "Use reference sizes for a quick compare."
+    ],
+    "camel-case-converter": [
+      "Type the text to convert.",
+      "Find the case style you want.",
+      "Click a card to copy it."
+    ],
+    "data-storage-converter": [
+      "Enter a value and unit.",
+      "See it converted to every storage unit.",
+      "Use the unit you need."
+    ],
+    "prime-number-checker": [
+      "Enter a number in 'Check Number' to test primality.",
+      "See its factorization and the previous/next prime.",
+      "Switch to 'List Primes' to list all primes up to a limit."
     ]
   },
   "games": {
@@ -3254,7 +3269,28 @@
     "fs_r_bluray": "Blu-ray",
     "fs_r_photo": "Photo (JPEG)",
     "fs_r_mp3": "MP3 song",
-    "fs_r_4k": "4K movie"
+    "fs_r_4k": "4K movie",
+    "ui_click_copy": "Click to copy",
+    "cam_input": "Input (any case)",
+    "ds_bit": "Bit (b)",
+    "ds_byte": "Byte (B)",
+    "ds_kb": "Kilobyte (KB)",
+    "ds_mb": "Megabyte (MB)",
+    "ds_gb": "Gigabyte (GB)",
+    "ds_tb": "Terabyte (TB)",
+    "ds_pb": "Petabyte (PB)",
+    "pn_check": "Check Number",
+    "pn_list": "List Primes",
+    "pn_enter": "Enter a number",
+    "pn_prime": "PRIME",
+    "pn_composite": "COMPOSITE",
+    "pn_is_prime": " is a prime number",
+    "pn_not_prime": " is not a prime number",
+    "pn_factor": "Prime factorization",
+    "pn_prev": "Previous prime",
+    "pn_next": "Next prime",
+    "pn_listup": "List primes up to (max 1000)",
+    "pn_found": "primes found"
   },
   "toolTags": {
     "spinner-wheel": [
