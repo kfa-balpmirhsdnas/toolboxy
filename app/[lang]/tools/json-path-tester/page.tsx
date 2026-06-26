@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -82,6 +83,7 @@ const EXAMPLES = [
 ]
 
 export default function JsonPathTesterPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [jsonInput, setJsonInput] = useState(SAMPLE_DATA)
   const [path, setPath] = useState('$.store.books[*].title')
   const [copied, setCopied] = useState(false)
@@ -95,8 +97,8 @@ export default function JsonPathTesterPage({ params }: { params: { lang: string 
   try {
     const parsed = JSON.parse(jsonInput)
     setParseErr('')
-    try { results = queryPath(parsed, path) } catch(e:unknown) { error = e instanceof Error?e.message:'Query error' }
-  } catch(e:unknown) { setParseErr(e instanceof Error?e.message:'Invalid JSON') }
+    try { results = queryPath(parsed, path) } catch(e:unknown) { error = e instanceof Error?e.message:t('jpt_queryerr') }
+  } catch(e:unknown) { setParseErr(e instanceof Error?e.message:t('jm_invalid')) }
 
   const resultStr = JSON.stringify(results.length===1?results[0]:results, null, 2)
 
@@ -110,7 +112,7 @@ export default function JsonPathTesterPage({ params }: { params: { lang: string 
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">JSONPath expression</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1">{t('jpt_expr')}</label>
           <input value={path} onChange={e=>{setPath(e.target.value);track()}} placeholder="$.store.books[*].title"
             className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
         </div>
@@ -123,7 +125,7 @@ export default function JsonPathTesterPage({ params }: { params: { lang: string 
           ))}
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">JSON Data</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1">{t('jpt_data')}</label>
           <textarea value={jsonInput} onChange={e=>{setJsonInput(e.target.value);track()}} rows={7}
             className={'w-full px-4 py-3 border rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none ' + (parseErr?'border-red-300':'border-gray-200')} />
           {parseErr && <p className="text-xs text-red-600 mt-0.5">{parseErr}</p>}
@@ -133,13 +135,13 @@ export default function JsonPathTesterPage({ params }: { params: { lang: string 
         ) : results.length > 0 ? (
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">{results.length} result{results.length>1?'s':''}</label>
-              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
+              <label className="text-xs font-medium text-gray-600">{t('jpt_results',{n:results.length})}</label>
+              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 '+t('ui_copied'):t('ui_copy')}</button>
             </div>
             <pre className="p-4 bg-gray-900 text-green-400 text-xs rounded-xl font-mono overflow-auto max-h-48">{resultStr}</pre>
           </div>
         ) : path && !parseErr ? (
-          <p className="text-sm text-gray-400">No results found for this path.</p>
+          <p className="text-sm text-gray-400">{t('jpt_noresults')}</p>
         ) : null}
       </div>
     </ToolLayout>

@@ -3302,6 +3302,16 @@
       "色名またはhexで検索します。",
       "色グループで絞り込みます。",
       "色をクリックしてhexをコピーします。"
+    ],
+    "json-path-tester": [
+      "JSONデータを入力します。",
+      "JSONPath式を入力します。",
+      "抽出された結果をコピーします。"
+    ],
+    "regex-library": [
+      "カテゴリや検索でパターンを探します。",
+      "正規表現パターンをコピーします。",
+      "入力欄でテキストを入れてテストします。"
     ]
   },
   "games": {
@@ -5405,7 +5415,16 @@
     "hcc_g_blue": "青",
     "hcc_g_purple": "紫",
     "hcc_g_gray": "グレー",
-    "hcc_g_white": "白"
+    "hcc_g_white": "白",
+    "jpt_expr": "JSONPath式",
+    "jpt_data": "JSONデータ",
+    "jpt_results": "{n}件の結果",
+    "jpt_noresults": "このパスの結果が見つかりません。",
+    "jpt_queryerr": "クエリエラー",
+    "rl_search": "パターンを検索...",
+    "rl_all": "すべて",
+    "rl_match": "一致",
+    "rl_nomatch": "不一致"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

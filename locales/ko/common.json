@@ -3335,6 +3335,16 @@
       "색상 이름이나 hex로 검색하세요.",
       "색상 그룹으로 필터링하세요.",
       "색상을 클릭해 hex를 복사하세요."
+    ],
+    "json-path-tester": [
+      "JSON 데이터를 입력하세요.",
+      "JSONPath 표현식을 입력하세요.",
+      "추출된 결과를 복사하세요."
+    ],
+    "regex-library": [
+      "카테고리나 검색으로 패턴을 찾으세요.",
+      "정규식 패턴을 복사하세요.",
+      "입력란에 텍스트를 넣어 테스트하세요."
     ]
   },
   "games": {
@@ -5438,7 +5448,16 @@
     "hcc_g_blue": "파랑",
     "hcc_g_purple": "보라",
     "hcc_g_gray": "회색",
-    "hcc_g_white": "흰색"
+    "hcc_g_white": "흰색",
+    "jpt_expr": "JSONPath 표현식",
+    "jpt_data": "JSON 데이터",
+    "jpt_results": "{n}개 결과",
+    "jpt_noresults": "이 경로에 대한 결과가 없습니다.",
+    "jpt_queryerr": "쿼리 오류",
+    "rl_search": "패턴 검색...",
+    "rl_all": "전체",
+    "rl_match": "일치",
+    "rl_nomatch": "불일치"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

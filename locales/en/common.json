@@ -2997,6 +2997,16 @@
       "Search by color name or hex.",
       "Filter by color group.",
       "Click a color to copy its hex."
+    ],
+    "json-path-tester": [
+      "Enter your JSON data.",
+      "Type a JSONPath expression.",
+      "Copy the extracted results."
+    ],
+    "regex-library": [
+      "Find a pattern by category or search.",
+      "Copy the regex pattern.",
+      "Test it by typing in the input box."
     ]
   },
   "games": {
@@ -5100,7 +5110,16 @@
     "hcc_g_blue": "Blue",
     "hcc_g_purple": "Purple",
     "hcc_g_gray": "Gray",
-    "hcc_g_white": "White"
+    "hcc_g_white": "White",
+    "jpt_expr": "JSONPath expression",
+    "jpt_data": "JSON Data",
+    "jpt_results": "{n} result(s)",
+    "jpt_noresults": "No results found for this path.",
+    "jpt_queryerr": "Query error",
+    "rl_search": "Search patterns...",
+    "rl_all": "All",
+    "rl_match": "Match",
+    "rl_nomatch": "No match"
   },
   "toolTags": {
     "spinner-wheel": [
