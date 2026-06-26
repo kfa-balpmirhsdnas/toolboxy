@@ -2937,6 +2937,16 @@
       "Enter a Unix timestamp to decode it.",
       "Or pick a date to get its timestamp.",
       "Copy the format you need."
+    ],
+    "text-truncator": [
+      "Enter the text to truncate.",
+      "Set limit, unit, position and ellipsis.",
+      "Copy the truncated result."
+    ],
+    "text-padder": [
+      "Enter the text to pad.",
+      "Set pad char, width and alignment.",
+      "Copy the padded result."
     ]
   },
   "games": {
@@ -4898,7 +4908,23 @@
     "uts_date2ts": "Human Date → Timestamp",
     "uts_or": "OR",
     "uts_local": "Local",
-    "uts_relative": "Relative"
+    "uts_relative": "Relative",
+    "ttr_ph": "Text to truncate...",
+    "ttr_limit": "Limit",
+    "ttr_chars": "Characters",
+    "ttr_position": "Position",
+    "ttr_end": "End",
+    "ttr_start": "Start",
+    "ttr_middle": "Middle",
+    "ttr_ellipsis": "Ellipsis",
+    "ttr_result": "Result ({n} chars)",
+    "tpd_padchar": "Pad char",
+    "tpd_align": "Align",
+    "tpd_left": "← Left",
+    "tpd_center": "Center",
+    "tpd_right": "Right →",
+    "tpd_autofit": "Auto-fit all lines",
+    "tpd_ph": "Enter text to pad..."
   },
   "toolTags": {
     "spinner-wheel": [

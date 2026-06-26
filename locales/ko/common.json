@@ -3275,6 +3275,16 @@
       "Unix 타임스탬프를 입력해 변환하세요.",
       "또는 날짜를 골라 타임스탬프를 얻으세요.",
       "필요한 형식을 복사하세요."
+    ],
+    "text-truncator": [
+      "줄일 텍스트를 입력하세요.",
+      "제한·단위·위치·말줄임표를 설정하세요.",
+      "줄인 결과를 복사하세요."
+    ],
+    "text-padder": [
+      "채울 텍스트를 입력하세요.",
+      "채움 문자·너비·정렬을 설정하세요.",
+      "채워진 결과를 복사하세요."
     ]
   },
   "games": {
@@ -5236,7 +5246,23 @@
     "uts_date2ts": "날짜 → 타임스탬프",
     "uts_or": "또는",
     "uts_local": "현지",
-    "uts_relative": "상대 시간"
+    "uts_relative": "상대 시간",
+    "ttr_ph": "줄일 텍스트...",
+    "ttr_limit": "제한",
+    "ttr_chars": "글자",
+    "ttr_position": "위치",
+    "ttr_end": "끝",
+    "ttr_start": "시작",
+    "ttr_middle": "중간",
+    "ttr_ellipsis": "말줄임표",
+    "ttr_result": "결과 ({n}자)",
+    "tpd_padchar": "채움 문자",
+    "tpd_align": "정렬",
+    "tpd_left": "← 왼쪽",
+    "tpd_center": "가운데",
+    "tpd_right": "오른쪽 →",
+    "tpd_autofit": "모든 줄 자동 맞춤",
+    "tpd_ph": "채울 텍스트를 입력하세요..."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -7,6 +8,7 @@ import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 const tool = getToolBySlug('text-padder')!
 
 export default function TextPadderPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const [padChar, setPadChar] = useState(' ')
   const [width, setWidth] = useState(20)
@@ -59,38 +61,38 @@ export default function TextPadderPage({ params }: { params: { lang: string } })
       <div className="space-y-4">
         <div className="flex flex-wrap gap-4 items-end">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Pad char</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">{t('tpd_padchar')}</label>
             <input value={padChar} onChange={e=>{setPadChar(e.target.value.slice(-1)||' ');track()}} maxLength={1}
               className="w-16 px-3 py-2 border border-gray-200 rounded-xl text-sm text-center font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Width</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">{t('ui_width')}</label>
             <input type="number" value={width} min={1} max={500} onChange={e=>{setWidth(parseInt(e.target.value)||1);track()}}
               className="w-20 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Align</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">{t('tpd_align')}</label>
             <div className="flex gap-1">
-              {([['left','\u2190 Left'],['center','Center'],['right','Right \u2192']] as [typeof align,string][]).map(([a,label])=>(
+              {([['left','tpd_left'],['center','tpd_center'],['right','tpd_right']] as [typeof align,string][]).map(([a,label])=>(
                 <button key={a} onClick={()=>{setAlign(a);track()}}
                   className={'px-2.5 py-2 rounded-lg text-xs font-medium transition-colors ' + (align===a?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                  {label}
+                  {t(label)}
                 </button>
               ))}
             </div>
           </div>
           <label className="flex items-center gap-2 cursor-pointer text-sm mb-0.5">
             <input type="checkbox" checked={applyToAll} onChange={e=>{setApplyToAll(e.target.checked);track()}} className="accent-brand-600" />
-            Auto-fit all lines
+            {t('tpd_autofit')}
           </label>
         </div>
-        <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} placeholder="Enter text to pad..." rows={5}
+        <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} placeholder={t('tpd_ph')} rows={5}
           className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none" />
         {output && (
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">Result</label>
-              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
+              <label className="text-xs font-medium text-gray-600">{t('ce_result')}</label>
+              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 '+t('ui_copied'):t('ui_copy')}</button>
             </div>
             <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono whitespace-pre overflow-x-auto">
               {output}
