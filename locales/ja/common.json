@@ -2617,6 +2617,16 @@
       "ページを開くと画面解像度が自動検出されます。",
       "ビューポート・ピクセル比・縦横比などの詳細を確認します。",
       "一般的な解像度の一覧と比較します。"
+    ],
+    "image-placeholder-generator": [
+      "サイズ・背景・文字色を設定します。",
+      "必要ならカスタムテキストを入力します。",
+      "Data URL や placehold.co のリンクをコピーします。"
+    ],
+    "color-blindness-simulator": [
+      "色覚タイプを選びます。",
+      "色を選ぶと元の色とシミュレーションを比較します。",
+      "パレットで複数の色の変化を確認します。"
     ]
   },
   "games": {
@@ -3675,7 +3685,24 @@
     "sr_mp": "メガピクセル",
     "sr_outer": "外側のウィンドウ",
     "sr_compare": "一般的な解像度と比較",
-    "sr_you": "現在"
+    "sr_you": "現在",
+    "ip_bg": "背景色",
+    "ip_fg": "文字色",
+    "ip_custom": "カスタムテキスト（任意）",
+    "cb_test": "色をテスト",
+    "cb_original": "元の色",
+    "cb_palette": "カラーパレットのシミュレーション",
+    "cb_legend": "上: 元の色 — 下: シミュレーション",
+    "cb_normal": "正常な視覚",
+    "cb_normal_d": "完全な色の知覚",
+    "cb_deuteranopia": "緑色弱 (Deuteranopia)",
+    "cb_deuteranopia_d": "緑が見えにくい（最も多い、男性1%）",
+    "cb_protanopia": "赤色弱 (Protanopia)",
+    "cb_protanopia_d": "赤が見えにくい（男性1%）",
+    "cb_tritanopia": "青色弱 (Tritanopia)",
+    "cb_tritanopia_d": "青が見えにくい（まれ、0.001%）",
+    "cb_achromatopsia": "全色盲 (Achromatopsia)",
+    "cb_achromatopsia_d": "完全な色覚異常（非常にまれ）"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

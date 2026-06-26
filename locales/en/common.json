@@ -2312,6 +2312,16 @@
       "Open the page to auto-detect your screen resolution.",
       "Check details like viewport, pixel ratio and aspect ratio.",
       "Compare against the list of common resolutions."
+    ],
+    "image-placeholder-generator": [
+      "Set the size, background and text color.",
+      "Optionally enter custom text.",
+      "Copy the Data URL or placehold.co link."
+    ],
+    "color-blindness-simulator": [
+      "Choose a color-vision type.",
+      "Pick a color to compare original vs simulated.",
+      "Use the palette to see how many colors shift."
     ]
   },
   "games": {
@@ -3370,7 +3380,24 @@
     "sr_mp": "Megapixels",
     "sr_outer": "Outer window",
     "sr_compare": "Compare with common resolutions",
-    "sr_you": "You"
+    "sr_you": "You",
+    "ip_bg": "Background",
+    "ip_fg": "Text color",
+    "ip_custom": "Custom text (optional)",
+    "cb_test": "Test a color",
+    "cb_original": "Original",
+    "cb_palette": "Color palette simulation",
+    "cb_legend": "Top: original — Bottom: simulated",
+    "cb_normal": "Normal Vision",
+    "cb_normal_d": "Full color perception",
+    "cb_deuteranopia": "Deuteranopia",
+    "cb_deuteranopia_d": "Green-blind (most common, 1% males)",
+    "cb_protanopia": "Protanopia",
+    "cb_protanopia_d": "Red-blind (1% males)",
+    "cb_tritanopia": "Tritanopia",
+    "cb_tritanopia_d": "Blue-blind (rare, 0.001%)",
+    "cb_achromatopsia": "Achromatopsia",
+    "cb_achromatopsia_d": "Complete color blindness (very rare)"
   },
   "toolTags": {
     "spinner-wheel": [

@@ -1,10 +1,12 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('image-placeholder-generator')!
 const PRESETS=[{label:'16:9',w:1280,h:720},{label:'4:3',w:800,h:600},{label:'1:1',w:500,h:500},{label:'Profile',w:200,h:200},{label:'Banner',w:728,h:90},{label:'OG',w:1200,h:630},{label:'Thumbnail',w:320,h:180}]
 export default function ImagePlaceholderGeneratorPage() {
+  const t = useTranslations('toolui')
   const [w,setW]=useState(400)
   const [h,setH]=useState(300)
   const [bg,setBg]=useState('#cccccc')
@@ -29,18 +31,18 @@ export default function ImagePlaceholderGeneratorPage() {
           ))}
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div><label className="block text-xs font-medium text-gray-600 mb-1">Width (px)</label>
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">{t('ui_width')} (px)</label>
             <input type="number" min="1" max="2000" value={w} onChange={e=>setW(Number(e.target.value))} className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"/></div>
-          <div><label className="block text-xs font-medium text-gray-600 mb-1">Height (px)</label>
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">{t('ui_height')} (px)</label>
             <input type="number" min="1" max="2000" value={h} onChange={e=>setH(Number(e.target.value))} className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm"/></div>
-          <div><label className="block text-xs font-medium text-gray-600 mb-1">Background</label>
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">{t('ip_bg')}</label>
             <div className="flex gap-1"><input type="color" value={bg} onChange={e=>setBg(e.target.value)} className="w-10 h-9 rounded border border-gray-300 cursor-pointer p-0.5"/>
               <input value={bg} onChange={e=>setBg(e.target.value)} className="flex-1 rounded border border-gray-300 px-1.5 py-1 text-xs font-mono"/></div></div>
-          <div><label className="block text-xs font-medium text-gray-600 mb-1">Text color</label>
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">{t('ip_fg')}</label>
             <div className="flex gap-1"><input type="color" value={fg} onChange={e=>setFg(e.target.value)} className="w-10 h-9 rounded border border-gray-300 cursor-pointer p-0.5"/>
               <input value={fg} onChange={e=>setFg(e.target.value)} className="flex-1 rounded border border-gray-300 px-1.5 py-1 text-xs font-mono"/></div></div>
         </div>
-        <div><label className="block text-xs font-medium text-gray-600 mb-1">Custom text (optional)</label>
+        <div><label className="block text-xs font-medium text-gray-600 mb-1">{t('ip_custom')}</label>
           <input value={text} onChange={e=>setText(e.target.value)} placeholder={w+'x'+h} className="w-full rounded border border-gray-300 px-3 py-1.5 text-sm"/></div>
         <div className="flex justify-center" style={{maxHeight:'200px',overflow:'hidden'}}>
           <img src={dataUrl} style={{maxWidth:'100%',maxHeight:'200px',objectFit:'contain'}} alt="placeholder preview"/>
@@ -49,17 +51,17 @@ export default function ImagePlaceholderGeneratorPage() {
           <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
             <span className="text-xs text-gray-500 w-16">Data URL</span>
             <code className="flex-1 text-xs font-mono text-gray-700 truncate">{dataUrl.slice(0,60)}...</code>
-            <button onClick={()=>copy(dataUrl,'data')} className="text-xs text-blue-600 hover:underline whitespace-nowrap">{copied==='data'?'Copied!':'Copy'}</button>
+            <button onClick={()=>copy(dataUrl,'data')} className="text-xs text-blue-600 hover:underline whitespace-nowrap">{copied==='data'?t('ui_copied'):t('ui_copy')}</button>
           </div>
           <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
             <span className="text-xs text-gray-500 w-16">placehold.co</span>
             <code className="flex-1 text-xs font-mono text-gray-700 truncate">{placehold}</code>
-            <button onClick={()=>copy(placehold,'url')} className="text-xs text-blue-600 hover:underline whitespace-nowrap">{copied==='url'?'Copied!':'Copy'}</button>
+            <button onClick={()=>copy(placehold,'url')} className="text-xs text-blue-600 hover:underline whitespace-nowrap">{copied==='url'?t('ui_copied'):t('ui_copy')}</button>
           </div>
           <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
             <span className="text-xs text-gray-500 w-16">HTML img</span>
             <code className="flex-1 text-xs font-mono text-gray-700 truncate">{'<img src="'+placehold+'" alt="placeholder" />'}</code>
-            <button onClick={()=>copy('<img src="'+placehold+'" alt="placeholder" />','html')} className="text-xs text-blue-600 hover:underline whitespace-nowrap">{copied==='html'?'Copied!':'Copy'}</button>
+            <button onClick={()=>copy('<img src="'+placehold+'" alt="placeholder" />','html')} className="text-xs text-blue-600 hover:underline whitespace-nowrap">{copied==='html'?t('ui_copied'):t('ui_copy')}</button>
           </div>
         </div>
       </div>

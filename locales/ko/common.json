@@ -2650,6 +2650,16 @@
       "페이지를 열면 화면 해상도가 자동 감지됩니다.",
       "뷰포트·픽셀 비율·종횡비 등 상세 정보를 확인하세요.",
       "일반 해상도 목록과 비교해 보세요."
+    ],
+    "image-placeholder-generator": [
+      "크기·배경·글자 색을 설정하세요.",
+      "원하면 사용자 지정 텍스트를 입력하세요.",
+      "Data URL이나 placehold.co 링크를 복사하세요."
+    ],
+    "color-blindness-simulator": [
+      "색각 유형을 고르세요.",
+      "테스트할 색을 선택하면 원본과 시뮬레이션을 비교합니다.",
+      "팔레트로 여러 색의 변화를 확인하세요."
     ]
   },
   "games": {
@@ -3708,7 +3718,24 @@
     "sr_mp": "메가픽셀",
     "sr_outer": "전체 창",
     "sr_compare": "일반 해상도와 비교",
-    "sr_you": "내 화면"
+    "sr_you": "내 화면",
+    "ip_bg": "배경색",
+    "ip_fg": "글자 색",
+    "ip_custom": "사용자 지정 텍스트 (선택)",
+    "cb_test": "색상 테스트",
+    "cb_original": "원본",
+    "cb_palette": "색상 팔레트 시뮬레이션",
+    "cb_legend": "위: 원본 — 아래: 시뮬레이션",
+    "cb_normal": "정상 시각",
+    "cb_normal_d": "완전한 색 인지",
+    "cb_deuteranopia": "녹색맹 (Deuteranopia)",
+    "cb_deuteranopia_d": "녹색 약함 (가장 흔함, 남성 1%)",
+    "cb_protanopia": "적색맹 (Protanopia)",
+    "cb_protanopia_d": "적색 약함 (남성 1%)",
+    "cb_tritanopia": "청색맹 (Tritanopia)",
+    "cb_tritanopia_d": "청색 약함 (드묾, 0.001%)",
+    "cb_achromatopsia": "전색맹 (Achromatopsia)",
+    "cb_achromatopsia_d": "완전 색맹 (매우 드묾)"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
