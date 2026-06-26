@@ -2957,6 +2957,11 @@
       "Enter one item per line.",
       "Choose a sort mode and options.",
       "Copy the sorted result."
+    ],
+    "morse-code-translator": [
+      "Choose a conversion direction.",
+      "Enter text or Morse code.",
+      "Copy the result or play it as audio."
     ]
   },
   "games": {
@@ -4954,7 +4959,32 @@
     "ls_inlines": "Input ({n} lines)",
     "ls_ph": "One item per line...",
     "ls_outlines": "Output ({n} lines)",
-    "ls_outph": "Sorted output appears here"
+    "ls_outph": "Sorted output appears here",
+    "mc_encode": "Text to Morse",
+    "mc_decode": "Morse to Text",
+    "mc_ph_enc": "Type text...",
+    "mc_ph_dec": "... --- ... (use space between chars, / between words)",
+    "mc_playing": "Playing...",
+    "mc_play": "Play Audio",
+    "mc_visual": "Visual representation",
+    "mc_space": "[space]",
+    "np_title": "Number Palindrome Checker",
+    "np_subtitle": "Check if numbers are palindromes, find them in ranges, and explore reverse-addition.",
+    "np_check": "Check Number",
+    "np_reverse": "Reverse Addition",
+    "np_range": "Find in Range",
+    "np_enter": "Enter a number",
+    "np_isp": "{v} is a palindrome",
+    "np_notp": "{v} is NOT a palindrome",
+    "np_reversed": "Reversed",
+    "np_revdesc": "The reverse-addition process: repeatedly add a number to its reverse until a palindrome is reached.",
+    "np_startnum": "Starting number",
+    "np_already": "✓ Already a palindrome!",
+    "np_reached": "✓ Palindrome reached in {n} step(s)!",
+    "np_lychrel": "⚠ Possible Lychrel number (no palindrome after 50 steps)",
+    "np_from": "From",
+    "np_to": "To (max 10,000)",
+    "np_found": "Found {n} palindromes:"
   },
   "toolTags": {
     "spinner-wheel": [
