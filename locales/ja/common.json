@@ -3312,6 +3312,16 @@
       "カテゴリや検索でパターンを探します。",
       "正規表現パターンをコピーします。",
       "入力欄でテキストを入れてテストします。"
+    ],
+    "tax-bracket-calculator": [
+      "年間課税所得を入力します。",
+      "申告区分を選びます。",
+      "区分別の税額内訳を確認します。"
+    ],
+    "pace-calculator": [
+      "求める値(ペース・時間・距離)を選びます。",
+      "わかっている値を入力します。",
+      "計算結果を確認します。"
     ]
   },
   "games": {
@@ -5424,7 +5434,30 @@
     "rl_search": "パターンを検索...",
     "rl_all": "すべて",
     "rl_match": "一致",
-    "rl_nomatch": "不一致"
+    "rl_nomatch": "不一致",
+    "tbc_title": "税率区分計算機",
+    "tbc_subtitle": "2024年 米国連邦所得税の区分別内訳 (参考用)",
+    "tbc_income": "年間課税所得",
+    "tbc_status": "申告区分",
+    "tbc_single": "独身",
+    "tbc_married": "夫婦合算申告",
+    "tbc_hoh": "世帯主",
+    "tbc_totaltax": "税額合計",
+    "tbc_effective": "実効税率",
+    "tbc_marginal": "限界税率",
+    "tbc_aftertax": "税引後",
+    "tbc_bracket": "区分",
+    "tbc_taxable": "課税額",
+    "tbc_tax": "税額",
+    "tbc_pctotal": "全体に対する%",
+    "tbc_disclaimer": "教育目的のみ。正確なアドバイスは税理士にご相談ください。",
+    "pc_find_pace": "ペースを求める",
+    "pc_find_time": "時間を求める",
+    "pc_find_distance": "距離を求める",
+    "pc_time": "時間 (時:分:秒)",
+    "pc_pace": "ペース ({u}あたり 分:秒)",
+    "pc_r_pace": "ペース",
+    "pc_finish": "完走タイム"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

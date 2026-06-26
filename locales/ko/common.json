@@ -3345,6 +3345,16 @@
       "카테고리나 검색으로 패턴을 찾으세요.",
       "정규식 패턴을 복사하세요.",
       "입력란에 텍스트를 넣어 테스트하세요."
+    ],
+    "tax-bracket-calculator": [
+      "연간 과세 소득을 입력하세요.",
+      "신고 유형을 고르세요.",
+      "구간별 세금 분석을 확인하세요."
+    ],
+    "pace-calculator": [
+      "구할 값(페이스·시간·거리)을 고르세요.",
+      "아는 값을 입력하세요.",
+      "계산된 결과를 확인하세요."
     ]
   },
   "games": {
@@ -5457,7 +5467,30 @@
     "rl_search": "패턴 검색...",
     "rl_all": "전체",
     "rl_match": "일치",
-    "rl_nomatch": "불일치"
+    "rl_nomatch": "불일치",
+    "tbc_title": "세금 구간 계산기",
+    "tbc_subtitle": "2024년 미국 연방 소득세 구간별 분석 (참고용)",
+    "tbc_income": "연간 과세 소득",
+    "tbc_status": "신고 유형",
+    "tbc_single": "독신",
+    "tbc_married": "부부 합산 신고",
+    "tbc_hoh": "세대주",
+    "tbc_totaltax": "총 세금",
+    "tbc_effective": "실효세율",
+    "tbc_marginal": "한계세율",
+    "tbc_aftertax": "세후 소득",
+    "tbc_bracket": "구간",
+    "tbc_taxable": "과세 금액",
+    "tbc_tax": "세금",
+    "tbc_pctotal": "총액 대비 %",
+    "tbc_disclaimer": "교육 목적으로만 사용하세요. 정확한 조언은 세무 전문가와 상담하세요.",
+    "pc_find_pace": "페이스 구하기",
+    "pc_find_time": "시간 구하기",
+    "pc_find_distance": "거리 구하기",
+    "pc_time": "시간 (시:분:초)",
+    "pc_pace": "페이스 ({u}당 분:초)",
+    "pc_r_pace": "페이스",
+    "pc_finish": "완주 시간"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

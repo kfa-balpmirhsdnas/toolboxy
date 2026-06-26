@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -37,6 +38,7 @@ const fmtPct=(n:number)=>n.toFixed(1)+'%'
 const tool = getToolBySlug('tax-bracket-calculator')!
 
 export default function TaxBracketCalculatorPage() {
+  const t = useTranslations('toolui')
   const [income,setIncome]=useState('75000')
   const [status,setStatus]=useState<FilingStatus>('single')
 
@@ -50,19 +52,19 @@ export default function TaxBracketCalculatorPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Tax Bracket Calculator</h1>
-        <p className="text-gray-500 mb-8">2024 US Federal income tax breakdown by bracket (for reference only)</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('tbc_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('tbc_subtitle')}</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Annual Taxable Income</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('tbc_income')}</label>
             <input type="text" value={income} onChange={e=>setIncome(e.target.value.replace(/[^0-9]/g,''))}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-lg font-mono focus:outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Filing Status</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('tbc_status')}</label>
             <div className="flex gap-2">
-              {([['single','Single'],['married','Married Filing Jointly'],['hoh','Head of Household']] as [FilingStatus,string][]).map(([s,l])=>(
-                <button key={s} onClick={()=>setStatus(s)} className={'flex-1 py-2 text-sm rounded-lg font-medium transition-colors '+(status===s?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>{l}</button>
+              {([['single','tbc_single'],['married','tbc_married'],['hoh','tbc_hoh']] as [FilingStatus,string][]).map(([s,l])=>(
+                <button key={s} onClick={()=>setStatus(s)} className={'flex-1 py-2 text-sm rounded-lg font-medium transition-colors '+(status===s?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>{t(l)}</button>
               ))}
             </div>
           </div>
@@ -70,16 +72,16 @@ export default function TaxBracketCalculatorPage() {
         {incomeNum>0&&brackets.length>0&&(
           <>
             <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[['Total Tax',fmt(totalTax)],['Effective Rate',fmtPct(effectiveRate)],['Marginal Rate',fmtPct(marginalRate)],['After-Tax',fmt(afterTax)]].map(([l,v])=>(
+              {[['tbc_totaltax',fmt(totalTax)],['tbc_effective',fmtPct(effectiveRate)],['tbc_marginal',fmtPct(marginalRate)],['tbc_aftertax',fmt(afterTax)]].map(([l,v])=>(
                 <div key={l} className="bg-white rounded-xl border border-gray-200 p-3 text-center">
                   <div className="text-xl font-bold text-brand-600">{v}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">{l}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">{t(l)}</div>
                 </div>
               ))}
             </div>
             <div className="mt-4 bg-white rounded-2xl border border-gray-200 overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50"><tr>{['Bracket','Taxable Amount','Tax','% of Total'].map(h=><th key={h} className="px-4 py-2 text-left text-gray-500 font-medium">{h}</th>)}</tr></thead>
+                <thead className="bg-gray-50"><tr>{['tbc_bracket','tbc_taxable','tbc_tax','tbc_pctotal'].map(h=><th key={h} className="px-4 py-2 text-left text-gray-500 font-medium">{t(h)}</th>)}</tr></thead>
                 <tbody>
                   {brackets.map(b=>(
                     <tr key={b.bracket} className="border-t border-gray-50 hover:bg-gray-50">
@@ -90,7 +92,7 @@ export default function TaxBracketCalculatorPage() {
                     </tr>
                   ))}
                   <tr className="border-t-2 border-gray-200 bg-gray-50 font-bold">
-                    <td className="px-4 py-2">Total</td>
+                    <td className="px-4 py-2">{t('tc_total')}</td>
                     <td className="px-4 py-2">{fmt(incomeNum)}</td>
                     <td className="px-4 py-2 text-red-600">{fmt(totalTax)}</td>
                     <td className="px-4 py-2">{fmtPct(effectiveRate)}</td>
@@ -98,7 +100,7 @@ export default function TaxBracketCalculatorPage() {
                 </tbody>
               </table>
             </div>
-            <p className="text-xs text-gray-400 mt-2 text-center">For educational purposes only. Consult a tax professional for accurate advice.</p>
+            <p className="text-xs text-gray-400 mt-2 text-center">{t('tbc_disclaimer')}</p>
           </>
         )}
       </div>

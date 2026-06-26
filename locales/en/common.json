@@ -3007,6 +3007,16 @@
       "Find a pattern by category or search.",
       "Copy the regex pattern.",
       "Test it by typing in the input box."
+    ],
+    "tax-bracket-calculator": [
+      "Enter your annual taxable income.",
+      "Choose a filing status.",
+      "See the tax breakdown by bracket."
+    ],
+    "pace-calculator": [
+      "Choose what to find: pace, time or distance.",
+      "Enter the known values.",
+      "See the calculated result."
     ]
   },
   "games": {
@@ -5119,7 +5129,30 @@
     "rl_search": "Search patterns...",
     "rl_all": "All",
     "rl_match": "Match",
-    "rl_nomatch": "No match"
+    "rl_nomatch": "No match",
+    "tbc_title": "Tax Bracket Calculator",
+    "tbc_subtitle": "2024 US Federal income tax breakdown by bracket (for reference only)",
+    "tbc_income": "Annual Taxable Income",
+    "tbc_status": "Filing Status",
+    "tbc_single": "Single",
+    "tbc_married": "Married Filing Jointly",
+    "tbc_hoh": "Head of Household",
+    "tbc_totaltax": "Total Tax",
+    "tbc_effective": "Effective Rate",
+    "tbc_marginal": "Marginal Rate",
+    "tbc_aftertax": "After-Tax",
+    "tbc_bracket": "Bracket",
+    "tbc_taxable": "Taxable Amount",
+    "tbc_tax": "Tax",
+    "tbc_pctotal": "% of Total",
+    "tbc_disclaimer": "For educational purposes only. Consult a tax professional for accurate advice.",
+    "pc_find_pace": "Find pace",
+    "pc_find_time": "Find time",
+    "pc_find_distance": "Find distance",
+    "pc_time": "Time (h:m:s)",
+    "pc_pace": "Pace (min:sec per {u})",
+    "pc_r_pace": "Pace",
+    "pc_finish": "Finish Time"
   },
   "toolTags": {
     "spinner-wheel": [

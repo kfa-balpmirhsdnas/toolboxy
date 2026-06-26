@@ -1,10 +1,12 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='pace-calculator')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='pace-calculator')
   const [mode,setMode]=useState<'pace'|'time'|'distance'>('pace')
   const [distance,setDistance]=useState('5')
   const [unit,setUnit]=useState<'km'|'mi'>('km')
@@ -36,18 +38,18 @@ export default function Page(){
           {(['pace','time','distance'] as const).map(m=>(
             <button key={m} onClick={()=>setMode(m)}
               className={"px-3 py-1 rounded text-sm "+(mode===m?'bg-blue-600 text-white':'bg-gray-100 hover:bg-gray-200')}>
-              Find {m}
+              {t('pc_find_'+m)}
             </button>
           ))}
         </div>
         <div className="flex gap-2 items-center">
           <div className="flex-1">
-            <label className="block text-sm font-medium mb-1">Distance</label>
+            <label className="block text-sm font-medium mb-1">{t('sp_distance')}</label>
             <input type="number" value={distance} onChange={e=>setDistance(e.target.value)}
               className="w-full border rounded px-3 py-2"/>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Unit</label>
+            <label className="block text-sm font-medium mb-1">{t('sp_unit')}</label>
             <select value={unit} onChange={e=>setUnit(e.target.value as 'km'|'mi')}
               className="border rounded px-3 py-2">
               <option value="km">km</option>
@@ -57,7 +59,7 @@ export default function Page(){
         </div>
         {mode!=='time'&&(
           <div>
-            <label className="block text-sm font-medium mb-1">Time (h:m:s)</label>
+            <label className="block text-sm font-medium mb-1">{t('pc_time')}</label>
             <div className="flex gap-2">
               <input type="number" placeholder="0h" value={hours} onChange={e=>setHours(e.target.value)}
                 className="w-16 border rounded px-2 py-2 text-center"/>
@@ -70,7 +72,7 @@ export default function Page(){
         )}
         {mode!=='pace'&&(
           <div>
-            <label className="block text-sm font-medium mb-1">Pace (min:sec per {unit})</label>
+            <label className="block text-sm font-medium mb-1">{t('pc_pace',{u:unit})}</label>
             <div className="flex gap-2">
               <input type="number" value={paceMin} onChange={e=>setPaceMin(e.target.value)}
                 className="w-20 border rounded px-3 py-2" placeholder="min"/>
@@ -81,9 +83,9 @@ export default function Page(){
           </div>
         )}
         <div className="bg-blue-50 border border-blue-200 rounded p-4">
-          {mode==='pace'&&<><div className="text-sm text-gray-500">Pace</div><div className="text-2xl font-bold text-blue-700">{isFinite(calcPace)?fmt(calcPace):'-'} /{unit}</div></>}
-          {mode==='time'&&<><div className="text-sm text-gray-500">Finish Time</div><div className="text-2xl font-bold text-blue-700">{isFinite(calcTime)?fmt(calcTime):'-'}</div></>}
-          {mode==='distance'&&<><div className="text-sm text-gray-500">Distance</div><div className="text-2xl font-bold text-blue-700">{isFinite(calcDist)&&calcDist>0?calcDist.toFixed(2):'-'} {unit}</div></>}
+          {mode==='pace'&&<><div className="text-sm text-gray-500">{t('pc_r_pace')}</div><div className="text-2xl font-bold text-blue-700">{isFinite(calcPace)?fmt(calcPace):'-'} /{unit}</div></>}
+          {mode==='time'&&<><div className="text-sm text-gray-500">{t('pc_finish')}</div><div className="text-2xl font-bold text-blue-700">{isFinite(calcTime)?fmt(calcTime):'-'}</div></>}
+          {mode==='distance'&&<><div className="text-sm text-gray-500">{t('sp_distance')}</div><div className="text-2xl font-bold text-blue-700">{isFinite(calcDist)&&calcDist>0?calcDist.toFixed(2):'-'} {unit}</div></>}
         </div>
       </div>
     </ToolLayout>
