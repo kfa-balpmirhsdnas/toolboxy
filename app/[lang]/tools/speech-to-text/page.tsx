@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -35,18 +36,19 @@ interface SpeechRecognitionAlternative { transcript: string; confidence: number 
 interface SpeechRecognitionErrorEvent extends Event { error: string }
 
 const LANGS = [
-  { code:'en-US', label:'English (US)' },
-  { code:'en-GB', label:'English (UK)' },
-  { code:'ko-KR', label:'Korean' },
-  { code:'ja-JP', label:'Japanese' },
-  { code:'zh-CN', label:'Chinese (Simplified)' },
-  { code:'es-ES', label:'Spanish' },
-  { code:'fr-FR', label:'French' },
-  { code:'de-DE', label:'German' },
-  { code:'pt-BR', label:'Portuguese (BR)' },
+  { code:'en-US', k:'enus' },
+  { code:'en-GB', k:'engb' },
+  { code:'ko-KR', k:'ko' },
+  { code:'ja-JP', k:'ja' },
+  { code:'zh-CN', k:'zh' },
+  { code:'es-ES', k:'es' },
+  { code:'fr-FR', k:'fr' },
+  { code:'de-DE', k:'de' },
+  { code:'pt-BR', k:'pt' },
 ]
 
 export default function SpeechToTextPage({ params }: { params: { lang: string } }) {
+  const tr = useTranslations('toolui')
   const [isListening, setIsListening] = useState(false)
   const [transcript, setTranscript] = useState('')
   const [interim, setInterim] = useState('')
@@ -82,7 +84,7 @@ export default function SpeechToTextPage({ params }: { params: { lang: string } 
       setInterim(inter)
     }
     rec.onerror = (e: SpeechRecognitionErrorEvent) => {
-      setError(e.error==='not-allowed'?'Microphone access denied. Please allow microphone access and try again.':'Error: '+e.error)
+      setError(e.error==='not-allowed'?tr('stt_denied'):'Error: '+e.error)
       setIsListening(false)
     }
     rec.onend = () => { setIsListening(false); setInterim('') }
@@ -108,39 +110,39 @@ export default function SpeechToTextPage({ params }: { params: { lang: string } 
       <div className="space-y-4">
         {!supported ? (
           <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-            Speech recognition is not supported in this browser. Please use Chrome or Edge.
+            {tr('stt_unsupported')}
           </div>
         ) : (
           <>
             <div className="flex gap-3 items-center flex-wrap">
               <select value={lang} onChange={e=>setLang(e.target.value)}
                 className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
-                {LANGS.map(l=><option key={l.code} value={l.code}>{l.label}</option>)}
+                {LANGS.map(l=><option key={l.code} value={l.code}>{tr('stt_l_'+l.k)}</option>)}
               </select>
               <button onClick={isListening?stopListening:startListening}
                 className={'px-6 py-2 rounded-xl font-semibold text-sm transition-colors ' + (isListening?'bg-red-500 hover:bg-red-600 text-white':'bg-brand-600 hover:bg-brand-700 text-white')}>
-                {isListening ? '\u23F9 Stop' : '\uD83C\uDFA4 Start Recording'}
+                {isListening ? tr('stt_stop') : tr('stt_start')}
               </button>
             </div>
             {isListening && (
               <div className="flex items-center gap-2 text-sm text-brand-600">
                 <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                Listening...
+                {tr('stt_listening')}
               </div>
             )}
             {error && <p className="text-sm text-red-600">{error}</p>}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-medium text-gray-600">Transcript</label>
+                <label className="text-xs font-medium text-gray-600">{tr('stt_transcript')}</label>
                 <div className="flex gap-2">
-                  {transcript && <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>}
-                  {transcript && <button onClick={()=>setTranscript('')} className="text-xs text-gray-400 hover:text-gray-600">Clear</button>}
+                  {transcript && <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?tr('ui_copied'):tr('ui_copy')}</button>}
+                  {transcript && <button onClick={()=>setTranscript('')} className="text-xs text-gray-400 hover:text-gray-600">{tr('ui_clear')}</button>}
                 </div>
               </div>
               <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm min-h-24 whitespace-pre-wrap">
                 {transcript}
                 {interim && <span className="text-gray-400">{interim}</span>}
-                {!transcript && !interim && <span className="text-gray-400 italic">Your speech will appear here...</span>}
+                {!transcript && !interim && <span className="text-gray-400 italic">{tr('stt_ph')}</span>}
               </div>
             </div>
           </>

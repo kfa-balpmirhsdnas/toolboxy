@@ -2352,6 +2352,11 @@
       "Enter a cron expression.",
       "See each field's meaning and the next run times.",
       "Use the example buttons to start quickly."
+    ],
+    "speech-to-text": [
+      "Choose the language to recognize.",
+      "Press 'Start Recording' and speak.",
+      "Copy or clear the transcript."
     ]
   },
   "games": {
@@ -3532,7 +3537,24 @@
     "cp_ex_2": "Daily at midnight",
     "cp_ex_3": "Every Monday 9am",
     "cp_ex_4": "Every 15 minutes",
-    "cp_ex_5": "First day of month"
+    "cp_ex_5": "First day of month",
+    "stt_unsupported": "Speech recognition is not supported in this browser. Please use Chrome or Edge.",
+    "stt_stop": "⏹ Stop",
+    "stt_start": "🎤 Start Recording",
+    "stt_listening": "Listening...",
+    "stt_denied": "Microphone access denied. Please allow microphone access and try again.",
+    "stt_transcript": "Transcript",
+    "ui_clear": "Clear",
+    "stt_ph": "Your speech will appear here...",
+    "stt_l_enus": "English (US)",
+    "stt_l_engb": "English (UK)",
+    "stt_l_ko": "Korean",
+    "stt_l_ja": "Japanese",
+    "stt_l_zh": "Chinese (Simplified)",
+    "stt_l_es": "Spanish",
+    "stt_l_fr": "French",
+    "stt_l_de": "German",
+    "stt_l_pt": "Portuguese (BR)"
   },
   "toolTags": {
     "spinner-wheel": [
