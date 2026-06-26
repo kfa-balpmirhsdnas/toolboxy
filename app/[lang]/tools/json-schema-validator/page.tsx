@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('json-schema-validator')!
@@ -34,29 +35,30 @@ function validateValue(value:unknown,schema:Record<string,unknown>,path='root'):
 const SAMPLE_SCHEMA=JSON.stringify({type:'object',required:['name','age','email'],properties:{name:{type:'string',minLength:2},age:{type:'integer',minimum:0,maximum:120},email:{type:'string'},active:{type:'boolean'}}},null,2)
 const SAMPLE_DATA=JSON.stringify({name:'Alice',age:30,email:'alice@example.com',active:true},null,2)
 export default function JsonSchemaValidatorPage() {
+  const t = useTranslations('toolui')
   const [schema,setSchema]=useState(SAMPLE_SCHEMA)
   const [data,setData]=useState(SAMPLE_DATA)
   const [tried,setTried]=useState(false)
   const validate=()=>{
     try{const s=JSON.parse(schema);const d=JSON.parse(data);return validateValue(d,s)}
-    catch(e){return{valid:false,errors:['Parse error: '+String(e)]}}
+    catch(e){return{valid:false,errors:[t('jsv_parseerr')+': '+String(e)]}}
   }
   const result=validate()
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4 space-y-3">
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-xs font-medium text-gray-600 mb-1">JSON Schema</label>
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">{t('jsv_schema')}</label>
             <textarea value={schema} onChange={e=>setSchema(e.target.value)} rows={12}
               className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-xs resize-none focus:outline-none focus:border-blue-400"/></div>
-          <div><label className="block text-xs font-medium text-gray-600 mb-1">JSON Data</label>
+          <div><label className="block text-xs font-medium text-gray-600 mb-1">{t('jpt_data')}</label>
             <textarea value={data} onChange={e=>setData(e.target.value)} rows={12}
               className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-xs resize-none focus:outline-none focus:border-blue-400"/></div>
         </div>
         <div className={'rounded-xl p-4 border '+(result.valid?'bg-green-50 border-green-200':'bg-red-50 border-red-200')}>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-2xl">{result.valid?'✅':'❌'}</span>
-            <p className={'font-bold text-lg '+(result.valid?'text-green-700':'text-red-700')}>{result.valid?'Valid!':'Invalid'}</p>
+            <p className={'font-bold text-lg '+(result.valid?'text-green-700':'text-red-700')}>{result.valid?t('jsv_valid'):t('jsv_invalid')}</p>
           </div>
           {result.errors.length>0&&(
             <ul className="space-y-1">
@@ -64,7 +66,7 @@ export default function JsonSchemaValidatorPage() {
             </ul>
           )}
         </div>
-        <p className="text-xs text-gray-400 text-center">Supports: type, required, properties, minimum, maximum, minLength, maxLength, enum</p>
+        <p className="text-xs text-gray-400 text-center">{t('jsv_supports')}: type, required, properties, minimum, maximum, minLength, maxLength, enum</p>
       </div>
     </ToolLayout>
   )

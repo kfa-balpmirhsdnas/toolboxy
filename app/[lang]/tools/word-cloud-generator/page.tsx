@@ -1,10 +1,12 @@
 'use client'
 import {useState,useMemo} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='word-cloud-generator')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='word-cloud-generator')
   const [input,setInput]=useState('the quick brown fox jumps over the lazy dog the fox jumps high over every fence quickly')
   const [maxWords,setMaxWords]=useState(30)
 
@@ -29,9 +31,9 @@ export default function Page(){
       <div className='space-y-4'>
         <textarea value={input} onChange={e=>setInput(e.target.value)}
           className='w-full h-28 p-3 border rounded font-mono text-sm resize-y'
-          placeholder='Paste text to generate word cloud...'/>
+          placeholder={t('wcg_ph')}/>
         <label className='flex items-center gap-2 text-sm'>
-          Max words:
+          {t('wcg_maxwords')}
           <input type='range' min={10} max={50} value={maxWords} onChange={e=>setMaxWords(Number(e.target.value))} className='flex-1'/>
           <span className='w-8'>{maxWords}</span>
         </label>
@@ -41,9 +43,9 @@ export default function Page(){
               {word}
             </span>
           ))}
-          {words.length===0&&<p className='text-gray-400'>No words to display</p>}
+          {words.length===0&&<p className='text-gray-400'>{t('wcg_nowords')}</p>}
         </div>
-        <p className='text-xs text-gray-400'>Showing {words.length} words (common stop words excluded)</p>
+        <p className='text-xs text-gray-400'>{t('wcg_showing',{n:words.length})}</p>
       </div>
     </ToolLayout>
   )

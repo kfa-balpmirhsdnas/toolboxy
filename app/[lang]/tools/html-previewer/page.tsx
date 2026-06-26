@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -25,6 +26,7 @@ const DEFAULT_HTML = `<!DOCTYPE html>
 </html>`
 
 export default function HtmlPreviewerPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [html, setHtml] = useState(DEFAULT_HTML)
   const [layout, setLayout] = useState<'split'|'preview'>('split')
   const [copied, setCopied] = useState(false)
@@ -41,11 +43,11 @@ export default function HtmlPreviewerPage({ params }: { params: { lang: string }
             {(['split','preview'] as const).map(l=>(
               <button key={l} onClick={()=>setLayout(l)}
                 className={'px-3 py-1.5 rounded-lg text-sm capitalize transition-colors ' + (layout===l?'bg-gray-800 text-white':'bg-gray-100 text-gray-600')}>
-                {l}
+                {t(l==='split'?'med_split':'med_preview')}
               </button>
             ))}
           </div>
-          <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'✓ Copied HTML':'Copy HTML'}</button>
+          <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'✓ '+t('hp_copiedhtml'):t('hp_copyhtml')}</button>
         </div>
         <div className={`${layout==='split'?'grid grid-cols-2 gap-3':'flex flex-col'}`} style={{height:480}}>
           {layout==='split' && (
@@ -57,7 +59,7 @@ export default function HtmlPreviewerPage({ params }: { params: { lang: string }
               <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
               <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
               <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-              <span className="text-xs text-gray-400 ml-2">Preview</span>
+              <span className="text-xs text-gray-400 ml-2">{t('htg_preview')}</span>
             </div>
             <iframe srcDoc={html} title="preview" className="w-full" style={{height:layout==='split'?'calc(100% - 32px)':'432px',border:'none'}} sandbox="allow-scripts allow-popups" />
           </div>

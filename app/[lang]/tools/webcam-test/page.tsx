@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
@@ -8,6 +9,7 @@ import { trackToolUsed } from '@/lib/gtag'
 const tool = getToolBySlug('webcam-test')!
 
 export default function WebcamTestPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [on, setOn] = useState(false)
   const [error, setError] = useState('')
   const [info, setInfo] = useState<{ label: string; w: number; h: number } | null>(null)
@@ -29,12 +31,12 @@ export default function WebcamTestPage({ params }: { params: { lang: string } })
       setOn(true)
       trackToolUsed('webcam-test')
     } catch (e) {
-      setError(e instanceof Error && e.name === 'NotAllowedError' ? 'Camera access was blocked. Allow it in your browser to test.' : 'No camera found or it is in use by another app.')
+      setError(e instanceof Error && e.name === 'NotAllowedError' ? t('wct_blocked') : t('wct_nocamera'))
     }
   }
 
   function stop() {
-    streamRef.current?.getTracks().forEach((t) => t.stop())
+    streamRef.current?.getTracks().forEach((tk) => tk.stop())
     if (videoRef.current) videoRef.current.srcObject = null
     setOn(false); setInfo(null)
   }
@@ -44,25 +46,25 @@ export default function WebcamTestPage({ params }: { params: { lang: string } })
       <div className="space-y-4">
         <div className="aspect-video w-full rounded-xl border border-gray-200 bg-gray-900 overflow-hidden flex items-center justify-center">
           <video ref={videoRef} muted playsInline className={`w-full h-full object-contain ${on ? '' : 'hidden'}`} />
-          {!on && <span className="text-gray-500 text-sm">Camera preview will appear here</span>}
+          {!on && <span className="text-gray-500 text-sm">{t('wct_preview')}</span>}
         </div>
 
         {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl p-3">{error}</p>}
 
         {info && (
           <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-sm text-green-800">
-            ✓ Camera working — <span className="font-semibold">{info.w}×{info.h}</span>{info.label ? ` · ${info.label}` : ''}
+            ✓ {t('wct_working')} — <span className="font-semibold">{info.w}×{info.h}</span>{info.label ? ` · ${info.label}` : ''}
           </div>
         )}
 
         <div className="flex gap-3">
           {!on ? (
-            <button onClick={start} className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors">Test my camera</button>
+            <button onClick={start} className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors">{t('wct_test')}</button>
           ) : (
-            <button onClick={stop} className="px-6 py-2.5 bg-gray-800 text-white text-sm font-semibold rounded-xl hover:bg-gray-900 transition-colors">Stop camera</button>
+            <button onClick={stop} className="px-6 py-2.5 bg-gray-800 text-white text-sm font-semibold rounded-xl hover:bg-gray-900 transition-colors">{t('wct_stop')}</button>
           )}
         </div>
-        <p className="text-xs text-gray-400">The preview stays on your device — nothing is recorded or uploaded.</p>
+        <p className="text-xs text-gray-400">{t('wct_note')}</p>
       </div>
 
     </ToolLayout>

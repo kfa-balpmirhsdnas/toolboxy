@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('pixel-art-maker')!
@@ -7,6 +8,7 @@ const PALETTE=['#000000','#ffffff','#ef4444','#f97316','#eab308','#22c55e','#3b8
 const SIZE=16
 function makeGrid():string[][]{return Array.from({length:SIZE},()=>Array(SIZE).fill('transparent'))}
 export default function PixelArtMakerPage() {
+  const t = useTranslations('toolui')
   const [grid,setGrid]=useState<string[][]>(makeGrid)
   const [color,setColor]=useState('#000000')
   const [tool2,setTool2]=useState<'draw'|'erase'|'fill'>('draw')
@@ -34,12 +36,12 @@ export default function PixelArtMakerPage() {
       <div className="max-w-xl mx-auto px-4 space-y-4">
         <div className="flex flex-wrap gap-2 items-center">
           <div className="flex rounded overflow-hidden border border-gray-300">
-            {(['draw','erase','fill'] as const).map(t=>(
-              <button key={t} onClick={()=>setTool2(t)} className={`px-3 py-1.5 text-xs font-medium capitalize transition ${tool2===t?'bg-gray-900 text-white':'bg-white text-gray-600 hover:bg-gray-50'}`}>{t==='draw'?'Draw':t==='erase'?'Erase':'Fill'}</button>
+            {(['draw','erase','fill'] as const).map(m=>(
+              <button key={m} onClick={()=>setTool2(m)} className={`px-3 py-1.5 text-xs font-medium capitalize transition ${tool2===m?'bg-gray-900 text-white':'bg-white text-gray-600 hover:bg-gray-50'}`}>{m==='draw'?t('pam_draw'):m==='erase'?t('pam_erase'):t('pam_fill')}</button>
             ))}
           </div>
-          <button onClick={()=>setGrid(makeGrid())} className="px-3 py-1.5 text-xs border border-red-300 text-red-600 rounded hover:bg-red-50">Clear</button>
-          <button onClick={exportPng} className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">Export PNG</button>
+          <button onClick={()=>setGrid(makeGrid())} className="px-3 py-1.5 text-xs border border-red-300 text-red-600 rounded hover:bg-red-50">{t('ui_clear')}</button>
+          <button onClick={exportPng} className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">{t('pam_export')}</button>
         </div>
         <div className="flex gap-1 flex-wrap">
           {PALETTE.map(c=>(
@@ -47,7 +49,7 @@ export default function PixelArtMakerPage() {
               className={`w-8 h-8 rounded border-2 transition ${color===c&&tool2==='draw'?'border-blue-600 scale-110':'border-gray-300'} ${c==='transparent'?'bg-[url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAHUlEQVQoU2NkYGD4z8BQDwQMjOoLGVAPBgwAAIkABsHxYMQAAAAASUVORK5CYII=")] bg-repeat':''}`}
               style={c!=='transparent'?{background:c}:{}}/>
           ))}
-          <input type="color" value={color==='transparent'?'#000000':color} onChange={e=>{setColor(e.target.value);setTool2('draw')}} className="w-8 h-8 rounded border-2 border-gray-300 cursor-pointer p-0" title="Custom color"/>
+          <input type="color" value={color==='transparent'?'#000000':color} onChange={e=>{setColor(e.target.value);setTool2('draw')}} className="w-8 h-8 rounded border-2 border-gray-300 cursor-pointer p-0" title={t('pam_custom')}/>
         </div>
         <div
           className="border-2 border-gray-300 rounded-lg overflow-hidden cursor-crosshair select-none"

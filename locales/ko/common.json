@@ -3535,6 +3535,56 @@
       "이미지를 올리세요.",
       "흐림 강도를 조절하세요.",
       "흐림 처리된 이미지를 다운로드하세요."
+    ],
+    "html-previewer": [
+      "왼쪽에서 HTML을 편집하세요.",
+      "오른쪽에서 실시간 미리보기를 확인하세요.",
+      "완성되면 HTML을 복사하세요."
+    ],
+    "ip-address-info": [
+      "IP를 입력하거나 현재 IP를 사용하세요.",
+      "클래스·유형·이진수를 확인하세요.",
+      "사설 IP 범위를 확인하세요."
+    ],
+    "base64-image-viewer": [
+      "Base64 문자열이나 데이터 URL을 붙여넣으세요.",
+      "이미지가 미리보기됩니다.",
+      "파일로 다운로드하세요."
+    ],
+    "json-schema-validator": [
+      "JSON 스키마를 붙여넣으세요.",
+      "JSON 데이터를 붙여넣으세요.",
+      "검증 오류를 확인하세요."
+    ],
+    "svg-path-visualizer": [
+      "SVG path d 속성을 입력하세요.",
+      "채우기와 선을 조정하세요.",
+      "path 코드를 복사하세요."
+    ],
+    "rotate-pdf": [
+      "PDF를 올리세요.",
+      "회전 각도를 고르세요.",
+      "회전된 PDF를 다운로드하세요."
+    ],
+    "watermark-pdf": [
+      "PDF를 올리세요.",
+      "워터마크 텍스트를 입력하세요.",
+      "워터마크가 추가된 PDF를 다운로드하세요."
+    ],
+    "webcam-test": [
+      "카메라 테스트를 누르세요.",
+      "카메라 접근을 허용하세요.",
+      "해상도와 미리보기를 확인하세요."
+    ],
+    "pixel-art-maker": [
+      "색상과 도구를 고르세요.",
+      "16×16 격자에 그리세요.",
+      "PNG로 내보내세요."
+    ],
+    "word-cloud-generator": [
+      "텍스트를 붙여넣으세요.",
+      "최대 단어 수를 조정하세요.",
+      "빈도 기반 워드 클라우드를 확인하세요."
     ]
   },
   "games": {
@@ -5868,7 +5918,72 @@
     "vqr_website": "웹사이트",
     "vqr_hint": "연락처 QR을 생성하려면 이름·전화·이메일 중 하나를 입력하세요.",
     "cc_desc": "투명한 모서리의 원형으로 자릅니다 (PNG)",
-    "bi_blur": "흐림"
+    "bi_blur": "흐림",
+    "hp_copyhtml": "HTML 복사",
+    "hp_copiedhtml": "HTML 복사됨",
+    "ipi_label": "IP 주소",
+    "ipi_ph": "IP 주소를 입력하거나 아래 내 IP를 사용하세요",
+    "ipi_invalid": "잘못된 IP 주소",
+    "ipi_current": "현재 내 IP",
+    "ipi_usethis": "이 IP 사용",
+    "ipi_loading": "불러오는 중...",
+    "ipi_unavailable": "사용 불가",
+    "ipi_version": "버전",
+    "ipi_class": "클래스",
+    "ipi_type": "유형",
+    "ipi_loopback": "루프백",
+    "ipi_broadcast": "브로드캐스트",
+    "ipi_binary": "이진수",
+    "ipi_private": "사설",
+    "ipi_public": "공인",
+    "ipi_yes": "예",
+    "ipi_no": "아니오",
+    "ipi_ranges": "사설 IP 범위",
+    "biv_label": "Base64 또는 데이터 URL",
+    "biv_ph": "Base64 문자열 또는 data:image/... URL을 붙여넣으세요",
+    "biv_loadsample": "샘플 불러오기",
+    "biv_invalid": "잘못된 이미지 데이터",
+    "biv_size": "크기",
+    "biv_type": "유형",
+    "biv_filesize": "~파일 크기",
+    "biv_unknown": "알 수 없음",
+    "biv_download": "이미지 다운로드",
+    "jsv_schema": "JSON 스키마",
+    "jsv_valid": "유효함!",
+    "jsv_invalid": "유효하지 않음",
+    "jsv_parseerr": "구문 분석 오류",
+    "jsv_supports": "지원",
+    "spv_triangle": "삼각형",
+    "spv_heart": "하트",
+    "spv_star": "별",
+    "spv_arrow": "화살표",
+    "spv_spiral": "나선 (호)",
+    "spv_dattr": "SVG path d 속성",
+    "spv_fill": "채우기",
+    "spv_stroke": "선",
+    "rp_drop": "PDF를 끌어다 놓거나 클릭하여 선택",
+    "rp_rotating": "회전 중…",
+    "rp_rotate": "모든 페이지 {a}° 회전",
+    "wmp_text": "워터마크 텍스트",
+    "wmp_adding": "추가 중…",
+    "wmp_add": "워터마크 추가",
+    "wmp_note": "모든 페이지에 대각선 워터마크 · 브라우저에서 전부 처리됩니다.",
+    "wct_blocked": "카메라 접근이 차단되었습니다. 테스트하려면 브라우저에서 허용하세요.",
+    "wct_nocamera": "카메라를 찾을 수 없거나 다른 앱에서 사용 중입니다.",
+    "wct_preview": "카메라 미리보기가 여기에 표시됩니다",
+    "wct_working": "카메라 작동 중",
+    "wct_test": "카메라 테스트",
+    "wct_stop": "카메라 중지",
+    "wct_note": "미리보기는 기기에만 유지되며 녹화·업로드되지 않습니다.",
+    "pam_draw": "그리기",
+    "pam_erase": "지우기",
+    "pam_fill": "채우기",
+    "pam_export": "PNG 내보내기",
+    "pam_custom": "사용자 색상",
+    "wcg_ph": "워드 클라우드를 생성할 텍스트를 붙여넣으세요...",
+    "wcg_maxwords": "최대 단어 수:",
+    "wcg_nowords": "표시할 단어가 없습니다",
+    "wcg_showing": "{n}개 단어 표시 (일반 불용어 제외)"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

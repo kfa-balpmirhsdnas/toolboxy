@@ -3197,6 +3197,56 @@
       "Upload an image.",
       "Adjust the blur amount.",
       "Download the blurred image."
+    ],
+    "html-previewer": [
+      "Edit the HTML on the left.",
+      "See the live preview on the right.",
+      "Copy the HTML when done."
+    ],
+    "ip-address-info": [
+      "Enter an IP or use your current one.",
+      "See its class, type and binary.",
+      "Check the private IP ranges."
+    ],
+    "base64-image-viewer": [
+      "Paste a Base64 string or data URL.",
+      "The image is previewed.",
+      "Download it as a file."
+    ],
+    "json-schema-validator": [
+      "Paste your JSON Schema.",
+      "Paste the JSON data.",
+      "See validation errors."
+    ],
+    "svg-path-visualizer": [
+      "Enter an SVG path d attribute.",
+      "Adjust fill and stroke.",
+      "Copy the path code."
+    ],
+    "rotate-pdf": [
+      "Upload a PDF.",
+      "Choose a rotation angle.",
+      "Download the rotated PDF."
+    ],
+    "watermark-pdf": [
+      "Upload a PDF.",
+      "Type the watermark text.",
+      "Download the watermarked PDF."
+    ],
+    "webcam-test": [
+      "Press test my camera.",
+      "Allow camera access.",
+      "Check the resolution and preview."
+    ],
+    "pixel-art-maker": [
+      "Pick a color and tool.",
+      "Draw on the 16×16 grid.",
+      "Export as PNG."
+    ],
+    "word-cloud-generator": [
+      "Paste your text.",
+      "Adjust the max word count.",
+      "See the frequency-based word cloud."
     ]
   },
   "games": {
@@ -5530,7 +5580,72 @@
     "vqr_website": "Website",
     "vqr_hint": "Fill in a name, phone or email to generate the contact QR.",
     "cc_desc": "Cropped to a circle with transparent corners (PNG)",
-    "bi_blur": "Blur"
+    "bi_blur": "Blur",
+    "hp_copyhtml": "Copy HTML",
+    "hp_copiedhtml": "Copied HTML",
+    "ipi_label": "IP Address",
+    "ipi_ph": "Enter IP address or use your IP below",
+    "ipi_invalid": "Invalid IP address",
+    "ipi_current": "Your current IP",
+    "ipi_usethis": "Use this",
+    "ipi_loading": "Loading...",
+    "ipi_unavailable": "Unavailable",
+    "ipi_version": "Version",
+    "ipi_class": "Class",
+    "ipi_type": "Type",
+    "ipi_loopback": "Loopback",
+    "ipi_broadcast": "Broadcast",
+    "ipi_binary": "Binary",
+    "ipi_private": "Private",
+    "ipi_public": "Public",
+    "ipi_yes": "Yes",
+    "ipi_no": "No",
+    "ipi_ranges": "Private IP ranges",
+    "biv_label": "Base64 or Data URL",
+    "biv_ph": "Paste Base64 string or data:image/... URL",
+    "biv_loadsample": "Load sample",
+    "biv_invalid": "Invalid image data",
+    "biv_size": "Size",
+    "biv_type": "Type",
+    "biv_filesize": "~File size",
+    "biv_unknown": "unknown",
+    "biv_download": "Download image",
+    "jsv_schema": "JSON Schema",
+    "jsv_valid": "Valid!",
+    "jsv_invalid": "Invalid",
+    "jsv_parseerr": "Parse error",
+    "jsv_supports": "Supports",
+    "spv_triangle": "Triangle",
+    "spv_heart": "Heart",
+    "spv_star": "Star",
+    "spv_arrow": "Arrow",
+    "spv_spiral": "Spiral (arc)",
+    "spv_dattr": "SVG path d attribute",
+    "spv_fill": "Fill",
+    "spv_stroke": "Stroke",
+    "rp_drop": "Drop a PDF or click to select",
+    "rp_rotating": "Rotating…",
+    "rp_rotate": "Rotate all pages {a}°",
+    "wmp_text": "Watermark text",
+    "wmp_adding": "Adding…",
+    "wmp_add": "Add watermark",
+    "wmp_note": "Diagonal watermark on every page · processed entirely in your browser.",
+    "wct_blocked": "Camera access was blocked. Allow it in your browser to test.",
+    "wct_nocamera": "No camera found or it is in use by another app.",
+    "wct_preview": "Camera preview will appear here",
+    "wct_working": "Camera working",
+    "wct_test": "Test my camera",
+    "wct_stop": "Stop camera",
+    "wct_note": "The preview stays on your device — nothing is recorded or uploaded.",
+    "pam_draw": "Draw",
+    "pam_erase": "Erase",
+    "pam_fill": "Fill",
+    "pam_export": "Export PNG",
+    "pam_custom": "Custom color",
+    "wcg_ph": "Paste text to generate word cloud...",
+    "wcg_maxwords": "Max words:",
+    "wcg_nowords": "No words to display",
+    "wcg_showing": "Showing {n} words (common stop words excluded)"
   },
   "toolTags": {
     "spinner-wheel": [

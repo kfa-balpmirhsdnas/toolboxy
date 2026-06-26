@@ -3502,6 +3502,56 @@
       "画像をアップロードします。",
       "ぼかし量を調整します。",
       "ぼかした画像をダウンロードします。"
+    ],
+    "html-previewer": [
+      "左側でHTMLを編集します。",
+      "右側でライブプレビューを確認します。",
+      "完成したらHTMLをコピーします。"
+    ],
+    "ip-address-info": [
+      "IPを入力するか現在のIPを使用します。",
+      "クラス・種類・バイナリを確認します。",
+      "プライベートIP範囲を確認します。"
+    ],
+    "base64-image-viewer": [
+      "Base64文字列またはデータURLを貼り付けます。",
+      "画像がプレビューされます。",
+      "ファイルとしてダウンロードします。"
+    ],
+    "json-schema-validator": [
+      "JSONスキーマを貼り付けます。",
+      "JSONデータを貼り付けます。",
+      "検証エラーを確認します。"
+    ],
+    "svg-path-visualizer": [
+      "SVG path d 属性を入力します。",
+      "塗りと線を調整します。",
+      "pathコードをコピーします。"
+    ],
+    "rotate-pdf": [
+      "PDFをアップロードします。",
+      "回転角度を選びます。",
+      "回転したPDFをダウンロードします。"
+    ],
+    "watermark-pdf": [
+      "PDFをアップロードします。",
+      "透かしテキストを入力します。",
+      "透かし入りPDFをダウンロードします。"
+    ],
+    "webcam-test": [
+      "カメラをテストを押します。",
+      "カメラアクセスを許可します。",
+      "解像度とプレビューを確認します。"
+    ],
+    "pixel-art-maker": [
+      "色とツールを選びます。",
+      "16×16グリッドに描きます。",
+      "PNGとしてエクスポートします。"
+    ],
+    "word-cloud-generator": [
+      "テキストを貼り付けます。",
+      "最大単語数を調整します。",
+      "頻度ベースのワードクラウドを確認します。"
     ]
   },
   "games": {
@@ -5835,7 +5885,72 @@
     "vqr_website": "ウェブサイト",
     "vqr_hint": "連絡先QRを生成するには名前・電話・メールのいずれかを入力してください。",
     "cc_desc": "透明な角の円形に切り抜きます (PNG)",
-    "bi_blur": "ぼかし"
+    "bi_blur": "ぼかし",
+    "hp_copyhtml": "HTMLをコピー",
+    "hp_copiedhtml": "HTMLをコピーしました",
+    "ipi_label": "IPアドレス",
+    "ipi_ph": "IPアドレスを入力するか下の自分のIPを使用",
+    "ipi_invalid": "無効なIPアドレス",
+    "ipi_current": "現在の自分のIP",
+    "ipi_usethis": "これを使用",
+    "ipi_loading": "読み込み中...",
+    "ipi_unavailable": "利用不可",
+    "ipi_version": "バージョン",
+    "ipi_class": "クラス",
+    "ipi_type": "種類",
+    "ipi_loopback": "ループバック",
+    "ipi_broadcast": "ブロードキャスト",
+    "ipi_binary": "バイナリ",
+    "ipi_private": "プライベート",
+    "ipi_public": "パブリック",
+    "ipi_yes": "はい",
+    "ipi_no": "いいえ",
+    "ipi_ranges": "プライベートIP範囲",
+    "biv_label": "Base64またはデータURL",
+    "biv_ph": "Base64文字列またはdata:image/... URLを貼り付け",
+    "biv_loadsample": "サンプルを読み込む",
+    "biv_invalid": "無効な画像データ",
+    "biv_size": "サイズ",
+    "biv_type": "種類",
+    "biv_filesize": "~ファイルサイズ",
+    "biv_unknown": "不明",
+    "biv_download": "画像をダウンロード",
+    "jsv_schema": "JSONスキーマ",
+    "jsv_valid": "有効!",
+    "jsv_invalid": "無効",
+    "jsv_parseerr": "解析エラー",
+    "jsv_supports": "対応",
+    "spv_triangle": "三角形",
+    "spv_heart": "ハート",
+    "spv_star": "星",
+    "spv_arrow": "矢印",
+    "spv_spiral": "螺旋 (弧)",
+    "spv_dattr": "SVG path d 属性",
+    "spv_fill": "塗り",
+    "spv_stroke": "線",
+    "rp_drop": "PDFをドロップまたはクリックして選択",
+    "rp_rotating": "回転中…",
+    "rp_rotate": "全ページを{a}°回転",
+    "wmp_text": "透かしテキスト",
+    "wmp_adding": "追加中…",
+    "wmp_add": "透かしを追加",
+    "wmp_note": "全ページに斜めの透かし · ブラウザ内ですべて処理されます。",
+    "wct_blocked": "カメラへのアクセスがブロックされました。テストするにはブラウザで許可してください。",
+    "wct_nocamera": "カメラが見つからないか、他のアプリで使用中です。",
+    "wct_preview": "カメラのプレビューがここに表示されます",
+    "wct_working": "カメラ動作中",
+    "wct_test": "カメラをテスト",
+    "wct_stop": "カメラを停止",
+    "wct_note": "プレビューは端末内に留まり、録画・アップロードされません。",
+    "pam_draw": "描画",
+    "pam_erase": "消去",
+    "pam_fill": "塗りつぶし",
+    "pam_export": "PNGエクスポート",
+    "pam_custom": "カスタム色",
+    "wcg_ph": "ワードクラウドを生成するテキストを貼り付け...",
+    "wcg_maxwords": "最大単語数:",
+    "wcg_nowords": "表示する単語がありません",
+    "wcg_showing": "{n}語を表示 (一般的なストップワードを除外)"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
