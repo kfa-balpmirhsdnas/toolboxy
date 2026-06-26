@@ -16,10 +16,12 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
   const [name, setName] = useState('')
   const [entries, setEntries] = useState<Entry[]>([])
   const [error, setError] = useState('')
+  const [showAll, setShowAll] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const LIMIT = 10
 
   async function load(f: File) {
-    setName(f.name); setError(''); setEntries([]); trackToolUsed('unzip')
+    setName(f.name); setError(''); setEntries([]); setShowAll(false); trackToolUsed('unzip')
     try {
       const { unzipSync } = await import('fflate')
       const buf = new Uint8Array(await f.arrayBuffer())
@@ -88,11 +90,11 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
         {entries.length > 0 && (
           <>
             <div className="flex items-center justify-between">
-              <p className="text-xs text-gray-400">{t('uz_entries', { n: entries.length })}</p>
+              <p className="text-xs text-gray-400">{!showAll && entries.length > LIMIT ? t('uz_entries_some', { shown: LIMIT, total: entries.length }) : t('uz_entries', { n: entries.length })}</p>
               <button onClick={extractAll} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">📂 {t('uz_downloadall')}</button>
             </div>
             <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-72 overflow-auto">
-              {entries.map((e, i) => (
+              {(showAll ? entries : entries.slice(0, LIMIT)).map((e, i) => (
                 <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
                   <span className="flex-1 truncate text-gray-700"><span className="text-gray-400">{(name.replace(/\.zip$/i, '') || 'extracted')}/</span>{e.name}</span>
                   <span className="text-gray-400 shrink-0">{fmt(e.size)}</span>
@@ -100,6 +102,11 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
                 </div>
               ))}
             </div>
+            {entries.length > LIMIT && (
+              <button onClick={() => setShowAll((v) => !v)} className="w-full text-center text-xs text-brand-600 hover:underline py-1">
+                {showAll ? t('uz_less') : t('uz_more', { n: entries.length - LIMIT })}
+              </button>
+            )}
           </>
         )}
         <p className="text-xs text-gray-400">{t('uz_note')}</p>

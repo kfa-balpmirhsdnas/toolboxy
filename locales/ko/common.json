@@ -3258,7 +3258,10 @@
     "cs_fav_empty": "저장한 구절이 없습니다. 구절 옆 ☆를 눌러 저장하세요.",
     "cs_top": "맨 위로",
     "zf_folder": "폴더 선택",
-    "zf_name": "압축 파일 이름"
+    "zf_name": "압축 파일 이름",
+    "uz_entries_some": "파일 {shown}개 (총 파일 {total}개)",
+    "uz_more": "…외 {n}개 더 보기",
+    "uz_less": "접기"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

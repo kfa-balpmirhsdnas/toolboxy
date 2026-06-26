@@ -2925,7 +2925,10 @@
     "cs_fav_empty": "No saved lines yet. Tap the ☆ next to a line to save it.",
     "cs_top": "Back to top",
     "zf_folder": "Select a folder",
-    "zf_name": "Zip file name"
+    "zf_name": "Zip file name",
+    "uz_entries_some": "{shown} of {total} files",
+    "uz_more": "Show {n} more",
+    "uz_less": "Show less"
   },
   "toolTags": {
     "spinner-wheel": [
