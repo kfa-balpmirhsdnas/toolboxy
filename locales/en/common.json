@@ -2817,6 +2817,16 @@
       "Enter a number.",
       "Choose currency, locale and decimals.",
       "Copy the formatted currency string."
+    ],
+    "speed-converter": [
+      "Enter a value.",
+      "Choose the input unit.",
+      "See the value in every speed unit."
+    ],
+    "pixel-converter": [
+      "Enter a pixel value.",
+      "Set the base font size.",
+      "See rem, em, pt, vw and more."
     ]
   },
   "games": {
@@ -4668,7 +4678,19 @@
     "cuf_locale": "Locale",
     "cuf_withsym": "With currency symbol",
     "cuf_numonly": "Number only",
-    "cuf_raw": "Raw number"
+    "cuf_raw": "Raw number",
+    "spc_title": "Speed Converter",
+    "spc_subtitle": "Convert between m/s, km/h, mph, knots, Mach, and more",
+    "px_pixels": "Pixels (px)",
+    "px_base": "Base Font Size (px)",
+    "px_d_rem": "Relative to root font size",
+    "px_d_em": "Relative to parent element",
+    "px_d_pt": "1px = 0.75pt",
+    "px_d_cm": "1cm = 37.795px",
+    "px_d_mm": "1mm = 3.7795px",
+    "px_d_in": "1in = 96px",
+    "px_d_vw": "Based on 1920px viewport",
+    "px_d_vh": "Based on 1080px viewport"
   },
   "toolTags": {
     "spinner-wheel": [
