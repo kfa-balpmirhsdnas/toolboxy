@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('tic-tac-toe')!
@@ -33,10 +34,11 @@ export default function TicTacToePage({ params }: { params: { lang: string } }) 
   const [vsAI, setVsAI] = useState(true)
   const [board, setBoard] = useState<Cell[]>(Array(9).fill(null))
   const [xTurn, setXTurn] = useState(true)
+  const stage = useGameStage()
   const w = winner(board)
 
   function play(i: number) {
-    if (board[i] || w) return
+    if (!stage.playing || board[i] || w) return
     const nb = [...board]; nb[i] = xTurn ? 'X' : 'O'
     setBoard(nb); setXTurn(!xTurn)
     if (vsAI && !winner(nb)) {
@@ -45,32 +47,37 @@ export default function TicTacToePage({ params }: { params: { lang: string } }) 
     }
   }
   const reset = () => { setBoard(Array(9).fill(null)); setXTurn(true) }
+  useEffect(() => { if (stage.phase === 'playing') reset() }, [stage.phase]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (w) stage.finish() }, [w]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const status = w === 'draw' ? t('ttt_draw') : w ? t('ttt_win', { p: w }) : t('ttt_turn', { p: xTurn ? 'X' : 'O' })
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-xs mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="max-w-xs mx-auto space-y-4 text-center select-none">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('ttt_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('ttt_subtitle')}</p>
         </div>
 
         <div className="flex justify-center gap-2 text-sm">
-          <button onClick={() => { setVsAI(true); reset() }} className={`px-3 py-1 rounded-full border ${vsAI ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{t('ttt_ai')}</button>
-          <button onClick={() => { setVsAI(false); reset() }} className={`px-3 py-1 rounded-full border ${!vsAI ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{t('ttt_2p')}</button>
+          <button onClick={() => { setVsAI(true); reset(); stage.reset() }} className={`px-3 py-1 rounded-full border ${vsAI ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{t('ttt_ai')}</button>
+          <button onClick={() => { setVsAI(false); reset(); stage.reset() }} className={`px-3 py-1 rounded-full border ${!vsAI ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{t('ttt_2p')}</button>
         </div>
 
         <div className="font-semibold text-gray-700 h-6">{status}</div>
 
-        <div className="grid grid-cols-3 gap-2 w-60 mx-auto">
-          {board.map((c, i) => (
-            <button key={i} onClick={() => play(i)} disabled={!!c || !!w || (vsAI && !xTurn)}
-              className={`aspect-square rounded-xl border-2 border-gray-200 text-4xl font-bold flex items-center justify-center ${c === 'X' ? 'text-brand-600' : 'text-rose-500'} hover:bg-gray-50`}>{c}</button>
-          ))}
+        <div className="relative w-60 mx-auto">
+          <div className="grid grid-cols-3 gap-2">
+            {board.map((c, i) => (
+              <button key={i} onClick={() => play(i)} disabled={!!c || !!w || (vsAI && !xTurn)}
+                className={`aspect-square rounded-xl border-2 border-gray-200 text-4xl font-bold flex items-center justify-center ${c === 'X' ? 'text-brand-600' : 'text-rose-500'} hover:bg-gray-50`}>{c}</button>
+            ))}
+          </div>
+          <GameStageOverlay stage={stage} />
         </div>
 
-        <button onClick={reset} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('ttt_new')}</button>
+        <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('ttt_new')}</button>
       </div>
     </ToolLayout>
   )

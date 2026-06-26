@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('word-guess')!
@@ -32,16 +33,19 @@ export default function WordGuessPage({ params }: { params: { lang: string } }) 
   const [guesses, setGuesses] = useState<string[]>([])
   const [input, setInput] = useState('')
   const [msg, setMsg] = useState('')
+  const stage = useGameStage()
 
   const cols = lang === 'EN' ? 5 : 6
   const ansJ = lang === 'EN' ? answer.split('') : jamo(answer)
 
   const reset = useCallback((l: 'EN' | 'KO') => { setLang(l); const bank = l === 'EN' ? EN : KO; setAnswer(bank[Math.floor(Math.random() * bank.length)]); setGuesses([]); setInput(''); setMsg('') }, [])
   useEffect(() => { reset('KO') }, [reset])
+  useEffect(() => { if (stage.phase === 'playing') reset(lang) }, [stage.phase]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const done = guesses.includes(answer) || guesses.length >= 6
+  useEffect(() => { if (done) stage.finish() }, [done]) // eslint-disable-line react-hooks/exhaustive-deps
   function submit() {
-    if (done) return
+    if (!stage.playing || done) return
     const g = input.trim().toLowerCase()
     if (lang === 'EN') { if (!/^[a-z]{5}$/.test(g)) { setMsg(t('wg_len5')); return } }
     else { if (!/^[가-힣]{2}$/.test(input.trim())) { setMsg(t('wg_len2')); return } }
@@ -53,17 +57,17 @@ export default function WordGuessPage({ params }: { params: { lang: string } }) 
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-xs mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="max-w-xs mx-auto space-y-4 text-center select-none">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('wg_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('wg_subtitle')}</p>
         </div>
 
         <div className="flex justify-center gap-2 text-sm">
-          {(['KO', 'EN'] as const).map((l) => <button key={l} onClick={() => reset(l)} className={`px-3 py-1 rounded-full border ${lang === l ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{l === 'KO' ? '한글' : 'English'}</button>)}
+          {(['KO', 'EN'] as const).map((l) => <button key={l} onClick={() => { reset(l); stage.reset() }} className={`px-3 py-1 rounded-full border ${lang === l ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{l === 'KO' ? '한글' : 'English'}</button>)}
         </div>
 
-        <div className="space-y-1 w-fit mx-auto">
+        <div className="relative space-y-1 w-fit mx-auto">
           {Array.from({ length: 6 }).map((_, r) => {
             const g = guesses[r]
             const gj = g ? (lang === 'EN' ? g.split('') : jamo(g)) : []
@@ -79,6 +83,7 @@ export default function WordGuessPage({ params }: { params: { lang: string } }) 
               </div>
             )
           })}
+          <GameStageOverlay stage={stage} />
         </div>
 
         {!done && (
@@ -90,7 +95,7 @@ export default function WordGuessPage({ params }: { params: { lang: string } }) 
           </div>
         )}
         {msg && <p className="font-semibold text-gray-800">{msg}</p>}
-        {done && <button onClick={() => reset(lang)} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('wg_new')}</button>}
+        {done && <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('wg_new')}</button>}
         <p className="text-xs text-gray-400">{t('wg_note')}</p>
       </div>
     </ToolLayout>

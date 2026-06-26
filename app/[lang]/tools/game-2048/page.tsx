@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
+import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('game-2048')!
@@ -27,11 +28,17 @@ export default function Game2048Page({ params }: { params: { lang: string } }) {
   const [score, setScore] = useState(0)
   const [best, setBest] = useState(0)
   const [over, setOver] = useState(false)
+  const stage = useGameStage()
+  const playingRef = useRef(false)
+  useEffect(() => { playingRef.current = stage.playing }, [stage.playing])
 
   const reset = useCallback(() => { setBoard(spawn(spawn(Array(16).fill(0)))); setScore(0); setOver(false) }, [])
   useEffect(() => { reset(); setBest(+(localStorage.getItem('g2048-best') || 0)) }, [reset])
+  useEffect(() => { if (stage.phase === 'playing') reset() }, [stage.phase, reset])
+  useEffect(() => { if (over) stage.finish() }, [over]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const doMove = useCallback((dir: number) => {
+    if (!playingRef.current) return
     setBoard((b) => {
       const { board: nb, score: s, moved } = move(b, dir)
       if (!moved) return b
@@ -50,7 +57,7 @@ export default function Game2048Page({ params }: { params: { lang: string } }) {
   let sx = 0, sy = 0
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-xs mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="max-w-xs mx-auto space-y-4 text-center select-none">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('g2_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('g2_subtitle')}</p>
@@ -69,10 +76,11 @@ export default function Game2048Page({ params }: { params: { lang: string } }) {
               <div key={i} className="rounded-md flex items-center justify-center font-bold" style={{ background: COLORS[v] || '#3c3a32', color: v > 4 ? '#f9f6f2' : '#776e65', fontSize: v >= 1024 ? 20 : v >= 128 ? 24 : 28 }}>{v || ''}</div>
             ))}
           </div>
-          {over && <div className="absolute inset-0 rounded-xl bg-white/70 flex flex-col items-center justify-center gap-2"><b className="text-xl text-gray-800">{t('g2_over')}</b><button onClick={reset} className="px-4 py-2 bg-brand-600 text-white rounded-xl">{t('g2_retry')}</button></div>}
+          {over && <div className="absolute inset-0 rounded-xl bg-white/70 flex flex-col items-center justify-center gap-2"><b className="text-xl text-gray-800">{t('g2_over')}</b><button onClick={stage.begin} className="px-4 py-2 bg-brand-600 text-white rounded-xl">{t('g2_retry')}</button></div>}
+          <GameStageOverlay stage={stage} />
         </div>
 
-        <button onClick={reset} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('g2_new')}</button>
+        <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('g2_new')}</button>
         <p className="text-xs text-gray-400">{t('g2_note')}</p>
       </div>
       <Leaderboard game="game-2048" score={best || null} better="higher" />
