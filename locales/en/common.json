@@ -2627,6 +2627,16 @@
       "Pick a preset or adjust each corner.",
       "Set the unit (px/%) and color.",
       "Copy the generated border-radius CSS."
+    ],
+    "css-specificity-calculator": [
+      "Enter CSS selectors, one per line.",
+      "See each selector's specificity (ID, class, element).",
+      "Use the example buttons to compare."
+    ],
+    "htaccess-redirect-generator": [
+      "Enter the source path and target URL.",
+      "Choose a 301 or 302 status code.",
+      "Copy the generated .htaccess rules."
     ]
   },
   "games": {
@@ -4229,7 +4239,11 @@
     "brg_tl": "Top Left",
     "brg_tr": "Top Right",
     "brg_br": "Bottom Right",
-    "brg_bl": "Bottom Left"
+    "brg_bl": "Bottom Left",
+    "spec_label": "CSS Selectors (one per line)",
+    "spec_examples": "Examples:",
+    "htr_force": "Force HTTPS + www",
+    "htr_add": "+ Add redirect"
   },
   "toolTags": {
     "spinner-wheel": [

@@ -2932,6 +2932,16 @@
       "プリセットを選ぶか各角を調整します。",
       "単位(px/%)と色を設定します。",
       "生成されたborder-radius CSSをコピーします。"
+    ],
+    "css-specificity-calculator": [
+      "CSSセレクタを1行に1つ入力します。",
+      "各セレクタの詳細度（ID・クラス・要素）を確認します。",
+      "例ボタンで比較します。"
+    ],
+    "htaccess-redirect-generator": [
+      "元のパスと対象URLを入力します。",
+      "301／302のステータスコードを選びます。",
+      "生成された.htaccessルールをコピーします。"
     ]
   },
   "games": {
@@ -4534,7 +4544,11 @@
     "brg_tl": "左上",
     "brg_tr": "右上",
     "brg_br": "右下",
-    "brg_bl": "左下"
+    "brg_bl": "左下",
+    "spec_label": "CSSセレクタ (1行に1つ)",
+    "spec_examples": "例:",
+    "htr_force": "HTTPS + www を強制",
+    "htr_add": "+ リダイレクトを追加"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

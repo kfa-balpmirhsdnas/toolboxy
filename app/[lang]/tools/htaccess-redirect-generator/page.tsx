@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolCopy } from '@/lib/gtag'
@@ -10,6 +11,7 @@ const tool = getToolBySlug('htaccess-redirect-generator')!
 interface Row { from: string; to: string; code: '301' | '302' }
 
 export default function HtaccessRedirectPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [rows, setRows] = useState<Row[]>([{ from: '/old-page', to: '/new-page', code: '301' }])
   const [wwwHttps, setWwwHttps] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -47,7 +49,7 @@ export default function HtaccessRedirectPage({ params }: { params: { lang: strin
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <label className="flex items-center gap-2 text-sm text-gray-600">
-          <input type="checkbox" checked={wwwHttps} onChange={(e) => setWwwHttps(e.target.checked)} /> Force HTTPS + www
+          <input type="checkbox" checked={wwwHttps} onChange={(e) => setWwwHttps(e.target.checked)} /> {t('htr_force')}
         </label>
 
         <div className="space-y-2">
@@ -67,12 +69,12 @@ export default function HtaccessRedirectPage({ params }: { params: { lang: strin
             </div>
           ))}
           <button onClick={() => setRows((rs) => [...rs, { from: '', to: '', code: '301' }])}
-            className="text-sm text-brand-600 hover:text-brand-700 font-medium">+ Add redirect</button>
+            className="text-sm text-brand-600 hover:text-brand-700 font-medium">{t('htr_add')}</button>
         </div>
 
         <div className="relative">
           <pre className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono text-gray-800 whitespace-pre-wrap min-h-[6rem]">{output}</pre>
-          <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? '✓ Copied' : 'Copy'}</button>
+          <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? t('ui_copied') : t('ui_copy')}</button>
         </div>
       </div>
 

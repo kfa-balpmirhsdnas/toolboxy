@@ -2965,6 +2965,16 @@
       "프리셋을 고르거나 각 모서리를 조절하세요.",
       "단위(px/%)와 색상을 설정하세요.",
       "생성된 border-radius CSS를 복사하세요."
+    ],
+    "css-specificity-calculator": [
+      "CSS 선택자를 한 줄에 하나씩 입력하세요.",
+      "각 선택자의 명시도(ID·클래스·요소)를 확인하세요.",
+      "예시 버튼으로 빠르게 비교하세요."
+    ],
+    "htaccess-redirect-generator": [
+      "원본 경로와 대상 URL을 입력하세요.",
+      "301/302 상태 코드를 고르세요.",
+      "생성된 .htaccess 규칙을 복사하세요."
     ]
   },
   "games": {
@@ -4567,7 +4577,11 @@
     "brg_tl": "왼쪽 위",
     "brg_tr": "오른쪽 위",
     "brg_br": "오른쪽 아래",
-    "brg_bl": "왼쪽 아래"
+    "brg_bl": "왼쪽 아래",
+    "spec_label": "CSS 선택자 (한 줄에 하나)",
+    "spec_examples": "예시:",
+    "htr_force": "HTTPS + www 강제",
+    "htr_add": "+ 리디렉션 추가"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
