@@ -3047,6 +3047,16 @@
       "Upload an SVG file or paste code.",
       "Set the scale.",
       "Convert to PNG and download."
+    ],
+    "png-to-jpg": [
+      "Upload a PNG image.",
+      "Set the quality.",
+      "Convert to JPG and download."
+    ],
+    "jpg-to-png": [
+      "Upload a JPG/JPEG image.",
+      "Press convert.",
+      "Convert to PNG and download."
     ]
   },
   "games": {
@@ -5230,7 +5240,16 @@
     "stp_paste": "Or paste SVG code",
     "stp_scale": "Scale: {s}x (output: {d})",
     "stp_convert": "Convert to PNG",
-    "stp_download": "Download PNG ({w}x{h}px)"
+    "stp_download": "Download PNG ({w}x{h}px)",
+    "ptj_drop": "Drop PNG here or click to select",
+    "ptj_transparent": "Transparent areas will be filled white",
+    "ptj_convert": "Convert to JPG",
+    "ptj_ready": "JPG ready!",
+    "ptj_download": "Download .jpg",
+    "jtp_drop": "Drop JPG/JPEG here or click to select",
+    "jtp_lossless": "Converted to lossless PNG in your browser",
+    "jtp_ready": "PNG ready!",
+    "jtp_download": "Download .png"
   },
   "toolTags": {
     "spinner-wheel": [

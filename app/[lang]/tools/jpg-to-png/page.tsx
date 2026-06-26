@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -12,6 +13,7 @@ function fmtBytes(b: number) {
 }
 
 export default function JpgToPngPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [original, setOriginal] = useState<File|null>(null)
   const [preview, setPreview] = useState('')
   const [resultUrl, setResultUrl] = useState('')
@@ -81,24 +83,24 @@ export default function JpgToPngPage({ params }: { params: { lang: string } }) {
           ) : (
             <>
               <p className="text-4xl mb-2">&#x1F5BC;</p>
-              <p className="text-sm font-medium text-gray-600">Drop JPG/JPEG here or click to select</p>
-              <p className="text-xs text-gray-400 mt-1">Converted to lossless PNG in your browser</p>
+              <p className="text-sm font-medium text-gray-600">{t('jtp_drop')}</p>
+              <p className="text-xs text-gray-400 mt-1">{t('jtp_lossless')}</p>
             </>
           )}
         </div>
         {preview && <img src={preview} alt="preview" className="max-h-48 rounded-xl border border-gray-200 object-contain mx-auto" />}
         <button onClick={convert} disabled={!original || loading}
           className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors">
-          {loading ? 'Converting...' : 'Convert to PNG'}
+          {loading ? t('wc_converting') : t('stp_convert')}
         </button>
         {resultUrl && (
           <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-xl">
             <div>
-              <p className="text-sm font-semibold text-green-800">PNG ready!</p>
+              <p className="text-sm font-semibold text-green-800">{t('jtp_ready')}</p>
               <p className="text-xs text-green-600">{fmtBytes(resultSize)}</p>
             </div>
             <button onClick={download} className="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700">
-              &#x2B07; Download .png
+              &#x2B07; {t('jtp_download')}
             </button>
           </div>
         )}

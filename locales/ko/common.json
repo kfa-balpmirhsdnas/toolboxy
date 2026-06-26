@@ -3385,6 +3385,16 @@
       "SVG 파일을 올리거나 코드를 붙여넣으세요.",
       "배율을 설정하세요.",
       "PNG로 변환해 다운로드하세요."
+    ],
+    "png-to-jpg": [
+      "PNG 이미지를 올리세요.",
+      "품질을 설정하세요.",
+      "JPG로 변환해 다운로드하세요."
+    ],
+    "jpg-to-png": [
+      "JPG/JPEG 이미지를 올리세요.",
+      "변환 버튼을 누르세요.",
+      "PNG로 변환해 다운로드하세요."
     ]
   },
   "games": {
@@ -5568,7 +5578,16 @@
     "stp_paste": "또는 SVG 코드 붙여넣기",
     "stp_scale": "배율: {s}x (출력: {d})",
     "stp_convert": "PNG로 변환",
-    "stp_download": "PNG 다운로드 ({w}x{h}px)"
+    "stp_download": "PNG 다운로드 ({w}x{h}px)",
+    "ptj_drop": "PNG를 끌어다 놓거나 클릭하여 선택",
+    "ptj_transparent": "투명 영역은 흰색으로 채워집니다",
+    "ptj_convert": "JPG로 변환",
+    "ptj_ready": "JPG 준비 완료!",
+    "ptj_download": ".jpg 다운로드",
+    "jtp_drop": "JPG/JPEG를 끌어다 놓거나 클릭하여 선택",
+    "jtp_lossless": "브라우저에서 무손실 PNG로 변환됩니다",
+    "jtp_ready": "PNG 준비 완료!",
+    "jtp_download": ".png 다운로드"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
