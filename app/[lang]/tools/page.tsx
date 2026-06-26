@@ -14,7 +14,7 @@ export default async function ToolsPage({ params }: { params: { lang: string } }
       <p className="text-gray-500 mb-10">{th('hero_description')}</p>
 
       {categories.map((cat) => {
-        const tools = TOOLS.filter((t) => t.category === cat)
+        const tools = TOOLS.filter((t) => t.category === cat || t.also?.includes(cat))
         if (tools.length === 0) return null
         const meta = CATEGORY_META[cat]
         return (

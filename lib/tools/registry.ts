@@ -4,6 +4,7 @@ export type Phase = 1 | 2 | 3
 export interface ToolMeta {
   slug: string
   category: ToolCategory
+  also?: ToolCategory[] // extra categories this tool is cross-listed in (home stays `category`)
   added?: string // ISO date (YYYY-MM-DD) the tool was first published
   isPro: boolean
   isNew: boolean
@@ -64,6 +65,9 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'nickname-generator',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['닉네임 생성기','아이디 추천','아이디 만들기','username generator','nickname generator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'social-image-sizes',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['sns 이미지 규격','소셜 이미지 크기','인스타 사이즈','social media image sizes','image size guide'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'engagement-rate-calculator',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['참여율 계산기','인게이지먼트','engagement rate calculator','engagement rate','인플루언서 참여율'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'periodic-table',category:'science',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['주기율표','periodic table','원소','元素周期表','화학 원소'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'molar-mass-calculator',category:'science',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['분자량 계산기','몰질량','molar mass calculator','molecular weight','화학식 계산'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'element-quiz',category:'science',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['원소 기호 퀴즈','원소 기호 외우기','element quiz','periodic table quiz','원소 암기'],maxFileSizeMB:{free:0,pro:0} },
@@ -124,7 +128,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'heic-to-jpg',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['heic to jpg','heic converter','iphone photo','heic convert','HEIC jp'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'rotate-image',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['rotate image','flip image','image rotate','image flip','image rotate jp'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'meme-generator',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['meme generator','meme maker','meme make','meme jp'],maxFileSizeMB:{free:30,pro:120} },
-  {slug:'circle-crop',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['circle crop','round image','circle crop ko','circle crop jp'],maxFileSizeMB:{free:30,pro:120} },
+  {slug:'circle-crop',category:'image',also:['social'],added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['circle crop','round image','circle crop ko','circle crop jp'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'blur-image',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['blur image','blur photo','image blur','image blur jp'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'image-filter',category:'image',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['사진 필터','이미지 밝기 대비','image filter','photo filter','brightness contrast'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'ocr',category:'image',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['ocr','이미지 텍스트 추출','image to text','글자 인식','사진 텍스트'],maxFileSizeMB:{free:20,pro:80} },
@@ -152,7 +156,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'capital-distance',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['두 도시 거리','수도 간 거리','distance between cities','capital distance','도시 거리 계산'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'time-difference',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['시차 계산기','나라 시차','time difference','한국 미국 시차','timezone difference'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'plug-type',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['나라별 콘센트','플러그 타입','power plug type','콘센트 모양','travel adapter'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'youtube-thumbnail',category:'image',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['유튜브 썸네일','썸네일 다운로드','youtube thumbnail','thumbnail downloader','유튜브 이미지'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'youtube-thumbnail',category:'image',also:['social'],added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['유튜브 썸네일','썸네일 다운로드','youtube thumbnail','thumbnail downloader','유튜브 이미지'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'savings-calculator',category:'finance',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['적금 계산기','적금 이자','savings calculator','만기 수령액','적금 만기'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'social-character-counter',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['글자수 세기','sns 글자수','character counter','instagram caption length','트위터 글자수'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'instagram-line-break',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['인스타 줄바꿈','인스타그램 줄바꿈','instagram line break','캡션 줄바꿈','띄어쓰기'],maxFileSizeMB:{free:0,pro:0} },
@@ -163,7 +167,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'split-pdf',category:'pdf',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['pdf','split','extract','pages','分割','분할'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'rotate-pdf',category:'pdf',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['pdf','rotate','turn','回転','회전'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'remove-pdf-pages',category:'pdf',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['pdf','delete','remove','pages','削除','삭제'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'fancy-text-generator',category:'funny',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['fancy text','font','unicode','instagram','폰트','フォント'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'fancy-text-generator',category:'funny',also:['social'],added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['fancy text','font','unicode','instagram','폰트','フォント'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'favicon-generator',category:'image',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['favicon','icon','generator','ico','ファビコン','파비콘'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'webp-converter',category:'image',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['webp','convert','png','jpg','compress'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'image-to-pdf',category:'pdf',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['image','pdf','convert','jpg','png'],maxFileSizeMB:{free:0,pro:0} },
@@ -279,7 +283,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'css-minifier',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['css','minify','compress','optimize','clean'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'sql-formatter',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['sql','format','query','database','beautify'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'cron-parser',category:'developer',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['cron parser'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'emoji-picker',category:'text',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['emoji picker'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'emoji-picker',category:'text',also:['social'],added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['emoji picker'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'color-contrast-checker',category:'design',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['color','contrast','wcag','accessibility','a11y'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'password-strength-checker',category:'security',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['password','strength','security','checker'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'html-color-names',category:'design',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['html color names'],maxFileSizeMB:{free:0,pro:0} },
@@ -328,7 +332,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'image-color-extractor',category:'image',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['image','color','extract','palette','dominant'],maxFileSizeMB:{free:5,pro:10} },
   {slug:'font-pairing-tool',category:'text',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['font','pairing','typography','google','design'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'html-color-codes',category:'design',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['html','color','codes','reference','hex'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'image-resizer',category:'image',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['image','resize','scale','width','height'],maxFileSizeMB:{free:5,pro:10} },
+  {slug:'image-resizer',category:'image',also:['social'],added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['image','resize','scale','width','height'],maxFileSizeMB:{free:5,pro:10} },
   {slug:'html-table-generator',category:'developer',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['html','table','generator','rows','columns'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'xml-formatter',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['xml','format','beautify','indent','parse'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'text-to-ascii-art',category:'funny',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['ascii','art','text','banner','figlet'],maxFileSizeMB:{free:0,pro:0} },
@@ -423,7 +427,7 @@ export function getToolBySlug(slug: string): ToolMeta | undefined {
 }
 
 export function getToolsByCategory(category: ToolCategory): ToolMeta[] {
-  return TOOLS.filter((t) => t.category === category)
+  return TOOLS.filter((t) => t.category === category || t.also?.includes(category))
 }
 
 export function getToolsByPhase(phase: Phase): ToolMeta[] {

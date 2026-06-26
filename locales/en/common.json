@@ -781,7 +781,10 @@
     "elementary-japanese-words": "Learn essential elementary Japanese words hands-free: a new word appears every few seconds with Japanese and Korean audio you can toggle. Free flashcard trainer with a study timer.",
     "elementary-english-words": "Learn the ~800 essential elementary English words hands-free: a new word appears every few seconds with English and Korean audio you can toggle. Free flashcard trainer with a study timer.",
     "middle-english-words": "Learn the 900 essential middle-school English words hands-free: a new word appears every few seconds with English and Korean audio you can toggle. Free flashcard trainer with a study timer.",
-    "high-english-words": "Learn the ~1300 essential high-school English words hands-free: a new word appears every few seconds with English and Korean audio you can toggle. Free flashcard trainer with a study timer."
+    "high-english-words": "Learn the ~1300 essential high-school English words hands-free: a new word appears every few seconds with English and Korean audio you can toggle. Free flashcard trainer with a study timer.",
+    "nickname-generator": "Free generator for cool social/gaming usernames and nicknames from a keyword.",
+    "social-image-sizes": "Free guide to recommended image sizes for Instagram, YouTube, TikTok and more.",
+    "engagement-rate-calculator": "Free calculator for social media engagement rate from followers, likes and comments."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1800,7 +1803,10 @@
     "elementary-japanese-words": "This flashcard trainer plays through ~150 essential elementary Japanese words on a timer you control (3–20 seconds). Each card shows the Japanese word with its reading and the Korean meaning, and can read both aloud (toggle Japanese and Korean audio independently). A study timer tracks how long you practice. Everything runs in your browser; nothing you do is uploaded.",
     "elementary-english-words": "This flashcard trainer plays through ~800 essential elementary English words on a timer you control. Each card shows the English word and its Korean meaning, and reads them aloud (toggle English and Korean audio independently, set the gap between them and a repeat count). A study timer tracks how long you practice. Everything runs in your browser; nothing you do is uploaded.",
     "middle-english-words": "This flashcard trainer plays through 900 essential middle-school English words on a timer you control. Each card shows the English word and its Korean meaning, and reads them aloud (toggle English and Korean audio independently, set the gap between them and a repeat count). A study timer tracks how long you practice. Everything runs in your browser; nothing you do is uploaded.",
-    "high-english-words": "This flashcard trainer plays through ~1300 essential high-school English words on a timer you control. Each card shows the English word and its Korean meaning, and reads them aloud (toggle English and Korean audio independently, set the gap between them and a repeat count). A study timer tracks how long you practice. Everything runs in your browser; nothing you do is uploaded."
+    "high-english-words": "This flashcard trainer plays through ~1300 essential high-school English words on a timer you control. Each card shows the English word and its Korean meaning, and reads them aloud (toggle English and Korean audio independently, set the gap between them and a repeat count). A study timer tracks how long you practice. Everything runs in your browser; nothing you do is uploaded.",
+    "nickname-generator": "Type a keyword and press Generate to get a batch of username ideas — adjective + noun combos, keyword variations, numbers and separators mixed in. Click any one to copy it. Works for Instagram, X (Twitter), TikTok, gaming handles and more; check actual availability on each service. Everything is generated in your browser, free and with no install.",
+    "social-image-sizes": "Recommended pixel sizes for posts, stories, thumbnails, profiles and covers across Instagram, YouTube, X (Twitter), Facebook, TikTok and LinkedIn, organized by platform. Click a size to copy it as “1080x1080” to paste straight into your design tool. Matching the right size before posting keeps your images crisp and uncropped. Specs change over time, so use it as a reference. Free, no install.",
+    "engagement-rate-calculator": "Enter your follower count and a post’s average likes and comments to get the engagement rate, using (likes + comments) ÷ followers × 100. As a rough guide, under 1% is low, 1–3.5% average, 3.5–6% high, and above 6% excellent. Averaging several recent posts gives a more accurate result. Handy for influencer collaborations and marketing. Free, no install."
   },
   "howto": {
     "title": "How to use",
@@ -2177,6 +2183,21 @@
       "Each card plays the English audio, then after the voice gap reads the Korean meaning.",
       "Adjust the interval, voice gap, repeat count, and the English / Korean audio toggles.",
       "Use ‹ › to step through words by hand; a study timer tracks how long you practice."
+    ],
+    "nickname-generator": [
+      "Enter a keyword (optional).",
+      "Press Generate to create username ideas.",
+      "Click one you like to copy it."
+    ],
+    "social-image-sizes": [
+      "Find the use (post, story, etc.) on a platform card.",
+      "Check the recommended size.",
+      "Click the size to copy it."
+    ],
+    "engagement-rate-calculator": [
+      "Enter your follower count.",
+      "Enter average likes and comments.",
+      "The engagement rate and tier show instantly."
     ]
   },
   "games": {
@@ -2935,7 +2956,39 @@
     "zf_method": "Compression",
     "zf_method_normal": "Normal",
     "zf_method_max": "Maximum (slower)",
-    "zf_method_min": "None — bundle only (fastest)"
+    "zf_method_min": "None — bundle only (fastest)",
+    "ng_title": "Nickname & Username Generator",
+    "ng_subtitle": "Enter a keyword and get cool username ideas.",
+    "ng_ph": "Keyword (optional, e.g. star)",
+    "ng_gen": "Generate",
+    "ng_copy": "Click to copy",
+    "ng_note": "Click any handle to copy it. Check availability on each platform. Everything runs in your browser.",
+    "sis_title": "Social Media Image Size Guide",
+    "sis_subtitle": "Recommended image sizes per platform at a glance. Click a size to copy.",
+    "sis_copy": "Click to copy",
+    "sis_copied": "Copied",
+    "sis_note": "Recommended pixel sizes for each platform. Specs change over time — use as a reference.",
+    "sis_post": "Post",
+    "sis_post_square": "Square post",
+    "sis_post_portrait": "Portrait post",
+    "sis_story": "Story / Reels",
+    "sis_profile": "Profile",
+    "sis_cover": "Cover",
+    "sis_header": "Header",
+    "sis_thumbnail": "Thumbnail",
+    "sis_channelart": "Channel art",
+    "sis_video": "Video",
+    "er_title": "Engagement Rate Calculator",
+    "er_subtitle": "Calculate engagement from followers, likes and comments.",
+    "er_followers": "Followers",
+    "er_likes": "Avg. likes",
+    "er_comments": "Avg. comments",
+    "er_rate": "Engagement rate",
+    "er_note": "Rate = (likes + comments) ÷ followers × 100. Use averages over several posts for accuracy.",
+    "er_tier_low": "Low",
+    "er_tier_avg": "Average",
+    "er_tier_high": "High",
+    "er_tier_top": "Excellent"
   },
   "toolTags": {
     "spinner-wheel": [
@@ -3058,7 +3111,10 @@
     "elementary-japanese-words": "Elementary Japanese Words Trainer",
     "elementary-english-words": "Elementary English Words Trainer",
     "middle-english-words": "Middle School English Words Trainer",
-    "high-english-words": "High School English Words Trainer"
+    "high-english-words": "High School English Words Trainer",
+    "nickname-generator": "Nickname & Username Generator",
+    "social-image-sizes": "Social Media Image Sizes",
+    "engagement-rate-calculator": "Engagement Rate Calculator"
   },
   "howtoNote": {
     "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",

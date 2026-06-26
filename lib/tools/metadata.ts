@@ -125,7 +125,7 @@ export async function buildCategoryMetadata(category: string, lang: string): Pro
     toolsWord = messages.nav?.tools ?? 'Tools'
   } catch { /* fall back to defaults */ }
 
-  const count = TOOLS.filter((t) => t.category === category).length
+  const count = TOOLS.filter((t) => t.category === category || (t.also as string[] | undefined)?.includes(category)).length
   const title = `${catName} ${toolsWord} | ToolBoxy`
   const description = (CAT_DESC[safeLang] ?? CAT_DESC.en)(catName, count)
   const url = `${BASE}/${safeLang}/tools/${category}`
