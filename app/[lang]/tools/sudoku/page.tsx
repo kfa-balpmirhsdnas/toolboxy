@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
+import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('sudoku')!
@@ -50,6 +51,7 @@ export default function SudokuPage({ params }: { params: { lang: string } }) {
   const [sel, setSel] = useState(-1)
   const [time, setTime] = useState(0)
   const [best, setBest] = useState<Record<string, number>>({})
+  const stage = useGameStage()
 
   const make = useCallback((d: string) => {
     const { puzzle } = generate(GIVENS[d])
@@ -57,16 +59,17 @@ export default function SudokuPage({ params }: { params: { lang: string } }) {
   }, [])
   useEffect(() => { make('sd_easy') }, [make])
   useEffect(() => { try { setBest(JSON.parse(localStorage.getItem('sudoku-best') || '{}')) } catch { /* ignore */ } }, [])
+  useEffect(() => { if (stage.phase === 'playing') make(diff) }, [stage.phase]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  function put(v: number) { if (sel < 0 || given[sel]) return; setGrid((g) => g.map((x, i) => (i === sel ? v : x))) }
+  function put(v: number) { if (!stage.playing || sel < 0 || given[sel]) return; setGrid((g) => g.map((x, i) => (i === sel ? v : x))) }
   const conflict = (i: number) => { const v = grid[i]; if (!v) return false; return [...Array(9)].some((_, k) => (k !== i % 9 && grid[Math.floor(i / 9) * 9 + k] === v) || (k !== Math.floor(i / 9) && grid[k * 9 + (i % 9)] === v)) }
   const solved = grid.length === 81 && grid.every((v, i) => v !== 0 && !conflict(i))
 
   useEffect(() => {
-    if (grid.length !== 81 || solved) return
+    if (grid.length !== 81 || solved || !stage.playing) return
     const id = setInterval(() => setTime((t) => t + 0.1), 100)
     return () => clearInterval(id)
-  }, [grid.length, solved])
+  }, [grid.length, solved, stage.playing])
   useEffect(() => {
     if (!solved) return
     setBest((b) => {
@@ -76,32 +79,36 @@ export default function SudokuPage({ params }: { params: { lang: string } }) {
       localStorage.setItem('sudoku-best', JSON.stringify(nb))
       return nb
     })
+    stage.finish()
   }, [solved]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-sm mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="max-w-sm mx-auto space-y-4 text-center select-none">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('sd_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('sd_subtitle')}</p>
         </div>
 
         <div className="flex justify-center gap-2 text-sm">
-          {Object.keys(GIVENS).map((d) => <button key={d} onClick={() => make(d)} className={`px-3 py-1 rounded-full border ${diff === d ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{t(d)}</button>)}
+          {Object.keys(GIVENS).map((d) => <button key={d} onClick={() => { make(d); stage.reset() }} className={`px-3 py-1 rounded-full border ${diff === d ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{t(d)}</button>)}
         </div>
         <div className="text-sm text-gray-600">⏱ {time.toFixed(1)}s{best[diff] != null ? ` · ${t('lb_best')} ${best[diff].toFixed(1)}s` : ''}</div>
 
-        <div className="grid grid-cols-9 mx-auto w-fit border-2 border-gray-800">
-          {grid.map((v, i) => {
-            const conf = conflict(i)
-            return (
-              <button key={i} onClick={() => setSel(i)}
-                className={`w-9 h-9 text-lg flex items-center justify-center ${given[i] ? 'font-bold text-gray-900' : conf ? 'text-rose-600' : 'text-brand-600'} ${sel === i ? 'bg-brand-100' : (Math.floor(i / 9) % 2 === Math.floor((i % 9) / 3) % 2 ? 'bg-white' : 'bg-gray-50')}`}
-                style={{ borderRight: (i % 9) % 3 === 2 && (i % 9) !== 8 ? '2px solid #1f2937' : '1px solid #e5e7eb', borderBottom: Math.floor(i / 9) % 3 === 2 && Math.floor(i / 9) !== 8 ? '2px solid #1f2937' : '1px solid #e5e7eb' }}>
-                {v || ''}
-              </button>
-            )
-          })}
+        <div className="relative w-fit mx-auto">
+          <div className="grid grid-cols-9 w-fit border-2 border-gray-800">
+            {grid.map((v, i) => {
+              const conf = conflict(i)
+              return (
+                <button key={i} onClick={() => setSel(i)}
+                  className={`w-9 h-9 text-lg flex items-center justify-center ${given[i] ? 'font-bold text-gray-900' : conf ? 'text-rose-600' : 'text-brand-600'} ${sel === i ? 'bg-brand-100' : (Math.floor(i / 9) % 2 === Math.floor((i % 9) / 3) % 2 ? 'bg-white' : 'bg-gray-50')}`}
+                  style={{ borderRight: (i % 9) % 3 === 2 && (i % 9) !== 8 ? '2px solid #1f2937' : '1px solid #e5e7eb', borderBottom: Math.floor(i / 9) % 3 === 2 && Math.floor(i / 9) !== 8 ? '2px solid #1f2937' : '1px solid #e5e7eb' }}>
+                  {v || ''}
+                </button>
+              )
+            })}
+          </div>
+          <GameStageOverlay stage={stage} />
         </div>
 
         {solved && <div className="rounded-xl bg-emerald-50 text-emerald-700 py-3 font-semibold">{t('sd_solved')}</div>}
@@ -110,7 +117,7 @@ export default function SudokuPage({ params }: { params: { lang: string } }) {
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => <button key={n} onClick={() => put(n)} className="aspect-square rounded-lg bg-gray-100 text-lg font-semibold hover:bg-brand-100">{n}</button>)}
           <button onClick={() => put(0)} className="aspect-square rounded-lg bg-gray-100 hover:bg-rose-100">⌫</button>
         </div>
-        <button onClick={() => make(diff)} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('sd_new')}</button>
+        <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('sd_new')}</button>
       </div>
       <Leaderboard game={`sudoku-${diff.replace('sd_', '')}`} score={best[diff] != null ? Math.round(best[diff] * 10) / 10 : null} unit=" s" better="lower" />
     </ToolLayout>

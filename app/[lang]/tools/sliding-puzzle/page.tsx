@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
+import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('sliding-puzzle')!
@@ -21,16 +22,20 @@ export default function SlidingPuzzlePage({ params }: { params: { lang: string }
   const [board, setBoard] = useState<number[]>(SOLVED)
   const [moves, setMoves] = useState(0)
   const [best, setBest] = useState<number | null>(null)
+  const stage = useGameStage()
   const reset = useCallback(() => { setBoard(shuffled()); setMoves(0) }, [])
   useEffect(() => { reset() }, [reset])
+  useEffect(() => { if (stage.phase === 'playing') reset() }, [stage.phase, reset])
   useEffect(() => { const v = localStorage.getItem('sliding-best'); if (v) setBest(+v) }, [])
 
   const solved = board.every((v, i) => v === SOLVED[i])
   useEffect(() => {
     if (!solved || moves === 0) return
     setBest((b) => { const nb = b == null || moves < b ? moves : b; localStorage.setItem('sliding-best', String(nb)); return nb })
+    stage.finish()
   }, [solved]) // eslint-disable-line react-hooks/exhaustive-deps
   function click(i: number) {
+    if (!stage.playing) return
     const z = board.indexOf(0)
     if (!adj(i, z)) return
     const nb = [...board];[nb[i], nb[z]] = [nb[z], nb[i]]; setBoard(nb); setMoves((m) => m + 1)
@@ -38,7 +43,7 @@ export default function SlidingPuzzlePage({ params }: { params: { lang: string }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-xs mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="max-w-xs mx-auto space-y-4 text-center select-none">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('sp2_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('sp2_subtitle')}</p>
@@ -46,15 +51,18 @@ export default function SlidingPuzzlePage({ params }: { params: { lang: string }
 
         <div className="text-sm text-gray-600">{t('sp2_moves')}: <b>{moves}</b>{best != null ? ` · ${t('lb_best')} ${best}` : ''}</div>
 
-        <div className="grid grid-cols-4 gap-1.5 mx-auto" style={{ width: 280, height: 280 }}>
-          {board.map((v, i) => (
-            <button key={i} onClick={() => click(i)} disabled={v === 0}
-              className={`rounded-lg text-xl font-bold ${v === 0 ? 'bg-transparent' : solved ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-500 text-white hover:bg-brand-600'}`}>{v || ''}</button>
-          ))}
+        <div className="relative mx-auto" style={{ width: 280 }}>
+          <div className="grid grid-cols-4 gap-1.5" style={{ width: 280, height: 280 }}>
+            {board.map((v, i) => (
+              <button key={i} onClick={() => click(i)} disabled={v === 0}
+                className={`rounded-lg text-xl font-bold ${v === 0 ? 'bg-transparent' : solved ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-500 text-white hover:bg-brand-600'}`}>{v || ''}</button>
+            ))}
+          </div>
+          <GameStageOverlay stage={stage} />
         </div>
 
         {solved && moves > 0 && <div className="rounded-xl bg-emerald-50 text-emerald-700 py-3 font-semibold">{t('sp2_done', { moves })}</div>}
-        <button onClick={reset} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('sp2_new')}</button>
+        <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('sp2_new')}</button>
       </div>
       <Leaderboard game="sliding-puzzle" score={best} better="lower" />
     </ToolLayout>

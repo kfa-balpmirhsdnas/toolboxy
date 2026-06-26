@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
+import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('memory-game')!
@@ -24,14 +25,16 @@ export default function MemoryGamePage({ params }: { params: { lang: string } })
   const [time, setTime] = useState(0)
   const [running, setRunning] = useState(false)
   const [best, setBest] = useState<Record<number, number>>({})
+  const stage = useGameStage()
 
   const reset = useCallback((p: number) => { setCards(deal(p)); setOpen([]); setMoves(0); setTime(0); setRunning(false) }, [])
   useEffect(() => { reset(pairs) }, [pairs, reset])
+  useEffect(() => { if (stage.phase === 'playing') reset(pairs) }, [stage.phase, pairs, reset])
   useEffect(() => { if (!running) return; const id = setInterval(() => setTime((t) => t + 1), 1000); return () => clearInterval(id) }, [running])
   useEffect(() => { try { setBest(JSON.parse(localStorage.getItem('memory-best') || '{}')) } catch { /* ignore */ } }, [])
 
   const won = cards.length > 0 && cards.every((c) => c.matched)
-  useEffect(() => { if (won) setRunning(false) }, [won])
+  useEffect(() => { if (won) { setRunning(false); stage.finish() } }, [won]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!won) return
     setBest((b) => {
@@ -44,7 +47,7 @@ export default function MemoryGamePage({ params }: { params: { lang: string } })
   }, [won]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function flip(idx: number) {
-    if (open.length === 2 || cards[idx].flipped || cards[idx].matched) return
+    if (!stage.playing || open.length === 2 || cards[idx].flipped || cards[idx].matched) return
     if (!running) setRunning(true)
     const nc = cards.map((c, i) => (i === idx ? { ...c, flipped: true } : c))
     const no = [...open, idx]
@@ -59,28 +62,31 @@ export default function MemoryGamePage({ params }: { params: { lang: string } })
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-sm mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="max-w-sm mx-auto space-y-4 text-center select-none">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('mg2_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('mg2_subtitle')}</p>
         </div>
 
         <div className="flex items-center justify-center gap-2 text-sm">
-          {[6, 8, 10].map((p) => <button key={p} onClick={() => setPairs(p)} className={`px-3 py-1 rounded-full border ${pairs === p ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{p * 2}{t('mg2_cards')}</button>)}
+          {[6, 8, 10].map((p) => <button key={p} onClick={() => { setPairs(p); stage.reset() }} className={`px-3 py-1 rounded-full border ${pairs === p ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>{p * 2}{t('mg2_cards')}</button>)}
         </div>
         <div className="flex justify-center gap-6 text-sm text-gray-600"><span>{t('mg2_moves')}: <b>{moves}</b></span><span>{t('mg2_time')}: <b>{time}s</b></span>{best[pairs] != null && <span>{t('lb_best')}: <b>{best[pairs]}</b></span>}</div>
 
-        <div className={`grid gap-2 ${pairs <= 6 ? 'grid-cols-4' : 'grid-cols-4'}`}>
-          {cards.map((c, i) => (
-            <button key={c.id} onClick={() => flip(i)}
-              className={`aspect-square rounded-xl text-3xl flex items-center justify-center transition-colors ${c.flipped || c.matched ? 'bg-white border-2 border-brand-200' : 'bg-brand-500 hover:bg-brand-600'} ${c.matched ? 'opacity-50' : ''}`}>
-              {c.flipped || c.matched ? c.e : ''}
-            </button>
-          ))}
+        <div className="relative">
+          <div className="grid gap-2 grid-cols-4">
+            {cards.map((c, i) => (
+              <button key={c.id} onClick={() => flip(i)}
+                className={`aspect-square rounded-xl text-3xl flex items-center justify-center transition-colors ${c.flipped || c.matched ? 'bg-white border-2 border-brand-200' : 'bg-brand-500 hover:bg-brand-600'} ${c.matched ? 'opacity-50' : ''}`}>
+                {c.flipped || c.matched ? c.e : ''}
+              </button>
+            ))}
+          </div>
+          <GameStageOverlay stage={stage} />
         </div>
 
         {won && <div className="rounded-xl bg-emerald-50 text-emerald-700 py-3 font-semibold">{t('mg2_won', { moves, time })}</div>}
-        <button onClick={() => reset(pairs)} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('mg2_new')}</button>
+        <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('mg2_new')}</button>
       </div>
       <Leaderboard game={`memory-${pairs}`} score={best[pairs] ?? null} better="lower" />
     </ToolLayout>
