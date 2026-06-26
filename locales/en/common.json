@@ -2587,6 +2587,16 @@
       "Choose a block or search.",
       "Click the character you want.",
       "The clicked character is copied."
+    ],
+    "ini-parser": [
+      "Paste INI content.",
+      "Press Parse.",
+      "View sections and copy as JSON."
+    ],
+    "hex-dump-viewer": [
+      "Choose text or hex input mode.",
+      "Enter your content.",
+      "See the offset/hex/ASCII dump."
     ]
   },
   "games": {
@@ -4138,7 +4148,18 @@
     "cmap_r_latinext": "Latin Extended",
     "cmap_r_greek": "Greek",
     "cmap_r_arrows": "Arrows",
-    "cmap_r_math": "Math"
+    "cmap_r_math": "Math",
+    "ini_content": "INI Content",
+    "ini_ph": "Paste INI file content...",
+    "ini_parse": "Parse",
+    "ini_copyjson": "Copy as JSON",
+    "hd_as_text": "Input as text",
+    "hd_as_hex": "Input as hex",
+    "hd_width": "Width:",
+    "hd_ph_text": "Enter text...",
+    "hd_ph_hex": "Enter hex bytes (e.g. 48656c6c6f)...",
+    "hd_invalid": "Invalid hex string (must be even-length hex characters)",
+    "hd_dump": "Hex dump"
   },
   "toolTags": {
     "spinner-wheel": [

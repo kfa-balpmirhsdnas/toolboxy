@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
@@ -27,7 +28,8 @@ function parseIni(text:string):Record<string,Record<string,string>>{
 const DEMO='[database]\nhost=localhost\nport=5432\nname=mydb\n\n[server]\nhost=0.0.0.0\nport=8080\ndebug=true'
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='ini-parser')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='ini-parser')
   const [input,setInput]=useState(DEMO)
   const [parsed,setParsed]=useState<Record<string,Record<string,string>>|null>(null)
   const [error,setError]=useState('')
@@ -45,12 +47,12 @@ export default function Page(){
     <ToolLayout tool={tool}>
       <div className='space-y-4'>
         <div>
-          <label className='block text-sm font-medium mb-1'>INI Content</label>
+          <label className='block text-sm font-medium mb-1'>{t('ini_content')}</label>
           <textarea value={input} onChange={e=>setInput(e.target.value)}
             className='w-full h-40 p-3 border rounded font-mono text-sm resize-y'
-            placeholder='Paste INI file content...'/>
+            placeholder={t('ini_ph')}/>
         </div>
-        <button onClick={parse} className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>Parse</button>
+        <button onClick={parse} className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>{t('ini_parse')}</button>
         {error&&<p className='text-red-500 text-sm'>{error}</p>}
         {parsed&&(
           <div className='space-y-3'>
@@ -71,7 +73,7 @@ export default function Page(){
               </div>
             ))}
             <button onClick={()=>navigator.clipboard.writeText(JSON.stringify(parsed,null,2))}
-              className='px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm'>Copy as JSON</button>
+              className='px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm'>{t('ini_copyjson')}</button>
           </div>
         )}
       </div>
