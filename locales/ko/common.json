@@ -3255,6 +3255,16 @@
       "문단·문장·단어 유형을 고르세요.",
       "개수를 입력하세요.",
       "생성된 더미 텍스트를 복사하세요."
+    ],
+    "text-diff": [
+      "원본과 수정본 텍스트를 입력하세요.",
+      "대소문자 무시 여부를 정하세요.",
+      "줄 단위 추가·삭제 결과를 확인하세요."
+    ],
+    "csv-to-json": [
+      "CSV 데이터를 붙여넣으세요.",
+      "구분자를 고르세요.",
+      "변환된 JSON을 복사하거나 다운로드하세요."
     ]
   },
   "games": {
@@ -3777,8 +3787,8 @@
     "cj_subtitle": "1,000자를 4자씩 250구로 나눠 훈음과 함께 익히고, 따라쓰기까지.",
     "sj_title": "사자소학(四字小學)",
     "sj_subtitle": "효행·우애 등 주제별 네 글자 구절을 뜻과 함께 익힙니다.",
-    "td_title": "시차 계산기",
-    "td_subtitle": "두 나라 사이의 시차와 현재 시각을 보여줍니다.",
+    "td_title": "텍스트 비교",
+    "td_subtitle": "두 텍스트를 나란히 비교해 변경된 부분을 확인합니다",
     "td_hour": "시간",
     "td_min": "분",
     "td_same": "시차 없음 (같은 시간대)",
@@ -5184,7 +5194,18 @@
     "lip_type": "유형",
     "lip_paragraphs": "문단",
     "lip_sentences": "문장",
-    "lip_words": "단어"
+    "lip_words": "단어",
+    "td_original": "원본 (A)",
+    "td_modified": "수정본 (B)",
+    "td_added": "추가",
+    "td_removed": "삭제",
+    "td_unchanged": "변경 없음",
+    "td_ignorecase": "대소문자 무시",
+    "td_output": "비교 결과",
+    "ctj_needrows": "헤더 행과 데이터 행이 각각 최소 하나씩 필요합니다",
+    "ctj_title": "CSV → JSON 변환기",
+    "ctj_subtitle": "CSV 데이터를 자동 타입 감지와 함께 JSON으로 변환합니다",
+    "ctj_rows": "({n}행)"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

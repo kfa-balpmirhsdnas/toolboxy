@@ -2917,6 +2917,16 @@
       "Choose paragraphs, sentences or words.",
       "Enter the count.",
       "Copy the generated placeholder text."
+    ],
+    "text-diff": [
+      "Enter the original and modified text.",
+      "Toggle ignore case if needed.",
+      "See added and removed lines."
+    ],
+    "csv-to-json": [
+      "Paste your CSV data.",
+      "Choose the delimiter.",
+      "Copy or download the converted JSON."
     ]
   },
   "games": {
@@ -3439,8 +3449,8 @@
     "cj_subtitle": "Learn 1,000 characters in 250 four-character verses with meanings, and trace them.",
     "sj_title": "Sajasohak (四字小學)",
     "sj_subtitle": "Learn four-character verses by topic (filial piety, friendship…) with meanings.",
-    "td_title": "Time Difference Calculator",
-    "td_subtitle": "Shows the time difference and current time between two countries.",
+    "td_title": "Text Diff",
+    "td_subtitle": "Compare two texts side-by-side and see what changed",
     "td_hour": "h",
     "td_min": "m",
     "td_same": "No difference (same time zone)",
@@ -4846,7 +4856,18 @@
     "lip_type": "Type",
     "lip_paragraphs": "Paragraphs",
     "lip_sentences": "Sentences",
-    "lip_words": "Words"
+    "lip_words": "Words",
+    "td_original": "Original (A)",
+    "td_modified": "Modified (B)",
+    "td_added": "added",
+    "td_removed": "removed",
+    "td_unchanged": "unchanged",
+    "td_ignorecase": "Ignore case",
+    "td_output": "Diff Output",
+    "ctj_needrows": "Need at least a header row and one data row",
+    "ctj_title": "CSV to JSON Converter",
+    "ctj_subtitle": "Convert CSV data to JSON format with automatic type detection",
+    "ctj_rows": "({n} rows)"
   },
   "toolTags": {
     "spinner-wheel": [

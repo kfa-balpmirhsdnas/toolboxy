@@ -1,5 +1,6 @@
 'use client'
 import { useState, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -28,6 +29,7 @@ function diffLines(a:string,b:string):DiffLine[]{
 const tool = getToolBySlug('text-diff')!
 
 export default function TextDiffPage() {
+  const t = useTranslations('toolui')
   const [textA,setTextA]=useState('The quick brown fox\njumps over the lazy dog\nHello World')
   const [textB,setTextB]=useState('The quick brown fox\nleaps over the lazy cat\nHello World\nNew line here')
   const [ignore,setIgnore]=useState(false)
@@ -45,12 +47,12 @@ export default function TextDiffPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-5xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Text Diff</h1>
-        <p className="text-gray-500 mb-6">Compare two texts side-by-side and see what changed</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('td_title')}</h1>
+        <p className="text-gray-500 mb-6">{t('td_subtitle')}</p>
         <div className="grid md:grid-cols-2 gap-4 mb-4">
-          {[['Original (A)',textA,setTextA],['Modified (B)',textB,setTextB]].map(([l,v,fn])=>(
+          {[['td_original',textA,setTextA],['td_modified',textB,setTextB]].map(([l,v,fn])=>(
             <div key={l as string} className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-              <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-sm font-medium text-gray-600">{l as string}</div>
+              <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-sm font-medium text-gray-600">{t(l as string)}</div>
               <textarea value={v as string} onChange={e=>(fn as (s:string)=>void)(e.target.value)} rows={8}
                 className="w-full p-3 font-mono text-sm focus:outline-none resize-none" />
             </div>
@@ -58,17 +60,17 @@ export default function TextDiffPage() {
         </div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex gap-3 text-sm">
-            <span className="text-green-600 font-medium">+{added} added</span>
-            <span className="text-red-500 font-medium">-{removed} removed</span>
-            <span className="text-gray-400">{unchanged} unchanged</span>
+            <span className="text-green-600 font-medium">+{added} {t('td_added')}</span>
+            <span className="text-red-500 font-medium">-{removed} {t('td_removed')}</span>
+            <span className="text-gray-400">{unchanged} {t('td_unchanged')}</span>
           </div>
           <label className="flex items-center gap-1.5 text-sm cursor-pointer">
             <input type="checkbox" checked={ignore} onChange={e=>setIgnore(e.target.checked)} className="rounded" />
-            Ignore case
+            {t('td_ignorecase')}
           </label>
         </div>
         <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-sm font-medium text-gray-600">Diff Output</div>
+          <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-sm font-medium text-gray-600">{t('td_output')}</div>
           <div className="p-2 font-mono text-sm overflow-auto max-h-[500px]">
             {diffs.map((d,i)=>(
               <div key={i} className={'px-3 py-0.5 rounded '+(d.type==='add'?'bg-green-50 text-green-800':d.type==='remove'?'bg-red-50 text-red-800':'text-gray-600')}>
