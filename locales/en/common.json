@@ -2462,6 +2462,16 @@
       "Pick a base color.",
       "Choose a scheme (analogous, complementary, etc.).",
       "Click a swatch to copy it."
+    ],
+    "color-to-tailwind": [
+      "Enter a hex color.",
+      "See the closest Tailwind class.",
+      "Copy the bg- or text- class."
+    ],
+    "html-color-picker": [
+      "Pick a color or type a hex.",
+      "Click any HEX/RGB/HSL/HSV value to copy.",
+      "Search CSS named colors to pick one."
     ]
   },
   "games": {
@@ -3858,7 +3868,13 @@
     "cpg_triadic": "Triadic",
     "cpg_random": "Random",
     "ui_generate": "Generate",
-    "cpg_copied": "Copied"
+    "cpg_copied": "Copied",
+    "ctw_title": "Color to Tailwind CSS",
+    "ctw_subtitle": "Find the closest Tailwind CSS color class for any hex color value",
+    "ctw_top5": "Top 5 Closest Colors",
+    "hcp_white": "White text",
+    "hcp_black": "Black text",
+    "hcp_search": "Search named colors..."
   },
   "toolTags": {
     "spinner-wheel": [

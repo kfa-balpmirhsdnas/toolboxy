@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -48,6 +49,7 @@ const NAMED: Record<string,string> = {
 }
 
 export default function HtmlColorPickerPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [hex, setHex] = useState('#6366f1')
   const [search, setSearch] = useState('')
   const [copied, setCopied] = useState<string|null>(null)
@@ -96,11 +98,11 @@ export default function HtmlColorPickerPage({ params }: { params: { lang: string
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="p-2 rounded-lg text-center font-semibold" style={{background:safeHex,color:'white'}}>White text ({whiteContrast}:1)</div>
-          <div className="p-2 rounded-lg text-center font-semibold" style={{background:safeHex,color:'black'}}>Black text ({blackContrast}:1)</div>
+          <div className="p-2 rounded-lg text-center font-semibold" style={{background:safeHex,color:'white'}}>{t('hcp_white')} ({whiteContrast}:1)</div>
+          <div className="p-2 rounded-lg text-center font-semibold" style={{background:safeHex,color:'black'}}>{t('hcp_black')} ({blackContrast}:1)</div>
         </div>
         <div>
-          <input value={search} onChange={e=>{setSearch(e.target.value);track()}} placeholder="Search named colors..."
+          <input value={search} onChange={e=>{setSearch(e.target.value);track()}} placeholder={t('hcp_search')}
             className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 mb-2" />
           <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5 max-h-56 overflow-y-auto">
             {filtered.map(([name,hx])=>(

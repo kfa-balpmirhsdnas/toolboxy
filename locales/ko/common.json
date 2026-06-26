@@ -2800,6 +2800,16 @@
       "기준 색을 고르세요.",
       "배색 유형(유사색·보색·삼색·랜덤)을 고르세요.",
       "생성된 팔레트를 클릭해 복사하세요."
+    ],
+    "color-to-tailwind": [
+      "HEX 색상을 입력하세요.",
+      "가장 가까운 Tailwind 클래스를 보여줍니다.",
+      "bg-/text- 클래스를 복사하세요."
+    ],
+    "html-color-picker": [
+      "색을 고르거나 HEX를 입력하세요.",
+      "HEX·RGB·HSL·HSV 값을 클릭해 복사하세요.",
+      "CSS 색 이름을 검색해 선택하세요."
     ]
   },
   "games": {
@@ -4196,7 +4206,13 @@
     "cpg_triadic": "삼색",
     "cpg_random": "랜덤",
     "ui_generate": "생성",
-    "cpg_copied": "복사됨"
+    "cpg_copied": "복사됨",
+    "ctw_title": "색상 → Tailwind CSS",
+    "ctw_subtitle": "어떤 HEX 색상이든 가장 가까운 Tailwind CSS 색상 클래스를 찾습니다",
+    "ctw_top5": "가장 가까운 색상 5개",
+    "hcp_white": "흰색 글자",
+    "hcp_black": "검은색 글자",
+    "hcp_search": "색 이름 검색..."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

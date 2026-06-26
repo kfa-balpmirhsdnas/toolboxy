@@ -2767,6 +2767,16 @@
       "ベースカラーを選びます。",
       "配色（類似色・補色など）を選びます。",
       "スウォッチをクリックしてコピーします。"
+    ],
+    "color-to-tailwind": [
+      "HEXカラーを入力します。",
+      "最も近いTailwindクラスを表示します。",
+      "bg-/text- クラスをコピーします。"
+    ],
+    "html-color-picker": [
+      "色を選ぶかHEXを入力します。",
+      "HEX/RGB/HSL/HSV値をクリックしてコピーします。",
+      "CSS色名を検索して選びます。"
     ]
   },
   "games": {
@@ -4163,7 +4173,13 @@
     "cpg_triadic": "トライアド",
     "cpg_random": "ランダム",
     "ui_generate": "生成",
-    "cpg_copied": "コピーしました"
+    "cpg_copied": "コピーしました",
+    "ctw_title": "カラー → Tailwind CSS",
+    "ctw_subtitle": "任意のHEXカラーに最も近いTailwind CSSのカラークラスを見つけます",
+    "ctw_top5": "近い色 上位5",
+    "hcp_white": "白文字",
+    "hcp_black": "黒文字",
+    "hcp_search": "色名を検索..."
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

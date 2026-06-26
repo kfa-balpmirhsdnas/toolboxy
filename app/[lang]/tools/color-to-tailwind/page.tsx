@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -36,6 +37,7 @@ function colorDist(a:{r:number,g:number,b:number},b:{r:number,g:number,b:number}
 const tool = getToolBySlug('color-to-tailwind')!
 
 export default function ColorToTailwindPage() {
+  const t = useTranslations('toolui')
   const [input,setInput]=useState('#3b82f6')
   const [copied,setCopied]=useState('')
 
@@ -48,8 +50,8 @@ export default function ColorToTailwindPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Color to Tailwind CSS</h1>
-        <p className="text-gray-500 mb-8">Find the closest Tailwind CSS color class for any hex color value</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('ctw_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('ctw_subtitle')}</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
           <div className="flex gap-3 items-center">
             <input type="color" value={input} onChange={e=>setInput(e.target.value)} className="w-12 h-12 rounded-lg border border-gray-300 cursor-pointer" />
@@ -58,7 +60,7 @@ export default function ColorToTailwindPage() {
           </div>
           {best&&rgb&&(
             <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-xs text-gray-500 mb-2">Best match</p>
+              <p className="text-xs text-gray-500 mb-2">{t('cnf_best')}</p>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg border border-white shadow" style={{background:best.hex}} />
@@ -77,7 +79,7 @@ export default function ColorToTailwindPage() {
         </div>
         {matches.length>0&&(
           <div className="mt-4 bg-white rounded-2xl border border-gray-200 p-5">
-            <h2 className="font-semibold text-gray-800 mb-3">Top 5 Closest Colors</h2>
+            <h2 className="font-semibold text-gray-800 mb-3">{t('ctw_top5')}</h2>
             <div className="space-y-2">
               {matches.map((c,i)=>(
                 <div key={c.name} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50">
@@ -87,7 +89,7 @@ export default function ColorToTailwindPage() {
                     <p className="font-mono text-sm font-medium">{c.name}</p>
                     <p className="text-xs text-gray-400">{c.hex} \u2022 \u0394{Math.round(c.dist)}</p>
                   </div>
-                  <button onClick={()=>copy('bg-'+c.name)} className={'text-xs px-2 py-0.5 rounded '+(copied==='bg-'+c.name?'bg-brand-500 text-white':'bg-gray-100')}>Copy</button>
+                  <button onClick={()=>copy('bg-'+c.name)} className={'text-xs px-2 py-0.5 rounded '+(copied==='bg-'+c.name?'bg-brand-500 text-white':'bg-gray-100')}>{t('ui_copy')}</button>
                 </div>
               ))}
             </div>
