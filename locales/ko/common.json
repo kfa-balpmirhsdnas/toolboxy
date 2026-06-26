@@ -3075,6 +3075,16 @@
       "마지막 생리 시작일을 입력하세요.",
       "생리주기 길이를 입력하세요.",
       "예상 배란일과 가임기를 확인하세요."
+    ],
+    "palindrome-checker": [
+      "확인할 텍스트를 입력하세요.",
+      "공백·대소문자 무시 옵션을 고르세요.",
+      "회문 여부와 정규화·역순 결과를 확인하세요."
+    ],
+    "number-base-converter": [
+      "아무 진법 칸에 숫자를 입력하세요.",
+      "2·8·10·16진수로 즉시 변환됩니다.",
+      "원하는 값을 복사하세요."
     ]
   },
   "games": {
@@ -4821,7 +4831,25 @@
     "ov_ovulation": "예상 배란일",
     "ov_fertile": "가임기",
     "ov_next": "다음 생리",
-    "ov_disclaimer": "달력 기반 추정 · 피임 수단이 아니며 의학적 조언이 아닙니다."
+    "ov_disclaimer": "달력 기반 추정 · 피임 수단이 아니며 의학적 조언이 아닙니다.",
+    "pal_label": "확인할 텍스트",
+    "pal_ignore_spaces": "공백·문장부호 무시",
+    "pal_ignore_case": "대소문자 무시",
+    "pal_yes": "회문입니다!",
+    "pal_no": "회문이 아닙니다",
+    "pal_normalized": "정규화:",
+    "pal_reversed": "역순:",
+    "pal_examples": "예시를 눌러보세요",
+    "nbc_binary": "2진수",
+    "nbc_octal": "8진수",
+    "nbc_decimal": "10진수",
+    "nbc_hex": "16진수",
+    "nbc_base": "기수",
+    "nbc_invalid": "{b}진법에 잘못된 숫자",
+    "nbc_converr": "변환 오류",
+    "nbc_dec": "10진",
+    "nbc_hex_s": "16진",
+    "nbc_oct": "8진"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

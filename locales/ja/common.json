@@ -3042,6 +3042,16 @@
       "最終月経の開始日を入力します。",
       "生理周期の長さを入力します。",
       "推定排卵日と妊娠可能期間を確認します。"
+    ],
+    "palindrome-checker": [
+      "確認するテキストを入力します。",
+      "空白・大文字小文字の無視を選びます。",
+      "回文かどうかと正規化・逆順を確認します。"
+    ],
+    "number-base-converter": [
+      "任意の基数の欄に数値を入力します。",
+      "2・8・10・16進数に即変換されます。",
+      "必要な値をコピーします。"
     ]
   },
   "games": {
@@ -4788,7 +4798,25 @@
     "ov_ovulation": "推定排卵日",
     "ov_fertile": "妊娠可能期間",
     "ov_next": "次の生理",
-    "ov_disclaimer": "暦による推定 · 避妊法ではなく、医療助言でもありません。"
+    "ov_disclaimer": "暦による推定 · 避妊法ではなく、医療助言でもありません。",
+    "pal_label": "確認するテキスト",
+    "pal_ignore_spaces": "空白・句読点を無視",
+    "pal_ignore_case": "大文字小文字を無視",
+    "pal_yes": "回文です！",
+    "pal_no": "回文ではありません",
+    "pal_normalized": "正規化:",
+    "pal_reversed": "逆順:",
+    "pal_examples": "例を試す",
+    "nbc_binary": "2進数",
+    "nbc_octal": "8進数",
+    "nbc_decimal": "10進数",
+    "nbc_hex": "16進数",
+    "nbc_base": "基数",
+    "nbc_invalid": "{b}進数に無効な数値",
+    "nbc_converr": "変換エラー",
+    "nbc_dec": "10進",
+    "nbc_hex_s": "16進",
+    "nbc_oct": "8進"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

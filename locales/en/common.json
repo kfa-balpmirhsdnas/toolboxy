@@ -2737,6 +2737,16 @@
       "Enter the first day of your last period.",
       "Enter your cycle length.",
       "See the estimated ovulation and fertile window."
+    ],
+    "palindrome-checker": [
+      "Enter text to check.",
+      "Choose ignore spaces/case options.",
+      "See if it's a palindrome with normalized/reversed views."
+    ],
+    "number-base-converter": [
+      "Type a number in any base field.",
+      "It converts to binary, octal, decimal, hex instantly.",
+      "Copy the value you need."
     ]
   },
   "games": {
@@ -4483,7 +4493,25 @@
     "ov_ovulation": "Estimated ovulation",
     "ov_fertile": "Fertile window",
     "ov_next": "Next period",
-    "ov_disclaimer": "Calendar estimate · not a contraceptive method, not medical advice."
+    "ov_disclaimer": "Calendar estimate · not a contraceptive method, not medical advice.",
+    "pal_label": "Text to check",
+    "pal_ignore_spaces": "Ignore spaces & punctuation",
+    "pal_ignore_case": "Ignore case",
+    "pal_yes": "Palindrome!",
+    "pal_no": "Not a palindrome",
+    "pal_normalized": "Normalized:",
+    "pal_reversed": "Reversed:",
+    "pal_examples": "Try these examples",
+    "nbc_binary": "Binary",
+    "nbc_octal": "Octal",
+    "nbc_decimal": "Decimal",
+    "nbc_hex": "Hex",
+    "nbc_base": "Base",
+    "nbc_invalid": "Invalid number for base {b}",
+    "nbc_converr": "Conversion error",
+    "nbc_dec": "Dec",
+    "nbc_hex_s": "Hex",
+    "nbc_oct": "Oct"
   },
   "toolTags": {
     "spinner-wheel": [
