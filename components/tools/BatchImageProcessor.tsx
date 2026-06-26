@@ -111,6 +111,8 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
   const [status, setStatus] = useState<'idle' | 'processing' | 'done'>('idle')
   const [progress, setProgress] = useState({ current: 0, total: 0 })
   const [dragging, setDragging] = useState(false)
+  // Ids of thumbnails the browser couldn't render (e.g. HEIC) — shown as a fallback.
+  const [thumbFailed, setThumbFailed] = useState<Set<string>>(() => new Set())
   const [zipping, setZipping] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -291,8 +293,16 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
             {items.map((it, idx) => (
               <div key={it.id} title={previewName ? `${it.file.name} → ${previewName(it.file, idx)}` : it.file.name}
                 className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={it.url} alt={it.file.name} className="w-full h-full object-cover" />
+                {thumbFailed.has(it.id) ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                    <span className="text-2xl">🖼️</span>
+                    <span className="text-[9px] font-medium uppercase mt-0.5">{it.file.name.split('.').pop()}</span>
+                  </div>
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={it.url} alt={it.file.name} className="w-full h-full object-cover"
+                    onError={() => setThumbFailed((prev) => new Set(prev).add(it.id))} />
+                )}
                 <button
                   onClick={(e) => { e.stopPropagation(); removeItem(it.id) }}
                   aria-label={t('bip_remove')}
