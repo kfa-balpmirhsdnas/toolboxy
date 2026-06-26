@@ -1,10 +1,12 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='word-frequency-counter')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='word-frequency-counter')
   const [input,setInput]=useState('')
   const [minLen,setMinLen]=useState(1)
   const [excludeCommon,setExcludeCommon]=useState(false)
@@ -23,25 +25,25 @@ export default function Page(){
       <div className='space-y-4'>
         <textarea value={input} onChange={e=>setInput(e.target.value)}
           className='w-full h-36 p-3 border rounded font-mono text-sm resize-y'
-          placeholder='Paste text to analyze word frequency...'/>
+          placeholder={t('wfc_ph')}/>
         <div className='flex gap-4 items-center flex-wrap'>
           <label className='flex items-center gap-2 text-sm'>
-            Min word length:
+            {t('wfc_minlen')}
             <input type='number' value={minLen} onChange={e=>setMinLen(Number(e.target.value))}
               min={1} max={10} className='border rounded px-2 py-1 w-16'/>
           </label>
           <label className='flex items-center gap-2 text-sm'>
             <input type='checkbox' checked={excludeCommon} onChange={e=>setExcludeCommon(e.target.checked)}/>
-            Exclude common words
+            {t('wfc_exclude')}
           </label>
         </div>
         <div className='overflow-auto max-h-72'>
           <table className='w-full text-sm border-collapse'>
             <thead><tr className='bg-gray-100'>
-              <th className='p-2 text-left border'>Rank</th>
-              <th className='p-2 text-left border'>Word</th>
-              <th className='p-2 text-right border'>Count</th>
-              <th className='p-2 text-right border'>Frequency</th>
+              <th className='p-2 text-left border'>{t('wfc_rank')}</th>
+              <th className='p-2 text-left border'>{t('wfc_word')}</th>
+              <th className='p-2 text-right border'>{t('wfc_count')}</th>
+              <th className='p-2 text-right border'>{t('wfc_freq')}</th>
             </tr></thead>
             <tbody>
               {sorted.slice(0,50).map(([w,c],i)=>(
@@ -55,7 +57,7 @@ export default function Page(){
             </tbody>
           </table>
         </div>
-        <p className='text-xs text-gray-400'>Total: {words.length} words | {sorted.length} unique</p>
+        <p className='text-xs text-gray-400'>{t('wfc_total',{n:words.length,u:sorted.length})}</p>
       </div>
     </ToolLayout>
   )

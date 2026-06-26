@@ -2747,6 +2747,16 @@
       "Type a number in any base field.",
       "It converts to binary, octal, decimal, hex instantly.",
       "Copy the value you need."
+    ],
+    "email-validator": [
+      "Enter email addresses, one per line.",
+      "Press Validate.",
+      "See each address's validity and a summary."
+    ],
+    "word-frequency-counter": [
+      "Paste your text.",
+      "Set min length and exclude-common options.",
+      "See the word frequency table sorted by count."
     ]
   },
   "games": {
@@ -4511,7 +4521,21 @@
     "nbc_converr": "Conversion error",
     "nbc_dec": "Dec",
     "nbc_hex_s": "Hex",
-    "nbc_oct": "Oct"
+    "nbc_oct": "Oct",
+    "ev_invalid_fmt": "Invalid format",
+    "ev_invalid_dom": "Invalid domain",
+    "ev_valid": "Valid",
+    "ev_label": "Email Addresses (one per line)",
+    "ev_validate": "Validate",
+    "ev_summary": "{v} valid, {iv} invalid",
+    "wfc_ph": "Paste text to analyze word frequency...",
+    "wfc_minlen": "Min word length:",
+    "wfc_exclude": "Exclude common words",
+    "wfc_rank": "Rank",
+    "wfc_word": "Word",
+    "wfc_count": "Count",
+    "wfc_freq": "Frequency",
+    "wfc_total": "Total: {n} words | {u} unique"
   },
   "toolTags": {
     "spinner-wheel": [
