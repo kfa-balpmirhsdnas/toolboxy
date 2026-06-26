@@ -2887,6 +2887,16 @@
       "Enter title, description, URL and more.",
       "Meta tags are generated automatically.",
       "Copy the generated HTML tags."
+    ],
+    "markdown-table-generator": [
+      "Set the number of rows and columns.",
+      "Fill in the table cells.",
+      "Copy the generated Markdown table."
+    ],
+    "markdown-editor": [
+      "Type your Markdown.",
+      "Switch split, editor or preview view.",
+      "Copy the finished Markdown."
     ]
   },
   "games": {
@@ -4787,7 +4797,18 @@
     "mtg_ogimg": "OG Image",
     "mtg_keywords": "Keywords",
     "mtg_author": "Author",
-    "mtg_tags": "Generated Tags"
+    "mtg_tags": "Generated Tags",
+    "mtt_rows": "Rows",
+    "mtt_cols": "Cols",
+    "mtt_header": "Header",
+    "mtt_cell": "Cell",
+    "med_split": "Split",
+    "med_editor": "Editor",
+    "med_preview": "Preview",
+    "med_stats": "{w} words · {c} chars",
+    "med_copymd": "Copy MD",
+    "med_ph": "Write markdown here...",
+    "med_privacy": "All content stays in your browser."
   },
   "toolTags": {
     "spinner-wheel": [

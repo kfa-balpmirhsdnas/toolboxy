@@ -3225,6 +3225,16 @@
       "제목·설명·URL 등을 입력하세요.",
       "메타 태그가 자동 생성됩니다.",
       "생성된 HTML 태그를 복사하세요."
+    ],
+    "markdown-table-generator": [
+      "행과 열 개수를 정하세요.",
+      "표 셀에 내용을 입력하세요.",
+      "생성된 마크다운 표를 복사하세요."
+    ],
+    "markdown-editor": [
+      "마크다운을 입력하세요.",
+      "분할·편집기·미리보기 보기를 전환하세요.",
+      "완성된 마크다운을 복사하세요."
     ]
   },
   "games": {
@@ -5125,7 +5135,18 @@
     "mtg_ogimg": "OG 이미지",
     "mtg_keywords": "키워드",
     "mtg_author": "작성자",
-    "mtg_tags": "생성된 태그"
+    "mtg_tags": "생성된 태그",
+    "mtt_rows": "행",
+    "mtt_cols": "열",
+    "mtt_header": "헤더",
+    "mtt_cell": "셀",
+    "med_split": "분할",
+    "med_editor": "편집기",
+    "med_preview": "미리보기",
+    "med_stats": "{w}단어 · {c}자",
+    "med_copymd": "MD 복사",
+    "med_ph": "여기에 마크다운을 작성하세요...",
+    "med_privacy": "모든 내용은 브라우저에만 저장됩니다."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('markdown-editor')!
@@ -21,6 +22,7 @@ function renderMarkdown(md: string): string {
 }
 const SAMPLE=`# Hello, Markdown!\n\nThis is a **live preview** editor.\n\n## Features\n\n- **Bold** and *italic* text\n- \`inline code\`\n- [Links](https://toolboxy.net)\n\n> Blockquotes look great too!\n`
 export default function MarkdownEditorPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [markdown, setMarkdown] = useState(SAMPLE)
   const [view, setView] = useState<'split'|'editor'|'preview'>('split')
   const [copied, setCopied] = useState(false)
@@ -30,16 +32,16 @@ export default function MarkdownEditorPage({ params }: { params: { lang: string 
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-3">
         <div className="flex items-center gap-2 flex-wrap">
-          {(['split','editor','preview'] as const).map(v=>(<button key={v} onClick={()=>setView(v)} className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors capitalize ${view===v?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{v}</button>))}
-          <span className="ml-auto text-xs text-gray-400">{wc} words · {markdown.length} chars</span>
-          <button onClick={copy} className="text-xs bg-white border border-gray-200 px-3 py-1 rounded-lg hover:bg-brand-50 hover:border-brand-400 transition-colors">{copied?'✓ Copied':'Copy MD'}</button>
-          <button onClick={()=>setMarkdown('')} className="text-xs text-gray-400 hover:text-red-500 transition-colors">Clear</button>
+          {(['split','editor','preview'] as const).map(v=>(<button key={v} onClick={()=>setView(v)} className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors capitalize ${view===v?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{t('med_'+v)}</button>))}
+          <span className="ml-auto text-xs text-gray-400">{t('med_stats',{w:wc,c:markdown.length})}</span>
+          <button onClick={copy} className="text-xs bg-white border border-gray-200 px-3 py-1 rounded-lg hover:bg-brand-50 hover:border-brand-400 transition-colors">{copied?'✓ '+t('ui_copied'):t('med_copymd')}</button>
+          <button onClick={()=>setMarkdown('')} className="text-xs text-gray-400 hover:text-red-500 transition-colors">{t('ui_clear')}</button>
         </div>
         <div className={`gap-4 ${view==='split'?'flex':'block'}`} style={{minHeight:400}}>
-          {(view==='split'||view==='editor')&&(<textarea value={markdown} onChange={e=>setMarkdown(e.target.value)} className={`border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-brand-400 ${view==='split'?'flex-1':'w-full'}`} style={{minHeight:400}} placeholder="Write markdown here..." spellCheck={false} />)}
+          {(view==='split'||view==='editor')&&(<textarea value={markdown} onChange={e=>setMarkdown(e.target.value)} className={`border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-brand-400 ${view==='split'?'flex-1':'w-full'}`} style={{minHeight:400}} placeholder={t('med_ph')} spellCheck={false} />)}
           {(view==='split'||view==='preview')&&(<div className={`border border-gray-200 rounded-xl px-5 py-4 overflow-auto prose prose-sm max-w-none ${view==='split'?'flex-1':'w-full'}`} style={{minHeight:400}} dangerouslySetInnerHTML={{__html:renderMarkdown(markdown)}} />)}
         </div>
-        <p className="text-xs text-gray-400">All content stays in your browser.</p>
+        <p className="text-xs text-gray-400">{t('med_privacy')}</p>
       </div>
     </ToolLayout>
   )

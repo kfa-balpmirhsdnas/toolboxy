@@ -3192,6 +3192,16 @@
       "タイトル・説明・URLなどを入力します。",
       "メタタグが自動生成されます。",
       "生成されたHTMLタグをコピーします。"
+    ],
+    "markdown-table-generator": [
+      "行数と列数を決めます。",
+      "表のセルに内容を入力します。",
+      "生成されたMarkdownの表をコピーします。"
+    ],
+    "markdown-editor": [
+      "Markdownを入力します。",
+      "分割・エディタ・プレビューを切り替えます。",
+      "完成したMarkdownをコピーします。"
     ]
   },
   "games": {
@@ -5092,7 +5102,18 @@
     "mtg_ogimg": "OG画像",
     "mtg_keywords": "キーワード",
     "mtg_author": "作成者",
-    "mtg_tags": "生成されたタグ"
+    "mtg_tags": "生成されたタグ",
+    "mtt_rows": "行",
+    "mtt_cols": "列",
+    "mtt_header": "ヘッダー",
+    "mtt_cell": "セル",
+    "med_split": "分割",
+    "med_editor": "エディタ",
+    "med_preview": "プレビュー",
+    "med_stats": "{w}語 · {c}文字",
+    "med_copymd": "MDをコピー",
+    "med_ph": "ここにMarkdownを書きます...",
+    "med_privacy": "すべての内容はブラウザ内に保持されます。"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
