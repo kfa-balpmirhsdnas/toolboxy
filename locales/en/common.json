@@ -784,7 +784,9 @@
     "high-english-words": "Learn the ~1300 essential high-school English words hands-free: a new word appears every few seconds with English and Korean audio you can toggle. Free flashcard trainer with a study timer.",
     "nickname-generator": "Free generator for cool social/gaming usernames and nicknames from a keyword.",
     "social-image-sizes": "Free guide to recommended image sizes for Instagram, YouTube, TikTok and more.",
-    "engagement-rate-calculator": "Free calculator for social media engagement rate from followers, likes and comments."
+    "engagement-rate-calculator": "Free calculator for social media engagement rate from followers, likes and comments.",
+    "encoding-converter": "Free tool to fix garbled text by converting files between EUC-KR/CP949, UTF-8, Shift_JIS and more — in your browser.",
+    "csv-to-excel": "Free tool to convert CSV to Excel (.xlsx) and Excel back to CSV, right in your browser."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1806,7 +1808,9 @@
     "high-english-words": "This flashcard trainer plays through ~1300 essential high-school English words on a timer you control. Each card shows the English word and its Korean meaning, and reads them aloud (toggle English and Korean audio independently, set the gap between them and a repeat count). A study timer tracks how long you practice. Everything runs in your browser; nothing you do is uploaded.",
     "nickname-generator": "Type a keyword and press Generate to get a batch of username ideas — adjective + noun combos, keyword variations, numbers and separators mixed in. Click any one to copy it. Works for Instagram, X (Twitter), TikTok, gaming handles and more; check actual availability on each service. Everything is generated in your browser, free and with no install.",
     "social-image-sizes": "Recommended pixel sizes for posts, stories, thumbnails, profiles and covers across Instagram, YouTube, X (Twitter), Facebook, TikTok and LinkedIn, organized by platform. Click a size to copy it as “1080x1080” to paste straight into your design tool. Matching the right size before posting keeps your images crisp and uncropped. Specs change over time, so use it as a reference. Free, no install.",
-    "engagement-rate-calculator": "Enter your follower count and a post’s average likes and comments to get the engagement rate, using (likes + comments) ÷ followers × 100. As a rough guide, under 1% is low, 1–3.5% average, 3.5–6% high, and above 6% excellent. Averaging several recent posts gives a more accurate result. Handy for influencer collaborations and marketing. Free, no install."
+    "engagement-rate-calculator": "Enter your follower count and a post’s average likes and comments to get the engagement rate, using (likes + comments) ÷ followers × 100. As a rough guide, under 1% is low, 1–3.5% average, 3.5–6% high, and above 6% excellent. Averaging several recent posts gives a more accurate result. Handy for influencer collaborations and marketing. Free, no install.",
+    "encoding-converter": "Open a text or CSV file saved in a legacy encoding (like Korean EUC-KR/CP949 or Japanese Shift_JIS) and convert it to UTF-8 — or the other way around. Pick the source encoding (or let it auto-detect), preview the decoded text to confirm it reads correctly, choose a target encoding and download the re-saved file. Choosing “UTF-8 + BOM” makes a CSV open without garbled characters in Excel. Everything is processed in your browser, so your files are never uploaded, and it is free with no install.",
+    "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
     "title": "How to use",
@@ -2198,6 +2202,16 @@
       "Enter your follower count.",
       "Enter average likes and comments.",
       "The engagement rate and tier show instantly."
+    ],
+    "encoding-converter": [
+      "Drop a text or CSV file.",
+      "Pick the source encoding (or auto) and check the preview.",
+      "Choose a target encoding and download."
+    ],
+    "csv-to-excel": [
+      "Drop a .csv or .xlsx file.",
+      "The direction is detected automatically.",
+      "Click Convert to download the result."
     ]
   },
   "games": {
@@ -2988,7 +3002,23 @@
     "er_tier_low": "Low",
     "er_tier_avg": "Average",
     "er_tier_high": "High",
-    "er_tier_top": "Excellent"
+    "er_tier_top": "Excellent",
+    "ec_title": "Text Encoding Converter",
+    "ec_subtitle": "Fix garbled text — convert files between EUC-KR/CP949, UTF-8, Shift_JIS and more.",
+    "ec_drop": "Drop a text/CSV file or click",
+    "ec_source": "From (source)",
+    "ec_target": "To (target)",
+    "ec_preview": "Decoded preview",
+    "ec_download": "Download converted",
+    "ec_note": "Decodes with the source encoding and re-saves in the target encoding. “UTF-8 + BOM” opens correctly in Excel. Everything runs in your browser — files are never uploaded.",
+    "cx_title": "CSV ↔ Excel Converter",
+    "cx_subtitle": "Convert CSV to Excel (.xlsx) or Excel back to CSV.",
+    "cx_drop": "Drop a .csv or .xlsx file or click",
+    "cx_to_excel": "Will convert CSV → Excel (.xlsx)",
+    "cx_to_csv": "Will convert Excel → CSV",
+    "cx_convert": "Convert & download",
+    "cx_error": "Could not read the file. Please check it is a valid CSV or Excel file.",
+    "cx_note": "CSV → Excel builds an .xlsx; Excel → CSV exports the first sheet (with a UTF-8 BOM so it opens cleanly). Everything runs in your browser — files are never uploaded."
   },
   "toolTags": {
     "spinner-wheel": [
@@ -3114,7 +3144,9 @@
     "high-english-words": "High School English Words Trainer",
     "nickname-generator": "Nickname & Username Generator",
     "social-image-sizes": "Social Media Image Sizes",
-    "engagement-rate-calculator": "Engagement Rate Calculator"
+    "engagement-rate-calculator": "Engagement Rate Calculator",
+    "encoding-converter": "Text Encoding Converter",
+    "csv-to-excel": "CSV ↔ Excel Converter"
   },
   "howtoNote": {
     "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",
