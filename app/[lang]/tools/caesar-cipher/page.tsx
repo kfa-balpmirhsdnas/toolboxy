@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -23,6 +24,7 @@ function bruteForce(text: string) {
 const tool = getToolBySlug('caesar-cipher')!
 
 export default function CaesarCipher() {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('Hello World')
   const [shift, setShift] = useState(3)
   const [mode, setMode] = useState<'encrypt'|'decrypt'|'brute'>('encrypt')
@@ -33,40 +35,40 @@ export default function CaesarCipher() {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Caesar Cipher</h1>
-        <p className="text-gray-500 mb-8">Encrypt or decrypt text with the classic Caesar cipher shift.</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('cz_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('cz_subtitle')}</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 mb-6">
           <div className="flex gap-2 mb-5 flex-wrap">
             {(['encrypt','decrypt','brute'] as const).map(m=>(
               <button key={m} onClick={()=>setMode(m)} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${mode===m?'bg-blue-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-                {m==='encrypt'?'🔒 Encrypt':m==='decrypt'?'🔓 Decrypt':'🔍 Brute Force'}
+                {m==='encrypt'?t('cz_encrypt'):m==='decrypt'?t('cz_decrypt'):t('cz_brute')}
               </button>
             ))}
           </div>
           {mode !== 'brute' && (
             <div className="mb-5">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Shift: <span className="text-blue-600">{shift}</span></label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">{t('cz_shift')} <span className="text-blue-600">{shift}</span></label>
               <input type="range" min="1" max="25" value={shift} onChange={e=>setShift(Number(e.target.value))} className="w-full accent-blue-600"/>
               <div className="flex justify-between text-xs text-gray-400 mt-1"><span>1</span><span>25</span></div>
             </div>
           )}
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Input</label>
-              <textarea value={input} onChange={e=>setInput(e.target.value)} className="w-full border border-gray-300 rounded-xl p-4 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={4} placeholder="Enter text..."/>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">{t('ui_input')}</label>
+              <textarea value={input} onChange={e=>setInput(e.target.value)} className="w-full border border-gray-300 rounded-xl p-4 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={4} placeholder={t('ui_text_ph')}/>
             </div>
             {mode !== 'brute' && (
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-semibold text-gray-700">Output</label>
-                  <button onClick={()=>copy(output)} className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded-lg font-medium">{copied?'✓ Copied!':'Copy'}</button>
+                  <label className="text-sm font-semibold text-gray-700">{t('ui_output')}</label>
+                  <button onClick={()=>copy(output)} className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded-lg font-medium">{copied?t('ui_copied'):t('ui_copy')}</button>
                 </div>
-                <div className="border border-gray-200 rounded-xl p-4 bg-gray-50 font-mono text-sm min-h-[90px] text-gray-800 whitespace-pre-wrap">{output||<span className="text-gray-400">Output will appear here...</span>}</div>
+                <div className="border border-gray-200 rounded-xl p-4 bg-gray-50 font-mono text-sm min-h-[90px] text-gray-800 whitespace-pre-wrap">{output||<span className="text-gray-400">{t('ui_output_ph')}</span>}</div>
               </div>
             )}
             {mode === 'brute' && (
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-3">All 25 possible decryptions:</p>
+                <p className="text-sm font-semibold text-gray-700 mb-3">{t('cz_all25')}</p>
                 <div className="space-y-1 max-h-80 overflow-y-auto">
                   {bruteResults.map(({shift:s,result})=>(
                     <div key={s} className="flex gap-3 items-start p-2 hover:bg-gray-50 rounded-lg cursor-pointer" onClick={()=>copy(result)}>
@@ -80,7 +82,7 @@ export default function CaesarCipher() {
           </div>
         </div>
         <div className="bg-blue-50 rounded-2xl p-4 text-sm text-blue-700">
-          <strong>About Caesar Cipher:</strong> A substitution cipher that shifts each letter by a fixed number of positions in the alphabet. ROT-13 (shift=13) is its own inverse.
+          <strong>{t('cz_about_title')}</strong> {t('cz_about_desc')}
         </div>
       </div>
     </div>

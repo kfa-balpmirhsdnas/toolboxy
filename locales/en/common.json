@@ -2537,6 +2537,11 @@
       "Paste your HTML.",
       "Choose the indent size.",
       "Copy or download the formatted HTML."
+    ],
+    "hash-generator": [
+      "Enter text or drop a file.",
+      "MD5 and SHA hashes are generated automatically.",
+      "Copy the hash you need."
     ]
   },
   "games": {
@@ -2998,8 +3003,8 @@
     "av_days": "Day {n}",
     "av_year": "{n}-yr",
     "av_note": "The start date counts as day 1 (Korean style); e.g. day 100 is 99 days after the start.",
-    "cz_title": "Chinese Zodiac & Ganzhi Calculator",
-    "cz_subtitle": "Enter a year to see its zodiac animal, sexagenary cycle (ganzhi), and element.",
+    "cz_title": "Caesar Cipher",
+    "cz_subtitle": "Encrypt or decrypt text with the classic Caesar cipher shift.",
     "cz_birthyear": "Year (birth year)",
     "cz_ganzi": "Ganzhi (60-cycle)",
     "cz_element": "Element · Color",
@@ -4011,7 +4016,17 @@
     "hf_indent_size": "Indent size",
     "hf_ph": "Paste HTML to format...",
     "hf_formatted": "Formatted Output",
-    "ui_download": "Download"
+    "ui_download": "Download",
+    "cz_encrypt": "🔒 Encrypt",
+    "cz_decrypt": "🔓 Decrypt",
+    "cz_brute": "🔍 Brute Force",
+    "cz_shift": "Shift:",
+    "cz_all25": "All 25 possible decryptions:",
+    "cz_about_title": "About Caesar Cipher:",
+    "cz_about_desc": "A substitution cipher that shifts each letter by a fixed number of positions in the alphabet. ROT-13 (shift=13) is its own inverse.",
+    "hg_ph": "Enter text to hash…",
+    "hg_drop": "Drop a file or click to checksum it",
+    "hg_computing": "Computing…"
   },
   "toolTags": {
     "spinner-wheel": [
