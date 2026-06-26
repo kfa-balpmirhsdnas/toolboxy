@@ -3247,6 +3247,56 @@
       "Paste your text.",
       "Adjust the max word count.",
       "See the frequency-based word cloud."
+    ],
+    "random-string-generator": [
+      "Set the length and how many.",
+      "Pick the character sets.",
+      "Generate and copy."
+    ],
+    "slug-to-title": [
+      "Paste a slug or kebab-case text.",
+      "Choose a case style.",
+      "Copy the converted text."
+    ],
+    "roman-numeral-converter": [
+      "Choose a conversion direction.",
+      "Enter a number or Roman numeral.",
+      "See the converted value."
+    ],
+    "uuid-generator": [
+      "Set how many to generate.",
+      "Toggle uppercase and hyphens.",
+      "Copy the UUIDs."
+    ],
+    "jwt-decoder": [
+      "Paste your JWT.",
+      "See the header and payload.",
+      "Check the expiry status."
+    ],
+    "list-deduplicator": [
+      "Paste one item per line.",
+      "Choose dedup options.",
+      "Copy the unique list."
+    ],
+    "temperature-converter": [
+      "Pick the source unit.",
+      "Enter a temperature.",
+      "See it in every unit."
+    ],
+    "json-validator": [
+      "Paste your JSON.",
+      "Click validate.",
+      "Copy the pretty-printed JSON."
+    ],
+    "url-parser": [
+      "Enter a URL.",
+      "See each part broken down.",
+      "Copy any part or query value."
+    ],
+    "hiragana-katakana-converter": [
+      "Choose a conversion direction.",
+      "Type hiragana or katakana.",
+      "Copy the converted result."
     ]
   },
   "games": {
@@ -5645,7 +5695,60 @@
     "wcg_ph": "Paste text to generate word cloud...",
     "wcg_maxwords": "Max words:",
     "wcg_nowords": "No words to display",
-    "wcg_showing": "Showing {n} words (common stop words excluded)"
+    "wcg_showing": "Showing {n} words (common stop words excluded)",
+    "rsg_length": "Length",
+    "rsg_howmany": "How many",
+    "rsg_lower": "lowercase",
+    "rsg_upper": "uppercase",
+    "rsg_digits": "digits",
+    "rsg_symbols": "symbols",
+    "rsg_note": "Generated with crypto.getRandomValues — cryptographically secure, never leaves your browser.",
+    "stt2_label": "Slug or kebab-case text",
+    "rnc_outofrange": "Out of range (1–3999)",
+    "rnc_n2r": "Number → Roman",
+    "rnc_r2n": "Roman → Number",
+    "rnc_integer": "Integer (1–3999)",
+    "rnc_roman": "Roman Numeral",
+    "rnc_integerres": "Integer",
+    "rnc_examples": "Quick examples",
+    "rnc_reference": "Roman numeral reference",
+    "uug_title": "UUID Generator",
+    "uug_subtitle": "Generate cryptographically secure UUID v4 identifiers",
+    "uug_hyphens": "Hyphens",
+    "uug_about": "About UUID v4",
+    "uug_abouttext": "UUID (Universally Unique Identifier) v4 generates 122 bits of randomness using a cryptographically secure random number generator. The probability of collision is astronomically low — approximately 1 in 5.3 undecillion (5.3 × 10³⁶). Safe for use as primary keys, session tokens, and unique identifiers.",
+    "jwtd_token": "JWT Token",
+    "jwtd_ph": "Paste your JWT here…",
+    "jwtd_invalid": "⚠ Invalid JWT — must have 3 dot-separated parts",
+    "jwtd_expired": "⚠ Token is expired",
+    "jwtd_notexpired": "✓ Token is not expired",
+    "jwtd_header": "Header",
+    "jwtd_payload": "Payload",
+    "jwtd_signature": "Signature",
+    "jwtd_note": "Client-side only — your token never leaves your browser",
+    "ld_case": "Case-sensitive",
+    "ld_trim": "Trim whitespace",
+    "ld_removeblank": "Remove blank lines",
+    "ld_sort": "Sort result",
+    "ld_input": "{n} input",
+    "ld_unique": "{n} unique",
+    "ld_removed": "-{n} duplicates removed",
+    "temp_celsius": "Celsius",
+    "temp_fahrenheit": "Fahrenheit",
+    "temp_kelvin": "Kelvin",
+    "temp_rankine": "Rankine",
+    "temp_freeze": "Water freezes",
+    "temp_body": "Body temp",
+    "temp_boil": "Water boils",
+    "temp_abszero": "Absolute zero",
+    "temp_room": "Room temp",
+    "temp_refs": "Common reference points",
+    "jvd_validate": "Validate JSON",
+    "jvd_invalid": "Invalid JSON",
+    "jvd_note": "Validates JSON syntax and pretty-prints valid JSON · Updates on button click",
+    "up_sample": "Sample",
+    "up_params": "Query parameters ({n})",
+    "hkc_note": "{n} chars · Instant, in-browser conversion."
   },
   "toolTags": {
     "spinner-wheel": [

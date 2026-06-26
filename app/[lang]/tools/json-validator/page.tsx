@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -7,6 +8,7 @@ import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 const tool = getToolBySlug('json-validator')!
 
 export default function JsonValidatorPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const [result, setResult] = useState<{ valid: boolean; error?: string; formatted?: string } | null>(null)
   const [copied, setCopied] = useState(false)
@@ -35,7 +37,7 @@ export default function JsonValidatorPage({ params }: { params: { lang: string }
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">JSON Input</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">{t('jm_input')}</label>
           <textarea
             value={input}
             onChange={e => { setInput(e.target.value); setResult(null) }}
@@ -48,7 +50,7 @@ export default function JsonValidatorPage({ params }: { params: { lang: string }
           disabled={!input.trim()}
           className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors"
         >
-          Validate JSON
+          {t('jvd_validate')}
         </button>
         {result && (
           <div className={`rounded-xl p-4 border ${result.valid ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
@@ -56,12 +58,12 @@ export default function JsonValidatorPage({ params }: { params: { lang: string }
               <div className="flex items-center gap-2">
                 <span className="text-lg">{result.valid ? '✅' : '❌'}</span>
                 <span className={`font-semibold text-sm ${result.valid ? 'text-green-700' : 'text-red-700'}`}>
-                  {result.valid ? 'Valid JSON' : 'Invalid JSON'}
+                  {result.valid ? t('jtv_valid') : t('jvd_invalid')}
                 </span>
               </div>
               {result.formatted && (
                 <button onClick={copy} className="text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50">
-                  {copied ? '✓ Copied' : 'Copy'}
+                  {copied ? '✓ '+t('ui_copied') : t('ui_copy')}
                 </button>
               )}
             </div>
@@ -71,7 +73,7 @@ export default function JsonValidatorPage({ params }: { params: { lang: string }
             )}
           </div>
         )}
-        <p className="text-xs text-gray-400">Validates JSON syntax and pretty-prints valid JSON · Updates on button click</p>
+        <p className="text-xs text-gray-400">{t('jvd_note')}</p>
       </div>
     </ToolLayout>
   )

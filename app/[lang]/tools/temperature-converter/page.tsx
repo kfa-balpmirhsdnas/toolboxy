@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('temperature-converter')!
@@ -17,13 +18,14 @@ function fromC(c:number,to:Unit):number{
   return c*9/5+491.67
 }
 const UNITS:Record<Unit,{name:string;symbol:string;color:string}>={
-  C:{name:'Celsius',symbol:'°C',color:'#3b82f6'},
-  F:{name:'Fahrenheit',symbol:'°F',color:'#f97316'},
-  K:{name:'Kelvin',symbol:'K',color:'#8b5cf6'},
-  R:{name:'Rankine',symbol:'°R',color:'#10b981'},
+  C:{name:'temp_celsius',symbol:'°C',color:'#3b82f6'},
+  F:{name:'temp_fahrenheit',symbol:'°F',color:'#f97316'},
+  K:{name:'temp_kelvin',symbol:'K',color:'#8b5cf6'},
+  R:{name:'temp_rankine',symbol:'°R',color:'#10b981'},
 }
-const REFS=[{label:'Water freezes',C:0},{label:'Body temp',C:37},{label:'Water boils',C:100},{label:'Absolute zero',C:-273.15},{label:'Room temp',C:22}]
+const REFS=[{label:'temp_freeze',C:0},{label:'temp_body',C:37},{label:'temp_boil',C:100},{label:'temp_abszero',C:-273.15},{label:'temp_room',C:22}]
 export default function TemperatureConverterPage() {
+  const t = useTranslations('toolui')
   const [srcUnit,setSrcUnit]=useState<Unit>('C')
   const [val,setVal]=useState('100')
   const num=parseFloat(val)||0
@@ -42,25 +44,25 @@ export default function TemperatureConverterPage() {
           ))}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{UNITS[srcUnit].name}</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t(UNITS[srcUnit].name)}</label>
           <input type="number" value={val} onChange={e=>setVal(e.target.value)}
             className="w-full rounded-xl border border-gray-300 px-4 py-4 text-3xl font-mono text-center font-bold focus:outline-none focus:border-blue-400"/>
         </div>
         <div className="grid grid-cols-2 gap-3">
           {(Object.keys(UNITS) as Unit[]).filter(u=>u!==srcUnit).map(u=>(
             <div key={u} className="rounded-xl border-2 p-4" style={{borderColor:UNITS[u].color+'40'}}>
-              <p className="text-xs font-medium mb-1" style={{color:UNITS[u].color}}>{UNITS[u].name}</p>
+              <p className="text-xs font-medium mb-1" style={{color:UNITS[u].color}}>{t(UNITS[u].name)}</p>
               <p className="text-2xl font-bold font-mono text-gray-800">{r(u).toLocaleString()}<span className="text-sm ml-1 text-gray-400">{UNITS[u].symbol}</span></p>
             </div>
           ))}
         </div>
         <div>
-          <p className="text-xs font-medium text-gray-600 mb-2">Common reference points</p>
+          <p className="text-xs font-medium text-gray-600 mb-2">{t('temp_refs')}</p>
           <div className="space-y-1.5">
             {REFS.map(ref=>(
               <button key={ref.label} onClick={()=>{setSrcUnit('C');setVal(String(ref.C))}}
                 className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 text-left">
-                <span className="text-sm text-gray-600">{ref.label}</span>
+                <span className="text-sm text-gray-600">{t(ref.label)}</span>
                 <div className="flex gap-3 text-xs font-mono text-gray-500">
                   <span>{ref.C}°C</span>
                   <span>{parseFloat(fromC(ref.C,'F').toFixed(1))}°F</span>

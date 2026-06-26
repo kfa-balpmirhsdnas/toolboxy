@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -18,6 +19,7 @@ function toHiragana(s: string): string {
 type Mode = 'to-kata' | 'to-hira'
 
 export default function HiraganaKatakanaPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const [mode, setMode] = useState<Mode>('to-kata')
   const [copied, setCopied] = useState(false)
@@ -66,12 +68,12 @@ export default function HiraganaKatakanaPage({ params }: { params: { lang: strin
           />
           {output && (
             <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">
-              {copied ? '✓ Copied' : 'Copy'}
+              {copied ? '✓ '+t('ui_copied') : t('ui_copy')}
             </button>
           )}
         </div>
 
-        <p className="text-xs text-gray-400">{input.length} chars · Instant, in-browser conversion.</p>
+        <p className="text-xs text-gray-400">{t('hkc_note',{n:input.length})}</p>
       </div>
 
     </ToolLayout>

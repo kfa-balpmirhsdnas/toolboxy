@@ -3585,6 +3585,56 @@
       "텍스트를 붙여넣으세요.",
       "최대 단어 수를 조정하세요.",
       "빈도 기반 워드 클라우드를 확인하세요."
+    ],
+    "random-string-generator": [
+      "길이와 개수를 설정하세요.",
+      "문자 집합을 고르세요.",
+      "생성 후 복사하세요."
+    ],
+    "slug-to-title": [
+      "슬러그나 kebab-case 텍스트를 붙여넣으세요.",
+      "케이스 스타일을 고르세요.",
+      "변환된 텍스트를 복사하세요."
+    ],
+    "roman-numeral-converter": [
+      "변환 방향을 고르세요.",
+      "숫자나 로마 숫자를 입력하세요.",
+      "변환된 값을 확인하세요."
+    ],
+    "uuid-generator": [
+      "생성할 개수를 설정하세요.",
+      "대문자·하이픈을 전환하세요.",
+      "UUID를 복사하세요."
+    ],
+    "jwt-decoder": [
+      "JWT를 붙여넣으세요.",
+      "헤더와 페이로드를 확인하세요.",
+      "만료 상태를 확인하세요."
+    ],
+    "list-deduplicator": [
+      "한 줄에 하나씩 항목을 붙여넣으세요.",
+      "중복 제거 옵션을 고르세요.",
+      "고유 목록을 복사하세요."
+    ],
+    "temperature-converter": [
+      "원본 단위를 고르세요.",
+      "온도를 입력하세요.",
+      "모든 단위로 변환된 값을 확인하세요."
+    ],
+    "json-validator": [
+      "JSON을 붙여넣으세요.",
+      "검증을 클릭하세요.",
+      "정렬된 JSON을 복사하세요."
+    ],
+    "url-parser": [
+      "URL을 입력하세요.",
+      "각 구성 요소를 확인하세요.",
+      "원하는 부분이나 쿼리 값을 복사하세요."
+    ],
+    "hiragana-katakana-converter": [
+      "변환 방향을 고르세요.",
+      "히라가나나 가타카나를 입력하세요.",
+      "변환 결과를 복사하세요."
     ]
   },
   "games": {
@@ -5983,7 +6033,60 @@
     "wcg_ph": "워드 클라우드를 생성할 텍스트를 붙여넣으세요...",
     "wcg_maxwords": "최대 단어 수:",
     "wcg_nowords": "표시할 단어가 없습니다",
-    "wcg_showing": "{n}개 단어 표시 (일반 불용어 제외)"
+    "wcg_showing": "{n}개 단어 표시 (일반 불용어 제외)",
+    "rsg_length": "길이",
+    "rsg_howmany": "개수",
+    "rsg_lower": "소문자",
+    "rsg_upper": "대문자",
+    "rsg_digits": "숫자",
+    "rsg_symbols": "기호",
+    "rsg_note": "crypto.getRandomValues로 생성 — 암호학적으로 안전하며 브라우저를 벗어나지 않습니다.",
+    "stt2_label": "슬러그 또는 kebab-case 텍스트",
+    "rnc_outofrange": "범위를 벗어남 (1–3999)",
+    "rnc_n2r": "숫자 → 로마",
+    "rnc_r2n": "로마 → 숫자",
+    "rnc_integer": "정수 (1–3999)",
+    "rnc_roman": "로마 숫자",
+    "rnc_integerres": "정수",
+    "rnc_examples": "빠른 예시",
+    "rnc_reference": "로마 숫자 참조",
+    "uug_title": "UUID 생성기",
+    "uug_subtitle": "암호학적으로 안전한 UUID v4 식별자를 생성합니다",
+    "uug_hyphens": "하이픈",
+    "uug_about": "UUID v4 정보",
+    "uug_abouttext": "UUID(범용 고유 식별자) v4는 암호학적으로 안전한 난수 생성기로 122비트의 무작위성을 생성합니다. 충돌 확률은 천문학적으로 낮아 약 5.3 운데실리언분의 1 (5.3 × 10³⁶)입니다. 기본 키, 세션 토큰, 고유 식별자로 안전하게 사용할 수 있습니다.",
+    "jwtd_token": "JWT 토큰",
+    "jwtd_ph": "JWT를 여기에 붙여넣으세요…",
+    "jwtd_invalid": "⚠ 잘못된 JWT — 점으로 구분된 3개 부분이 필요합니다",
+    "jwtd_expired": "⚠ 토큰이 만료되었습니다",
+    "jwtd_notexpired": "✓ 토큰이 만료되지 않았습니다",
+    "jwtd_header": "헤더",
+    "jwtd_payload": "페이로드",
+    "jwtd_signature": "서명",
+    "jwtd_note": "클라이언트에서만 처리 — 토큰은 브라우저를 벗어나지 않습니다",
+    "ld_case": "대소문자 구분",
+    "ld_trim": "공백 제거",
+    "ld_removeblank": "빈 줄 제거",
+    "ld_sort": "결과 정렬",
+    "ld_input": "입력 {n}개",
+    "ld_unique": "고유 {n}개",
+    "ld_removed": "-{n}개 중복 제거됨",
+    "temp_celsius": "섭씨",
+    "temp_fahrenheit": "화씨",
+    "temp_kelvin": "켈빈",
+    "temp_rankine": "랭킨",
+    "temp_freeze": "물의 어는점",
+    "temp_body": "체온",
+    "temp_boil": "물의 끓는점",
+    "temp_abszero": "절대 영도",
+    "temp_room": "실온",
+    "temp_refs": "주요 기준점",
+    "jvd_validate": "JSON 검증",
+    "jvd_invalid": "유효하지 않은 JSON",
+    "jvd_note": "JSON 구문을 검증하고 유효한 JSON을 정렬합니다 · 버튼 클릭 시 갱신",
+    "up_sample": "샘플",
+    "up_params": "쿼리 매개변수 ({n})",
+    "hkc_note": "{n}자 · 즉시 브라우저 내 변환."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

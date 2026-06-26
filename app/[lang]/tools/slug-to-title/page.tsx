@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -35,6 +36,7 @@ const STYLES = [
 ]
 
 export default function SlugToTitlePage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('the-quick-brown-fox-jumps-over-the-lazy-dog')
   const [style, setStyle] = useState('title')
   const [copied, setCopied] = useState(false)
@@ -54,7 +56,7 @@ export default function SlugToTitlePage({ params }: { params: { lang: string } }
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Slug or kebab-case text</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1">{t('stt2_label')}</label>
           <input value={input} onChange={e=>{setInput(e.target.value);track()}} placeholder="my-awesome-blog-post"
             className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
         </div>
@@ -69,8 +71,8 @@ export default function SlugToTitlePage({ params }: { params: { lang: string } }
         {output && (
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">Result</label>
-              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
+              <label className="text-xs font-medium text-gray-600">{t('ce_result')}</label>
+              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 '+t('ui_copied'):t('ui_copy')}</button>
             </div>
             <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-lg font-semibold text-gray-800 break-all">{output}</div>
           </div>

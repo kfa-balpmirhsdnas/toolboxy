@@ -1,10 +1,12 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('url-parser')!
 const SAMPLES=['https://www.example.com/path/to/page?name=Alice&age=30&city=New+York#section-2','https://api.github.com/repos/owner/repo/issues?state=open&labels=bug,help+wanted&per_page=30','ftp://user:password@files.example.net:21/downloads/file.zip?v=2#chunk1']
 export default function UrlParserPage() {
+  const t = useTranslations('toolui')
   const [url,setUrl]=useState(SAMPLES[0])
   const [copied,setCopied]=useState('')
   const parse=(u:string)=>{
@@ -25,7 +27,7 @@ export default function UrlParserPage() {
     <div className="flex items-start gap-2 py-2 border-b border-gray-100 last:border-0">
       <span className="w-24 flex-shrink-0 text-xs font-medium text-gray-500 mt-0.5">{label}</span>
       <code className="flex-1 text-xs font-mono text-gray-800 break-all">{value}</code>
-      <button onClick={()=>copy(value)} className="flex-shrink-0 text-xs text-blue-500 hover:text-blue-700">{copied===value?'✓':'Copy'}</button>
+      <button onClick={()=>copy(value)} className="flex-shrink-0 text-xs text-blue-500 hover:text-blue-700">{copied===value?'✓':t('ui_copy')}</button>
     </div>
   ):null
   return (
@@ -39,7 +41,7 @@ export default function UrlParserPage() {
         </div>
         <div className="flex flex-wrap gap-1.5">
           {SAMPLES.map((s,i)=>(
-            <button key={i} onClick={()=>setUrl(s)} className="text-xs px-2.5 py-1 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600">Sample {i+1}</button>
+            <button key={i} onClick={()=>setUrl(s)} className="text-xs px-2.5 py-1 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600">{t('up_sample')} {i+1}</button>
           ))}
         </div>
         {!p.error&&(
@@ -56,14 +58,14 @@ export default function UrlParserPage() {
             <Row label="Origin" value={p.origin}/>
             {p.params.length>0&&(
               <div className="pt-2">
-                <p className="text-xs font-medium text-gray-600 mb-2">Query parameters ({p.params.length})</p>
+                <p className="text-xs font-medium text-gray-600 mb-2">{t('up_params',{n:p.params.length})}</p>
                 <div className="space-y-1">
                   {p.params.map(([k,v],i)=>(
                     <div key={i} className="flex items-center gap-2 text-xs bg-white rounded-lg px-3 py-1.5 border border-gray-200">
                       <span className="font-medium text-blue-600 w-24 truncate">{k}</span>
                       <span className="text-gray-400">=</span>
                       <span className="font-mono text-gray-700 flex-1 truncate">{decodeURIComponent(v)}</span>
-                      <button onClick={()=>copy(v)} className="text-blue-400 hover:text-blue-600">{copied===v?'✓':'Copy'}</button>
+                      <button onClick={()=>copy(v)} className="text-blue-400 hover:text-blue-600">{copied===v?'✓':t('ui_copy')}</button>
                     </div>
                   ))}
                 </div>

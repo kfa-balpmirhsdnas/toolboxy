@@ -3552,6 +3552,56 @@
       "テキストを貼り付けます。",
       "最大単語数を調整します。",
       "頻度ベースのワードクラウドを確認します。"
+    ],
+    "random-string-generator": [
+      "長さと個数を設定します。",
+      "文字セットを選びます。",
+      "生成してコピーします。"
+    ],
+    "slug-to-title": [
+      "スラッグまたはkebab-caseテキストを貼り付けます。",
+      "ケーススタイルを選びます。",
+      "変換されたテキストをコピーします。"
+    ],
+    "roman-numeral-converter": [
+      "変換方向を選びます。",
+      "数字またはローマ数字を入力します。",
+      "変換された値を確認します。"
+    ],
+    "uuid-generator": [
+      "生成する個数を設定します。",
+      "大文字・ハイフンを切り替えます。",
+      "UUIDをコピーします。"
+    ],
+    "jwt-decoder": [
+      "JWTを貼り付けます。",
+      "ヘッダーとペイロードを確認します。",
+      "有効期限の状態を確認します。"
+    ],
+    "list-deduplicator": [
+      "1行に1項目を貼り付けます。",
+      "重複削除オプションを選びます。",
+      "ユニークなリストをコピーします。"
+    ],
+    "temperature-converter": [
+      "元の単位を選びます。",
+      "温度を入力します。",
+      "すべての単位で確認します。"
+    ],
+    "json-validator": [
+      "JSONを貼り付けます。",
+      "検証をクリックします。",
+      "整形されたJSONをコピーします。"
+    ],
+    "url-parser": [
+      "URLを入力します。",
+      "各部分の内訳を確認します。",
+      "任意の部分やクエリ値をコピーします。"
+    ],
+    "hiragana-katakana-converter": [
+      "変換方向を選びます。",
+      "ひらがなまたはカタカナを入力します。",
+      "変換結果をコピーします。"
     ]
   },
   "games": {
@@ -5950,7 +6000,60 @@
     "wcg_ph": "ワードクラウドを生成するテキストを貼り付け...",
     "wcg_maxwords": "最大単語数:",
     "wcg_nowords": "表示する単語がありません",
-    "wcg_showing": "{n}語を表示 (一般的なストップワードを除外)"
+    "wcg_showing": "{n}語を表示 (一般的なストップワードを除外)",
+    "rsg_length": "長さ",
+    "rsg_howmany": "個数",
+    "rsg_lower": "小文字",
+    "rsg_upper": "大文字",
+    "rsg_digits": "数字",
+    "rsg_symbols": "記号",
+    "rsg_note": "crypto.getRandomValuesで生成 — 暗号学的に安全で、ブラウザ外には出ません。",
+    "stt2_label": "スラッグまたはkebab-caseテキスト",
+    "rnc_outofrange": "範囲外 (1–3999)",
+    "rnc_n2r": "数字 → ローマ",
+    "rnc_r2n": "ローマ → 数字",
+    "rnc_integer": "整数 (1–3999)",
+    "rnc_roman": "ローマ数字",
+    "rnc_integerres": "整数",
+    "rnc_examples": "クイック例",
+    "rnc_reference": "ローマ数字リファレンス",
+    "uug_title": "UUIDジェネレーター",
+    "uug_subtitle": "暗号学的に安全なUUID v4識別子を生成します",
+    "uug_hyphens": "ハイフン",
+    "uug_about": "UUID v4について",
+    "uug_abouttext": "UUID（汎用一意識別子）v4は、暗号学的に安全な乱数生成器で122ビットのランダム性を生成します。衝突の確率は天文学的に低く、約5.3澗分の1（5.3 × 10³⁶）です。主キー、セッショントークン、一意識別子として安全に使用できます。",
+    "jwtd_token": "JWTトークン",
+    "jwtd_ph": "JWTをここに貼り付け…",
+    "jwtd_invalid": "⚠ 無効なJWT — ドット区切りの3つの部分が必要です",
+    "jwtd_expired": "⚠ トークンは期限切れです",
+    "jwtd_notexpired": "✓ トークンは有効です",
+    "jwtd_header": "ヘッダー",
+    "jwtd_payload": "ペイロード",
+    "jwtd_signature": "署名",
+    "jwtd_note": "クライアント側のみ — トークンはブラウザ外に出ません",
+    "ld_case": "大文字小文字を区別",
+    "ld_trim": "空白を除去",
+    "ld_removeblank": "空行を削除",
+    "ld_sort": "結果を並べ替え",
+    "ld_input": "入力 {n}件",
+    "ld_unique": "ユニーク {n}件",
+    "ld_removed": "-{n}件の重複を削除",
+    "temp_celsius": "摂氏",
+    "temp_fahrenheit": "華氏",
+    "temp_kelvin": "ケルビン",
+    "temp_rankine": "ランキン",
+    "temp_freeze": "水の凝固点",
+    "temp_body": "体温",
+    "temp_boil": "水の沸点",
+    "temp_abszero": "絶対零度",
+    "temp_room": "室温",
+    "temp_refs": "主な基準点",
+    "jvd_validate": "JSONを検証",
+    "jvd_invalid": "無効なJSON",
+    "jvd_note": "JSON構文を検証し、有効なJSONを整形します · ボタンクリックで更新",
+    "up_sample": "サンプル",
+    "up_params": "クエリパラメータ ({n})",
+    "hkc_note": "{n}文字 · 即時・ブラウザ内変換。"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
