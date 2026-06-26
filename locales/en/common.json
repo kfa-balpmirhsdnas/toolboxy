@@ -2857,6 +2857,16 @@
       "Paste your YAML.",
       "It converts to JSON automatically.",
       "Copy the converted JSON."
+    ],
+    "csv-viewer": [
+      "Paste your CSV.",
+      "Choose the delimiter.",
+      "View the data as a table."
+    ],
+    "yaml-validator": [
+      "Paste your YAML.",
+      "Its syntax is validated automatically.",
+      "See any error location."
     ]
   },
   "games": {
@@ -4735,7 +4745,17 @@
     "jc_output": "CSV Output",
     "ytj_input": "YAML Input",
     "ytj_output": "JSON Output",
-    "ytj_copyjson": "Copy JSON"
+    "ytj_copyjson": "Copy JSON",
+    "cvw_input": "CSV Input",
+    "cvw_delim": "Delimiter",
+    "cvw_semicolon": "semicolon",
+    "cvw_pipe": "pipe",
+    "cvw_stats": "{r} rows, {c} cols",
+    "yv_empty": "Input is empty",
+    "yv_tabs": "Line {n}: YAML does not allow tabs for indentation",
+    "yv_ph": "Paste YAML to validate...",
+    "yv_valid": "Valid YAML ({n} lines)",
+    "yv_invalid": "Invalid"
   },
   "toolTags": {
     "spinner-wheel": [

@@ -3162,6 +3162,16 @@
       "YAMLを貼り付けます。",
       "自動でJSONに変換されます。",
       "変換されたJSONをコピーします。"
+    ],
+    "csv-viewer": [
+      "CSVを貼り付けます。",
+      "区切り文字を選びます。",
+      "データを表で確認します。"
+    ],
+    "yaml-validator": [
+      "YAMLを貼り付けます。",
+      "構文が自動で検証されます。",
+      "エラー箇所を確認します。"
     ]
   },
   "games": {
@@ -5040,7 +5050,17 @@
     "jc_output": "CSV出力",
     "ytj_input": "YAML入力",
     "ytj_output": "JSON出力",
-    "ytj_copyjson": "JSONをコピー"
+    "ytj_copyjson": "JSONをコピー",
+    "cvw_input": "CSV入力",
+    "cvw_delim": "区切り文字",
+    "cvw_semicolon": "セミコロン",
+    "cvw_pipe": "パイプ",
+    "cvw_stats": "{r}行、{c}列",
+    "yv_empty": "入力が空です",
+    "yv_tabs": "{n}行目: YAMLはインデントにタブを使えません",
+    "yv_ph": "検証するYAMLを貼り付け...",
+    "yv_valid": "有効なYAML ({n}行)",
+    "yv_invalid": "無効"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

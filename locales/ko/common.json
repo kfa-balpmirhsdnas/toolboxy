@@ -3195,6 +3195,16 @@
       "YAML을 붙여넣으세요.",
       "자동으로 JSON으로 변환됩니다.",
       "변환된 JSON을 복사하세요."
+    ],
+    "csv-viewer": [
+      "CSV를 붙여넣으세요.",
+      "구분자를 고르세요.",
+      "표로 정리된 데이터를 확인하세요."
+    ],
+    "yaml-validator": [
+      "YAML을 붙여넣으세요.",
+      "구문 유효성이 자동 검사됩니다.",
+      "오류 위치를 확인하세요."
     ]
   },
   "games": {
@@ -5073,7 +5083,17 @@
     "jc_output": "CSV 출력",
     "ytj_input": "YAML 입력",
     "ytj_output": "JSON 출력",
-    "ytj_copyjson": "JSON 복사"
+    "ytj_copyjson": "JSON 복사",
+    "cvw_input": "CSV 입력",
+    "cvw_delim": "구분자",
+    "cvw_semicolon": "세미콜론",
+    "cvw_pipe": "파이프",
+    "cvw_stats": "{r}행, {c}열",
+    "yv_empty": "입력이 비어 있습니다",
+    "yv_tabs": "{n}번째 줄: YAML은 들여쓰기에 탭을 허용하지 않습니다",
+    "yv_ph": "검증할 YAML을 붙여넣으세요...",
+    "yv_valid": "유효한 YAML ({n}줄)",
+    "yv_invalid": "유효하지 않음"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
