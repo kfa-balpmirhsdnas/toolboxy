@@ -8,7 +8,7 @@ import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
 const tool = getToolBySlug('zip-files')!
 const fmt = (b: number) => (b < 1024 ? b + ' B' : b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(2) + ' MB')
-const relPath = (f: File) => (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name
+const relPath = (f: File) => (f as File & { __path?: string; webkitRelativePath?: string }).__path || (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name
 const baseName = (s: string) => s.replace(/\.[^./\\]+$/, '')
 
 export default function ZipFilesPage({ params }: { params: { lang: string } }) {
@@ -24,7 +24,7 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
     const rel = relPath(arr[0])
     return rel.includes('/') ? rel.split('/')[0] : baseName(arr[0].name) // folder name, else first file
   }
-  function add(list: FileList | null) {
+  function add(list: FileList | File[] | null) {
     if (!list || !list.length) return
     const arr = Array.from(list)
     setFiles((f) => [...f, ...arr])
@@ -32,6 +32,38 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
     setOut(null)
   }
   function removeAt(i: number) { setFiles((f) => f.filter((_, k) => k !== i)); setOut(null) }
+
+  // Drag & drop of folders: walk the dropped FileSystemEntry tree, tagging each file
+  // with its relative path so nested structure is preserved in the zip.
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  async function addEntries(entries: any[]) {
+    const out: File[] = []
+    const walk = async (entry: any, prefix: string) => {
+      if (entry.isFile) {
+        const file: File = await new Promise((res, rej) => entry.file(res, rej))
+        try { (file as any).__path = prefix + entry.name } catch { /* read-only on some engines */ }
+        out.push(file)
+      } else if (entry.isDirectory) {
+        const reader = entry.createReader()
+        const readAll = () => new Promise<any[]>((res) => reader.readEntries((r: any[]) => res(r), () => res([])))
+        let batch = await readAll()
+        while (batch.length) { for (const c of batch) await walk(c, prefix + entry.name + '/'); batch = await readAll() }
+      }
+    }
+    for (const e of entries) await walk(e, '')
+    if (out.length) add(out)
+  }
+  function onDrop(e: React.DragEvent) {
+    e.preventDefault()
+    const items = e.dataTransfer.items
+    if (items && items.length && (items[0] as any).webkitGetAsEntry) {
+      const entries: any[] = []
+      for (let i = 0; i < items.length; i++) { const en = (items[i] as any).webkitGetAsEntry?.(); if (en) entries.push(en) } // must read synchronously
+      if (entries.length) { addEntries(entries); return }
+    }
+    add(e.dataTransfer.files)
+  }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   function clearAll() { setFiles([]); setZipName(''); setOut(null) }
 
   const fileName = () => `${(zipName || 'archive').replace(/[\\/:*?"<>|]+/g, '').trim() || 'archive'}.zip`
@@ -65,7 +97,7 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
           <p className="text-gray-500 text-sm mt-1">{t('zf_subtitle')}</p>
         </div>
 
-        <div onClick={() => inputRef.current?.click()} onDrop={(e) => { e.preventDefault(); add(e.dataTransfer.files) }} onDragOver={(e) => e.preventDefault()}
+        <div onClick={() => inputRef.current?.click()} onDrop={onDrop} onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
           <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => { add(e.target.files); e.target.value = '' }} />
           <p className="text-4xl mb-2">🗂️</p><p className="text-sm font-medium text-gray-600">{t('zf_drop')}</p>

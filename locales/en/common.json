@@ -2530,7 +2530,7 @@
     "cp_note": "Each page is rasterized and re-compressed as an image. Best for scanned or image-heavy PDFs; text becomes part of the image, so it won't be selectable or searchable.",
     "zf_title": "Zip Files (Create ZIP)",
     "zf_subtitle": "Combine several files into a single ZIP.",
-    "zf_drop": "Drop files or click to add",
+    "zf_drop": "Drop files or folders, or click to add",
     "zf_files": "{n} files",
     "zf_make": "Create ZIP",
     "zf_making": "Zipping…",
