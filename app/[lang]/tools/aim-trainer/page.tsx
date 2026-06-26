@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
+import { useGameStage, GameStageOverlay, MuteToggle } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('aim-trainer')!
@@ -11,6 +12,7 @@ const DURATION = 30
 
 export default function AimTrainerPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
+  const stage = useGameStage()
   const [playing, setPlaying] = useState(false)
   const [hits, setHits] = useState(0)
   const [time, setTime] = useState(DURATION)
@@ -19,13 +21,14 @@ export default function AimTrainerPage({ params }: { params: { lang: string } })
   const boxRef = useRef<HTMLDivElement>(null)
 
   const move = useCallback(() => setPos({ x: 8 + Math.random() * 84, y: 8 + Math.random() * 84 }), [])
-  const start = () => { setHits(0); setTime(DURATION); setPlaying(true); move() }
   useEffect(() => { const b = localStorage.getItem('aim-best'); if (b) setBest(+b) }, [])
+  // real round starts when the countdown finishes
+  useEffect(() => { if (stage.phase === 'playing') { setHits(0); setTime(DURATION); setPlaying(true); move() } }, [stage.phase, move])
   useEffect(() => {
     if (!playing) return
-    const id = setInterval(() => setTime((tm) => { if (tm <= 0.1) { setPlaying(false); setHits((h) => { setBest((bb) => { const nb = Math.max(bb, h); localStorage.setItem('aim-best', String(nb)); return nb }); return h }); return 0 } return tm - 0.1 }), 100)
+    const id = setInterval(() => setTime((tm) => { if (tm <= 0.1) { setPlaying(false); setHits((h) => { setBest((bb) => { const nb = Math.max(bb, h); localStorage.setItem('aim-best', String(nb)); return nb }); return h }); stage.finish(); return 0 } return tm - 0.1 }), 100)
     return () => clearInterval(id)
-  }, [playing])
+  }, [playing]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function hit(e: React.MouseEvent) { e.stopPropagation(); if (!playing) return; setHits((h) => h + 1); move() }
 
@@ -37,18 +40,20 @@ export default function AimTrainerPage({ params }: { params: { lang: string } })
           <p className="text-gray-500 text-sm mt-1">{t('at_subtitle')}</p>
         </div>
 
-        <div className="flex justify-between text-sm text-gray-600">
+        <div className="flex items-center justify-between text-sm text-gray-600">
           <span>{t('at_hits')}: <b className="text-brand-600">{hits}</b></span>
           <span>{t('at_time')}: <b>{time.toFixed(0)}s</b></span>
           <span>{t('at_best')}: <b>{best}</b></span>
+          <MuteToggle stage={stage} />
         </div>
 
         <div ref={boxRef} className="relative rounded-xl bg-gray-100 mx-auto overflow-hidden" style={{ width: 300, height: 300 }}>
-          {playing ? (
+          {stage.playing ? (
             <button onClick={hit} className="absolute w-10 h-10 rounded-full bg-rose-500 hover:bg-rose-600 -translate-x-1/2 -translate-y-1/2 ring-4 ring-rose-200" style={{ left: `${pos.x}%`, top: `${pos.y}%` }} />
           ) : (
-            <button onClick={start} className="absolute inset-0 flex items-center justify-center text-brand-600 font-semibold">{time === 0 ? t('at_result', { hits, n: (hits / DURATION).toFixed(1) }) : t('at_start')}</button>
+            <button onClick={stage.begin} className="absolute inset-0 flex items-center justify-center text-brand-600 font-semibold">{stage.phase === 'finished' ? t('at_result', { hits, n: (hits / DURATION).toFixed(1) }) : t('at_start')}</button>
           )}
+          <GameStageOverlay stage={stage} />
         </div>
         <p className="text-xs text-gray-400">{t('at_note')}</p>
       </div>
