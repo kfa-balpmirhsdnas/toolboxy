@@ -24,6 +24,7 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
   const [score, setScore] = useState(0)
   const [correct, setCorrect] = useState(0)
   const [lastPts, setLastPts] = useState(0)
+  const [tick, setTick] = useState(0)
   const qStart = useRef(Date.now())
   const stage = useGameStage()
 
@@ -47,6 +48,13 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
     } else setLastPts(0)
   }
   function next() { setPicked(null); setLastPts(0); setIdx((n) => n + 1); qStart.current = Date.now() }
+  // After answering, count 5→1 and auto-advance; pressing the button skips ahead.
+  useEffect(() => {
+    if (!picked) { setTick(0); return }
+    setTick(5); let s = 5
+    const id = setInterval(() => { s -= 1; setTick(s); if (s <= 0) { clearInterval(id); next() } }, 1000)
+    return () => clearInterval(id)
+  }, [picked]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!quiz.length) return null
   const finished = idx >= quiz.length
@@ -97,7 +105,7 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
             {picked && (
               <div className="space-y-3">
                 <div className={`text-sm font-bold ${lastPts > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>{lastPts > 0 ? `+${lastPts}${lastPts > BASE ? ' ⚡' : ''}` : '+0'}</div>
-                <button onClick={next} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{idx + 1 < N ? `${t('iq_next')} →` : `${t('quiz_finish')} →`}</button>
+                <button onClick={next} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{idx + 1 < N ? t('iq_next') : t('quiz_finish')} <span className="inline-flex items-center justify-center w-6 h-6 ml-1 rounded-full bg-white/25 text-sm tabular-nums">{tick}</span></button>
               </div>
             )}
           </>

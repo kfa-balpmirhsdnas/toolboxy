@@ -32,6 +32,7 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
   const [score, setScore] = useState(0)
   const [correct, setCorrect] = useState(0)
   const [lastPts, setLastPts] = useState(0)
+  const [tick, setTick] = useState(0)
   const qStart = useRef(Date.now())
   const stage = useGameStage()
 
@@ -47,6 +48,13 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
     setResult(ok ? 'ok' : 'no')
     if (ok) { const p = BASE + speedBonus(Date.now() - qStart.current); setScore((n) => n + p); setCorrect((n) => n + 1); setLastPts(p) } else setLastPts(0)
   }
+  // After answering, count 5→1 and auto-advance; pressing the button skips ahead.
+  useEffect(() => {
+    if (!result) { setTick(0); return }
+    setTick(5); let s = 5
+    const id = setInterval(() => { s -= 1; setTick(s); if (s <= 0) { clearInterval(id); submit() } }, 1000)
+    return () => clearInterval(id)
+  }, [result]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!quiz.length) return null
   const finished = idx >= quiz.length
@@ -88,7 +96,7 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
             {result === 'ok' && <p className="text-emerald-600 font-semibold">{t('cq_correct')} +{lastPts}{lastPts > BASE ? ' ⚡' : ''}</p>}
             {result === 'no' && <p className="text-rose-600 font-semibold">{t('cq_wrong', { a: quiz[idx][0] })}</p>}
 
-            <button onClick={submit} className="w-full px-5 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{result ? (idx + 1 < N ? `${t('cq_next')} →` : `${t('quiz_finish')} →`) : t('cq_check')}</button>
+            <button onClick={submit} className="w-full px-5 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{result ? (<>{idx + 1 < N ? t('cq_next') : t('quiz_finish')} <span className="inline-flex items-center justify-center w-6 h-6 ml-1 rounded-full bg-white/25 text-sm tabular-nums">{tick}</span></>) : t('cq_check')}</button>
             <p className="text-xs text-gray-400">{t('cq_note')}</p>
           </>
         )}
