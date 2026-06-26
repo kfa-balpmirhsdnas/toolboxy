@@ -2597,6 +2597,16 @@
       "Choose text or hex input mode.",
       "Enter your content.",
       "See the offset/hex/ASCII dump."
+    ],
+    "chmod-calculator": [
+      "Toggle permission checkboxes or type an octal.",
+      "Set owner, group and others permissions.",
+      "Copy the octal, symbolic or chmod command."
+    ],
+    "bracket-matcher": [
+      "Paste your code.",
+      "Optionally check angle brackets too.",
+      "See matched pairs highlighted and any errors."
     ]
   },
   "games": {
@@ -4159,7 +4169,26 @@
     "hd_ph_text": "Enter text...",
     "hd_ph_hex": "Enter hex bytes (e.g. 48656c6c6f)...",
     "hd_invalid": "Invalid hex string (must be even-length hex characters)",
-    "hd_dump": "Hex dump"
+    "hd_dump": "Hex dump",
+    "chm_owner": "Owner",
+    "chm_group": "Group",
+    "chm_others": "Others",
+    "chm_read": "Read",
+    "chm_write": "Write",
+    "chm_execute": "Execute",
+    "chm_octal_in": "Octal input:",
+    "chm_octal": "Octal",
+    "chm_symbolic": "Symbolic",
+    "chm_cmd": "chmod command",
+    "chm_numeric": "Numeric",
+    "bm_unexpected": "Unexpected {c} at col {n}",
+    "bm_expected": "Expected {e}, got {c} at col {n}",
+    "bm_unclosed": "Unclosed {c} at col {n}",
+    "bm_check": "Check angle brackets < >",
+    "bm_stats": "{m} matched, {e} errors",
+    "bm_ph": "Paste code here...",
+    "bm_ok": "✓ All brackets are matched correctly ({n} pairs)",
+    "bm_highlighted": "Highlighted"
   },
   "toolTags": {
     "spinner-wheel": [

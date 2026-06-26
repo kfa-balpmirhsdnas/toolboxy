@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -20,6 +21,7 @@ function permToSymbol(p: Perm): string {
 }
 
 export default function ChmodCalculatorPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [perms, setPerms] = useState<PermSet>({
     owner:{ read:true, write:true, execute:false },
     group:{ read:true, write:false, execute:false },
@@ -66,11 +68,11 @@ export default function ChmodCalculatorPage({ params }: { params: { lang: string
         <div className="grid grid-cols-3 gap-3">
           {WHOS.map(who=>(
             <div key={who} className="p-3 bg-gray-50 border border-gray-200 rounded-xl">
-              <p className="text-xs font-semibold text-gray-700 mb-2 capitalize">{who}</p>
+              <p className="text-xs font-semibold text-gray-700 mb-2">{t('chm_'+who)}</p>
               {BITS.map(bit=>(
                 <label key={bit} className="flex items-center gap-2 cursor-pointer text-sm mb-1">
                   <input type="checkbox" checked={perms[who][bit]} onChange={()=>togglePerm(who,bit)} className="accent-brand-600" />
-                  <span className="capitalize text-xs">{bit}</span>
+                  <span className="text-xs">{t('chm_'+bit)}</span>
                   <span className="ml-auto text-xs text-gray-400 font-mono">{bit==='read'?4:bit==='write'?2:1}</span>
                 </label>
               ))}
@@ -79,16 +81,16 @@ export default function ChmodCalculatorPage({ params }: { params: { lang: string
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-gray-600">Octal input:</label>
+          <label className="text-xs font-medium text-gray-600">{t('chm_octal_in')}</label>
           <input value={octalInput} onChange={e=>applyOctal(e.target.value)} placeholder="e.g. 644" maxLength={3}
             className="w-20 px-3 py-2 border border-gray-200 rounded-xl text-sm font-mono text-center focus:outline-none focus:ring-2 focus:ring-brand-400" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label:'Octal', val:octal },
-            { label:'Symbolic', val:symbolic },
-            { label:'chmod command', val:chmod },
-            { label:'Numeric', val:parseInt(octal,8).toString() },
+            { label:t('chm_octal'), val:octal },
+            { label:t('chm_symbolic'), val:symbolic },
+            { label:t('chm_cmd'), val:chmod },
+            { label:t('chm_numeric'), val:parseInt(octal,8).toString() },
           ].map(row=>(
             <div key={row.label} onClick={()=>copy(row.val,row.label)} className="p-3 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-brand-300 transition-colors">
               <p className="text-xs text-gray-500">{row.label}</p>

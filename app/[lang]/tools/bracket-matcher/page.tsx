@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
@@ -12,7 +13,7 @@ type BracketResult = { matched: [number,number][]; errors: BracketError[] }
 const PAIRS: Record<string,string> = { '(': ')', '[': ']', '{': '}', '<': '>' }
 const CLOSE = new Set([')',']','}','>'])
 
-function analyze(text: string, checkAngles: boolean): BracketResult {
+function analyze(text: string, checkAngles: boolean, t: (k: string, v?: Record<string, unknown>) => string): BracketResult {
   const stack: { char: string; idx: number }[] = []
   const matched: [number,number][] = []
   const errors: BracketError[] = []
@@ -25,33 +26,34 @@ function analyze(text: string, checkAngles: boolean): BracketResult {
       stack.push({ char: c, idx: i })
     } else if (closes.has(c)) {
       if (stack.length === 0) {
-        errors.push({ index: i, msg: 'Unexpected ' + c + ' at col '+(i+1) })
+        errors.push({ index: i, msg: t('bm_unexpected',{c, n:i+1}) })
       } else {
         const top = stack[stack.length-1]
         if (PAIRS[top.char] === c) {
           stack.pop()
           matched.push([top.idx, i])
         } else {
-          errors.push({ index: i, msg: 'Expected ' + PAIRS[top.char] + ', got ' + c + ' at col '+(i+1) })
+          errors.push({ index: i, msg: t('bm_expected',{e:PAIRS[top.char], c, n:i+1}) })
           stack.pop()
         }
       }
     }
   }
-  for (const s of stack) errors.push({ index: s.idx, msg: 'Unclosed ' + s.char + ' at col '+(s.idx+1) })
+  for (const s of stack) errors.push({ index: s.idx, msg: t('bm_unclosed',{c:s.char, n:s.idx+1}) })
   return { matched, errors }
 }
 
 const COLORS = ['text-blue-600','text-purple-600','text-green-600','text-orange-600','text-pink-600']
 
 export default function BracketMatcherPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('function greet(name: string) {\n  if (name.length > 0) {\n    return `Hello, ${name}!`\n  }\n}')
   const [checkAngles, setCheckAngles] = useState(false)
   const tracked = useRef(false)
 
   function track() { if (!tracked.current) { trackToolUsed('bracket-matcher'); tracked.current = true } }
 
-  const result = analyze(input, checkAngles)
+  const result = analyze(input, checkAngles, t)
 
   // Build colored spans
   const bracketDepth: Record<number,number> = {}
@@ -82,15 +84,15 @@ export default function BracketMatcherPage({ params }: { params: { lang: string 
         <div className="flex items-center gap-3">
           <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
             <input type="checkbox" checked={checkAngles} onChange={e=>{setCheckAngles(e.target.checked);track()}} className="accent-brand-600" />
-            Check angle brackets &lt; &gt;
+            {t('bm_check')}
           </label>
-          <span className="ml-auto text-xs text-gray-500">{result.matched.length} matched, {result.errors.length} errors</span>
+          <span className="ml-auto text-xs text-gray-500">{t('bm_stats',{m:result.matched.length,e:result.errors.length})}</span>
         </div>
-        <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} rows={8} placeholder="Paste code here..."
+        <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} rows={8} placeholder={t('bm_ph')}
           className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none" />
         {result.errors.length === 0 ? (
           <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 font-medium text-sm">
-            \u2713 All brackets are matched correctly ({result.matched.length} pairs)
+            {t('bm_ok',{n:result.matched.length})}
           </div>
         ) : (
           <div className="space-y-2">
@@ -100,7 +102,7 @@ export default function BracketMatcherPage({ params }: { params: { lang: string 
           </div>
         )}
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Highlighted</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1">{t('bm_highlighted')}</label>
           <pre className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono whitespace-pre-wrap break-all overflow-x-auto max-h-48">{spans}</pre>
         </div>
       </div>
