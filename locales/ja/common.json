@@ -3277,6 +3277,11 @@
       "項目を1行に1つ入力します。",
       "並べ替え基準とオプションを選びます。",
       "並べ替えた結果をコピーします。"
+    ],
+    "pixel-to-rem-converter": [
+      "基準フォントサイズを設定します。",
+      "pxまたはrem値を入力します。",
+      "変換された値をコピーします。"
     ]
   },
   "games": {
@@ -5310,7 +5315,34 @@
     "tsl_countwords": "単語数",
     "tsl_showlen": "長さを表示",
     "tsl_trim": "トリム",
-    "tsl_result": "結果 ({n}行)"
+    "tsl_result": "結果 ({n}行)",
+    "ua_title": "URLアナライザー & プレビュー",
+    "ua_subtitle": "アクセス前にURLを分析します。怪しいパターンを検出し、リンク構造を把握します。",
+    "ua_enter": "URLを入力",
+    "ua_analyze": "分析",
+    "ua_safe": "安全そう",
+    "ua_caution": "注意して進む",
+    "ua_suspicious": "怪しい可能性",
+    "ua_concerns": "{n}件の懸念が見つかりました",
+    "ua_breakdown": "URLの内訳",
+    "ua_protocol": "プロトコル",
+    "ua_hostname": "ホスト名 / ドメイン",
+    "ua_port": "ポート",
+    "ua_path": "パス",
+    "ua_query": "クエリ文字列",
+    "ua_fragment": "フラグメント / ハッシュ",
+    "ua_fullurl": "完全なURL",
+    "ua_default": "(デフォルト)",
+    "ua_none": "(なし)",
+    "ua_w_http": "⚠ 安全でない接続 (HTTPSではなくHTTP)",
+    "ua_w_ip": "⚠ IPアドレスのURL — 怪しい可能性",
+    "ua_w_subs": "⚠ サブドメインが多い — ルートドメインを確認してください",
+    "ua_w_hyphen": "⚠ ドメインに二重ハイフン — IDNホモグラフの可能性",
+    "ua_kw": "⚠ ドメインに怪しいキーワード: {list}",
+    "ua_invalid": "無効なURL形式",
+    "ua_note_label": "注:",
+    "ua_note_text": "このツールはURL構造のみを分析します。URLの内容にアクセスや検証は行いません。見慣れないリンクをクリックする前に常に注意してください。",
+    "ptr_quickref": "クイック参照 (基準 {b}px)"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

@@ -2972,6 +2972,11 @@
       "Enter one item per line.",
       "Pick a sort mode and options.",
       "Copy the sorted result."
+    ],
+    "pixel-to-rem-converter": [
+      "Set the base font size.",
+      "Enter a px or rem value.",
+      "Copy the converted value."
     ]
   },
   "games": {
@@ -5005,7 +5010,34 @@
     "tsl_countwords": "Count words",
     "tsl_showlen": "Show length",
     "tsl_trim": "Trim",
-    "tsl_result": "Result ({n} lines)"
+    "tsl_result": "Result ({n} lines)",
+    "ua_title": "URL Analyzer & Preview",
+    "ua_subtitle": "Analyze any URL before visiting it. Detect suspicious patterns and understand the link structure.",
+    "ua_enter": "Enter URL",
+    "ua_analyze": "Analyze",
+    "ua_safe": "Looks Safe",
+    "ua_caution": "Proceed with Caution",
+    "ua_suspicious": "Potentially Suspicious",
+    "ua_concerns": "{n} concern(s) found",
+    "ua_breakdown": "URL Breakdown",
+    "ua_protocol": "Protocol",
+    "ua_hostname": "Hostname / Domain",
+    "ua_port": "Port",
+    "ua_path": "Path",
+    "ua_query": "Query String",
+    "ua_fragment": "Fragment / Hash",
+    "ua_fullurl": "Full URL",
+    "ua_default": "(default)",
+    "ua_none": "(none)",
+    "ua_w_http": "⚠ Insecure connection (HTTP, not HTTPS)",
+    "ua_w_ip": "⚠ IP address URL — may be suspicious",
+    "ua_w_subs": "⚠ Many subdomains — verify the root domain",
+    "ua_w_hyphen": "⚠ Double hyphens in domain — possible IDN homograph",
+    "ua_kw": "⚠ Suspicious keywords in domain: {list}",
+    "ua_invalid": "Invalid URL format",
+    "ua_note_label": "Note:",
+    "ua_note_text": "This tool analyzes URL structure only. It does not visit or verify the content of the URL. Always exercise caution before clicking unfamiliar links.",
+    "ptr_quickref": "Quick reference (base {b}px)"
   },
   "toolTags": {
     "spinner-wheel": [

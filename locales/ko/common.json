@@ -3310,6 +3310,11 @@
       "항목을 한 줄에 하나씩 입력하세요.",
       "정렬 기준과 옵션을 고르세요.",
       "정렬된 결과를 복사하세요."
+    ],
+    "pixel-to-rem-converter": [
+      "기준 폰트 크기를 설정하세요.",
+      "px 또는 rem 값을 입력하세요.",
+      "변환된 값을 복사하세요."
     ]
   },
   "games": {
@@ -5343,7 +5348,34 @@
     "tsl_countwords": "단어 수",
     "tsl_showlen": "길이 표시",
     "tsl_trim": "공백 제거",
-    "tsl_result": "결과 ({n}줄)"
+    "tsl_result": "결과 ({n}줄)",
+    "ua_title": "URL 분석기 & 미리보기",
+    "ua_subtitle": "방문하기 전에 URL을 분석하세요. 의심스러운 패턴을 감지하고 링크 구조를 파악합니다.",
+    "ua_enter": "URL 입력",
+    "ua_analyze": "분석",
+    "ua_safe": "안전해 보임",
+    "ua_caution": "주의해서 진행",
+    "ua_suspicious": "의심스러울 수 있음",
+    "ua_concerns": "{n}개의 우려 사항 발견",
+    "ua_breakdown": "URL 구조 분석",
+    "ua_protocol": "프로토콜",
+    "ua_hostname": "호스트명 / 도메인",
+    "ua_port": "포트",
+    "ua_path": "경로",
+    "ua_query": "쿼리 문자열",
+    "ua_fragment": "프래그먼트 / 해시",
+    "ua_fullurl": "전체 URL",
+    "ua_default": "(기본값)",
+    "ua_none": "(없음)",
+    "ua_w_http": "⚠ 안전하지 않은 연결 (HTTPS가 아닌 HTTP)",
+    "ua_w_ip": "⚠ IP 주소 URL — 의심스러울 수 있음",
+    "ua_w_subs": "⚠ 서브도메인이 많음 — 루트 도메인을 확인하세요",
+    "ua_w_hyphen": "⚠ 도메인에 이중 하이픈 — IDN 호모그래프 가능성",
+    "ua_kw": "⚠ 도메인에 의심스러운 키워드: {list}",
+    "ua_invalid": "잘못된 URL 형식",
+    "ua_note_label": "참고:",
+    "ua_note_text": "이 도구는 URL 구조만 분석합니다. URL의 내용을 방문하거나 검증하지 않습니다. 낯선 링크를 클릭하기 전에 항상 주의하세요.",
+    "ptr_quickref": "빠른 참조 (기준 {b}px)"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
