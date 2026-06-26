@@ -6206,7 +6206,20 @@
     "np_download": "Download .txt",
     "np_copied": "Copied!",
     "np_clearconfirm": "Clear all text? This cannot be undone.",
-    "np_note": "Your notes are saved only in this browser (localStorage) — nothing is uploaded."
+    "np_note": "Your notes are saved only in this browser (localStorage) — nothing is uploaded.",
+    "bip_drop": "Drag & drop images here, or click to select",
+    "bip_supports": "JPG, PNG, WebP, GIF · processed in your browser",
+    "bip_privacy": "Your files never leave your device — everything runs in your browser.",
+    "bip_files_n": "{n} files selected",
+    "bip_remove": "Remove",
+    "bip_process": "Process {n} images",
+    "bip_processing": "Processing… {c}/{t}",
+    "bip_skip_unsupported": "Unsupported format",
+    "bip_skip_failed": "Processing failed",
+    "bip_skipped_n": "{n} file(s) skipped",
+    "bip_done_n": "{n} images ready",
+    "bip_download_all": "Download all (.zip)",
+    "bip_zipping": "Zipping…"
   },
   "toolTags": {
     "spinner-wheel": [

@@ -6552,7 +6552,20 @@
     "np_download": ".txt 다운로드",
     "np_copied": "복사됨",
     "np_clearconfirm": "모든 내용을 지울까요? 되돌릴 수 없습니다.",
-    "np_note": "메모는 이 브라우저(localStorage)에만 저장되며 업로드되지 않습니다."
+    "np_note": "메모는 이 브라우저(localStorage)에만 저장되며 업로드되지 않습니다.",
+    "bip_drop": "여기에 이미지를 드래그 앤 드롭하거나 클릭해서 선택",
+    "bip_supports": "JPG, PNG, WebP, GIF · 브라우저에서 처리",
+    "bip_privacy": "파일이 기기를 벗어나지 않습니다 — 모든 처리는 브라우저에서 이뤄집니다.",
+    "bip_files_n": "{n}개 파일 선택됨",
+    "bip_remove": "제거",
+    "bip_process": "{n}장 처리하기",
+    "bip_processing": "처리 중… {c}/{t}",
+    "bip_skip_unsupported": "지원하지 않는 형식",
+    "bip_skip_failed": "처리 실패",
+    "bip_skipped_n": "{n}개 파일 건너뜀",
+    "bip_done_n": "{n}장 완료",
+    "bip_download_all": "전체 다운로드 (.zip)",
+    "bip_zipping": "압축 중…"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
