@@ -1,10 +1,12 @@
 'use client'
 import {useState,useRef} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='image-color-picker')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='image-color-picker')
   const canvasRef=useRef<HTMLCanvasElement>(null)
   const [picked,setPicked]=useState<string[]>([])
   const [hover,setHover]=useState('')
@@ -56,10 +58,10 @@ export default function Page(){
           className="max-w-full border rounded cursor-crosshair"
           style={{display:imgLoaded?'block':'none',maxHeight:'400px'}}
           onClick={pick} onMouseMove={onMove}/>
-        {!imgLoaded&&<p className="text-gray-400 text-sm">Upload an image to pick colors</p>}
+        {!imgLoaded&&<p className="text-gray-400 text-sm">{t('icp_upload')}</p>}
         {picked.length>0&&(
           <div>
-            <p className="text-sm font-medium mb-2">Picked Colors ({picked.length})</p>
+            <p className="text-sm font-medium mb-2">{t('icp_picked')} ({picked.length})</p>
             <div className="flex flex-wrap gap-2">
               {picked.map((c,i)=>(
                 <button key={i} onClick={()=>navigator.clipboard.writeText(c)}

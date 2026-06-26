@@ -2677,6 +2677,16 @@
       "Pick an animation preset.",
       "Adjust duration, timing and iteration.",
       "Copy the generated CSS."
+    ],
+    "color-palette-extractor": [
+      "Set how many colors to extract.",
+      "Drop or upload an image.",
+      "Click an extracted color to copy it."
+    ],
+    "image-color-picker": [
+      "Upload an image.",
+      "Click on the image to pick a color.",
+      "Click a picked color to copy it."
     ]
   },
   "games": {
@@ -4337,7 +4347,12 @@
     "cag_p_shake": "Shake",
     "cag_duration": "Duration",
     "cag_timing": "Timing",
-    "cag_iteration": "Iteration"
+    "cag_iteration": "Iteration",
+    "cpe_count": "Colors to extract:",
+    "cpe_drop": "Drop an image or click to upload",
+    "cpe_extracting": "Extracting colors...",
+    "icp_upload": "Upload an image to pick colors",
+    "icp_picked": "Picked Colors"
   },
   "toolTags": {
     "spinner-wheel": [

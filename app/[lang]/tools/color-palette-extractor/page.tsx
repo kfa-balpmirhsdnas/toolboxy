@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -43,6 +44,7 @@ function getPixelClusters(data: Uint8ClampedArray, count=8): [number,number,numb
 }
 
 export default function ColorPaletteExtractorPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [palette, setPalette] = useState<string[]>([])
   const [preview, setPreview] = useState<string|null>(null)
   const [loading, setLoading] = useState(false)
@@ -99,7 +101,7 @@ export default function ColorPaletteExtractorPage({ params }: { params: { lang: 
       <canvas ref={canvasRef} className="hidden" />
       <div className="space-y-4">
         <div className="flex items-center gap-3 flex-wrap">
-          <label className="block text-xs font-medium text-gray-600">Colors to extract:</label>
+          <label className="block text-xs font-medium text-gray-600">{t('cpe_count')}</label>
           <input type="number" value={count} min={2} max={16} onChange={e=>{setCount(parseInt(e.target.value)||8)}}
             className="w-16 px-2 py-1 border border-gray-200 rounded-lg text-sm text-center" />
         </div>
@@ -112,12 +114,12 @@ export default function ColorPaletteExtractorPage({ params }: { params: { lang: 
           ) : (
             <div className="text-gray-400">
               <div className="text-3xl mb-2">\uD83C\uDFA8</div>
-              <p className="text-sm">Drop an image or click to upload</p>
+              <p className="text-sm">{t('cpe_drop')}</p>
               <p className="text-xs mt-1">PNG, JPG, WebP, GIF</p>
             </div>
           )}
         </div>
-        {loading && <p className="text-sm text-gray-500 text-center">Extracting colors...</p>}
+        {loading && <p className="text-sm text-gray-500 text-center">{t('cpe_extracting')}</p>}
         {palette.length > 0 && (
           <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
             {palette.map((hex,i)=>(
