@@ -2707,6 +2707,16 @@
       "Enter the loan amount, rate and term in years.",
       "See the monthly payment instantly.",
       "Check total interest and total paid."
+    ],
+    "statistics-calculator": [
+      "Enter numbers separated by space or comma.",
+      "Mean, median, std dev and more are computed.",
+      "Read the results instantly."
+    ],
+    "savings-goal-calculator": [
+      "Enter your goal and starting amount.",
+      "Enter monthly deposit and return rate.",
+      "See how long it takes to reach your goal."
     ]
   },
   "games": {
@@ -4397,7 +4407,29 @@
     "vat_rate": "VAT rate (%)",
     "vat_net": "Net",
     "vat_vat": "VAT",
-    "vat_gross": "Gross"
+    "vat_gross": "Gross",
+    "st_label": "Numbers (space or comma separated)",
+    "st_count": "Count",
+    "st_sum": "Sum",
+    "st_mean": "Mean",
+    "st_median": "Median",
+    "st_mode": "Mode",
+    "st_min": "Min",
+    "st_max": "Max",
+    "st_range": "Range",
+    "st_stddev": "Std Dev",
+    "st_variance": "Variance",
+    "st_empty": "Enter numbers above to see statistics.",
+    "sg_goal": "Savings goal",
+    "sg_start": "Starting amount",
+    "sg_monthly": "Monthly deposit",
+    "sg_return": "Annual return (%)",
+    "sg_reached": "You've already reached your goal! 🎉",
+    "sg_time": "Time to reach your goal",
+    "sg_y": "y",
+    "sg_m": "m",
+    "sg_months": "months",
+    "sg_unreachable": "Not reachable within 100 years — increase your monthly deposit."
   },
   "toolTags": {
     "spinner-wheel": [

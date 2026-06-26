@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('savings-goal-calculator')!
 
 export default function SavingsGoalPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [goal, setGoal] = useState('10000')
   const [initial, setInitial] = useState('1000')
   const [monthly, setMonthly] = useState('300')
@@ -36,26 +38,26 @@ export default function SavingsGoalPage({ params }: { params: { lang: string } }
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          {field('Savings goal', goal, setGoal)}
-          {field('Starting amount', initial, setInitial)}
-          {field('Monthly deposit', monthly, setMonthly)}
-          {field('Annual return (%)', rate, setRate)}
+          {field(t('sg_goal'), goal, setGoal)}
+          {field(t('sg_start'), initial, setInitial)}
+          {field(t('sg_monthly'), monthly, setMonthly)}
+          {field(t('sg_return'), rate, setRate)}
         </div>
 
         {result && (
           <div className="bg-brand-50 border border-brand-100 rounded-xl p-5 text-center">
             {result.reached && result.months === 0 ? (
-              <div className="text-brand-700 font-semibold">You&apos;ve already reached your goal! 🎉</div>
+              <div className="text-brand-700 font-semibold">{t('sg_reached')}</div>
             ) : result.reached && result.months ? (
               <>
-                <div className="text-sm text-brand-600">Time to reach your goal</div>
+                <div className="text-sm text-brand-600">{t('sg_time')}</div>
                 <div className="text-3xl font-bold text-brand-700 my-1">
-                  {Math.floor(result.months / 12)}y {result.months % 12}m
+                  {Math.floor(result.months / 12)}{t('sg_y')} {result.months % 12}{t('sg_m')}
                 </div>
-                <div className="text-xs text-brand-600">{result.months} months</div>
+                <div className="text-xs text-brand-600">{result.months} {t('sg_months')}</div>
               </>
             ) : (
-              <div className="text-gray-600 text-sm">Not reachable within 100 years — increase your monthly deposit.</div>
+              <div className="text-gray-600 text-sm">{t('sg_unreachable')}</div>
             )}
           </div>
         )}
