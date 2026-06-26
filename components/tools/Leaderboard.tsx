@@ -89,7 +89,7 @@ export default function Leaderboard({
         <div className="mb-4 rounded-xl border border-brand-100 bg-brand-50 p-4">
           <p className="text-sm text-brand-800 mb-2">{t('add_score', { score: `${score}${unit}` })}</p>
           <div className="flex gap-2">
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('display_name')} maxLength={20}
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('display_name')} maxLength={20} data-no-scroll-focus
               className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
             <button onClick={submit} disabled={submitting}
               className="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-60">

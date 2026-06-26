@@ -21,6 +21,8 @@ export default function ScrollInputOnFocus() {
       if (!window.matchMedia('(max-width: 768px)').matches) return
       const el = e.target as HTMLElement | null
       if (!el) return
+      // opt-out: fields (or their containers) marked data-no-scroll-focus stay put
+      if (el.closest('[data-no-scroll-focus]')) return
       const tag = el.tagName
       const isField =
         tag === 'TEXTAREA' ||
