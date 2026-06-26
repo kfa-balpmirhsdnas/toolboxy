@@ -2757,6 +2757,16 @@
       "Paste your text.",
       "Set min length and exclude-common options.",
       "See the word frequency table sorted by count."
+    ],
+    "text-to-slug": [
+      "Enter your title or text.",
+      "Choose separator and lowercase options.",
+      "Copy the generated URL slug."
+    ],
+    "nato-alphabet": [
+      "Enter the text to spell.",
+      "See each letter's NATO code word.",
+      "Expand the full alphabet chart if needed."
     ]
   },
   "games": {
@@ -4535,7 +4545,15 @@
     "wfc_word": "Word",
     "wfc_count": "Count",
     "wfc_freq": "Frequency",
-    "wfc_total": "Total: {n} words | {u} unique"
+    "wfc_total": "Total: {n} words | {u} unique",
+    "tts_input": "Input text",
+    "tts_ph": "Enter your title or text...",
+    "tts_sep": "Separator:",
+    "tts_lower": "Lowercase",
+    "tts_examples": "Quick examples",
+    "nato_label": "Text to spell",
+    "nato_ph": "Enter text to spell phonetically",
+    "nato_full": "full NATO alphabet"
   },
   "toolTags": {
     "spinner-wheel": [

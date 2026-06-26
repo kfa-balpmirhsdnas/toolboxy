@@ -1,11 +1,13 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('nato-alphabet')!
 const NATO:Record<string,string>={A:'Alpha',B:'Bravo',C:'Charlie',D:'Delta',E:'Echo',F:'Foxtrot',G:'Golf',H:'Hotel',I:'India',J:'Juliet',K:'Kilo',L:'Lima',M:'Mike',N:'November',O:'Oscar',P:'Papa',Q:'Quebec',R:'Romeo',S:'Sierra',T:'Tango',U:'Uniform',V:'Victor',W:'Whiskey',X:'X-ray',Y:'Yankee',Z:'Zulu','0':'Zero','1':'One','2':'Two','3':'Three','4':'Four','5':'Five','6':'Six','7':'Seven','8':'Eight','9':'Nine',' ':'(space)','.':', Decimal','-':'Dash'}
 const PHONETIC_DIGITS:Record<string,string>={'0':'Nadazero','1':'Unaone','2':'Bissotwo','3':'Terrathree','4':'Kartefour','5':'Pantafive','6':'Soxisix','7':'Setteseven','8':'Oktoeight','9':'Novenine'}
 export default function NatoAlphabetPage() {
+  const t = useTranslations('toolui')
   const [input,setInput]=useState('Hello World')
   const [mode,setMode]=useState<'nato'|'icao'>('nato')
   const [showAll,setShowAll]=useState(false)
@@ -25,10 +27,10 @@ export default function NatoAlphabetPage() {
           <button onClick={()=>setMode('nato')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='nato'?'bg-blue-600 text-white':'bg-white text-gray-600 hover:bg-gray-50')}>NATO</button>
           <button onClick={()=>setMode('icao')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='icao'?'bg-blue-600 text-white':'bg-white text-gray-600 hover:bg-gray-50')}>ICAO (digits)</button>
         </div>
-        <div><label className="block text-sm font-medium text-gray-700 mb-1">Text to spell</label>
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('nato_label')}</label>
           <input value={input} onChange={e=>setInput(e.target.value)}
             className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"
-            placeholder="Enter text to spell phonetically"/></div>
+            placeholder={t('nato_ph')}/></div>
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
           <div className="flex flex-wrap gap-1.5">
             {input.toUpperCase().split('').map((c,i)=>(
@@ -40,11 +42,11 @@ export default function NatoAlphabetPage() {
           </div>
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-blue-200">
             <p className="text-xs text-blue-600 font-mono break-all">{result}</p>
-            <button onClick={copy} className="flex-shrink-0 ml-2 text-xs bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700">{copied?'Copied!':'Copy'}</button>
+            <button onClick={copy} className="flex-shrink-0 ml-2 text-xs bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700">{copied?t('ui_copied'):t('ui_copy')}</button>
           </div>
         </div>
         <div>
-          <button onClick={()=>setShowAll(s=>!s)} className="text-sm text-blue-600 hover:underline">{showAll?'Hide':'Show'} full NATO alphabet</button>
+          <button onClick={()=>setShowAll(s=>!s)} className="text-sm text-blue-600 hover:underline">{showAll?t('ps_hide'):t('ps_show')} {t('nato_full')}</button>
           {showAll&&(
             <div className="mt-2 grid grid-cols-4 gap-1.5">
               {ALPHABET.split('').map(l=>(
