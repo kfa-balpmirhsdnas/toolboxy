@@ -3127,6 +3127,26 @@
       "Enter your website URL.",
       "Fill campaign source, medium and name.",
       "Copy the generated UTM link."
+    ],
+    "timezone-converter": [
+      "Enter the date and time.",
+      "Choose the source timezone.",
+      "See the time across multiple zones."
+    ],
+    "random-color-generator": [
+      "Set the count.",
+      "Press generate.",
+      "Copy the hex of a color you like."
+    ],
+    "svg-viewer": [
+      "Paste your SVG code.",
+      "Adjust preview background and scale.",
+      "Download or copy the SVG."
+    ],
+    "text-to-ascii-art": [
+      "Type A-Z text.",
+      "Block ASCII art is generated.",
+      "Copy the result."
     ]
   },
   "games": {
@@ -5408,7 +5428,20 @@
     "utm_medium": "Campaign medium",
     "utm_campaign": "Campaign name",
     "utm_term": "Term (optional)",
-    "utm_content": "Content (optional)"
+    "utm_content": "Content (optional)",
+    "tzc_invalid": "Invalid timezone",
+    "tzc_datetime": "Date & Time",
+    "tzc_source": "Source timezone",
+    "tzc_remove": "Remove",
+    "tzc_add": "+ Add",
+    "sv_code": "SVG Code",
+    "sv_bg": "BG",
+    "sv_download": "Download SVG",
+    "sv_copycode": "Copy Code",
+    "sv_sample": "Sample",
+    "taa_ph": "Type text (A-Z, max 20 chars)",
+    "taa_empty": "Enter text above",
+    "taa_copy": "Copy ASCII Art"
   },
   "toolTags": {
     "spinner-wheel": [

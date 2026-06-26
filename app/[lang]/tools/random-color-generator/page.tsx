@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 function hex(r,g,b){return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('')}
@@ -11,17 +12,18 @@ function hsl(r,g,b){
 }
 function gen(){const r=Math.floor(Math.random()*256),g=Math.floor(Math.random()*256),b=Math.floor(Math.random()*256);return{hex:hex(r,g,b),rgb:'rgb('+r+', '+g+', '+b+')',hsl:hsl(r,g,b)}}
 export default function Page(){
+  const t = useTranslations('toolui')
   const [n,setN]=useState(5)
   const [colors,setColors]=useState(()=>Array.from({length:5},gen))
   const generate=()=>setColors(Array.from({length:n},gen))
-  const tool=TOOLS.find(t=>t.slug==='random-color-generator')
+  const tool=TOOLS.find(x=>x.slug==='random-color-generator')
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4 space-y-4">
         <div className="flex gap-3 items-center">
-          <label className="text-sm text-gray-700">Count</label>
+          <label className="text-sm text-gray-700">{t('ubg_count')}</label>
           <input type="number" min={1} max={20} value={n} onChange={e=>setN(+e.target.value)} className="w-20 rounded border border-gray-300 px-2 py-1 text-sm"/>
-          <button onClick={generate} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">Generate</button>
+          <button onClick={generate} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">{t('ui_generate')}</button>
         </div>
         <div className="space-y-3">
           {colors.map((c,i)=>(
@@ -32,7 +34,7 @@ export default function Page(){
                 <div className="font-mono text-xs text-gray-500">{c.rgb}</div>
                 <div className="font-mono text-xs text-gray-500">{c.hsl}</div>
               </div>
-              <button onClick={()=>navigator.clipboard?.writeText(c.hex)} className="text-xs text-blue-600 hover:underline">Copy</button>
+              <button onClick={()=>navigator.clipboard?.writeText(c.hex)} className="text-xs text-blue-600 hover:underline">{t('ui_copy')}</button>
             </div>
           ))}
         </div>

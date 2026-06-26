@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
@@ -34,7 +35,8 @@ const BLOCK:Record<string,string[]>={
 }
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='text-to-ascii-art')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='text-to-ascii-art')
   const [input,setInput]=useState('HELLO')
   const chars=input.toUpperCase().split('').filter(c=>c in BLOCK)
   const rows=Array.from({length:5},(_,r)=>chars.map(c=>BLOCK[c][r]).join(' ')).join('\n')
@@ -43,12 +45,12 @@ export default function Page(){
       <div className='space-y-4'>
         <input value={input} onChange={e=>setInput(e.target.value.slice(0,20))}
           className='w-full border rounded px-3 py-2 text-lg font-mono uppercase'
-          placeholder='Type text (A-Z, max 20 chars)'/>
+          placeholder={t('taa_ph')}/>
         <pre className='bg-gray-900 text-green-400 p-4 rounded font-mono text-sm overflow-auto whitespace-pre'>
-          {rows||'Enter text above'}
+          {rows||t('taa_empty')}
         </pre>
         <button onClick={()=>navigator.clipboard.writeText(rows)}
-          className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm'>Copy ASCII Art</button>
+          className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm'>{t('taa_copy')}</button>
       </div>
     </ToolLayout>
   )
