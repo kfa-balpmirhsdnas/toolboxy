@@ -2696,8 +2696,8 @@
     "ct_pause": "Pause",
     "ct_reset": "Reset",
     "ct_timeup": "Time is up!",
-    "cc_title": "Country Calling Codes",
-    "cc_subtitle": "Look up international dialing codes by country.",
+    "cc_title": "Case Converter",
+    "cc_subtitle": "Convert text to camelCase, PascalCase, snake_case, kebab-case, Title Case, and more",
     "cc_search": "Search by country name or code",
     "cc_copied": "Copied!",
     "cc_none": "No results.",
@@ -3076,7 +3076,10 @@
     "nf_l_in": "Indian",
     "nf_l_ar": "Arabic",
     "nf_l_ch": "Swiss",
-    "nf_l_se": "Swedish"
+    "nf_l_se": "Swedish",
+    "ui_text_ph": "Type or paste your text here...",
+    "cc_input": "Input Text",
+    "cc_result_ph": "result appears here"
   },
   "toolTags": {
     "spinner-wheel": [

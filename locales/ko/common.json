@@ -3034,8 +3034,8 @@
     "ct_pause": "일시정지",
     "ct_reset": "초기화",
     "ct_timeup": "시간 종료!",
-    "cc_title": "국가번호(전화) 조회",
-    "cc_subtitle": "나라별 국제전화 국가번호를 검색합니다.",
+    "cc_title": "대소문자·표기 변환",
+    "cc_subtitle": "텍스트를 camelCase·PascalCase·snake_case·kebab-case·Title Case 등으로 변환",
     "cc_search": "나라 이름 또는 번호 검색",
     "cc_copied": "복사됨!",
     "cc_none": "검색 결과가 없습니다.",
@@ -3414,7 +3414,10 @@
     "nf_l_in": "인도",
     "nf_l_ar": "아랍어",
     "nf_l_ch": "스위스",
-    "nf_l_se": "스웨덴어"
+    "nf_l_se": "스웨덴어",
+    "ui_text_ph": "여기에 텍스트를 입력하거나 붙여넣으세요...",
+    "cc_input": "입력 텍스트",
+    "cc_result_ph": "결과가 여기에 표시됩니다"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

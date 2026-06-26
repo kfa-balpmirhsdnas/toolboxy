@@ -3001,8 +3001,8 @@
     "ct_pause": "一時停止",
     "ct_reset": "リセット",
     "ct_timeup": "時間切れ！",
-    "cc_title": "国番号（電話）検索",
-    "cc_subtitle": "国ごとの国際電話の国番号を検索します。",
+    "cc_title": "ケース変換",
+    "cc_subtitle": "テキストをcamelCase・PascalCase・snake_case・kebab-caseなどに変換",
     "cc_search": "国名または番号で検索",
     "cc_copied": "コピーしました！",
     "cc_none": "結果がありません。",
@@ -3381,7 +3381,10 @@
     "nf_l_in": "インド",
     "nf_l_ar": "アラビア語",
     "nf_l_ch": "スイス",
-    "nf_l_se": "スウェーデン語"
+    "nf_l_se": "スウェーデン語",
+    "ui_text_ph": "ここにテキストを入力または貼り付け...",
+    "cc_input": "入力テキスト",
+    "cc_result_ph": "結果がここに表示されます"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
