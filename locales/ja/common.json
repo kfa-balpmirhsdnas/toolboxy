@@ -3002,6 +3002,16 @@
       "請求額を入力します。",
       "チップ率と人数を選びます。",
       "チップ額と1人あたりの合計を確認します。"
+    ],
+    "vat-calculator": [
+      "VAT追加／除去モードを選びます。",
+      "金額とVAT税率を入力します。",
+      "税抜・VAT・税込を確認します。"
+    ],
+    "mortgage-calculator": [
+      "ローン元金・金利・期間(年)を入力します。",
+      "毎月の返済額が自動計算されます。",
+      "利息合計と総支払額を確認します。"
     ]
   },
   "games": {
@@ -4684,7 +4694,15 @@
     "tc_tipamt": "チップ額",
     "tc_perperson": "/ 1人",
     "tc_total": "合計",
-    "tc_per_person_label": "/ 1人"
+    "tc_per_person_label": "/ 1人",
+    "vat_add": "VAT追加 (税抜→税込)",
+    "vat_remove": "VAT除去 (税込→税抜)",
+    "vat_net_amt": "税抜金額",
+    "vat_gross_amt": "税込金額",
+    "vat_rate": "VAT税率 (%)",
+    "vat_net": "税抜",
+    "vat_vat": "VAT",
+    "vat_gross": "税込"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

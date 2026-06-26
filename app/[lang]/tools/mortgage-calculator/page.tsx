@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('mortgage-calculator')!
 
 export default function MortgageCalculatorPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [amount, setAmount] = useState('300000')
   const [rate, setRate] = useState('6')
   const [years, setYears] = useState('30')
@@ -36,23 +38,23 @@ export default function MortgageCalculatorPage({ params }: { params: { lang: str
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {field('Loan amount', amount, setAmount)}
-          {field('Interest rate', rate, setRate, '%')}
-          {field('Term', years, setYears, 'yr')}
+          {field(t('al_amount'), amount, setAmount)}
+          {field(t('al_rate'), rate, setRate, '%')}
+          {field(t('al_term'), years, setYears, 'yr')}
         </div>
         {result && (
           <div className="space-y-2">
             <div className="rounded-xl border border-brand-100 bg-brand-50 p-5 text-center">
-              <div className="text-sm text-brand-600">Monthly payment</div>
+              <div className="text-sm text-brand-600">{t('al_monthly')}</div>
               <div className="text-3xl font-bold text-brand-700">{money(result.monthly)}</div>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <div className="rounded-xl bg-gray-50 p-3"><div className="text-xs text-gray-500">Total interest</div><div className="font-semibold text-gray-900">{money(result.interest)}</div></div>
-              <div className="rounded-xl bg-gray-50 p-3"><div className="text-xs text-gray-500">Total paid</div><div className="font-semibold text-gray-900">{money(result.total)}</div></div>
+              <div className="rounded-xl bg-gray-50 p-3"><div className="text-xs text-gray-500">{t('al_tinterest')}</div><div className="font-semibold text-gray-900">{money(result.interest)}</div></div>
+              <div className="rounded-xl bg-gray-50 p-3"><div className="text-xs text-gray-500">{t('al_tpaid')}</div><div className="font-semibold text-gray-900">{money(result.total)}</div></div>
             </div>
           </div>
         )}
-        <p className="text-xs text-gray-400">Estimate only, not financial advice.</p>
+        <p className="text-xs text-gray-400">{t('al_disclaimer')}</p>
       </div>
 
     </ToolLayout>

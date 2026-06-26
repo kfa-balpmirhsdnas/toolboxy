@@ -2697,6 +2697,16 @@
       "Enter the bill amount.",
       "Choose tip percentage and number of people.",
       "See the tip amount and per-person total."
+    ],
+    "vat-calculator": [
+      "Choose add or remove VAT mode.",
+      "Enter the amount and VAT rate.",
+      "See the net, VAT and gross."
+    ],
+    "mortgage-calculator": [
+      "Enter the loan amount, rate and term in years.",
+      "See the monthly payment instantly.",
+      "Check total interest and total paid."
     ]
   },
   "games": {
@@ -4379,7 +4389,15 @@
     "tc_tipamt": "Tip Amount",
     "tc_perperson": "/ person",
     "tc_total": "Total",
-    "tc_per_person_label": "/ Person"
+    "tc_per_person_label": "/ Person",
+    "vat_add": "Add VAT (net → gross)",
+    "vat_remove": "Remove VAT (gross → net)",
+    "vat_net_amt": "Net amount",
+    "vat_gross_amt": "Gross amount",
+    "vat_rate": "VAT rate (%)",
+    "vat_net": "Net",
+    "vat_vat": "VAT",
+    "vat_gross": "Gross"
   },
   "toolTags": {
     "spinner-wheel": [

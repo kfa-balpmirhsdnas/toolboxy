@@ -3035,6 +3035,16 @@
       "청구 금액을 입력하세요.",
       "팁 비율과 인원수를 선택하세요.",
       "팁 금액과 1인당 금액을 확인하세요."
+    ],
+    "vat-calculator": [
+      "VAT 추가/제거 모드를 고르세요.",
+      "금액과 VAT 세율을 입력하세요.",
+      "공급가·VAT·합계를 확인하세요."
+    ],
+    "mortgage-calculator": [
+      "대출 원금·이자율·기간(년)을 입력하세요.",
+      "월 상환액이 자동 계산됩니다.",
+      "총 이자와 총 상환액을 확인하세요."
     ]
   },
   "games": {
@@ -4717,7 +4727,15 @@
     "tc_tipamt": "팁 금액",
     "tc_perperson": "/ 1인",
     "tc_total": "합계",
-    "tc_per_person_label": "/ 1인"
+    "tc_per_person_label": "/ 1인",
+    "vat_add": "VAT 추가 (공급가→합계)",
+    "vat_remove": "VAT 제거 (합계→공급가)",
+    "vat_net_amt": "공급가액",
+    "vat_gross_amt": "합계 금액",
+    "vat_rate": "VAT 세율 (%)",
+    "vat_net": "공급가",
+    "vat_vat": "VAT",
+    "vat_gross": "합계"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
