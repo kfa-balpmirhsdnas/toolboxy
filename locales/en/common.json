@@ -3027,6 +3027,16 @@
       "Set the frequency.",
       "Choose a waveform and volume.",
       "Press play to hear the tone."
+    ],
+    "favicon-generator": [
+      "Upload a square image.",
+      "Download the generated favicon sizes.",
+      "Copy the HTML tags."
+    ],
+    "image-resizer": [
+      "Upload an image.",
+      "Set width, height, format and quality.",
+      "Resize and download the result."
     ]
   },
   "games": {
@@ -5183,7 +5193,20 @@
     "tg_volume": "Volume",
     "tg_stop": "Stop",
     "tg_play": "Play tone",
-    "tg_warn": "⚠ Start at a low volume. High frequencies and volumes can damage hearing and speakers."
+    "tg_warn": "⚠ Start at a low volume. High frequencies and volumes can damage hearing and speakers.",
+    "fg_drop": "Drop a square image (PNG/JPG/SVG) or click",
+    "fg_recommend": "512×512 recommended",
+    "fg_htmltags": "HTML <head> tags",
+    "fg_note": "PNG favicons in all common sizes · processed entirely in your browser.",
+    "ir_change": "Click to change",
+    "ir_drop": "Drop image or click",
+    "ir_width": "Width (px)",
+    "ir_height": "Height (px)",
+    "ir_lock": "Lock",
+    "ir_free": "Free",
+    "ir_quality": "Quality",
+    "ir_resize": "Resize Image",
+    "ir_result": "Result"
   },
   "toolTags": {
     "spinner-wheel": [

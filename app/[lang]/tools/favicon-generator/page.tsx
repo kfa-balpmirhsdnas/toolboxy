@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -13,6 +14,7 @@ const LINK_TAGS = `<link rel="icon" type="image/png" sizes="32x32" href="/favico
 <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">`
 
 export default function FaviconGeneratorPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [preview, setPreview] = useState('')
   const [icons, setIcons] = useState<{ size: number; url: string }[]>([])
   const [copied, setCopied] = useState(false)
@@ -62,7 +64,7 @@ export default function FaviconGeneratorPage({ params }: { params: { lang: strin
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
           <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
           {preview ? <img src={preview} alt="source" className="max-h-32 mx-auto rounded-lg" />
-            : <><p className="text-4xl mb-2">🎨</p><p className="text-sm font-medium text-gray-600">Drop a square image (PNG/JPG/SVG) or click</p><p className="text-xs text-gray-400 mt-1">512×512 recommended</p></>}
+            : <><p className="text-4xl mb-2">🎨</p><p className="text-sm font-medium text-gray-600">{t('fg_drop')}</p><p className="text-xs text-gray-400 mt-1">{t('fg_recommend')}</p></>}
         </div>
 
         {icons.length > 0 && (
@@ -77,13 +79,13 @@ export default function FaviconGeneratorPage({ params }: { params: { lang: strin
               ))}
             </div>
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-1">HTML &lt;head&gt; tags</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('fg_htmltags')}</label>
               <pre className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono text-gray-800 whitespace-pre-wrap">{LINK_TAGS}</pre>
-              <button onClick={copyTags} className="absolute top-8 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? '✓ Copied' : 'Copy'}</button>
+              <button onClick={copyTags} className="absolute top-8 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? '✓ '+t('ui_copied') : t('ui_copy')}</button>
             </div>
           </>
         )}
-        <p className="text-xs text-gray-400">PNG favicons in all common sizes · processed entirely in your browser.</p>
+        <p className="text-xs text-gray-400">{t('fg_note')}</p>
       </div>
 
     </ToolLayout>
