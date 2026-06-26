@@ -2387,6 +2387,21 @@
       "Choose a mode (difference, add or subtract).",
       "Enter the dates and durations.",
       "See the difference or resulting date."
+    ],
+    "auto-loan-calculator": [
+      "Enter the loan amount, rate and term.",
+      "See the monthly payment instantly.",
+      "Check total interest and total paid."
+    ],
+    "compound-interest-calculator": [
+      "Enter the initial amount, rate and years.",
+      "Set the compounding frequency and contribution.",
+      "See the future value and interest earned."
+    ],
+    "due-date-calculator": [
+      "Enter the first day of your last period.",
+      "Adjust your average cycle length.",
+      "See the estimated due date and current progress."
     ]
   },
   "games": {
@@ -3664,7 +3679,27 @@
     "dt_weeks": "Weeks",
     "dt_rdays": "Remaining days",
     "dt_difference": "Difference",
-    "dt_result": "Result date"
+    "dt_result": "Result date",
+    "al_amount": "Loan amount",
+    "al_rate": "Interest rate",
+    "al_term": "Term",
+    "al_monthly": "Monthly payment",
+    "al_tinterest": "Total interest",
+    "al_tpaid": "Total paid",
+    "al_disclaimer": "Estimate only, not financial advice.",
+    "ci_initial": "Initial amount",
+    "ci_rate": "Annual rate (%)",
+    "ci_years": "Years",
+    "ci_contrib": "Monthly contribution",
+    "ci_f_semi": "Semi-annually",
+    "ci_fv": "Future value",
+    "ci_invested": "Total invested",
+    "ci_earned": "Interest earned",
+    "dd_lmp": "First day of last menstrual period",
+    "dd_cycle": "Average cycle length (days)",
+    "dd_due": "Estimated due date",
+    "dd_pregnant": "Currently {w} weeks {d} days pregnant",
+    "dd_disclaimer": "Naegele rule (280 days) · estimate only, not medical advice."
   },
   "toolTags": {
     "spinner-wheel": [
