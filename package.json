@@ -39,6 +39,7 @@
     "zustand": "^4.5.4"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "^1.0.1",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18",
