@@ -140,9 +140,9 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
         )}
 
         {out && (
-          <div className="rounded-xl border-2 border-green-200 bg-green-50 p-3 flex items-center justify-between gap-2">
-            <span className="text-sm text-green-700 truncate">{t('zf_done', { n: out.n, name: out.name })}</span>
-            <button onClick={() => downloadUrl(out.url, out.name)} className="shrink-0 px-3 py-1.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('zf_download')}</button>
+          <div className="rounded-xl border-2 border-green-200 bg-green-50 p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-sm text-green-700">{t('zf_done', { n: out.n, name: out.name })}</span>
+            <button onClick={() => downloadUrl(out.url, out.name)} className="shrink-0 self-start sm:self-auto px-4 py-1.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('zf_download')}</button>
           </div>
         )}
         <p className="text-xs text-gray-400">{t('zf_note')}</p>
