@@ -2607,6 +2607,16 @@
       "機器の消費電力（ワット）と1日の使用時間を入力します。",
       "電気料金と月の使用日数を入力します。",
       "1日・1ヶ月・1年の予想費用を確認します。"
+    ],
+    "investment-calculator": [
+      "初期投資額と毎月の積立額を入力します。",
+      "年利・期間・複利頻度を設定します。",
+      "将来価値と年ごとの成長を確認します。"
+    ],
+    "screen-resolution-checker": [
+      "ページを開くと画面解像度が自動検出されます。",
+      "ビューポート・ピクセル比・縦横比などの詳細を確認します。",
+      "一般的な解像度の一覧と比較します。"
     ]
   },
   "games": {
@@ -3638,7 +3648,34 @@
     "ec_daily": "1日",
     "ec_monthly": "1ヶ月",
     "ec_yearly": "1年",
-    "ec_formula": "計算式: (ワット / 1000) × 時間 × 料金 × 日数"
+    "ec_formula": "計算式: (ワット / 1000) × 時間 × 料金 × 日数",
+    "inv_title": "投資計算機",
+    "inv_subtitle": "毎月の積立と複利成長の結果を計算します",
+    "inv_initial": "初期投資額 ($)",
+    "inv_monthly": "毎月の積立額 ($)",
+    "inv_rate": "年利 (%)",
+    "inv_years": "投資期間 (年)",
+    "inv_freq": "複利頻度",
+    "inv_annually": "年1回",
+    "inv_quarterly": "四半期",
+    "inv_monthlyf": "毎月",
+    "inv_daily": "毎日",
+    "inv_fv": "将来価値",
+    "inv_interest": "利息合計",
+    "inv_contributed": "積立合計",
+    "inv_growth": "年ごとの成長",
+    "inv_h_year": "年",
+    "inv_h_balance": "残高",
+    "inv_h_contrib": "積立額",
+    "inv_h_interest": "利息",
+    "sr_title": "画面解像度",
+    "sr_viewport": "ビューポート (ウィンドウ)",
+    "sr_dpr": "デバイスピクセル比",
+    "sr_physical": "物理ピクセル",
+    "sr_mp": "メガピクセル",
+    "sr_outer": "外側のウィンドウ",
+    "sr_compare": "一般的な解像度と比較",
+    "sr_you": "現在"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

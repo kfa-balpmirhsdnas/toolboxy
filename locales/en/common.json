@@ -2302,6 +2302,16 @@
       "Enter the device wattage and daily hours of use.",
       "Enter your rate and days per month.",
       "See the daily, monthly and yearly cost."
+    ],
+    "investment-calculator": [
+      "Enter your initial investment and monthly contribution.",
+      "Set the rate, period and compound frequency.",
+      "See the future value and year-by-year growth."
+    ],
+    "screen-resolution-checker": [
+      "Open the page to auto-detect your screen resolution.",
+      "Check details like viewport, pixel ratio and aspect ratio.",
+      "Compare against the list of common resolutions."
     ]
   },
   "games": {
@@ -3333,7 +3343,34 @@
     "ec_daily": "Daily",
     "ec_monthly": "Monthly",
     "ec_yearly": "Yearly",
-    "ec_formula": "Formula: (Watts / 1000) × Hours × Rate × Days"
+    "ec_formula": "Formula: (Watts / 1000) × Hours × Rate × Days",
+    "inv_title": "Investment Calculator",
+    "inv_subtitle": "Calculate compound interest growth with regular monthly contributions",
+    "inv_initial": "Initial Investment ($)",
+    "inv_monthly": "Monthly Contribution ($)",
+    "inv_rate": "Annual Interest Rate (%)",
+    "inv_years": "Time Period (years)",
+    "inv_freq": "Compound Frequency",
+    "inv_annually": "Annually",
+    "inv_quarterly": "Quarterly",
+    "inv_monthlyf": "Monthly",
+    "inv_daily": "Daily",
+    "inv_fv": "Future Value",
+    "inv_interest": "Total Interest",
+    "inv_contributed": "Total Contributed",
+    "inv_growth": "Year-by-Year Growth",
+    "inv_h_year": "Year",
+    "inv_h_balance": "Balance",
+    "inv_h_contrib": "Contributed",
+    "inv_h_interest": "Interest",
+    "sr_title": "Screen Resolution",
+    "sr_viewport": "Viewport (window)",
+    "sr_dpr": "Device Pixel Ratio",
+    "sr_physical": "Physical pixels",
+    "sr_mp": "Megapixels",
+    "sr_outer": "Outer window",
+    "sr_compare": "Compare with common resolutions",
+    "sr_you": "You"
   },
   "toolTags": {
     "spinner-wheel": [

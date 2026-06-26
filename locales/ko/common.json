@@ -2640,6 +2640,16 @@
       "기기의 소비 전력(와트)과 하루 사용 시간을 입력하세요.",
       "전기 요금과 월 사용 일수를 입력하세요.",
       "하루·한 달·1년 예상 비용을 확인하세요."
+    ],
+    "investment-calculator": [
+      "초기 투자금과 매월 납입금을 입력하세요.",
+      "이자율·기간·복리 주기를 설정하세요.",
+      "미래 가치와 연도별 성장을 확인하세요."
+    ],
+    "screen-resolution-checker": [
+      "페이지를 열면 화면 해상도가 자동 감지됩니다.",
+      "뷰포트·픽셀 비율·종횡비 등 상세 정보를 확인하세요.",
+      "일반 해상도 목록과 비교해 보세요."
     ]
   },
   "games": {
@@ -3671,7 +3681,34 @@
     "ec_daily": "하루",
     "ec_monthly": "한 달",
     "ec_yearly": "1년",
-    "ec_formula": "공식: (와트 / 1000) × 시간 × 요금 × 일수"
+    "ec_formula": "공식: (와트 / 1000) × 시간 × 요금 × 일수",
+    "inv_title": "투자 계산기",
+    "inv_subtitle": "매월 정기 납입과 복리 성장 결과를 계산합니다",
+    "inv_initial": "초기 투자금 ($)",
+    "inv_monthly": "매월 납입금 ($)",
+    "inv_rate": "연 이자율 (%)",
+    "inv_years": "투자 기간 (년)",
+    "inv_freq": "복리 주기",
+    "inv_annually": "연 1회",
+    "inv_quarterly": "분기별",
+    "inv_monthlyf": "매월",
+    "inv_daily": "매일",
+    "inv_fv": "미래 가치",
+    "inv_interest": "총 이자",
+    "inv_contributed": "총 납입액",
+    "inv_growth": "연도별 성장",
+    "inv_h_year": "연도",
+    "inv_h_balance": "잔액",
+    "inv_h_contrib": "납입액",
+    "inv_h_interest": "이자",
+    "sr_title": "화면 해상도",
+    "sr_viewport": "뷰포트 (창)",
+    "sr_dpr": "기기 픽셀 비율",
+    "sr_physical": "실제 픽셀",
+    "sr_mp": "메가픽셀",
+    "sr_outer": "전체 창",
+    "sr_compare": "일반 해상도와 비교",
+    "sr_you": "내 화면"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
