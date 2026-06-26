@@ -57,7 +57,6 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
               <div className="text-xs text-gray-500 mt-2">{score / PTS} / {N}</div>
             </div>
             <button onClick={start} className="w-full px-5 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">↻ {t('quiz_again')}</button>
-            <Leaderboard game="choseong-quiz" score={score > 0 ? score : null} better="higher" />
           </>
         ) : (
           <>
@@ -82,6 +81,8 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
             <p className="text-xs text-gray-400">{t('cq_note')}</p>
           </>
         )}
+
+        <Leaderboard game="choseong-quiz" score={finished && score > 0 ? score : null} better="higher" />
       </div>
     </ToolLayout>
   )

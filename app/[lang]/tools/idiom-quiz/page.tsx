@@ -51,7 +51,6 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
               <div className="text-xs text-gray-500 mt-2">{score / PTS} / {N}</div>
             </div>
             <button onClick={start} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">↻ {t('quiz_again')}</button>
-            <Leaderboard game="idiom-quiz" score={score > 0 ? score : null} better="higher" />
           </>
         ) : (
           <>
@@ -81,6 +80,8 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
             {picked && <button onClick={next} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{idx + 1 < N ? `${t('iq_next')} →` : `${t('quiz_finish')} →`}</button>}
           </>
         )}
+
+        <Leaderboard game="idiom-quiz" score={finished && score > 0 ? score : null} better="higher" />
       </div>
     </ToolLayout>
   )
