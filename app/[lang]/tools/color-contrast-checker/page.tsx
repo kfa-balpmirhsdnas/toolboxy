@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('color-contrast-checker')!
@@ -20,6 +21,7 @@ function contrastRatio(h1:string,h2:string):number|null{
 }
 const PRESETS=[{name:'BW',fg:'#000000',bg:'#ffffff'},{name:'Dark',fg:'#ffffff',bg:'#1e293b'},{name:'Warn',fg:'#854d0e',bg:'#fef9c3'},{name:'Error',fg:'#7f1d1d',bg:'#fee2e2'},{name:'Info',fg:'#1e3a5f',bg:'#dbeafe'}]
 export default function ColorContrastCheckerPage() {
+  const t = useTranslations('toolui')
   const [fg,setFg]=useState('#000000')
   const [bg,setBg]=useState('#ffffff')
   const ratio=contrastRatio(fg,bg)
@@ -31,14 +33,14 @@ export default function ColorContrastCheckerPage() {
       <div className="max-w-md mx-auto px-4 space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Text color</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('ip_fg')}</label>
             <div className="flex gap-2 items-center">
               <input type="color" value={fg} onChange={e=>setFg(e.target.value)} className="w-12 h-10 rounded border border-gray-300 cursor-pointer p-0.5"/>
               <input value={fg} onChange={e=>setFg(e.target.value)} className="flex-1 rounded border border-gray-300 px-2 py-2 font-mono text-sm uppercase"/>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Background</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('ip_bg')}</label>
             <div className="flex gap-2 items-center">
               <input type="color" value={bg} onChange={e=>setBg(e.target.value)} className="w-12 h-10 rounded border border-gray-300 cursor-pointer p-0.5"/>
               <input value={bg} onChange={e=>setBg(e.target.value)} className="flex-1 rounded border border-gray-300 px-2 py-2 font-mono text-sm uppercase"/>
@@ -46,24 +48,24 @@ export default function ColorContrastCheckerPage() {
           </div>
         </div>
         <div className="rounded-2xl p-8 text-center" style={{background:bg}}>
-          <p className="text-3xl font-bold mb-2" style={{color:fg}}>Aa Sample Text</p>
+          <p className="text-3xl font-bold mb-2" style={{color:fg}}>{t('cn_sample')}</p>
           <p className="text-sm" style={{color:fg}}>The quick brown fox jumps over the lazy dog</p>
         </div>
         <div className="text-center bg-gray-50 rounded-xl p-5">
           <p className="text-6xl font-bold font-mono text-gray-800">{ratio??'—'}</p>
-          <p className="text-sm text-gray-500 mt-1">contrast ratio</p>
+          <p className="text-sm text-gray-500 mt-1">{t('cn_ratio')}</p>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {[['AA',levelAA,'Normal text (4.5:1)'],['AA Large',levelAA_Large,'Large text (3:1)'],['AAA',levelAAA,'Enhanced (7:1)']].map(([l,pass,desc])=>(
+          {[['AA',levelAA,'cn_normal'],['AA Large',levelAA_Large,'cn_large'],['AAA',levelAAA,'cn_enhanced']].map(([l,pass,desc])=>(
             <div key={l as string} className={'rounded-xl px-3 py-3 text-center '+(pass?'bg-green-50 border-2 border-green-300':'bg-red-50 border-2 border-red-200')}>
               <p className="text-lg font-bold">{l as string}</p>
-              <p className={'text-xs font-semibold '+(pass?'text-green-600':'text-red-500')}>{pass?'Pass':'Fail'}</p>
-              <p className="text-xs text-gray-500 mt-1">{desc as string}</p>
+              <p className={'text-xs font-semibold '+(pass?'text-green-600':'text-red-500')}>{pass?t('cn_pass'):t('cn_fail')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t(desc as string)}</p>
             </div>
           ))}
         </div>
         <div>
-          <p className="text-xs font-medium text-gray-600 mb-2">Preset combinations</p>
+          <p className="text-xs font-medium text-gray-600 mb-2">{t('cn_presets')}</p>
           <div className="flex flex-wrap gap-1.5">
             {PRESETS.map(p=>(
               <button key={p.name} onClick={()=>{setFg(p.fg);setBg(p.bg)}}

@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('color-name-finder')!
@@ -29,6 +30,7 @@ function isLight(hex:string):boolean{
   return (0.299*r+0.587*g+0.114*b)>128
 }
 export default function ColorNameFinderPage() {
+  const t = useTranslations('toolui')
   const [color,setColor]=useState('#3b82f6')
   const [hex,setHex]=useState('#3b82f6')
   const closest=findClosest(hex,5)
@@ -50,7 +52,7 @@ export default function ColorNameFinderPage() {
           <p className="text-sm font-mono" style={{color:textCol,opacity:0.7}}>{hex.toUpperCase()} · rgb({r},{g},{b})</p>
         </div>
         <div>
-          <p className="text-sm font-medium text-gray-700 mb-2">Closest named colors</p>
+          <p className="text-sm font-medium text-gray-700 mb-2">{t('cnf_closest')}</p>
           <div className="space-y-2">
             {closest.map((c,i)=>(
               <div key={c.name} className="flex items-center gap-3 rounded-lg border border-gray-200 p-2.5">
@@ -60,8 +62,8 @@ export default function ColorNameFinderPage() {
                   <p className="text-xs font-mono text-gray-500">{c.hex.toUpperCase()}</p>
                 </div>
                 <div className="text-right">
-                  {i===0&&<span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Best match</span>}
-                  <p className="text-xs text-gray-400 mt-0.5">dist: {Math.round(c.dist)}</p>
+                  {i===0&&<span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">{t('cnf_best')}</span>}
+                  <p className="text-xs text-gray-400 mt-0.5">{t('cnf_dist')}: {Math.round(c.dist)}</p>
                 </div>
               </div>
             ))}

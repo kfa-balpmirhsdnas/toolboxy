@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('color-mixer')!
@@ -17,6 +18,7 @@ function hslStr([r,g,b]:Rgb):string{
   return 'hsl('+Math.round(h*60)+', '+Math.round(s*100)+'%, '+Math.round(l*100)+'%)'
 }
 export default function ColorMixerPage() {
+  const t = useTranslations('toolui')
   const [c1,setC1]=useState('#6366f1')
   const [c2,setC2]=useState('#ec4899')
   const [steps,setSteps]=useState(7)
@@ -30,7 +32,7 @@ export default function ColorMixerPage() {
       <div className="max-w-md mx-auto px-4 space-y-4">
         <div className="flex gap-4 items-end">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Color 1</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('cmx_c1')}</label>
             <div className="flex gap-2">
               <input type="color" value={c1} onChange={e=>setC1(e.target.value)} className="w-12 h-10 rounded border border-gray-300 cursor-pointer p-0.5"/>
               <input value={c1} onChange={e=>setC1(e.target.value)} className="flex-1 rounded border border-gray-300 px-2 py-2 font-mono text-sm uppercase"/>
@@ -38,14 +40,14 @@ export default function ColorMixerPage() {
           </div>
           <div className="py-2 text-gray-400 font-bold text-xl">+</div>
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Color 2</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('cmx_c2')}</label>
             <div className="flex gap-2">
               <input type="color" value={c2} onChange={e=>setC2(e.target.value)} className="w-12 h-10 rounded border border-gray-300 cursor-pointer p-0.5"/>
               <input value={c2} onChange={e=>setC2(e.target.value)} className="flex-1 rounded border border-gray-300 px-2 py-2 font-mono text-sm uppercase"/>
             </div>
           </div>
         </div>
-        <div><label className="block text-xs text-gray-500 mb-1">Steps: {steps}</label>
+        <div><label className="block text-xs text-gray-500 mb-1">{t('cmx_steps')}: {steps}</label>
           <input type="range" min="3" max="15" value={steps} onChange={e=>setSteps(Number(e.target.value))} className="w-full"/></div>
         <div className="flex gap-1.5">
           {swatches.map((h,i)=>(
@@ -56,7 +58,7 @@ export default function ColorMixerPage() {
           ))}
         </div>
         <div className="text-center bg-gray-50 rounded-xl p-3">
-          <p className="text-xs text-gray-500 mb-1">Mid color</p>
+          <p className="text-xs text-gray-500 mb-1">{t('cmx_mid')}</p>
           <div className="flex items-center justify-center gap-3">
             <div className="w-10 h-10 rounded-lg" style={{background:midHex}}/>
             <div className="text-left">

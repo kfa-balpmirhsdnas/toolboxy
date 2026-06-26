@@ -2432,6 +2432,21 @@
       "Choose the from and to currencies.",
       "Enter an amount.",
       "See the converted result and rate."
+    ],
+    "color-contrast-checker": [
+      "Choose a text and background color.",
+      "The contrast ratio is calculated.",
+      "Check WCAG AA/AAA pass or fail."
+    ],
+    "color-mixer": [
+      "Pick two colors.",
+      "Adjust the number of steps.",
+      "Click a swatch to copy its hex."
+    ],
+    "color-name-finder": [
+      "Pick a color or type a hex.",
+      "See its closest named color.",
+      "Check the top 5 candidates and distances."
     ]
   },
   "games": {
@@ -3800,7 +3815,22 @@
     "cur_dkk": "Danish Krone",
     "cur_nzd": "New Zealand Dollar",
     "cur_zar": "South African Rand",
-    "cur_aed": "UAE Dirham"
+    "cur_aed": "UAE Dirham",
+    "cn_sample": "Aa Sample Text",
+    "cn_ratio": "contrast ratio",
+    "cn_normal": "Normal text (4.5:1)",
+    "cn_large": "Large text (3:1)",
+    "cn_enhanced": "Enhanced (7:1)",
+    "cn_pass": "Pass",
+    "cn_fail": "Fail",
+    "cn_presets": "Preset combinations",
+    "cmx_c1": "Color 1",
+    "cmx_c2": "Color 2",
+    "cmx_steps": "Steps",
+    "cmx_mid": "Mid color",
+    "cnf_closest": "Closest named colors",
+    "cnf_best": "Best match",
+    "cnf_dist": "dist"
   },
   "toolTags": {
     "spinner-wheel": [
