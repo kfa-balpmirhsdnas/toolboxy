@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -9,6 +10,7 @@ const PI=Math.PI
 const tool = getToolBySlug('circle-calculator')!
 
 export default function CircleCalculatorPage() {
+  const t = useTranslations('toolui')
   const [input,setInput]=useState('5')
   const [inputType,setInputType]=useState<'radius'|'diameter'|'circumference'|'area'>('radius')
 
@@ -28,23 +30,23 @@ export default function CircleCalculatorPage() {
   function fmt(n:number):string{return parseFloat(n.toFixed(6)).toString()}
 
   const results=[
-    {label:'Radius',value:fmt(r),unit:''},
-    {label:'Diameter',value:fmt(diameter),unit:''},
-    {label:'Circumference',value:fmt(circumference),unit:''},
-    {label:'Area',value:fmt(area),unit:'\u00B2'},
+    {label:'cl_radius',value:fmt(r),unit:''},
+    {label:'cl_diameter',value:fmt(diameter),unit:''},
+    {label:'cl_circumference',value:fmt(circumference),unit:''},
+    {label:'cl_area',value:fmt(area),unit:'\u00B2'},
   ]
 
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Circle Calculator</h1>
-        <p className="text-gray-500 mb-8">Calculate radius, diameter, circumference, and area of a circle</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('cl_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('cl_subtitle')}</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Known value</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('cl_known')}</label>
             <div className="flex flex-wrap gap-2 mb-3">
-              {(['radius','diameter','circumference','area'] as const).map(t=>(
-                <button key={t} onClick={()=>setInputType(t)} className={'px-3 py-1.5 rounded-lg capitalize text-sm font-medium transition-colors '+(inputType===t?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>{t}</button>
+              {(['radius','diameter','circumference','area'] as const).map(it=>(
+                <button key={it} onClick={()=>setInputType(it)} className={'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors '+(inputType===it?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>{t('cl_'+it)}</button>
               ))}
             </div>
             <input type="number" value={input} onChange={e=>setInput(e.target.value)} min={0}
@@ -66,13 +68,13 @@ export default function CircleCalculatorPage() {
               <div className="grid grid-cols-2 gap-3">
                 {results.map(res=>(
                   <div key={res.label} className="bg-gray-50 rounded-xl p-3">
-                    <div className="text-xs text-gray-500 mb-0.5">{res.label}</div>
+                    <div className="text-xs text-gray-500 mb-0.5">{t(res.label)}</div>
                     <div className="font-mono font-bold text-gray-900">{res.value}{res.unit}</div>
                   </div>
                 ))}
               </div>
               <div className="text-xs text-gray-400 space-y-0.5">
-                <p>Using \u03C0 = {PI.toFixed(10)}...</p>
+                <p>{t('cl_using')} \u03C0 = {PI.toFixed(10)}...</p>
               </div>
             </>
           )}

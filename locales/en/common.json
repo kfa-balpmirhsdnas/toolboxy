@@ -2402,6 +2402,21 @@
       "Enter the first day of your last period.",
       "Adjust your average cycle length.",
       "See the estimated due date and current progress."
+    ],
+    "fraction-calculator": [
+      "Enter the numerator and denominator of two fractions.",
+      "Choose an operator (+ - × ÷).",
+      "See the simplified result, decimal and mixed number."
+    ],
+    "circle-calculator": [
+      "Choose the value you know (radius, diameter, etc.).",
+      "Enter the value.",
+      "All other circle values are calculated."
+    ],
+    "budget-calculator": [
+      "Add your income and expense items.",
+      "Assign a category and amount to each.",
+      "See your balance and expense breakdown."
     ]
   },
   "games": {
@@ -3699,7 +3714,48 @@
     "dd_cycle": "Average cycle length (days)",
     "dd_due": "Estimated due date",
     "dd_pregnant": "Currently {w} weeks {d} days pregnant",
-    "dd_disclaimer": "Naegele rule (280 days) · estimate only, not medical advice."
+    "dd_disclaimer": "Naegele rule (280 days) · estimate only, not medical advice.",
+    "fr_title": "Fraction Calculator",
+    "fr_subtitle": "Add, subtract, multiply, and divide fractions with automatic simplification",
+    "fr_decimal": "Decimal",
+    "fr_mixed": "Mixed number",
+    "fr_invalid": "Invalid input",
+    "fr_denzero": "Denominator cannot be zero",
+    "fr_divzero": "Division by zero",
+    "cl_title": "Circle Calculator",
+    "cl_subtitle": "Calculate radius, diameter, circumference, and area of a circle",
+    "cl_known": "Known value",
+    "cl_radius": "Radius",
+    "cl_diameter": "Diameter",
+    "cl_circumference": "Circumference",
+    "cl_area": "Area",
+    "cl_using": "Using",
+    "bg_title": "Budget Calculator",
+    "bg_subtitle": "Track income and expenses to see your monthly budget balance",
+    "bg_income_total": "Total Income",
+    "bg_expense_total": "Total Expenses",
+    "bg_balance": "Balance",
+    "bg_income": "Income",
+    "bg_expenses": "Expenses",
+    "bg_expense_opt": "Expense",
+    "bg_add": "Add New Item",
+    "bg_name_ph": "Name",
+    "bg_breakdown": "Expense Breakdown",
+    "bg_c_salary": "Salary",
+    "bg_c_freelance": "Freelance",
+    "bg_c_investment": "Investment",
+    "bg_c_other": "Other",
+    "bg_c_housing": "Housing",
+    "bg_c_food": "Food",
+    "bg_c_transport": "Transport",
+    "bg_c_entertainment": "Entertainment",
+    "bg_c_health": "Health",
+    "bg_c_education": "Education",
+    "bg_c_savings": "Savings",
+    "bg_d_salary": "Salary",
+    "bg_d_rent": "Rent",
+    "bg_d_groceries": "Groceries",
+    "bg_d_transport": "Transport"
   },
   "toolTags": {
     "spinner-wheel": [

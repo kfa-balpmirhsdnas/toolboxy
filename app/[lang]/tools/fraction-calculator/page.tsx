@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -8,27 +9,28 @@ function simplify(n:number,d:number):{n:number,d:number}{const g=gcd(Math.abs(n)
 
 type Frac={n:string,d:string}
 
-function calc(a:Frac,b:Frac,op:string):{n:number,d:number}|string{
+function calc(a:Frac,b:Frac,op:string,t:(k:string)=>string):{n:number,d:number}|string{
   const an=parseInt(a.n||'0'),ad=parseInt(a.d||'1'),bn=parseInt(b.n||'0'),bd=parseInt(b.d||'1')
-  if(isNaN(an)||isNaN(ad)||isNaN(bn)||isNaN(bd)) return 'Invalid input'
-  if(ad===0||bd===0) return 'Denominator cannot be zero'
-  if(op==='\u00F7'&&bn===0) return 'Division by zero'
+  if(isNaN(an)||isNaN(ad)||isNaN(bn)||isNaN(bd)) return t('fr_invalid')
+  if(ad===0||bd===0) return t('fr_denzero')
+  if(op==='\u00F7'&&bn===0) return t('fr_divzero')
   if(op==='+') return simplify(an*bd+bn*ad,ad*bd)
   if(op==='-') return simplify(an*bd-bn*ad,ad*bd)
   if(op==='\u00D7') return simplify(an*bn,ad*bd)
   if(op==='\u00F7') return simplify(an*bd,ad*bn)
-  return 'Unknown op'
+  return t('fr_invalid')
 }
 
 
 const tool = getToolBySlug('fraction-calculator')!
 
 export default function FractionCalculatorPage() {
+  const t = useTranslations('toolui')
   const [a,setA]=useState<Frac>({n:'1',d:'2'})
   const [b,setB]=useState<Frac>({n:'1',d:'3'})
   const [op,setOp]=useState('+')
 
-  const result=calc(a,b,op)
+  const result=calc(a,b,op,t)
   const isNum=typeof result!=='string'
 
   function FracInput({val,onChange}:{val:Frac,onChange:(f:Frac)=>void}){
@@ -46,8 +48,8 @@ export default function FractionCalculatorPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Fraction Calculator</h1>
-        <p className="text-gray-500 mb-8">Add, subtract, multiply, and divide fractions with automatic simplification</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('fr_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('fr_subtitle')}</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <FracInput val={a} onChange={setA} />
@@ -74,11 +76,11 @@ export default function FractionCalculatorPage() {
           {isNum&&(
             <div className="mt-6 grid grid-cols-2 gap-3 text-center">
               <div className="bg-gray-50 rounded-xl p-3">
-                <div className="text-xs text-gray-500 mb-1">Decimal</div>
+                <div className="text-xs text-gray-500 mb-1">{t('fr_decimal')}</div>
                 <div className="font-mono font-semibold text-gray-800">{(result.n/result.d).toFixed(8).replace(/\.?0+$/,'')}</div>
               </div>
               <div className="bg-gray-50 rounded-xl p-3">
-                <div className="text-xs text-gray-500 mb-1">Mixed number</div>
+                <div className="text-xs text-gray-500 mb-1">{t('fr_mixed')}</div>
                 <div className="font-mono font-semibold text-gray-800">
                   {Math.abs(result.n)>=Math.abs(result.d)?
                     (result.n<0?'-':'')+(Math.abs(Math.floor(result.n/result.d))>0?Math.abs(Math.floor(result.n/result.d))+' ':'')+

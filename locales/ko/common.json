@@ -2740,6 +2740,21 @@
       "마지막 생리 시작일을 입력하세요.",
       "평균 생리주기를 조정하세요.",
       "예상 출산일과 현재 임신 주수를 확인하세요."
+    ],
+    "fraction-calculator": [
+      "두 분수의 분자·분모를 입력하세요.",
+      "연산자(+ - × ÷)를 고르세요.",
+      "약분된 결과와 소수·대분수를 확인하세요."
+    ],
+    "circle-calculator": [
+      "알고 있는 값(반지름/지름/둘레/넓이)을 고르세요.",
+      "값을 입력하세요.",
+      "나머지 모든 값을 자동으로 계산합니다."
+    ],
+    "budget-calculator": [
+      "수입·지출 항목을 추가하세요.",
+      "각 항목에 카테고리와 금액을 지정하세요.",
+      "잔액과 지출 분석을 확인하세요."
     ]
   },
   "games": {
@@ -4037,7 +4052,48 @@
     "dd_cycle": "평균 생리주기 (일)",
     "dd_due": "예상 출산일",
     "dd_pregnant": "현재 임신 {w}주 {d}일",
-    "dd_disclaimer": "네겔레 법칙(280일) · 참고용 추정치이며 의학적 조언이 아닙니다."
+    "dd_disclaimer": "네겔레 법칙(280일) · 참고용 추정치이며 의학적 조언이 아닙니다.",
+    "fr_title": "분수 계산기",
+    "fr_subtitle": "분수를 더하기·빼기·곱하기·나누기하고 자동으로 약분합니다",
+    "fr_decimal": "소수",
+    "fr_mixed": "대분수",
+    "fr_invalid": "잘못된 입력",
+    "fr_denzero": "분모는 0이 될 수 없습니다",
+    "fr_divzero": "0으로 나눌 수 없습니다",
+    "cl_title": "원 계산기",
+    "cl_subtitle": "원의 반지름·지름·둘레·넓이를 계산합니다",
+    "cl_known": "알고 있는 값",
+    "cl_radius": "반지름",
+    "cl_diameter": "지름",
+    "cl_circumference": "둘레",
+    "cl_area": "넓이",
+    "cl_using": "사용된 값",
+    "bg_title": "예산 계산기",
+    "bg_subtitle": "수입과 지출을 기록해 월간 예산 잔액을 확인합니다",
+    "bg_income_total": "총 수입",
+    "bg_expense_total": "총 지출",
+    "bg_balance": "잔액",
+    "bg_income": "수입",
+    "bg_expenses": "지출",
+    "bg_expense_opt": "지출",
+    "bg_add": "새 항목 추가",
+    "bg_name_ph": "이름",
+    "bg_breakdown": "지출 분석",
+    "bg_c_salary": "급여",
+    "bg_c_freelance": "프리랜스",
+    "bg_c_investment": "투자",
+    "bg_c_other": "기타",
+    "bg_c_housing": "주거",
+    "bg_c_food": "식비",
+    "bg_c_transport": "교통",
+    "bg_c_entertainment": "여가",
+    "bg_c_health": "건강",
+    "bg_c_education": "교육",
+    "bg_c_savings": "저축",
+    "bg_d_salary": "급여",
+    "bg_d_rent": "집세",
+    "bg_d_groceries": "장보기",
+    "bg_d_transport": "교통"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

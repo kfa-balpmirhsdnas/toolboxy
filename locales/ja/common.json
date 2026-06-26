@@ -2707,6 +2707,21 @@
       "最終月経の開始日を入力します。",
       "平均生理周期を調整します。",
       "予定出産日と現在の妊娠週数を確認します。"
+    ],
+    "fraction-calculator": [
+      "2つの分数の分子・分母を入力します。",
+      "演算子(+ - × ÷)を選びます。",
+      "約分された結果・小数・帯分数を確認します。"
+    ],
+    "circle-calculator": [
+      "既知の値（半径・直径など）を選びます。",
+      "値を入力します。",
+      "他のすべての値が自動計算されます。"
+    ],
+    "budget-calculator": [
+      "収入・支出の項目を追加します。",
+      "各項目にカテゴリと金額を割り当てます。",
+      "残高と支出の内訳を確認します。"
     ]
   },
   "games": {
@@ -4004,7 +4019,48 @@
     "dd_cycle": "平均生理周期 (日)",
     "dd_due": "予定出産日",
     "dd_pregnant": "現在 妊娠{w}週{d}日",
-    "dd_disclaimer": "ネーゲレ概算法(280日) · 推定値であり医療助言ではありません。"
+    "dd_disclaimer": "ネーゲレ概算法(280日) · 推定値であり医療助言ではありません。",
+    "fr_title": "分数計算機",
+    "fr_subtitle": "分数の加減乗除を行い自動で約分します",
+    "fr_decimal": "小数",
+    "fr_mixed": "帯分数",
+    "fr_invalid": "無効な入力",
+    "fr_denzero": "分母を0にできません",
+    "fr_divzero": "0で割れません",
+    "cl_title": "円の計算機",
+    "cl_subtitle": "円の半径・直径・円周・面積を計算します",
+    "cl_known": "既知の値",
+    "cl_radius": "半径",
+    "cl_diameter": "直径",
+    "cl_circumference": "円周",
+    "cl_area": "面積",
+    "cl_using": "使用",
+    "bg_title": "予算計算機",
+    "bg_subtitle": "収入と支出を記録して月間予算の収支を確認します",
+    "bg_income_total": "総収入",
+    "bg_expense_total": "総支出",
+    "bg_balance": "残高",
+    "bg_income": "収入",
+    "bg_expenses": "支出",
+    "bg_expense_opt": "支出",
+    "bg_add": "新規項目を追加",
+    "bg_name_ph": "名前",
+    "bg_breakdown": "支出の内訳",
+    "bg_c_salary": "給与",
+    "bg_c_freelance": "フリーランス",
+    "bg_c_investment": "投資",
+    "bg_c_other": "その他",
+    "bg_c_housing": "住居",
+    "bg_c_food": "食費",
+    "bg_c_transport": "交通",
+    "bg_c_entertainment": "娯楽",
+    "bg_c_health": "健康",
+    "bg_c_education": "教育",
+    "bg_c_savings": "貯蓄",
+    "bg_d_salary": "給与",
+    "bg_d_rent": "家賃",
+    "bg_d_groceries": "食料品",
+    "bg_d_transport": "交通"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
