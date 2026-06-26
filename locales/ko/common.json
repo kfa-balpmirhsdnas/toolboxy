@@ -2825,6 +2825,16 @@
       "CSS를 붙여넣으세요.",
       "적용할 최적화 옵션을 고르세요.",
       "압축된 CSS를 복사하세요."
+    ],
+    "json-formatter": [
+      "JSON을 붙여넣으세요.",
+      "들여쓰기·키 정렬 옵션을 고르세요.",
+      "정렬된 JSON을 복사하거나 압축하세요."
+    ],
+    "css-unit-converter": [
+      "값과 단위를 입력하세요.",
+      "기준 폰트·뷰포트 크기를 설정하세요.",
+      "모든 CSS 단위로 변환된 값을 복사하세요."
     ]
   },
   "games": {
@@ -4247,7 +4257,20 @@
     "cm_original": "원본",
     "cm_minified": "압축본",
     "cm_savings": "절약",
-    "cm_minified_css": "압축된 CSS"
+    "cm_minified_css": "압축된 CSS",
+    "jf_title": "JSON 포맷터",
+    "jf_subtitle": "JSON 데이터를 포맷·검증·압축합니다",
+    "jf_indent": "들여쓰기:",
+    "jf_tab": "탭",
+    "jf_sort": "키 정렬",
+    "jf_minify": "압축",
+    "ui_input": "입력",
+    "jf_formatted": "정렬됨",
+    "jf_lines": "줄",
+    "jf_bytes": "바이트",
+    "ui_value": "값",
+    "cuc_base": "기준 폰트:",
+    "cuc_viewport": "뷰포트:"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

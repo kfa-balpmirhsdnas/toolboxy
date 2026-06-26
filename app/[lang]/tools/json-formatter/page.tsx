@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -9,6 +10,7 @@ const SAMPLE='{"name":"Alice","age":30,"address":{"city":"New York","zip":"10001
 const tool = getToolBySlug('json-formatter')!
 
 export default function JsonFormatterPage() {
+  const t = useTranslations('toolui')
   const [input,setInput]=useState(SAMPLE)
   const [indent,setIndent]=useState(2)
   const [sortKeys,setSortKeys]=useState(false)
@@ -38,38 +40,38 @@ export default function JsonFormatterPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">JSON Formatter</h1>
-        <p className="text-gray-500 mb-6">Format, validate, and minify JSON data</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('jf_title')}</h1>
+        <p className="text-gray-500 mb-6">{t('jf_subtitle')}</p>
         <div className="flex flex-wrap items-center gap-3 mb-4">
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium text-gray-700">Indent:</span>
+            <span className="font-medium text-gray-700">{t('jf_indent')}</span>
             {[2,4,8,'\t'].map(n=>(
               <button key={n} onClick={()=>setIndent(n===('\t' as unknown)?'\t' as unknown as number:n as number)}
                 className={'px-2.5 py-1 rounded-lg font-mono text-xs font-bold '+(indent===n?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>
-                {n===('\t' as unknown)?'Tab':n}
+                {n===('\t' as unknown)?t('jf_tab'):n}
               </button>
             ))}
           </div>
           <label className="flex items-center gap-1.5 text-sm cursor-pointer">
             <input type="checkbox" checked={sortKeys} onChange={e=>setSortKeys(e.target.checked)} className="rounded" />
-            Sort keys
+            {t('jf_sort')}
           </label>
-          <button onClick={minify} className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg">Minify</button>
-          {output&&<button onClick={copy} className="px-3 py-1.5 text-sm bg-brand-500 hover:bg-brand-600 text-white rounded-lg">{copied?'\u2713':'Copy'}</button>}
+          <button onClick={minify} className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg">{t('jf_minify')}</button>
+          {output&&<button onClick={copy} className="px-3 py-1.5 text-sm bg-brand-500 hover:bg-brand-600 text-white rounded-lg">{copied?'\u2713':t('ui_copy')}</button>}
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
             <div className="px-4 py-2 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Input</span>
-              <button onClick={()=>setInput(SAMPLE)} className="text-xs text-brand-600 hover:underline">Example</button>
+              <span className="text-sm font-medium text-gray-600">{t('ui_input')}</span>
+              <button onClick={()=>setInput(SAMPLE)} className="text-xs text-brand-600 hover:underline">{t('ui_example')}</button>
             </div>
             <textarea value={input} onChange={e=>setInput(e.target.value)} rows={20}
               className="w-full p-4 font-mono text-xs focus:outline-none resize-none" />
           </div>
           <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
             <div className="px-4 py-2 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Formatted</span>
-              {!error&&output&&<span className="text-xs text-gray-400">{lines} lines · {size} bytes</span>}
+              <span className="text-sm font-medium text-gray-600">{t('jf_formatted')}</span>
+              {!error&&output&&<span className="text-xs text-gray-400">{lines} {t('jf_lines')} · {size} {t('jf_bytes')}</span>}
             </div>
             {error?(
               <div className="p-4"><p className="text-red-500 text-sm bg-red-50 rounded-lg p-3">{error}</p></div>

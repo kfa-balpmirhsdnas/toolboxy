@@ -2792,6 +2792,16 @@
       "CSSを貼り付けます。",
       "適用する最適化を選びます。",
       "圧縮されたCSSをコピーします。"
+    ],
+    "json-formatter": [
+      "JSONを貼り付けます。",
+      "インデントとキーソートを選びます。",
+      "整形したJSONをコピーまたは圧縮します。"
+    ],
+    "css-unit-converter": [
+      "値と単位を入力します。",
+      "基準フォントとビューポートを設定します。",
+      "任意のCSS単位の値をコピーします。"
     ]
   },
   "games": {
@@ -4214,7 +4224,20 @@
     "cm_original": "元",
     "cm_minified": "圧縮後",
     "cm_savings": "削減",
-    "cm_minified_css": "圧縮されたCSS"
+    "cm_minified_css": "圧縮されたCSS",
+    "jf_title": "JSONフォーマッター",
+    "jf_subtitle": "JSONデータを整形・検証・圧縮します",
+    "jf_indent": "インデント:",
+    "jf_tab": "タブ",
+    "jf_sort": "キーをソート",
+    "jf_minify": "圧縮",
+    "ui_input": "入力",
+    "jf_formatted": "整形済み",
+    "jf_lines": "行",
+    "jf_bytes": "バイト",
+    "ui_value": "値",
+    "cuc_base": "基準フォント:",
+    "cuc_viewport": "ビューポート:"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

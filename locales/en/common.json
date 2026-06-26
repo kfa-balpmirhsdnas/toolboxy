@@ -2487,6 +2487,16 @@
       "Paste your CSS.",
       "Choose which optimizations to apply.",
       "Copy the minified CSS."
+    ],
+    "json-formatter": [
+      "Paste your JSON.",
+      "Choose indent and sort options.",
+      "Copy the formatted JSON or minify it."
+    ],
+    "css-unit-converter": [
+      "Enter a value and unit.",
+      "Set the base font and viewport size.",
+      "Copy the value in any CSS unit."
     ]
   },
   "games": {
@@ -3909,7 +3919,20 @@
     "cm_original": "Original",
     "cm_minified": "Minified",
     "cm_savings": "Savings",
-    "cm_minified_css": "Minified CSS"
+    "cm_minified_css": "Minified CSS",
+    "jf_title": "JSON Formatter",
+    "jf_subtitle": "Format, validate, and minify JSON data",
+    "jf_indent": "Indent:",
+    "jf_tab": "Tab",
+    "jf_sort": "Sort keys",
+    "jf_minify": "Minify",
+    "ui_input": "Input",
+    "jf_formatted": "Formatted",
+    "jf_lines": "lines",
+    "jf_bytes": "bytes",
+    "ui_value": "Value",
+    "cuc_base": "Base font:",
+    "cuc_viewport": "Viewport:"
   },
   "toolTags": {
     "spinner-wheel": [

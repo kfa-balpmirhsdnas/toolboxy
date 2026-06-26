@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('css-unit-converter')!
@@ -22,6 +23,7 @@ function convert(val:number,from:string,base:number,vw:number,vh:number):Record<
   }
 }
 export default function CssUnitConverterPage() {
+  const t = useTranslations('toolui')
   const [val,setVal]=useState(16)
   const [from,setFrom]=useState('px')
   const [baseFontSize,setBaseFontSize]=useState(16)
@@ -35,16 +37,16 @@ export default function CssUnitConverterPage() {
     <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto px-4 space-y-4">
         <div className="flex gap-3 items-end">
-          <div className="flex-1"><label className="block text-xs text-gray-500 mb-1">Value</label>
+          <div className="flex-1"><label className="block text-xs text-gray-500 mb-1">{t('ui_value')}</label>
             <input type="number" value={val} onChange={e=>setVal(Number(e.target.value))} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-2xl font-mono text-center font-bold focus:outline-none focus:border-blue-400"/></div>
-          <div><label className="block text-xs text-gray-500 mb-1">Unit</label>
+          <div><label className="block text-xs text-gray-500 mb-1">{t('sp_unit')}</label>
             <select value={from} onChange={e=>setFrom(e.target.value)} className="rounded-xl border border-gray-300 px-3 py-3 font-semibold text-gray-700">
               {UNITS.map(u=><option key={u}>{u}</option>)}</select></div>
         </div>
         <div className="flex gap-3 flex-wrap text-xs">
-          <div className="flex items-center gap-1.5"><span className="text-gray-500">Base font:</span>
+          <div className="flex items-center gap-1.5"><span className="text-gray-500">{t('cuc_base')}</span>
             <input type="number" value={baseFontSize} onChange={e=>setBaseFontSize(Number(e.target.value))} className="w-14 rounded border border-gray-300 px-2 py-1 text-center text-xs"/><span className="text-gray-400">px</span></div>
-          <div className="flex items-center gap-1.5"><span className="text-gray-500">Viewport:</span>
+          <div className="flex items-center gap-1.5"><span className="text-gray-500">{t('cuc_viewport')}</span>
             <input type="number" value={vw} onChange={e=>setVw(Number(e.target.value))} className="w-16 rounded border border-gray-300 px-2 py-1 text-center text-xs"/>
             <span className="text-gray-400">x</span>
             <input type="number" value={vh} onChange={e=>setVh(Number(e.target.value))} className="w-16 rounded border border-gray-300 px-2 py-1 text-center text-xs"/>
@@ -58,7 +60,7 @@ export default function CssUnitConverterPage() {
               <button key={u} onClick={()=>copy(u,v)}
                 className={'flex items-center justify-between px-3 py-2.5 rounded-xl border transition '+(isSrc?'bg-blue-600 text-white border-blue-600':'bg-gray-50 border-gray-200 hover:bg-gray-100')}>
                 <span className={'font-medium '+(isSrc?'text-blue-100 text-xs':'text-gray-500 text-xs')}>{u}</span>
-                <span className={'font-mono font-bold '+(isSrc?'text-white':'text-gray-800')}>{copied===u?'Copied!':fmt(v)}</span>
+                <span className={'font-mono font-bold '+(isSrc?'text-white':'text-gray-800')}>{copied===u?t('ui_copied'):fmt(v)}</span>
               </button>
             )
           })}
