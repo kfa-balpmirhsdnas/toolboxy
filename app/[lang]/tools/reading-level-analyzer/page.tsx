@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -13,7 +14,7 @@ function syllableCount(word:string):number{
   return matches?matches.length:1
 }
 
-function analyze(text:string){
+function analyze(text:string,t:(k:string)=>string){
   const sentences=text.split(/[.!?]+/).filter(s=>s.trim().length>0)
   const words=text.split(/\s+/).filter(w=>w.replace(/[^a-zA-Z]/g,'').length>0)
   const syllables=words.reduce((s,w)=>s+syllableCount(w),0)
@@ -27,8 +28,8 @@ function analyze(text:string){
   const fkGrade=0.39*asl+11.8*asw-15.59
   const colemanLiau=5.88*(words.length>0?text.replace(/[^a-zA-Z]/g,'').length/words.length:0)-29.6*(sentences.length/words.length)-15.8
 
-  const easeLabel=fleschEase>=90?'Very Easy':fleschEase>=80?'Easy':fleschEase>=70?'Fairly Easy':fleschEase>=60?'Standard':fleschEase>=50?'Fairly Difficult':fleschEase>=30?'Difficult':'Very Difficult'
-  const gradeLabel=Math.round(fkGrade)<=6?'Elementary':Math.round(fkGrade)<=8?'Middle School':Math.round(fkGrade)<=12?'High School':Math.round(fkGrade)<=16?'College':'Graduate'
+  const easeLabel=fleschEase>=90?t('rla_e_veryeasy'):fleschEase>=80?t('rla_e_easy'):fleschEase>=70?t('rla_e_fairlyeasy'):fleschEase>=60?t('rla_e_standard'):fleschEase>=50?t('rla_e_fairlydiff'):fleschEase>=30?t('rla_e_diff'):t('rla_e_verydiff')
+  const gradeLabel=Math.round(fkGrade)<=6?t('rla_g_elem'):Math.round(fkGrade)<=8?t('rla_g_middle'):Math.round(fkGrade)<=12?t('rla_g_high'):Math.round(fkGrade)<=16?t('rla_g_college'):t('rla_g_grad')
 
   return{sentences:sentences.length,words:words.length,syllables,asl:asl.toFixed(1),asw:asw.toFixed(2),fleschEase:fleschEase.toFixed(1),fkGrade:Math.max(0,fkGrade).toFixed(1),colemanLiau:Math.max(0,colemanLiau).toFixed(1),easeLabel,gradeLabel}
 }
@@ -39,16 +40,17 @@ const SAMPLE="The quick brown fox jumps over the lazy dog. It was a sunny aftern
 const tool = getToolBySlug('reading-level-analyzer')!
 
 export default function ReadingLevelPage() {
+  const t = useTranslations('toolui')
   const [text,setText]=useState(SAMPLE)
-  const result=analyze(text)
+  const result=analyze(text,t)
 
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Reading Level Analyzer</h1>
-        <p className="text-gray-500 mb-8">Analyze text readability using Flesch-Kincaid and Coleman-Liau scores</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('rla_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('rla_subtitle')}</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Paste your text</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('rla_paste')}</label>
           <textarea value={text} onChange={e=>setText(e.target.value)} rows={8}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
         </div>
@@ -67,10 +69,10 @@ export default function ReadingLevelPage() {
               </div>
             </div>
             <div className="mt-3 grid grid-cols-3 gap-3">
-              {[['Sentences',result.sentences],['Words',result.words],['Syllables',result.syllables],['Avg Sentence Len',result.asl+' words'],['Avg Syllables/Word',result.asw],['Coleman-Liau',result.colemanLiau]].map(([l,v])=>(
-                <div key={l} className="bg-white rounded-xl border border-gray-200 p-3 text-center">
+              {[['rla_sentences',result.sentences],['lip_words',result.words],['rla_syllables',result.syllables],['rla_asl',t('rla_aslval',{n:result.asl})],['rla_asw',result.asw],['rla_coleman',result.colemanLiau]].map(([l,v])=>(
+                <div key={l as string} className="bg-white rounded-xl border border-gray-200 p-3 text-center">
                   <div className="font-bold text-gray-900">{v}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">{l}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">{t(l as string)}</div>
                 </div>
               ))}
             </div>

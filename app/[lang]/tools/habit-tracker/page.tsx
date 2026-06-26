@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
@@ -18,10 +19,10 @@ function getDateStr(offset:number): string {
   const d = new Date(); d.setDate(d.getDate()-offset)
   return d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')+'-'+d.getDate().toString().padStart(2,'0')
 }
-function getDayLabel(offset:number): string {
-  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+function getDayLabel(offset:number,t:(k:string)=>string): string {
+  const days=[t('ht_sun'),t('ht_mon'),t('ht_tue'),t('ht_wed'),t('ht_thu'),t('ht_fri'),t('ht_sat')]
   const d = new Date(); d.setDate(d.getDate()-offset)
-  return offset===0?'Today':offset===1?'Yesterday':days[d.getDay()]
+  return offset===0?t('ht_todaylabel'):offset===1?t('ht_yesterday'):days[d.getDay()]
 }
 
 const DEFAULT_HABITS: Habit[] = [
@@ -31,6 +32,7 @@ const DEFAULT_HABITS: Habit[] = [
 ]
 
 export default function HabitTrackerPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [habits, setHabits] = useState<Habit[]>(DEFAULT_HABITS)
   const [newName, setNewName] = useState('')
   const [newEmoji, setNewEmoji] = useState('💧')
@@ -62,7 +64,7 @@ export default function HabitTrackerPage({ params }: { params: { lang: string } 
     return s
   }
 
-  const dates = Array.from({length:DAYS_SHOWN},(_,i)=>({str:getDateStr(i),label:getDayLabel(i)}))
+  const dates = Array.from({length:DAYS_SHOWN},(_,i)=>({str:getDateStr(i),label:getDayLabel(i,t)}))
   const today = getTodayStr()
   const todayCompleted = habits.filter(h=>h.completedDays.includes(today)).length
   const completionRate = habits.length ? Math.round(todayCompleted/habits.length*100) : 0
@@ -72,16 +74,16 @@ export default function HabitTrackerPage({ params }: { params: { lang: string } 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-semibold text-gray-700">Today: {todayCompleted}/{habits.length} completed</p>
+            <p className="text-sm font-semibold text-gray-700">{t('ht_today',{n:todayCompleted,m:habits.length})}</p>
             <div className="w-32 h-1.5 bg-gray-200 rounded-full mt-1"><div className="h-1.5 bg-brand-500 rounded-full transition-all" style={{width:completionRate+'%'}} /></div>
           </div>
           <button onClick={()=>setAdding(!adding)} className="px-3 py-1.5 rounded-xl text-xs bg-brand-600 text-white hover:bg-brand-700 transition-colors">
-            + Add Habit
+            {t('ht_addhabit')}
           </button>
         </div>
         {adding && (
           <div className="p-3 border border-brand-200 bg-brand-50 rounded-xl space-y-2">
-            <input value={newName} onChange={e=>setNewName(e.target.value)} placeholder="Habit name..."
+            <input value={newName} onChange={e=>setNewName(e.target.value)} placeholder={t('ht_name_ph')}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
             <div className="flex flex-wrap gap-1.5">
               {EMOJIS.map(e=>(
@@ -92,8 +94,8 @@ export default function HabitTrackerPage({ params }: { params: { lang: string } 
               ))}
             </div>
             <div className="flex gap-2">
-              <button onClick={addHabit} className="px-3 py-1.5 rounded-lg text-xs bg-brand-600 text-white">Add</button>
-              <button onClick={()=>setAdding(false)} className="px-3 py-1.5 rounded-lg text-xs bg-gray-100 text-gray-600">Cancel</button>
+              <button onClick={addHabit} className="px-3 py-1.5 rounded-lg text-xs bg-brand-600 text-white">{t('ht_add')}</button>
+              <button onClick={()=>setAdding(false)} className="px-3 py-1.5 rounded-lg text-xs bg-gray-100 text-gray-600">{t('ht_cancel')}</button>
             </div>
           </div>
         )}
@@ -101,13 +103,13 @@ export default function HabitTrackerPage({ params }: { params: { lang: string } 
           <table className="w-full text-sm">
             <thead>
               <tr>
-                <th className="text-left text-xs font-medium text-gray-500 pb-2 pr-4 w-32">Habit</th>
+                <th className="text-left text-xs font-medium text-gray-500 pb-2 pr-4 w-32">{t('ht_habit')}</th>
                 {dates.map(d=>(
                   <th key={d.str} className={'text-center text-xs font-medium pb-2 w-10 ' + (d.str===today?'text-brand-600':'text-gray-400')}>
                     {d.label}
                   </th>
                 ))}
-                <th className="text-center text-xs font-medium text-gray-400 pb-2 w-12">Streak</th>
+                <th className="text-center text-xs font-medium text-gray-400 pb-2 w-12">{t('ht_streak')}</th>
                 <th className="w-6" />
               </tr>
             </thead>

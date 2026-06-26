@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -8,6 +9,7 @@ import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 const tool = getToolBySlug('voice-recorder')!
 
 export default function VoiceRecorderPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [recording, setRecording] = useState(false)
   const [url, setUrl] = useState('')
   const [seconds, setSeconds] = useState(0)
@@ -25,7 +27,7 @@ export default function VoiceRecorderPage({ params }: { params: { lang: string }
       rec.ondataavailable = (e) => e.data.size && chunksRef.current.push(e.data)
       rec.onstop = () => {
         setUrl(URL.createObjectURL(new Blob(chunksRef.current, { type: 'audio/webm' })))
-        stream.getTracks().forEach((t) => t.stop())
+        stream.getTracks().forEach((tk) => tk.stop())
         if (timerRef.current) clearInterval(timerRef.current)
         setRecording(false)
       }
@@ -35,7 +37,7 @@ export default function VoiceRecorderPage({ params }: { params: { lang: string }
       timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000)
       trackToolUsed('voice-recorder')
     } catch (e) {
-      setError(e instanceof Error && e.name === 'NotAllowedError' ? 'Microphone access was blocked. Allow it to record.' : 'No microphone found.')
+      setError(e instanceof Error && e.name === 'NotAllowedError' ? t('vr_blocked') : t('vr_nomic'))
     }
   }
 
@@ -56,9 +58,9 @@ export default function VoiceRecorderPage({ params }: { params: { lang: string }
         <div className="text-5xl font-bold text-gray-900 tabular-nums">{mmss}</div>
         <div className="flex gap-3 justify-center">
           {!recording ? (
-            <button onClick={start} className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors">● Start recording</button>
+            <button onClick={start} className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors">{t('vr_start')}</button>
           ) : (
-            <button onClick={stop} className="px-6 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-xl hover:bg-red-700 transition-colors animate-pulse">■ Stop</button>
+            <button onClick={stop} className="px-6 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-xl hover:bg-red-700 transition-colors animate-pulse">{t('vr_stop')}</button>
           )}
         </div>
 
@@ -67,10 +69,10 @@ export default function VoiceRecorderPage({ params }: { params: { lang: string }
         {url && (
           <div className="space-y-3">
             <audio src={url} controls className="w-full" />
-            <button onClick={download} className="px-5 py-2 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors">⬇ Download audio</button>
+            <button onClick={download} className="px-5 py-2 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors">⬇ {t('vr_download')}</button>
           </div>
         )}
-        <p className="text-xs text-gray-400">Records from your microphone to an audio file in your browser. Nothing is uploaded.</p>
+        <p className="text-xs text-gray-400">{t('vr_note')}</p>
       </div>
 
     </ToolLayout>

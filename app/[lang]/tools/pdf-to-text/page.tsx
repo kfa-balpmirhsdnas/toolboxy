@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import Script from 'next/script'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -13,6 +14,7 @@ declare global {
 }
 
 export default function PdfToTextPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -24,11 +26,11 @@ export default function PdfToTextPage({ params }: { params: { lang: string } }) 
 
   const extractText = useCallback(async (file: File) => {
     if (!scriptReady.current || !window.pdfjsLib) {
-      setError('PDF engine still loading — please try again.')
+      setError(t('ptt_loading'))
       return
     }
     if (!file.name.toLowerCase().endsWith('.pdf')) {
-      setError('Please upload a PDF file.')
+      setError(t('ptt_pleasepdf'))
       return
     }
     setLoading(true)
@@ -49,11 +51,11 @@ export default function PdfToTextPage({ params }: { params: { lang: string } }) 
       }
       setText(pages.join('\n\n'))
     } catch {
-      setError('Failed to extract text. The PDF may be encrypted, scanned-only, or damaged.')
+      setError(t('ptt_failed'))
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -104,8 +106,8 @@ export default function PdfToTextPage({ params }: { params: { lang: string } }) 
       >
         <input ref={inputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileInput} />
         <div className="text-4xl mb-3">📄</div>
-        <p className="font-semibold text-gray-700">Drop your PDF here or click to browse</p>
-        <p className="text-sm text-gray-400 mt-1">Supports text-based PDFs up to 10 MB</p>
+        <p className="font-semibold text-gray-700">{t('ptt_drop')}</p>
+        <p className="text-sm text-gray-400 mt-1">{t('ptt_supports')}</p>
       </div>
 
       {/* Loading */}
@@ -113,7 +115,7 @@ export default function PdfToTextPage({ params }: { params: { lang: string } }) 
         <div className="flex items-center justify-center gap-3 py-8">
           <div className="w-5 h-5 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
           <span className="text-gray-600">
-            Extracting text{pageCount > 0 ? ` from ${pageCount} pages` : ''}…
+            {pageCount > 0 ? t('ptt_extracting_n', { n: pageCount }) : t('ptt_extracting')}
           </span>
         </div>
       )}
@@ -130,20 +132,20 @@ export default function PdfToTextPage({ params }: { params: { lang: string } }) 
         <div className="space-y-3 mt-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <p className="text-sm text-gray-500">
-              <strong>{fileName}</strong> · {pageCount} page{pageCount !== 1 ? 's' : ''} · {text.length.toLocaleString()} chars
+              <strong>{fileName}</strong> · {t('ptt_info', { p: pageCount, c: text.length.toLocaleString() })}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={copyText}
                 className="text-sm px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
               >
-                Copy
+                {t('ui_copy')}
               </button>
               <button
                 onClick={downloadText}
                 className="text-sm px-3 py-1.5 rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition-colors"
               >
-                Download .txt
+                {t('ptt_downloadtxt')}
               </button>
             </div>
           </div>
@@ -156,13 +158,13 @@ export default function PdfToTextPage({ params }: { params: { lang: string } }) 
             onClick={() => { setText(''); setFileName(''); setPageCount(0) }}
             className="text-sm text-gray-400 hover:text-red-500 transition-colors"
           >
-            Clear
+            {t('ui_clear')}
           </button>
         </div>
       )}
 
       <p className="text-xs text-gray-400 mt-6 text-center">
-        All processing happens in your browser — no files are sent to any server.
+        {t('ptt_note')}
       </p>
     </ToolLayout>
   )
