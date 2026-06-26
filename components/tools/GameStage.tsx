@@ -36,8 +36,19 @@ function tone(freq: number, start: number, dur: number, type: OscillatorType = '
   o.start(t); o.stop(t + dur + 0.03)
 }
 const isMuted = () => typeof window !== 'undefined' && localStorage.getItem('game-muted') === '1'
-function countdownBeeps() { if (isMuted()) return; tone(700, 0, 0.14); tone(700, 0.6, 0.14); tone(700, 1.2, 0.14); tone(1175, 1.8, 0.5, 'square', 0.22) }
-function fanfare() { if (isMuted()) return;[523.25, 659.25, 783.99].forEach((f, i) => tone(f, i * 0.11, 0.16, 'triangle', 0.2)); tone(1046.5, 0.33, 0.6, 'triangle', 0.24) }
+// 3·2·1·START — rising pitch (C5 → E5 → G5 → high C6) for building tension.
+function countdownBeeps() { if (isMuted()) return; tone(523.25, 0, 0.15); tone(659.25, 0.6, 0.15); tone(783.99, 1.2, 0.15); tone(1046.5, 1.8, 0.5, 'square', 0.22) }
+// Victory fanfare: a quick ascending run that resolves into a big sustained
+// major chord with a high sparkle and a bass root for fullness.
+function fanfare() {
+  if (isMuted()) return
+  const run = [523.25, 659.25, 783.99, 1046.5] // C5 E5 G5 C6
+  run.forEach((f, i) => tone(f, i * 0.085, 0.12, 'square', 0.16))
+  const t = run.length * 0.085
+  ;[1046.5, 1318.51, 1567.98].forEach((f) => tone(f, t, 0.8, 'triangle', 0.17)) // C6 major chord
+  tone(2093.0, t + 0.12, 0.5, 'square', 0.09) // high sparkle
+  tone(261.63, t, 0.8, 'triangle', 0.13) // C4 bass root
+}
 
 export type Stage = ReturnType<typeof useGameStage>
 
