@@ -2922,6 +2922,16 @@
       "コマンドや説明で検索します。",
       "セクションごとにgitコマンドを見ます。",
       "項目をクリックでコマンドをコピーします。"
+    ],
+    "css-triangle-generator": [
+      "三角形の方向を選びます。",
+      "サイズと色を調整します。",
+      "生成されたCSSをコピーします。"
+    ],
+    "border-radius-generator": [
+      "プリセットを選ぶか各角を調整します。",
+      "単位(px/%)と色を設定します。",
+      "生成されたborder-radius CSSをコピーします。"
     ]
   },
   "games": {
@@ -4515,7 +4525,16 @@
     "gcs_s_remote": "リモート",
     "gcs_s_undo": "取り消し & リセット",
     "gcs_s_stash": "スタッシュ",
-    "gcs_s_log": "ログ & 確認"
+    "gcs_s_log": "ログ & 確認",
+    "ui_size": "サイズ",
+    "ct_copycss": "CSSをコピー",
+    "brg_title": "角丸ジェネレーター",
+    "brg_subtitle": "ライブプレビューでカスタムborder-radiusを作成します",
+    "brg_link": "角を連動",
+    "brg_tl": "左上",
+    "brg_tr": "右上",
+    "brg_br": "右下",
+    "brg_bl": "左下"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

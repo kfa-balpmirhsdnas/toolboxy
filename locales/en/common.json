@@ -2617,6 +2617,16 @@
       "Search by command or description.",
       "Browse git commands by section.",
       "Click an item to copy the command."
+    ],
+    "css-triangle-generator": [
+      "Pick a triangle direction.",
+      "Adjust the size and color.",
+      "Copy the generated CSS."
+    ],
+    "border-radius-generator": [
+      "Pick a preset or adjust each corner.",
+      "Set the unit (px/%) and color.",
+      "Copy the generated border-radius CSS."
     ]
   },
   "games": {
@@ -4210,7 +4220,16 @@
     "gcs_s_remote": "Remote",
     "gcs_s_undo": "Undo & Reset",
     "gcs_s_stash": "Stash",
-    "gcs_s_log": "Log & Inspect"
+    "gcs_s_log": "Log & Inspect",
+    "ui_size": "Size",
+    "ct_copycss": "Copy CSS",
+    "brg_title": "Border Radius Generator",
+    "brg_subtitle": "Create custom border radius shapes with live preview",
+    "brg_link": "Link corners",
+    "brg_tl": "Top Left",
+    "brg_tr": "Top Right",
+    "brg_br": "Bottom Right",
+    "brg_bl": "Bottom Left"
   },
   "toolTags": {
     "spinner-wheel": [

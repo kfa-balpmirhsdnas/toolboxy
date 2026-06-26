@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -7,6 +8,7 @@ import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('border-radius-generator')!
 
 export default function BorderRadiusGeneratorPage() {
+  const t = useTranslations('toolui')
   const [linked,setLinked]=useState(true)
   const [tl,setTl]=useState(16)
   const [tr,setTr]=useState(16)
@@ -34,13 +36,13 @@ export default function BorderRadiusGeneratorPage() {
     {name:'Pill',v:[50,50,50,50]},{name:'Leaf',v:[0,50,0,50]},{name:'Wave',v:[60,10,60,10]},
   ]
 
-  const corners=[['Top Left',tl,setTl],['Top Right',tr,setTr],['Bottom Right',br,setBr],['Bottom Left',bl,setBl]] as const
+  const corners=[['brg_tl',tl,setTl],['brg_tr',tr,setTr],['brg_br',br,setBr],['brg_bl',bl,setBl]] as const
 
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Border Radius Generator</h1>
-        <p className="text-gray-500 mb-8">Create custom border radius shapes with live preview</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('brg_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('brg_subtitle')}</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
           <div className="flex flex-wrap gap-2 mb-2">
             {PRESETS.map(p=>(
@@ -51,20 +53,20 @@ export default function BorderRadiusGeneratorPage() {
           <div className="flex gap-3 items-center">
             <label className="flex items-center gap-1.5 text-sm cursor-pointer">
               <input type="checkbox" checked={linked} onChange={e=>setLinked(e.target.checked)} className="rounded" />
-              Link corners
+              {t('brg_link')}
             </label>
             {['px','%'].map(u=>(
               <button key={u} onClick={()=>setUnit(u as 'px'|'%')} className={'px-3 py-1 text-sm rounded-lg font-mono '+(unit===u?'bg-brand-500 text-white':'bg-gray-100 text-gray-700')}>{u}</button>
             ))}
             <label className="flex items-center gap-2 text-sm ml-auto">
-              <span className="text-gray-600">Color</span>
+              <span className="text-gray-600">{t('ui_color')}</span>
               <input type="color" value={bgColor} onChange={e=>setBgColor(e.target.value)} className="w-8 h-6 rounded border border-gray-300" />
             </label>
           </div>
           <div className="grid grid-cols-2 gap-3">
             {corners.map(([label,val,setter])=>(
               <div key={label}>
-                <div className="flex justify-between text-xs text-gray-500 mb-1"><span>{label}</span><span className="font-mono">{val}{unit}</span></div>
+                <div className="flex justify-between text-xs text-gray-500 mb-1"><span>{t(label)}</span><span className="font-mono">{val}{unit}</span></div>
                 <input type="range" min={0} max={unit==='%'?50:100} value={val} onChange={e=>handleChange(setter,parseInt(e.target.value))} className="w-full accent-brand-500" />
               </div>
             ))}
@@ -74,7 +76,7 @@ export default function BorderRadiusGeneratorPage() {
           </div>
           <div className="flex items-center justify-between bg-gray-50 rounded-xl p-3">
             <code className="font-mono text-sm text-gray-700">{css}</code>
-            <button onClick={copy} className="text-xs px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded ml-2">{copied?'\u2713':'Copy'}</button>
+            <button onClick={copy} className="text-xs px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded ml-2">{copied?'\u2713':t('ui_copy')}</button>
           </div>
         </div>
       </div>

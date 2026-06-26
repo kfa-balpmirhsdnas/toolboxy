@@ -2955,6 +2955,16 @@
       "명령어나 설명으로 검색하세요.",
       "섹션별 git 명령을 둘러보세요.",
       "항목을 클릭하면 명령이 복사됩니다."
+    ],
+    "css-triangle-generator": [
+      "삼각형 방향을 고르세요.",
+      "크기와 색상을 조절하세요.",
+      "생성된 CSS를 복사하세요."
+    ],
+    "border-radius-generator": [
+      "프리셋을 고르거나 각 모서리를 조절하세요.",
+      "단위(px/%)와 색상을 설정하세요.",
+      "생성된 border-radius CSS를 복사하세요."
     ]
   },
   "games": {
@@ -4548,7 +4558,16 @@
     "gcs_s_remote": "원격",
     "gcs_s_undo": "되돌리기 & 리셋",
     "gcs_s_stash": "스태시",
-    "gcs_s_log": "로그 & 조회"
+    "gcs_s_log": "로그 & 조회",
+    "ui_size": "크기",
+    "ct_copycss": "CSS 복사",
+    "brg_title": "테두리 둥글기 생성기",
+    "brg_subtitle": "실시간 미리보기로 맞춤형 border-radius를 만듭니다",
+    "brg_link": "모서리 연동",
+    "brg_tl": "왼쪽 위",
+    "brg_tr": "오른쪽 위",
+    "brg_br": "오른쪽 아래",
+    "brg_bl": "왼쪽 아래"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

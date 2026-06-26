@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 type Dir='top'|'bottom'|'left'|'right'|'top-left'|'top-right'|'bottom-left'|'bottom-right'
@@ -20,12 +21,13 @@ function getCSS(dir:Dir,size:number,color:string){
 }
 const DIRS:Dir[]=['top','bottom','left','right','top-left','top-right','bottom-left','bottom-right']
 export default function Page(){
+  const t = useTranslations('toolui')
   const [dir,setDir]=useState<Dir>('top')
   const [size,setSize]=useState(50)
   const [color,setColor]=useState('#3b82f6')
   const css=getCSS(dir,size,color)
   const full='.triangle { '+css+'; display:inline-block; }'
-  const tool=TOOLS.find(t=>t.slug==='css-triangle-generator')
+  const tool=TOOLS.find(x=>x.slug==='css-triangle-generator')
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4 space-y-4">
@@ -33,10 +35,10 @@ export default function Page(){
           {DIRS.map(d=><button key={d} onClick={()=>setDir(d)} className={'px-3 py-1 rounded text-xs font-medium border '+(dir===d?'bg-blue-600 text-white border-blue-600':'border-gray-300 hover:bg-gray-50')}>{d}</button>)}
         </div>
         <div className="flex gap-4 items-center">
-          <label className="flex items-center gap-2 text-sm text-gray-700">Size
+          <label className="flex items-center gap-2 text-sm text-gray-700">{t('ui_size')}
             <input type="range" min={10} max={200} value={size} onChange={e=>setSize(+e.target.value)} className="w-28"/>
             <span>{size}px</span></label>
-          <label className="flex items-center gap-2 text-sm text-gray-700">Color
+          <label className="flex items-center gap-2 text-sm text-gray-700">{t('ui_color')}
             <input type="color" value={color} onChange={e=>setColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer"/></label>
         </div>
         <div className="flex items-center justify-center bg-gray-50 rounded-xl p-8 border border-gray-200 min-h-[140px]">
@@ -44,7 +46,7 @@ export default function Page(){
         </div>
         <div><label className="block text-sm font-medium text-gray-700 mb-1">CSS</label>
           <textarea value={full} readOnly rows={3} className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-xs resize-none"/></div>
-        <button onClick={()=>navigator.clipboard?.writeText(full)} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">Copy CSS</button>
+        <button onClick={()=>navigator.clipboard?.writeText(full)} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">{t('ct_copycss')}</button>
       </div>
     </ToolLayout>
   )
