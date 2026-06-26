@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
@@ -21,7 +22,8 @@ function paragraph(sentences=4){
 }
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='lorem-ipsum-generator')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='lorem-ipsum-generator')
   const [type,setType]=useState('paragraphs')
   const [count,setCount]=useState('3')
   const [output,setOutput]=useState('')
@@ -40,31 +42,31 @@ export default function Page(){
       <div className="space-y-4">
         <div className="flex gap-4 flex-wrap">
           <div>
-            <label className="block text-sm font-medium mb-1">Type</label>
+            <label className="block text-sm font-medium mb-1">{t('lip_type')}</label>
             <select value={type} onChange={e=>setType(e.target.value)}
               className="border rounded px-3 py-2">
-              <option value="paragraphs">Paragraphs</option>
-              <option value="sentences">Sentences</option>
-              <option value="words">Words</option>
+              <option value="paragraphs">{t('lip_paragraphs')}</option>
+              <option value="sentences">{t('lip_sentences')}</option>
+              <option value="words">{t('lip_words')}</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Count</label>
+            <label className="block text-sm font-medium mb-1">{t('ubg_count')}</label>
             <input type="number" value={count} onChange={e=>setCount(e.target.value)}
               min="1" max="50" className="border rounded px-3 py-2 w-24"/>
           </div>
         </div>
         <button onClick={generate}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-          Generate
+          {t('ui_generate')}
         </button>
         {output&&(
           <div>
-            <label className="block text-sm font-medium mb-1">Result</label>
+            <label className="block text-sm font-medium mb-1">{t('ce_result')}</label>
             <textarea readOnly value={output}
               className="w-full h-48 p-3 border rounded text-sm bg-gray-50 resize-y"/>
             <button onClick={()=>navigator.clipboard.writeText(output)}
-              className="mt-2 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">Copy</button>
+              className="mt-2 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">{t('ui_copy')}</button>
           </div>
         )}
       </div>

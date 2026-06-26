@@ -3245,6 +3245,16 @@
       "구분된 데이터를 붙여넣으세요.",
       "구분자와 추출할 열 번호를 정하세요.",
       "추출된 결과를 복사하세요."
+    ],
+    "robots-txt-generator": [
+      "허용 또는 차단 정책을 고르세요.",
+      "차단할 경로와 사이트맵 URL을 입력하세요.",
+      "생성된 robots.txt를 복사하세요."
+    ],
+    "lorem-ipsum-generator": [
+      "문단·문장·단어 유형을 고르세요.",
+      "개수를 입력하세요.",
+      "생성된 더미 텍스트를 복사하세요."
     ]
   },
   "games": {
@@ -5166,7 +5176,15 @@
     "ce_cols": "열 번호 (예: 1,3)",
     "ce_ph": "구분된 데이터를 붙여넣으세요...",
     "ce_extract": "열 추출",
-    "ce_result": "결과"
+    "ce_result": "결과",
+    "rtg_allow": "크롤링 허용",
+    "rtg_block": "전체 차단",
+    "rtg_disallow": "차단 경로 (한 줄에 하나씩)",
+    "rtg_sitemap": "사이트맵 URL (선택)",
+    "lip_type": "유형",
+    "lip_paragraphs": "문단",
+    "lip_sentences": "문장",
+    "lip_words": "단어"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

@@ -2907,6 +2907,16 @@
       "Paste delimited data.",
       "Pick the delimiter and column numbers.",
       "Copy the extracted result."
+    ],
+    "robots-txt-generator": [
+      "Choose allow or block policy.",
+      "Enter disallow paths and sitemap URL.",
+      "Copy the generated robots.txt."
+    ],
+    "lorem-ipsum-generator": [
+      "Choose paragraphs, sentences or words.",
+      "Enter the count.",
+      "Copy the generated placeholder text."
     ]
   },
   "games": {
@@ -4828,7 +4838,15 @@
     "ce_cols": "Column Numbers (e.g. 1,3)",
     "ce_ph": "Paste delimited data...",
     "ce_extract": "Extract Columns",
-    "ce_result": "Result"
+    "ce_result": "Result",
+    "rtg_allow": "Allow crawling",
+    "rtg_block": "Block everything",
+    "rtg_disallow": "Disallow paths (one per line)",
+    "rtg_sitemap": "Sitemap URL (optional)",
+    "lip_type": "Type",
+    "lip_paragraphs": "Paragraphs",
+    "lip_sentences": "Sentences",
+    "lip_words": "Words"
   },
   "toolTags": {
     "spinner-wheel": [
