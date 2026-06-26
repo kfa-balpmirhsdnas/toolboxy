@@ -1,10 +1,12 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 
 const tool = getToolBySlug('git-cheat-sheet')!
+const TKEY: Record<string,string> = { 'Setup':'gcs_s_setup', 'Initialize':'gcs_s_init', 'Stage & Snapshot':'gcs_s_stage', 'Branch & Merge':'gcs_s_branch', 'Remote':'gcs_s_remote', 'Undo & Reset':'gcs_s_undo', 'Stash':'gcs_s_stash', 'Log & Inspect':'gcs_s_log' }
 
 const SECTIONS = [
   { title:'Setup', commands:[
@@ -76,6 +78,7 @@ const SECTIONS = [
 ]
 
 export default function GitCheatSheetPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [search, setSearch] = useState('')
   const [copied, setCopied] = useState<string|null>(null)
   const tracked = useRef(false)
@@ -97,11 +100,11 @@ export default function GitCheatSheetPage({ params }: { params: { lang: string }
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
-        <input value={search} onChange={e=>{setSearch(e.target.value);track()}} placeholder="Search commands..."
+        <input value={search} onChange={e=>{setSearch(e.target.value);track()}} placeholder={t('gcs_search')}
           className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
         {filtered.map(sec=>(
           <div key={sec.title}>
-            <h3 className="text-xs font-semibold text-brand-600 mb-2">{sec.title}</h3>
+            <h3 className="text-xs font-semibold text-brand-600 mb-2">{t(TKEY[sec.title])}</h3>
             <div className="space-y-1">
               {sec.commands.map(c=>(
                 <div key={c.cmd} onClick={()=>copy(c.cmd)}
@@ -110,7 +113,7 @@ export default function GitCheatSheetPage({ params }: { params: { lang: string }
                     <code className="text-xs font-mono text-gray-800">{c.cmd}</code>
                     <p className="text-xs text-gray-500 mt-0.5">{c.desc}</p>
                   </div>
-                  <span className="text-xs text-brand-400 ml-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">{copied===c.cmd?'\u2713':'Copy'}</span>
+                  <span className="text-xs text-brand-400 ml-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">{copied===c.cmd?'\u2713':t('ui_copy')}</span>
                 </div>
               ))}
             </div>

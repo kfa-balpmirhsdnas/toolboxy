@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('http-status-codes')!
@@ -33,6 +34,7 @@ const CODES:{code:number;name:string;desc:string;cat:string}[]=[
 ]
 const CAT_COLORS:Record<string,string>={'1xx':'#6366f1','2xx':'#22c55e','3xx':'#f59e0b','4xx':'#ef4444','5xx':'#8b5cf6'}
 export default function HttpStatusCodesPage() {
+  const t = useTranslations('toolui')
   const [search,setSearch]=useState('')
   const [filter,setFilter]=useState('all')
   const cats=['all','1xx','2xx','3xx','4xx','5xx']
@@ -43,11 +45,11 @@ export default function HttpStatusCodesPage() {
     <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4 space-y-4">
         <div className="flex gap-2">
-          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by code or name..." className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm"/>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t('hsc_search')} className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm"/>
           <div className="flex rounded-lg overflow-hidden border border-gray-300">
             {cats.map(c=>(
               <button key={c} onClick={()=>setFilter(c)}
-                className={`px-3 py-2 text-xs font-medium transition ${filter===c?'bg-gray-900 text-white':'bg-white text-gray-600 hover:bg-gray-50'}`}>{c}</button>
+                className={`px-3 py-2 text-xs font-medium transition ${filter===c?'bg-gray-900 text-white':'bg-white text-gray-600 hover:bg-gray-50'}`}>{c==='all'?t('hsc_all'):c}</button>
             ))}
           </div>
         </div>
@@ -70,7 +72,7 @@ export default function HttpStatusCodesPage() {
               <span className="text-xs text-gray-400">{c.cat}</span>
             </div>
           ))}
-          {filtered.length===0&&<p className="text-center text-gray-400 py-8">No matching status codes</p>}
+          {filtered.length===0&&<p className="text-center text-gray-400 py-8">{t('hsc_nomatch')}</p>}
         </div>
       </div>
     </ToolLayout>

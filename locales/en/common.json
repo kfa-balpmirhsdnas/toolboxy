@@ -2607,6 +2607,16 @@
       "Paste your code.",
       "Optionally check angle brackets too.",
       "See matched pairs highlighted and any errors."
+    ],
+    "http-status-codes": [
+      "Search by code or name.",
+      "Filter by category (2xx, 4xx, etc.).",
+      "Click an item to see its description."
+    ],
+    "git-cheat-sheet": [
+      "Search by command or description.",
+      "Browse git commands by section.",
+      "Click an item to copy the command."
     ]
   },
   "games": {
@@ -4188,7 +4198,19 @@
     "bm_stats": "{m} matched, {e} errors",
     "bm_ph": "Paste code here...",
     "bm_ok": "✓ All brackets are matched correctly ({n} pairs)",
-    "bm_highlighted": "Highlighted"
+    "bm_highlighted": "Highlighted",
+    "hsc_search": "Search by code or name...",
+    "hsc_nomatch": "No matching status codes",
+    "hsc_all": "all",
+    "gcs_search": "Search commands...",
+    "gcs_s_setup": "Setup",
+    "gcs_s_init": "Initialize",
+    "gcs_s_stage": "Stage & Snapshot",
+    "gcs_s_branch": "Branch & Merge",
+    "gcs_s_remote": "Remote",
+    "gcs_s_undo": "Undo & Reset",
+    "gcs_s_stash": "Stash",
+    "gcs_s_log": "Log & Inspect"
   },
   "toolTags": {
     "spinner-wheel": [
