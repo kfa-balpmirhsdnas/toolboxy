@@ -2927,6 +2927,16 @@
       "Paste your CSV data.",
       "Choose the delimiter.",
       "Copy or download the converted JSON."
+    ],
+    "password-generator": [
+      "Set length and character options.",
+      "Pick how many to generate.",
+      "Generate and copy your password."
+    ],
+    "unix-timestamp": [
+      "Enter a Unix timestamp to decode it.",
+      "Or pick a date to get its timestamp.",
+      "Copy the format you need."
     ]
   },
   "games": {
@@ -4867,7 +4877,28 @@
     "ctj_needrows": "Need at least a header row and one data row",
     "ctj_title": "CSV to JSON Converter",
     "ctj_subtitle": "Convert CSV data to JSON format with automatic type detection",
-    "ctj_rows": "({n} rows)"
+    "ctj_rows": "({n} rows)",
+    "pg_weak": "Weak",
+    "pg_fair": "Fair",
+    "pg_strong": "Strong",
+    "pg_vstrong": "Very Strong",
+    "pg_strength": "Strength",
+    "pg_length": "Length",
+    "pg_uppercase": "Uppercase",
+    "pg_lowercase": "Lowercase",
+    "pg_numbers": "Numbers",
+    "pg_symbols": "Symbols",
+    "pg_npw": "{n} passwords",
+    "pg_generate": "Generate Password",
+    "pg_allgen": "All Generated",
+    "uts_current": "Current Unix Timestamp",
+    "uts_usecurrent": "Use Current",
+    "uts_ts2date": "Timestamp → Human Date",
+    "uts_ph": "e.g. 1700000000 or 1700000000000 (ms)",
+    "uts_date2ts": "Human Date → Timestamp",
+    "uts_or": "OR",
+    "uts_local": "Local",
+    "uts_relative": "Relative"
   },
   "toolTags": {
     "spinner-wheel": [

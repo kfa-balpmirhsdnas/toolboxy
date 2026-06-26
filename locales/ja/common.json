@@ -3232,6 +3232,16 @@
       "CSVデータを貼り付けます。",
       "区切り文字を選びます。",
       "変換されたJSONをコピーまたはダウンロードします。"
+    ],
+    "password-generator": [
+      "長さと文字オプションを設定します。",
+      "生成する個数を選びます。",
+      "生成してパスワードをコピーします。"
+    ],
+    "unix-timestamp": [
+      "Unixタイムスタンプを入力して変換します。",
+      "または日付を選んでタイムスタンプを取得します。",
+      "必要な形式をコピーします。"
     ]
   },
   "games": {
@@ -5172,7 +5182,28 @@
     "ctj_needrows": "ヘッダー行とデータ行が少なくとも1つずつ必要です",
     "ctj_title": "CSV → JSON 変換",
     "ctj_subtitle": "CSVデータを自動型判定でJSONに変換します",
-    "ctj_rows": "({n}行)"
+    "ctj_rows": "({n}行)",
+    "pg_weak": "弱い",
+    "pg_fair": "普通",
+    "pg_strong": "強い",
+    "pg_vstrong": "非常に強い",
+    "pg_strength": "強度",
+    "pg_length": "長さ",
+    "pg_uppercase": "大文字",
+    "pg_lowercase": "小文字",
+    "pg_numbers": "数字",
+    "pg_symbols": "記号",
+    "pg_npw": "{n}個",
+    "pg_generate": "パスワードを生成",
+    "pg_allgen": "生成されたすべて",
+    "uts_current": "現在のUnixタイムスタンプ",
+    "uts_usecurrent": "現在時刻を使用",
+    "uts_ts2date": "タイムスタンプ → 日付",
+    "uts_ph": "例: 1700000000 または 1700000000000 (ms)",
+    "uts_date2ts": "日付 → タイムスタンプ",
+    "uts_or": "または",
+    "uts_local": "ローカル",
+    "uts_relative": "相対時間"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
