@@ -1,9 +1,11 @@
 'use client'
 import { useState, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('calculator')!
 export default function CalculatorPage() {
+  const t = useTranslations('toolui')
   const [display,setDisplay]=useState('0')
   const [expr,setExpr]=useState('')
   const [newNum,setNewNum]=useState(true)
@@ -29,14 +31,14 @@ export default function CalculatorPage() {
         setDisplay(rounded)
         setExpr('')
         setNewNum(true)
-      }catch{setDisplay('Error');setNewNum(true)}
+      }catch{setDisplay(t('ca_error'));setNewNum(true)}
     }else if(key==='sqrt'){
       const n=parseFloat(display)
-      setDisplay(n>=0?parseFloat(Math.sqrt(n).toFixed(10)).toString():'Error')
+      setDisplay(n>=0?parseFloat(Math.sqrt(n).toFixed(10)).toString():t('ca_error'))
       setNewNum(true)
     }else if(key==='1/x'){
       const n=parseFloat(display)
-      setDisplay(n!==0?parseFloat((1/n).toFixed(10)).toString():'Error')
+      setDisplay(n!==0?parseFloat((1/n).toFixed(10)).toString():t('ca_error'))
       setNewNum(true)
     }else if(key==='x2'){
       setDisplay(parseFloat((parseFloat(display)**2).toFixed(10)).toString())
@@ -88,7 +90,7 @@ export default function CalculatorPage() {
         </div>
         {history.length>0&&(
           <div className="bg-gray-50 rounded-xl p-3">
-            <p className="text-xs font-medium text-gray-600 mb-2">History</p>
+            <p className="text-xs font-medium text-gray-600 mb-2">{t('ca_history')}</p>
             {history.map((h,i)=><p key={i} className="text-xs font-mono text-gray-600 py-0.5 border-b border-gray-100 last:border-0">{h}</p>)}
           </div>
         )}

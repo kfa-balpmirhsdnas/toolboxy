@@ -2417,6 +2417,21 @@
       "Add your income and expense items.",
       "Assign a category and amount to each.",
       "See your balance and expense breakdown."
+    ],
+    "inflation-calculator": [
+      "Enter today's amount and number of years.",
+      "Enter the expected inflation rate.",
+      "See the future cost and purchasing power."
+    ],
+    "calculator": [
+      "Tap numbers and operators to calculate.",
+      "Use extra functions like √, x² and 1/x.",
+      "Press = to save it to history."
+    ],
+    "currency-converter": [
+      "Choose the from and to currencies.",
+      "Enter an amount.",
+      "See the converted result and rate."
     ]
   },
   "games": {
@@ -3755,7 +3770,37 @@
     "bg_d_salary": "Salary",
     "bg_d_rent": "Rent",
     "bg_d_groceries": "Groceries",
-    "bg_d_transport": "Transport"
+    "bg_d_transport": "Transport",
+    "if_amount": "Amount today",
+    "if_rate": "Inflation rate (%)",
+    "if_future": "Cost in the future",
+    "if_power": "Future purchasing power",
+    "ca_error": "Error",
+    "ca_history": "History",
+    "cv_from": "From",
+    "cv_to": "To",
+    "cv_disclaimer": "Rates are approximate and updated periodically. For exact rates, consult your bank.",
+    "cv_popular": "Popular pairs",
+    "cur_usd": "US Dollar",
+    "cur_eur": "Euro",
+    "cur_gbp": "British Pound",
+    "cur_jpy": "Japanese Yen",
+    "cur_krw": "Korean Won",
+    "cur_cny": "Chinese Yuan",
+    "cur_aud": "Australian Dollar",
+    "cur_cad": "Canadian Dollar",
+    "cur_chf": "Swiss Franc",
+    "cur_inr": "Indian Rupee",
+    "cur_mxn": "Mexican Peso",
+    "cur_brl": "Brazilian Real",
+    "cur_sgd": "Singapore Dollar",
+    "cur_hkd": "Hong Kong Dollar",
+    "cur_nok": "Norwegian Krone",
+    "cur_sek": "Swedish Krona",
+    "cur_dkk": "Danish Krone",
+    "cur_nzd": "New Zealand Dollar",
+    "cur_zar": "South African Rand",
+    "cur_aed": "UAE Dirham"
   },
   "toolTags": {
     "spinner-wheel": [

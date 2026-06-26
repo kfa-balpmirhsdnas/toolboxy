@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('inflation-calculator')!
 
 export default function InflationCalculatorPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [amount, setAmount] = useState('10000')
   const [years, setYears] = useState('10')
   const [rate, setRate] = useState('3')
@@ -30,23 +32,23 @@ export default function InflationCalculatorPage({ params }: { params: { lang: st
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {field('Amount today', amount, setAmount)}
-          {field('Years', years, setYears)}
-          {field('Inflation rate (%)', rate, setRate)}
+          {field(t('if_amount'), amount, setAmount)}
+          {field(t('ci_years'), years, setYears)}
+          {field(t('if_rate'), rate, setRate)}
         </div>
         {result && (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <div className="rounded-xl border border-brand-100 bg-brand-50 p-5 text-center">
-              <div className="text-sm text-brand-600">Cost in the future</div>
+              <div className="text-sm text-brand-600">{t('if_future')}</div>
               <div className="text-2xl font-bold text-brand-700">{money(result.futureCost)}</div>
             </div>
             <div className="rounded-xl border border-gray-200 bg-gray-50 p-5 text-center">
-              <div className="text-sm text-gray-500">Future purchasing power</div>
+              <div className="text-sm text-gray-500">{t('if_power')}</div>
               <div className="text-2xl font-bold text-gray-900">{money(result.power)}</div>
             </div>
           </div>
         )}
-        <p className="text-xs text-gray-400">Estimate only, not financial advice.</p>
+        <p className="text-xs text-gray-400">{t('al_disclaimer')}</p>
       </div>
 
     </ToolLayout>
