@@ -8,10 +8,27 @@ import path from 'path'
 const SIZE = 512
 const OUT = 'public/icons'
 const FONT = (s) => `700 ${s}px "Malgun Gothic","Yu Gothic UI","Segoe UI",sans-serif`
+// Slight corner rounding: softens the sharp square on desktop installs, yet small
+// enough that a phone launcher's own (larger) mask crops past it — so mobile is
+// unaffected. Corners become transparent.
+const CORNER = 58
+
+function roundRect(x) {
+  const r = CORNER
+  x.beginPath()
+  x.moveTo(r, 0)
+  x.arcTo(SIZE, 0, SIZE, SIZE, r)
+  x.arcTo(SIZE, SIZE, 0, SIZE, r)
+  x.arcTo(0, SIZE, 0, 0, r)
+  x.arcTo(0, 0, SIZE, 0, r)
+  x.closePath()
+}
 
 function bg(x) {
+  roundRect(x); x.clip()
+  // azure-blue gradient matching the Samsung-Wear reference (lighter top → deeper bottom)
   const g = x.createLinearGradient(0, 0, 0, SIZE)
-  g.addColorStop(0, '#34ABE6'); g.addColorStop(0.55, '#0284c7'); g.addColorStop(1, '#045E92')
+  g.addColorStop(0, '#3E9DF5'); g.addColorStop(1, '#1A6BEC')
   x.fillStyle = g; x.fillRect(0, 0, SIZE, SIZE)
 }
 
