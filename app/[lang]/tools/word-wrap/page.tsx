@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -42,6 +43,7 @@ function wrap(text: string, width: number, mode: 'word'|'char'|'break'): string 
 }
 
 export default function WordWrapPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const [width, setWidth] = useState(80)
   const [mode, setMode] = useState<'word'|'char'|'break'>('word')
@@ -66,29 +68,29 @@ export default function WordWrapPage({ params }: { params: { lang: string } }) {
       <div className="space-y-4">
         <div className="flex flex-wrap gap-4 items-end">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Wrap at (chars)</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">{t('ww_wrapat')}</label>
             <input type="number" value={width} min={10} max={500} onChange={e=>{setWidth(parseInt(e.target.value)||80);track()}}
               className="w-24 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Mode</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">{t('ww_mode')}</label>
             <div className="flex gap-1">
-              {([['word','Word'],['break','Break'],['char','Char']] as [typeof mode,string][]).map(([m,label])=>(
+              {([['word','ww_word'],['break','ww_break'],['char','ww_char']] as [typeof mode,string][]).map(([m,label])=>(
                 <button key={m} onClick={()=>{setMode(m);track()}}
                   className={'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (mode===m?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                  {label}
+                  {t(label)}
                 </button>
               ))}
             </div>
           </div>
         </div>
-        <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} placeholder="Paste long text to wrap..." rows={5}
+        <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} placeholder={t('ww_ph')} rows={5}
           className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none" />
         {output && (
           <div>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-gray-500">Max line: {maxLen} chars | {output.split('\n').length} lines</span>
-              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
+              <span className="text-xs text-gray-500">{t('ww_stats',{c:maxLen,l:output.split('\n').length})}</span>
+              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 '+t('ui_copied'):t('ui_copy')}</button>
             </div>
             <div style={{ fontFamily:'monospace' }} className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm whitespace-pre max-h-64 overflow-auto">
               {output}

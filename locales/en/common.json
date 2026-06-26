@@ -2947,6 +2947,16 @@
       "Enter the text to pad.",
       "Set pad char, width and alignment.",
       "Copy the padded result."
+    ],
+    "word-wrap": [
+      "Paste the text to wrap.",
+      "Set the width and mode.",
+      "Copy the wrapped result."
+    ],
+    "line-sort": [
+      "Enter one item per line.",
+      "Choose a sort mode and options.",
+      "Copy the sorted result."
     ]
   },
   "games": {
@@ -4924,7 +4934,27 @@
     "tpd_center": "Center",
     "tpd_right": "Right →",
     "tpd_autofit": "Auto-fit all lines",
-    "tpd_ph": "Enter text to pad..."
+    "tpd_ph": "Enter text to pad...",
+    "ww_wrapat": "Wrap at (chars)",
+    "ww_mode": "Mode",
+    "ww_word": "Word",
+    "ww_break": "Break",
+    "ww_char": "Char",
+    "ww_ph": "Paste long text to wrap...",
+    "ww_stats": "Max line: {c} chars | {l} lines",
+    "ls_az": "A→Z",
+    "ls_za": "Z→A",
+    "ls_shortfirst": "Short first",
+    "ls_longfirst": "Long first",
+    "ls_reverse": "Reverse",
+    "ls_shuffle": "Shuffle",
+    "ls_dedup": "Deduplicate",
+    "ls_trim": "Trim lines",
+    "ls_removeblank": "Remove blanks",
+    "ls_inlines": "Input ({n} lines)",
+    "ls_ph": "One item per line...",
+    "ls_outlines": "Output ({n} lines)",
+    "ls_outph": "Sorted output appears here"
   },
   "toolTags": {
     "spinner-wheel": [
