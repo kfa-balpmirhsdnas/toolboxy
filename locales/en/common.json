@@ -2897,6 +2897,16 @@
       "Type your Markdown.",
       "Switch split, editor or preview view.",
       "Copy the finished Markdown."
+    ],
+    "sitemap-generator": [
+      "Enter one URL per line.",
+      "Choose the change frequency.",
+      "Copy the generated sitemap.xml."
+    ],
+    "column-extractor": [
+      "Paste delimited data.",
+      "Pick the delimiter and column numbers.",
+      "Copy the extracted result."
     ]
   },
   "games": {
@@ -4808,7 +4818,17 @@
     "med_stats": "{w} words · {c} chars",
     "med_copymd": "Copy MD",
     "med_ph": "Write markdown here...",
-    "med_privacy": "All content stays in your browser."
+    "med_privacy": "All content stays in your browser.",
+    "smg_urls": "URLs (one per line)",
+    "smg_freq": "Change frequency",
+    "ce_comma": "Comma (,)",
+    "ce_tab": "Tab",
+    "ce_pipe": "Pipe (|)",
+    "ce_space": "Space",
+    "ce_cols": "Column Numbers (e.g. 1,3)",
+    "ce_ph": "Paste delimited data...",
+    "ce_extract": "Extract Columns",
+    "ce_result": "Result"
   },
   "toolTags": {
     "spinner-wheel": [
