@@ -3152,6 +3152,16 @@
       "XMLを貼り付けます。",
       "インデント幅を選びます。",
       "整形または圧縮してコピーします。"
+    ],
+    "json-to-csv": [
+      "JSON配列を貼り付けます。",
+      "自動でCSVに変換されます。",
+      "コピーまたはダウンロードします。"
+    ],
+    "yaml-to-json": [
+      "YAMLを貼り付けます。",
+      "自動でJSONに変換されます。",
+      "変換されたJSONをコピーします。"
     ]
   },
   "games": {
@@ -5026,7 +5036,11 @@
     "sql_input": "SQL入力",
     "xf_indent": "インデント幅:",
     "xf_input": "XML入力",
-    "ui_format": "整形"
+    "ui_format": "整形",
+    "jc_output": "CSV出力",
+    "ytj_input": "YAML入力",
+    "ytj_output": "JSON出力",
+    "ytj_copyjson": "JSONをコピー"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

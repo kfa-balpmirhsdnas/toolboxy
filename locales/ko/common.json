@@ -3185,6 +3185,16 @@
       "XML을 붙여넣으세요.",
       "들여쓰기 칸 수를 고르세요.",
       "'포맷' 또는 '압축'한 결과를 복사하세요."
+    ],
+    "json-to-csv": [
+      "JSON 배열을 붙여넣으세요.",
+      "자동으로 CSV로 변환됩니다.",
+      "복사하거나 다운로드하세요."
+    ],
+    "yaml-to-json": [
+      "YAML을 붙여넣으세요.",
+      "자동으로 JSON으로 변환됩니다.",
+      "변환된 JSON을 복사하세요."
     ]
   },
   "games": {
@@ -5059,7 +5069,11 @@
     "sql_input": "SQL 입력",
     "xf_indent": "들여쓰기 칸:",
     "xf_input": "XML 입력",
-    "ui_format": "포맷"
+    "ui_format": "포맷",
+    "jc_output": "CSV 출력",
+    "ytj_input": "YAML 입력",
+    "ytj_output": "JSON 출력",
+    "ytj_copyjson": "JSON 복사"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

@@ -2847,6 +2847,16 @@
       "Paste your XML.",
       "Choose the indent size.",
       "Format or minify, then copy."
+    ],
+    "json-to-csv": [
+      "Paste a JSON array.",
+      "It converts to CSV automatically.",
+      "Copy or download the result."
+    ],
+    "yaml-to-json": [
+      "Paste your YAML.",
+      "It converts to JSON automatically.",
+      "Copy the converted JSON."
     ]
   },
   "games": {
@@ -4721,7 +4731,11 @@
     "sql_input": "SQL Input",
     "xf_indent": "Indent spaces:",
     "xf_input": "XML Input",
-    "ui_format": "Format"
+    "ui_format": "Format",
+    "jc_output": "CSV Output",
+    "ytj_input": "YAML Input",
+    "ytj_output": "JSON Output",
+    "ytj_copyjson": "Copy JSON"
   },
   "toolTags": {
     "spinner-wheel": [

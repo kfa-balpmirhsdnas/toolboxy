@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 function pval(v){
@@ -30,20 +31,21 @@ function parseYaml(yaml){
   return root
 }
 export default function Page(){
+  const t = useTranslations('toolui')
   const [yaml,setYaml]=useState('name: John Doe\nage: 30\nactive: true\naddress:\n  city: New York\n  zip: "10001"\nskills:\n  - JavaScript\n  - Python')
   let json=''
   try{json=JSON.stringify(parseYaml(yaml),null,2)}catch(e){json='Error: '+e.message}
-  const tool=TOOLS.find(t=>t.slug==='yaml-to-json')
+  const tool=TOOLS.find(x=>x.slug==='yaml-to-json')
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4 space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">YAML Input</label>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('ytj_input')}</label>
             <textarea value={yaml} onChange={e=>setYaml(e.target.value)} rows={14} className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-sm resize-none"/></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">JSON Output</label>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('ytj_output')}</label>
             <textarea value={json} readOnly rows={14} className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-sm resize-none"/></div>
         </div>
-        <button onClick={()=>navigator.clipboard?.writeText(json)} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">Copy JSON</button>
+        <button onClick={()=>navigator.clipboard?.writeText(json)} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">{t('ytj_copyjson')}</button>
       </div>
     </ToolLayout>
   )
