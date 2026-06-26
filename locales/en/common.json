@@ -2787,6 +2787,16 @@
       "Choose a die type (d6, d20, etc.).",
       "Set how many dice.",
       "Press Roll to see the results and total."
+    ],
+    "coin-flip": [
+      "Choose how many coins to flip at once.",
+      "Click the coin or press Flip.",
+      "See heads/tails results and stats."
+    ],
+    "text-repeater": [
+      "Enter the text to repeat.",
+      "Set repeat count and separator.",
+      "Copy the generated result."
     ]
   },
   "games": {
@@ -4594,7 +4604,19 @@
     "lr_shuffle": "Shuffle",
     "dr_count": "Dice",
     "dr_rolling": "Rolling...",
-    "dr_roll": "Roll"
+    "dr_roll": "Roll",
+    "cf_flip": "Flip",
+    "cf_atonce": "coins at once",
+    "cf_clicktoflip": "Click to flip",
+    "cf_heads": "Heads",
+    "cf_tails": "Tails",
+    "cf_flipping": "Flipping...",
+    "cf_results": "Results ({n} total)",
+    "cf_reset": "Reset stats",
+    "tr_label": "Text to repeat",
+    "tr_count": "Repeat count",
+    "tr_custom_sep": "Custom separator",
+    "tr_stats": "{c} chars, {r} repetitions"
   },
   "toolTags": {
     "spinner-wheel": [
