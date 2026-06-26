@@ -94,7 +94,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
             <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-72 overflow-auto">
               {entries.map((e, i) => (
                 <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
-                  <span className="flex-1 truncate text-gray-700">{e.name}</span>
+                  <span className="flex-1 truncate text-gray-700"><span className="text-gray-400">{(name.replace(/\.zip$/i, '') || 'extracted')}/</span>{e.name}</span>
                   <span className="text-gray-400 shrink-0">{fmt(e.size)}</span>
                   <button onClick={() => download(e)} className="shrink-0 px-2.5 py-1 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">⬇</button>
                 </div>
