@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -35,6 +36,7 @@ const PRESETS = [
 ]
 
 export default function Base64UrlEncoderPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('Hello, World!')
   const [mode, setMode] = useState<Mode>('encode')
   const [type, setType] = useState<'base64'|'url'>('base64')
@@ -65,10 +67,10 @@ export default function Base64UrlEncoderPage({ params }: { params: { lang: strin
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2 items-center">
           <div className="flex gap-1">
-            {(['base64','url'] as const).map(t=>(
-              <button key={t} onClick={()=>{setType(t);track()}}
-                className={'px-3 py-1.5 rounded-lg text-sm font-medium uppercase transition-colors ' + (type===t?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                {t==='base64'?'Base64':'URL encode'}
+            {(['base64','url'] as const).map(ty=>(
+              <button key={ty} onClick={()=>{setType(ty);track()}}
+                className={'px-3 py-1.5 rounded-lg text-sm font-medium uppercase transition-colors ' + (type===ty?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
+                {ty==='base64'?'Base64':t('b64u_url')}
               </button>
             ))}
           </div>
@@ -76,7 +78,7 @@ export default function Base64UrlEncoderPage({ params }: { params: { lang: strin
             {(['encode','decode'] as const).map(m=>(
               <button key={m} onClick={()=>{setMode(m);track()}}
                 className={'px-3 py-1.5 rounded-lg text-sm capitalize transition-colors ' + (mode===m?'bg-gray-700 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                {m}
+                {t(m==='encode'?'ui_encode':'ui_decode')}
               </button>
             ))}
           </div>
@@ -85,7 +87,7 @@ export default function Base64UrlEncoderPage({ params }: { params: { lang: strin
               {(['standard','url-safe'] as Variant[]).map(v=>(
                 <button key={v} onClick={()=>{setVariant(v);track()}}
                   className={'px-2.5 py-1.5 rounded-lg text-xs transition-colors ' + (variant===v?'bg-gray-700 text-white':'bg-gray-100 text-gray-600')}>
-                  {v}
+                  {t(v==='standard'?'b64u_standard':'b64u_urlsafe')}
                 </button>
               ))}
             </div>
@@ -99,14 +101,14 @@ export default function Base64UrlEncoderPage({ params }: { params: { lang: strin
             </button>
           ))}
         </div>
-        <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} rows={3} placeholder="Enter text..."
+        <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} rows={3} placeholder={t('ui_text_ph')}
           className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none" />
         {error && <p className="text-xs text-red-600">{error}</p>}
         {output && (
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">Output ({output.length} chars)</label>
-              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
+              <label className="text-xs font-medium text-gray-600">{t('b64u_out',{n:output.length})}</label>
+              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 '+t('ui_copied'):t('ui_copy')}</button>
             </div>
             <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono break-all">{output}</div>
           </div>

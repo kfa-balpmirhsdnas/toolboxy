@@ -2962,6 +2962,16 @@
       "Choose a conversion direction.",
       "Enter text or Morse code.",
       "Copy the result or play it as audio."
+    ],
+    "base64-url-encoder": [
+      "Choose Base64 or URL, encode or decode.",
+      "Enter your text.",
+      "Copy the converted result."
+    ],
+    "text-sort-by-length": [
+      "Enter one item per line.",
+      "Pick a sort mode and options.",
+      "Copy the sorted result."
     ]
   },
   "games": {
@@ -4984,7 +4994,18 @@
     "np_lychrel": "⚠ Possible Lychrel number (no palindrome after 50 steps)",
     "np_from": "From",
     "np_to": "To (max 10,000)",
-    "np_found": "Found {n} palindromes:"
+    "np_found": "Found {n} palindromes:",
+    "b64u_url": "URL encode",
+    "b64u_standard": "standard",
+    "b64u_urlsafe": "url-safe",
+    "b64u_out": "Output ({n} chars)",
+    "tsl_lenasc": "Length ↑",
+    "tsl_lendesc": "Length ↓",
+    "tsl_countchars": "Count chars",
+    "tsl_countwords": "Count words",
+    "tsl_showlen": "Show length",
+    "tsl_trim": "Trim",
+    "tsl_result": "Result ({n} lines)"
   },
   "toolTags": {
     "spinner-wheel": [
