@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -21,6 +22,7 @@ const FLIP: Record<string, string> = {
 }
 
 export default function FlipTextPage() {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const flipped = input.split('').map(c => FLIP[c] ?? c).reverse().join('')
 
@@ -28,19 +30,19 @@ export default function FlipTextPage() {
     <ToolLayout tool={tool}>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Input Text</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">{t('ui_input')}</label>
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Type text to flip upside down..."
+            placeholder={t('ft_ph')}
             rows={4}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Flipped Text</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">{t('ft_output')}</label>
           <div className="w-full border border-gray-200 bg-gray-50 rounded-lg px-4 py-3 font-mono text-gray-800 min-h-[80px] break-all">
-            {flipped || <span className="text-gray-400">Flipped text appears here...</span>}
+            {flipped || <span className="text-gray-400">{t('ui_output_ph')}</span>}
           </div>
         </div>
         {flipped && (
@@ -48,7 +50,7 @@ export default function FlipTextPage() {
             onClick={() => navigator.clipboard.writeText(flipped)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
           >
-            Copy
+            {t('ui_copy')}
           </button>
         )}
       </div>

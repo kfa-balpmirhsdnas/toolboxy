@@ -2857,6 +2857,16 @@
       "2つのJSON（A・B）を貼り付けます。",
       "「比較」を押します。",
       "追加・削除・変更された項目を確認します。"
+    ],
+    "flip-text": [
+      "テキストを入力します。",
+      "上下反転した結果が表示されます。",
+      "コピーして使います。"
+    ],
+    "fancy-text-generator": [
+      "テキストを入力します。",
+      "Unicodeのフォントスタイルを見ます。",
+      "スタイルをクリックしてコピーします。"
     ]
   },
   "games": {
@@ -4353,7 +4363,18 @@
     "jd_a": "A (元)",
     "jd_b": "B (変更後)",
     "jd_nodiff": "✓ 差分なし — 2つのJSONは同一です。",
-    "jd_found": "件の差分:"
+    "jd_found": "件の差分:",
+    "ft_ph": "反転するテキストを入力...",
+    "ft_output": "反転したテキスト",
+    "fty_bold": "太字",
+    "fty_bolditalic": "太字斜体",
+    "fty_script": "筆記体",
+    "fty_mono": "等幅",
+    "fty_fullwidth": "全角",
+    "fty_circled": "丸文字",
+    "fty_strike": "取り消し線",
+    "fty_underline": "下線",
+    "fty_note": "Instagram・TikTok・プロフィールなどに貼れるUnicodeの\"フォント\"です。"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

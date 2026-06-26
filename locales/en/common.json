@@ -2552,6 +2552,16 @@
       "Paste two JSONs (A and B).",
       "Press Compare.",
       "See added, removed and changed entries."
+    ],
+    "flip-text": [
+      "Type your text.",
+      "See it flipped upside down.",
+      "Copy and use it anywhere."
+    ],
+    "fancy-text-generator": [
+      "Type your text.",
+      "Browse the Unicode font styles.",
+      "Click a style to copy it."
     ]
   },
   "games": {
@@ -4048,7 +4058,18 @@
     "jd_a": "A (Original)",
     "jd_b": "B (Modified)",
     "jd_nodiff": "✓ No differences found — JSONs are identical.",
-    "jd_found": "difference(s) found:"
+    "jd_found": "difference(s) found:",
+    "ft_ph": "Type text to flip upside down...",
+    "ft_output": "Flipped Text",
+    "fty_bold": "Bold",
+    "fty_bolditalic": "Bold Italic",
+    "fty_script": "Script",
+    "fty_mono": "Monospace",
+    "fty_fullwidth": "Fullwidth",
+    "fty_circled": "Circled",
+    "fty_strike": "Strikethrough",
+    "fty_underline": "Underline",
+    "fty_note": "Unicode \"fonts\" you can paste into Instagram, TikTok, bios and more."
   },
   "toolTags": {
     "spinner-wheel": [
