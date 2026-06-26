@@ -2931,7 +2931,11 @@
     "uz_less": "Show less",
     "uz_extracted": "✓ Extracted {n} files into the “{folder}” folder.",
     "zf_done": "✓ Compressed {n} files into “{name}” and downloaded it.",
-    "uz_makefolder": "Auto-create a folder named after the zip"
+    "uz_makefolder": "Auto-create a folder named after the zip",
+    "zf_method": "Compression",
+    "zf_method_normal": "Normal",
+    "zf_method_max": "Maximum (slower)",
+    "zf_method_min": "None — bundle only (fastest)"
   },
   "toolTags": {
     "spinner-wheel": [

@@ -3231,7 +3231,11 @@
     "uz_less": "閉じる",
     "uz_extracted": "✓ 「{folder}」フォルダに{n}件を展開しました。",
     "zf_done": "✓ {n}件を「{name}」に圧縮してダウンロードしました。",
-    "uz_makefolder": "ZIP名のフォルダを自動作成"
+    "uz_makefolder": "ZIP名のフォルダを自動作成",
+    "zf_method": "圧縮方法",
+    "zf_method_normal": "標準",
+    "zf_method_max": "最大圧縮（遅い）",
+    "zf_method_min": "圧縮なし（速い）"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

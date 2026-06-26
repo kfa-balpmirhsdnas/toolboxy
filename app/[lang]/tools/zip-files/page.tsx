@@ -16,6 +16,7 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const [files, setFiles] = useState<File[]>([])
   const [zipName, setZipName] = useState('')
+  const [level, setLevel] = useState(6) // fflate deflate level: 6 normal, 9 max, 0 store-only
   const [out, setOut] = useState<{ url: string; size: number; n: number; name: string } | null>(null)
   const [busy, setBusy] = useState(false)
   const [showAll, setShowAll] = useState(false)
@@ -81,7 +82,7 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
         while (key in data) { const d = orig.lastIndexOf('.'); key = d > 0 ? `${orig.slice(0, d)} (${i})${orig.slice(d)}` : `${orig} (${i})`; i++ }
         data[key] = new Uint8Array(await f.arrayBuffer())
       }
-      const blob = new Blob([zipSync(data, { level: 6 })], { type: 'application/zip' })
+      const blob = new Blob([zipSync(data, { level: level as 0 | 6 | 9 })], { type: 'application/zip' })
       const url = URL.createObjectURL(blob), name = fileName()
       setOut({ url, size: blob.size, n: files.length, name })
       downloadUrl(url, name) // auto-download once it's ready
@@ -122,6 +123,16 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
               </button>
             )}
             <p className="text-xs text-gray-400">{!showAll && files.length > LIMIT ? t('uz_entries_some', { shown: LIMIT, total: files.length }) : t('zf_files', { n: files.length })} · {fmt(totalSize)}</p>
+
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">{t('zf_method')}</label>
+              <select value={level} onChange={(e) => setLevel(Number(e.target.value))}
+                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                <option value={6}>{t('zf_method_normal')}</option>
+                <option value={9}>{t('zf_method_max')}</option>
+                <option value={0}>{t('zf_method_min')}</option>
+              </select>
+            </div>
 
             <div>
               <label className="block text-xs text-gray-500 mb-1">{t('zf_name')}</label>
