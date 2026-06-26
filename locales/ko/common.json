@@ -3375,6 +3375,16 @@
       "이미지를 올리세요.",
       "너비·높이·형식·품질을 설정하세요.",
       "크기를 조절해 다운로드하세요."
+    ],
+    "webp-converter": [
+      "이미지를 올리세요.",
+      "변환 형식과 품질을 고르세요.",
+      "변환 후 다운로드하세요."
+    ],
+    "svg-to-png": [
+      "SVG 파일을 올리거나 코드를 붙여넣으세요.",
+      "배율을 설정하세요.",
+      "PNG로 변환해 다운로드하세요."
     ]
   },
   "games": {
@@ -5544,7 +5554,21 @@
     "ir_free": "자유",
     "ir_quality": "품질",
     "ir_resize": "이미지 크기 조절",
-    "ir_result": "결과"
+    "ir_result": "결과",
+    "wc_drop": "이미지를 끌어다 놓거나 클릭하여 선택",
+    "wc_convertto": "변환 대상",
+    "wc_convertbtn": "{f}(으)로 변환",
+    "wc_converting": "변환 중…",
+    "wc_ready": "준비됨",
+    "wc_smaller": "{n}% 감소",
+    "wc_converted": "변환됨",
+    "stp_invalidsvg": "잘못된 SVG",
+    "stp_renderfail": "SVG 렌더링 실패",
+    "stp_upload": "SVG 파일 업로드",
+    "stp_paste": "또는 SVG 코드 붙여넣기",
+    "stp_scale": "배율: {s}x (출력: {d})",
+    "stp_convert": "PNG로 변환",
+    "stp_download": "PNG 다운로드 ({w}x{h}px)"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

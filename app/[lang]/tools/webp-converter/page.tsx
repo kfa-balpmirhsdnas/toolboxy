@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -15,6 +16,7 @@ const FORMATS = { webp: 'image/webp', png: 'image/png', jpeg: 'image/jpeg' } as 
 type Fmt = keyof typeof FORMATS
 
 export default function WebpConverterPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState('')
   const [fmt, setFmt] = useState<Fmt>('webp')
@@ -66,21 +68,21 @@ export default function WebpConverterPage({ params }: { params: { lang: string }
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
           <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
           {file ? <p className="text-sm font-medium text-gray-700">{file.name} <span className="text-gray-400">({fmtBytes(file.size)})</span></p>
-            : <><p className="text-4xl mb-2">🖼</p><p className="text-sm font-medium text-gray-600">Drop an image or click to select</p></>}
+            : <><p className="text-4xl mb-2">🖼</p><p className="text-sm font-medium text-gray-600">{t('wc_drop')}</p></>}
         </div>
 
         {preview && <img src={preview} alt="preview" className="max-h-44 rounded-xl border border-gray-200 object-contain mx-auto bg-gray-100" />}
 
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-600">Convert to</label>
+            <label className="text-sm text-gray-600">{t('wc_convertto')}</label>
             <select value={fmt} onChange={(e) => setFmt(e.target.value as Fmt)} className="text-sm border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-400">
               <option value="webp">WebP</option><option value="png">PNG</option><option value="jpeg">JPG</option>
             </select>
           </div>
           {fmt !== 'png' && (
             <div className="flex items-center gap-2 flex-1 min-w-[10rem]">
-              <label className="text-sm text-gray-600 shrink-0">Quality {Math.round(quality * 100)}%</label>
+              <label className="text-sm text-gray-600 shrink-0">{t('ir_quality')} {Math.round(quality * 100)}%</label>
               <input type="range" min={0.3} max={1} step={0.01} value={quality} onChange={(e) => setQuality(+e.target.value)} className="flex-1" />
             </div>
           )}
@@ -88,16 +90,16 @@ export default function WebpConverterPage({ params }: { params: { lang: string }
 
         <button onClick={convert} disabled={!file || loading}
           className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors">
-          {loading ? 'Converting…' : `Convert to ${fmt.toUpperCase()}`}
+          {loading ? t('wc_converting') : t('wc_convertbtn', { f: fmt.toUpperCase() })}
         </button>
 
         {result && (
           <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-xl">
             <div>
-              <p className="text-sm font-semibold text-green-800">{fmt.toUpperCase()} ready · {fmtBytes(result.size)}</p>
-              {file && <p className="text-xs text-green-600">{result.size < file.size ? `${Math.round((1 - result.size / file.size) * 100)}% smaller` : 'converted'}</p>}
+              <p className="text-sm font-semibold text-green-800">{fmt.toUpperCase()} {t('wc_ready')} · {fmtBytes(result.size)}</p>
+              {file && <p className="text-xs text-green-600">{result.size < file.size ? t('wc_smaller', { n: Math.round((1 - result.size / file.size) * 100) }) : t('wc_converted')}</p>}
             </div>
-            <button onClick={download} className="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700">⬇ Download</button>
+            <button onClick={download} className="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700">⬇ {t('ui_download')}</button>
           </div>
         )}
       </div>

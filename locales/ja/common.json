@@ -3342,6 +3342,16 @@
       "画像をアップロードします。",
       "幅・高さ・形式・品質を設定します。",
       "リサイズしてダウンロードします。"
+    ],
+    "webp-converter": [
+      "画像をアップロードします。",
+      "変換形式と品質を選びます。",
+      "変換してダウンロードします。"
+    ],
+    "svg-to-png": [
+      "SVGファイルをアップロードかコードを貼り付けます。",
+      "倍率を設定します。",
+      "PNGに変換してダウンロードします。"
     ]
   },
   "games": {
@@ -5511,7 +5521,21 @@
     "ir_free": "自由",
     "ir_quality": "品質",
     "ir_resize": "画像をリサイズ",
-    "ir_result": "結果"
+    "ir_result": "結果",
+    "wc_drop": "画像をドロップまたはクリックして選択",
+    "wc_convertto": "変換先",
+    "wc_convertbtn": "{f}に変換",
+    "wc_converting": "変換中…",
+    "wc_ready": "準備完了",
+    "wc_smaller": "{n}% 縮小",
+    "wc_converted": "変換済み",
+    "stp_invalidsvg": "無効なSVG",
+    "stp_renderfail": "SVGのレンダリングに失敗",
+    "stp_upload": "SVGファイルをアップロード",
+    "stp_paste": "またはSVGコードを貼り付け",
+    "stp_scale": "倍率: {s}x (出力: {d})",
+    "stp_convert": "PNGに変換",
+    "stp_download": "PNGをダウンロード ({w}x{h}px)"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

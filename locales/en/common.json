@@ -3037,6 +3037,16 @@
       "Upload an image.",
       "Set width, height, format and quality.",
       "Resize and download the result."
+    ],
+    "webp-converter": [
+      "Upload an image.",
+      "Choose target format and quality.",
+      "Convert and download."
+    ],
+    "svg-to-png": [
+      "Upload an SVG file or paste code.",
+      "Set the scale.",
+      "Convert to PNG and download."
     ]
   },
   "games": {
@@ -5206,7 +5216,21 @@
     "ir_free": "Free",
     "ir_quality": "Quality",
     "ir_resize": "Resize Image",
-    "ir_result": "Result"
+    "ir_result": "Result",
+    "wc_drop": "Drop an image or click to select",
+    "wc_convertto": "Convert to",
+    "wc_convertbtn": "Convert to {f}",
+    "wc_converting": "Converting…",
+    "wc_ready": "ready",
+    "wc_smaller": "{n}% smaller",
+    "wc_converted": "converted",
+    "stp_invalidsvg": "Invalid SVG",
+    "stp_renderfail": "Failed to render SVG",
+    "stp_upload": "Upload SVG File",
+    "stp_paste": "Or paste SVG code",
+    "stp_scale": "Scale: {s}x (output: {d})",
+    "stp_convert": "Convert to PNG",
+    "stp_download": "Download PNG ({w}x{h}px)"
   },
   "toolTags": {
     "spinner-wheel": [
