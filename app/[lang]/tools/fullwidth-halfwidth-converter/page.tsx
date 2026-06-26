@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -22,6 +23,7 @@ function toFullwidth(s: string): string {
 type Mode = 'to-half' | 'to-full'
 
 export default function FullwidthHalfwidthPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const [mode, setMode] = useState<Mode>('to-half')
   const [copied, setCopied] = useState(false)
@@ -39,7 +41,7 @@ export default function FullwidthHalfwidthPage({ params }: { params: { lang: str
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2">
-          {([['to-half', '全角 → 半角  (Full → Half)'], ['to-full', '半角 → 全角  (Half → Full)']] as [Mode, string][]).map(
+          {([['to-half', 'fwh_to_half'], ['to-full', 'fwh_to_full']] as [Mode, string][]).map(
             ([id, label]) => (
               <button
                 key={id}
@@ -48,7 +50,7 @@ export default function FullwidthHalfwidthPage({ params }: { params: { lang: str
                   mode === id ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-400'
                 }`}
               >
-                {label}
+                {t(label)}
               </button>
             ),
           )}
@@ -70,13 +72,13 @@ export default function FullwidthHalfwidthPage({ params }: { params: { lang: str
           />
           {output && (
             <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">
-              {copied ? '✓ Copied' : 'Copy'}
+              {copied ? t('ui_copied') : t('ui_copy')}
             </button>
           )}
         </div>
 
         <p className="text-xs text-gray-400">
-          {input.length} chars · Converts ASCII letters, digits, symbols and spaces. Runs entirely in your browser.
+          {input.length} {t('ui_chars')} · {t('fwh_note')}
         </p>
       </div>
 

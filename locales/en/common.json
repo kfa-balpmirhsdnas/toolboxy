@@ -2562,6 +2562,16 @@
       "Type your text.",
       "Browse the Unicode font styles.",
       "Click a style to copy it."
+    ],
+    "fullwidth-halfwidth-converter": [
+      "Choose a direction (full↔half width).",
+      "Enter your text.",
+      "Copy the converted result."
+    ],
+    "anagram-solver": [
+      "Pick Check or Find mode.",
+      "Enter a word (and a second one to check).",
+      "See if they are anagrams or list found anagrams."
     ]
   },
   "games": {
@@ -4069,7 +4079,22 @@
     "fty_circled": "Circled",
     "fty_strike": "Strikethrough",
     "fty_underline": "Underline",
-    "fty_note": "Unicode \"fonts\" you can paste into Instagram, TikTok, bios and more."
+    "fty_note": "Unicode \"fonts\" you can paste into Instagram, TikTok, bios and more.",
+    "fwh_to_half": "Full → Half",
+    "fwh_to_full": "Half → Full",
+    "fwh_note": "Converts ASCII letters, digits, symbols and spaces. Runs entirely in your browser.",
+    "as_check": "Check Anagram",
+    "as_find": "Find Anagrams",
+    "as_first": "First word",
+    "as_findword": "Word to find anagrams of",
+    "as_ph1": "Enter a word...",
+    "as_sorted": "Sorted letters: ",
+    "as_second": "Second word",
+    "as_ph2": "Enter another word...",
+    "as_yes": "They are anagrams!",
+    "as_no": "Not anagrams",
+    "as_found": "Found {n} anagram(s) in our word list:",
+    "as_none": "No anagrams found in our word list for \"{w}\""
   },
   "toolTags": {
     "spinner-wheel": [
