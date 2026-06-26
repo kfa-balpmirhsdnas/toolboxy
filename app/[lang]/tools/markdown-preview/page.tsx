@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
@@ -21,18 +22,19 @@ function mdToHtml(md:string):string{
 const DEMO='# Hello Markdown\n\nThis is **bold** and *italic* text.\n\n- Item one\n- Item two\n\n> A blockquote\n\n[Link](https://toolboxy.net)'
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='markdown-preview')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='markdown-preview')
   const [md,setMd]=useState(DEMO)
   return (
     <ToolLayout tool={tool}>
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
-          <label className='block text-sm font-medium mb-1'>Markdown</label>
+          <label className='block text-sm font-medium mb-1'>{t('mdp_md')}</label>
           <textarea value={md} onChange={e=>setMd(e.target.value)}
             className='w-full h-80 p-3 border rounded font-mono text-sm resize-y'/>
         </div>
         <div>
-          <label className='block text-sm font-medium mb-1'>Preview</label>
+          <label className='block text-sm font-medium mb-1'>{t('htg_preview')}</label>
           <div className='h-80 p-3 border rounded overflow-auto'
             dangerouslySetInnerHTML={{__html:mdToHtml(md)}}/>
         </div>

@@ -2867,6 +2867,16 @@
       "Paste your YAML.",
       "Its syntax is validated automatically.",
       "See any error location."
+    ],
+    "markdown-preview": [
+      "Type Markdown on the left.",
+      "See the live preview on the right.",
+      "Supports headings, bold, lists, links and more."
+    ],
+    "markdown-to-html": [
+      "Type your Markdown.",
+      "Switch between HTML and Preview.",
+      "Copy the converted HTML."
     ]
   },
   "games": {
@@ -4755,7 +4765,8 @@
     "yv_tabs": "Line {n}: YAML does not allow tabs for indentation",
     "yv_ph": "Paste YAML to validate...",
     "yv_valid": "Valid YAML ({n} lines)",
-    "yv_invalid": "Invalid"
+    "yv_invalid": "Invalid",
+    "mdp_md": "Markdown"
   },
   "toolTags": {
     "spinner-wheel": [
