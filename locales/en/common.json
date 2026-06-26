@@ -2717,6 +2717,16 @@
       "Enter your goal and starting amount.",
       "Enter monthly deposit and return rate.",
       "See how long it takes to reach your goal."
+    ],
+    "interest-calculator": [
+      "Choose compound or simple mode.",
+      "Enter principal, rate and years.",
+      "See interest, total and the growth chart."
+    ],
+    "retirement-calculator": [
+      "Enter your current and retirement age.",
+      "Enter savings, monthly contribution and return.",
+      "See your projected savings at retirement."
     ]
   },
   "games": {
@@ -4429,7 +4439,24 @@
     "sg_y": "y",
     "sg_m": "m",
     "sg_months": "months",
-    "sg_unreachable": "Not reachable within 100 years — increase your monthly deposit."
+    "sg_unreachable": "Not reachable within 100 years — increase your monthly deposit.",
+    "ic_compound": "Compound",
+    "ic_simple": "Simple",
+    "ic_principal": "Principal ($)",
+    "ic_principal_s": "Principal",
+    "ic_f_annual": "Annual (1x)",
+    "ic_f_quarterly": "Quarterly (4x)",
+    "ic_f_monthly": "Monthly (12x)",
+    "ic_f_daily": "Daily (365x)",
+    "ic_interest": "Interest",
+    "ic_total": "Total",
+    "ic_growth": "Growth chart",
+    "rc_age": "Current age",
+    "rc_retire": "Retirement age",
+    "rc_savings": "Current savings",
+    "rc_monthly": "Monthly contribution",
+    "rc_fv": "Savings at retirement",
+    "rc_growth": "Growth"
   },
   "toolTags": {
     "spinner-wheel": [

@@ -3055,6 +3055,16 @@
       "목표 금액과 시작 금액을 입력하세요.",
       "매월 저축액과 수익률을 입력하세요.",
       "목표 달성까지 걸리는 기간을 확인하세요."
+    ],
+    "interest-calculator": [
+      "복리/단리 모드를 고르세요.",
+      "원금·이자율·기간을 입력하세요.",
+      "이자·합계와 성장 차트를 확인하세요."
+    ],
+    "retirement-calculator": [
+      "현재 나이와 은퇴 나이를 입력하세요.",
+      "현재 저축액·매월 납입금·수익률을 입력하세요.",
+      "은퇴 시 예상 저축액을 확인하세요."
     ]
   },
   "games": {
@@ -4767,7 +4777,24 @@
     "sg_y": "년",
     "sg_m": "개월",
     "sg_months": "개월",
-    "sg_unreachable": "100년 내 달성 불가 — 매월 저축액을 늘리세요."
+    "sg_unreachable": "100년 내 달성 불가 — 매월 저축액을 늘리세요.",
+    "ic_compound": "복리",
+    "ic_simple": "단리",
+    "ic_principal": "원금 ($)",
+    "ic_principal_s": "원금",
+    "ic_f_annual": "연 1회",
+    "ic_f_quarterly": "분기 (4회)",
+    "ic_f_monthly": "매월 (12회)",
+    "ic_f_daily": "매일 (365회)",
+    "ic_interest": "이자",
+    "ic_total": "합계",
+    "ic_growth": "성장 차트",
+    "rc_age": "현재 나이",
+    "rc_retire": "은퇴 나이",
+    "rc_savings": "현재 저축액",
+    "rc_monthly": "매월 납입금",
+    "rc_fv": "은퇴 시 저축액",
+    "rc_growth": "수익"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
