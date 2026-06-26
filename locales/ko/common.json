@@ -3435,6 +3435,16 @@
       "이미지를 올리세요.",
       "Data URL·Base64·CSS·HTML 탭을 고르세요.",
       "원하는 형식을 복사하세요."
+    ],
+    "romaji-kana-converter": [
+      "변환 방향을 고르세요.",
+      "로마자나 가나를 입력하세요.",
+      "변환 결과를 복사하세요."
+    ],
+    "whitespace-remover": [
+      "텍스트를 붙여넣으세요.",
+      "제거 모드를 고르세요.",
+      "정리된 결과를 복사하세요."
     ]
   },
   "games": {
@@ -5685,7 +5695,19 @@
     "itb_base64": "Base64",
     "itb_overhead": "오버헤드",
     "itb_dataurl": "데이터 URL",
-    "itb_base64only": "Base64만"
+    "itb_base64only": "Base64만",
+    "rk_r2h": "로마자 → 히라가나",
+    "rk_r2k": "로마자 → 가타카나",
+    "rk_k2r": "가나 → 로마자",
+    "rk_stats": "입력 {i}자 · 출력 {o}자 · 실시간 변환, 브라우저를 벗어나지 않습니다.",
+    "wsr_trim": "줄 공백 제거",
+    "wsr_collapse": "공백 축소",
+    "wsr_all": "모두 제거",
+    "wsr_blank": "빈 줄 제거",
+    "wsr_tabs": "탭을 공백으로",
+    "wsr_ph": "공백이 있는 텍스트를 붙여넣으세요...",
+    "wsr_remove": "공백 제거",
+    "wsr_copyresult": "결과 복사"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

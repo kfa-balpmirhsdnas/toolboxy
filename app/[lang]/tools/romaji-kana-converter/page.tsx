@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -91,6 +92,7 @@ function kanaToRomaji(input: string): string {
 type Mode = 'romaji-hira' | 'romaji-kata' | 'kana-romaji'
 
 export default function RomajiKanaPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const [mode, setMode] = useState<Mode>('romaji-hira')
   const [copied, setCopied] = useState(false)
@@ -109,9 +111,9 @@ export default function RomajiKanaPage({ params }: { params: { lang: string } })
   }
 
   const modes: { id: Mode; label: string }[] = [
-    { id: 'romaji-hira', label: 'Romaji → Hiragana' },
-    { id: 'romaji-kata', label: 'Romaji → Katakana' },
-    { id: 'kana-romaji', label: 'Kana → Romaji' },
+    { id: 'romaji-hira', label: 'rk_r2h' },
+    { id: 'romaji-kata', label: 'rk_r2k' },
+    { id: 'kana-romaji', label: 'rk_k2r' },
   ]
 
   return (
@@ -126,7 +128,7 @@ export default function RomajiKanaPage({ params }: { params: { lang: string } })
                 mode === m.id ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-400'
               }`}
             >
-              {m.label}
+              {t(m.label)}
             </button>
           ))}
         </div>
@@ -147,13 +149,13 @@ export default function RomajiKanaPage({ params }: { params: { lang: string } })
           />
           {output && (
             <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">
-              {copied ? '✓ Copied' : 'Copy'}
+              {copied ? '✓ '+t('ui_copied') : t('ui_copy')}
             </button>
           )}
         </div>
 
         <p className="text-xs text-gray-400">
-          {input.length} chars in · {output.length} chars out · Real-time conversion, nothing leaves your browser.
+          {t('rk_stats',{i:input.length,o:output.length})}
         </p>
       </div>
 

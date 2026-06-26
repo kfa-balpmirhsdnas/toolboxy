@@ -3097,6 +3097,16 @@
       "Upload an image.",
       "Pick Data URL, Base64, CSS or HTML tab.",
       "Copy the format you need."
+    ],
+    "romaji-kana-converter": [
+      "Choose a conversion direction.",
+      "Type romaji or kana.",
+      "Copy the converted result."
+    ],
+    "whitespace-remover": [
+      "Paste your text.",
+      "Choose a removal mode.",
+      "Copy the cleaned result."
     ]
   },
   "games": {
@@ -5347,7 +5357,19 @@
     "itb_base64": "Base64",
     "itb_overhead": "Overhead",
     "itb_dataurl": "Data URL",
-    "itb_base64only": "Base64 only"
+    "itb_base64only": "Base64 only",
+    "rk_r2h": "Romaji → Hiragana",
+    "rk_r2k": "Romaji → Katakana",
+    "rk_k2r": "Kana → Romaji",
+    "rk_stats": "{i} chars in · {o} chars out · Real-time conversion, nothing leaves your browser.",
+    "wsr_trim": "Trim Lines",
+    "wsr_collapse": "Collapse Spaces",
+    "wsr_all": "Remove All",
+    "wsr_blank": "Remove Blank Lines",
+    "wsr_tabs": "Tabs to Spaces",
+    "wsr_ph": "Paste text with whitespace...",
+    "wsr_remove": "Remove Whitespace",
+    "wsr_copyresult": "Copy Result"
   },
   "toolTags": {
     "spinner-wheel": [
