@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -33,8 +34,9 @@ function gradeColor(l:string):string{
 const tool = getToolBySlug('grade-calculator')!
 
 export default function GradeCalculatorPage() {
+  const t = useTranslations('toolui')
   const [mode,setMode]=useState<'simple'|'weighted'>('simple')
-  const [items,setItems]=useState<Assignment[]>([{id:1,name:'Midterm',score:'85',maxScore:'100',weight:'30'},{id:2,name:'Final',score:'90',maxScore:'100',weight:'40'},{id:3,name:'Homework',score:'47',maxScore:'50',weight:'30'}])
+  const [items,setItems]=useState<Assignment[]>(()=>[{id:1,name:t('gd_d_mid'),score:'85',maxScore:'100',weight:'30'},{id:2,name:t('gd_d_final'),score:'90',maxScore:'100',weight:'40'},{id:3,name:t('gd_d_hw'),score:'47',maxScore:'50',weight:'30'}])
   const [nextId,setNextId]=useState(4)
 
   function add(){setItems(i=>[...i,{id:nextId,name:'',score:'',maxScore:'100',weight:'10'}]);setNextId(n=>n+1)}
@@ -60,19 +62,19 @@ export default function GradeCalculatorPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Grade Calculator</h1>
-        <p className="text-gray-500 mb-8">Calculate your overall grade from multiple assignments with optional weighting</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('gd_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('gd_subtitle')}</p>
         <div className="flex gap-2 mb-4">
-          <button onClick={()=>setMode('simple')} className={'flex-1 py-2 rounded-lg font-medium transition-colors '+(mode==='simple'?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>Simple Average</button>
-          <button onClick={()=>setMode('weighted')} className={'flex-1 py-2 rounded-lg font-medium transition-colors '+(mode==='weighted'?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>Weighted</button>
+          <button onClick={()=>setMode('simple')} className={'flex-1 py-2 rounded-lg font-medium transition-colors '+(mode==='simple'?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>{t('gd_simple')}</button>
+          <button onClick={()=>setMode('weighted')} className={'flex-1 py-2 rounded-lg font-medium transition-colors '+(mode==='weighted'?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>{t('gd_weighted')}</button>
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 space-y-3">
           <div className={'grid gap-2 text-xs font-medium text-gray-500 px-1 '+(mode==='weighted'?'grid-cols-[1fr_auto_auto_auto_auto]':'grid-cols-[1fr_auto_auto_auto]')}>
-            <span>Assignment</span><span>Score</span><span>Max</span>{mode==='weighted'&&<span>Weight %</span>}<span/>
+            <span>{t('gd_assignment')}</span><span>{t('gd_score')}</span><span>{t('gd_max')}</span>{mode==='weighted'&&<span>{t('gd_weight')}</span>}<span/>
           </div>
           {items.map(item=>(
             <div key={item.id} className={'grid gap-2 items-center '+(mode==='weighted'?'grid-cols-[1fr_auto_auto_auto_auto]':'grid-cols-[1fr_auto_auto_auto]')}>
-              <input value={item.name} onChange={e=>update(item.id,'name',e.target.value)} placeholder="Assignment name"
+              <input value={item.name} onChange={e=>update(item.id,'name',e.target.value)} placeholder={t('gd_assignment_ph')}
                 className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
               <input type="number" value={item.score} onChange={e=>update(item.id,'score',e.target.value)} placeholder="85"
                 className="w-16 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-brand-500" />
@@ -83,12 +85,12 @@ export default function GradeCalculatorPage() {
               <button onClick={()=>remove(item.id)} className="text-gray-400 hover:text-red-500">\u00D7</button>
             </div>
           ))}
-          <button onClick={add} className="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg">+ Add Assignment</button>
+          <button onClick={add} className="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg">{t('gd_add')}</button>
         </div>
         {finalPct>0&&(
           <div className="mt-4 bg-white rounded-2xl border border-gray-200 p-5 flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Overall Grade</p>
+              <p className="text-sm text-gray-500">{t('gd_overall')}</p>
               <p className="text-4xl font-bold text-gray-900">{finalPct.toFixed(1)}%</p>
             </div>
             <div className={gradeColor(letter)+' text-6xl font-black'}>{letter}</div>

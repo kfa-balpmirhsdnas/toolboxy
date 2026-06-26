@@ -2710,6 +2710,21 @@
       "GPA 기준(4.0 등)을 고르세요.",
       "과목·성적·학점을 입력하세요.",
       "누적 GPA를 확인하세요."
+    ],
+    "ideal-weight-calculator": [
+      "성별을 고르세요.",
+      "키(cm)를 입력하세요.",
+      "여러 공식의 이상 체중 추정치를 확인하세요."
+    ],
+    "grade-calculator": [
+      "단순 평균/가중치 모드를 고르세요.",
+      "과제명·점수·만점(가중치)을 입력하세요.",
+      "종합 성적과 학점을 확인하세요."
+    ],
+    "date-calculator": [
+      "모드(차이/더하기/빼기)를 고르세요.",
+      "날짜와 기간을 입력하세요.",
+      "계산된 차이 또는 결과 날짜를 확인하세요."
     ]
   },
   "games": {
@@ -3958,7 +3973,36 @@
     "gp_courses": "과목 수:",
     "gp_d_math": "수학",
     "gp_d_eng": "영어",
-    "gp_d_phys": "물리"
+    "gp_d_phys": "물리",
+    "iw_formula": "공식",
+    "iw_disclaimer": "일반 임상 공식 기반 추정치 · 의학적 조언이 아닙니다.",
+    "gd_title": "성적 계산기",
+    "gd_subtitle": "여러 과제의 점수를 가중치(선택)와 함께 종합 계산합니다",
+    "gd_simple": "단순 평균",
+    "gd_weighted": "가중치",
+    "gd_assignment": "과제",
+    "gd_score": "점수",
+    "gd_max": "만점",
+    "gd_weight": "비중 %",
+    "gd_assignment_ph": "과제명",
+    "gd_add": "+ 과제 추가",
+    "gd_overall": "종합 성적",
+    "gd_d_mid": "중간고사",
+    "gd_d_final": "기말고사",
+    "gd_d_hw": "과제",
+    "dt_diff": "날짜 차이",
+    "dt_add": "날짜 더하기",
+    "dt_sub": "날짜 빼기",
+    "dt_start": "시작 날짜",
+    "dt_end": "종료 날짜",
+    "dt_base": "기준 날짜",
+    "dt_years": "년",
+    "dt_months": "개월",
+    "dt_days": "일",
+    "dt_weeks": "주",
+    "dt_rdays": "남은 일수",
+    "dt_difference": "차이",
+    "dt_result": "결과 날짜"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

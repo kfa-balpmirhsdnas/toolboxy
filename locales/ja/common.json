@@ -2677,6 +2677,21 @@
       "GPAスケール（4.0など）を選びます。",
       "各科目・成績・単位を入力します。",
       "累積GPAを確認します。"
+    ],
+    "ideal-weight-calculator": [
+      "性別を選びます。",
+      "身長(cm)を入力します。",
+      "複数の式による理想体重の推定値を比較します。"
+    ],
+    "grade-calculator": [
+      "単純平均／加重モードを選びます。",
+      "各課題の点数・満点（比重）を入力します。",
+      "総合成績と評定を確認します。"
+    ],
+    "date-calculator": [
+      "モード（差／加算／減算）を選びます。",
+      "日付と期間を入力します。",
+      "差または結果の日付を確認します。"
     ]
   },
   "games": {
@@ -3925,7 +3940,36 @@
     "gp_courses": "科目数:",
     "gp_d_math": "数学",
     "gp_d_eng": "英語",
-    "gp_d_phys": "物理"
+    "gp_d_phys": "物理",
+    "iw_formula": "式",
+    "iw_disclaimer": "一般的な臨床式に基づく推定値 · 医療助言ではありません。",
+    "gd_title": "成績計算機",
+    "gd_subtitle": "複数の課題から総合成績を重み付け（任意）で計算します",
+    "gd_simple": "単純平均",
+    "gd_weighted": "加重",
+    "gd_assignment": "課題",
+    "gd_score": "点数",
+    "gd_max": "満点",
+    "gd_weight": "比重 %",
+    "gd_assignment_ph": "課題名",
+    "gd_add": "+ 課題を追加",
+    "gd_overall": "総合成績",
+    "gd_d_mid": "中間試験",
+    "gd_d_final": "期末試験",
+    "gd_d_hw": "課題",
+    "dt_diff": "日付の差",
+    "dt_add": "日付に加算",
+    "dt_sub": "日付から減算",
+    "dt_start": "開始日",
+    "dt_end": "終了日",
+    "dt_base": "基準日",
+    "dt_years": "年",
+    "dt_months": "ヶ月",
+    "dt_days": "日",
+    "dt_weeks": "週",
+    "dt_rdays": "残り日数",
+    "dt_difference": "差",
+    "dt_result": "結果の日付"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

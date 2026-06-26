@@ -1,10 +1,14 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations, useLocale } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('date-calculator')!
+const LOC:Record<string,string>={en:'en-US',ko:'ko-KR',ja:'ja-JP'}
 type Mode='diff'|'add'|'subtract'
 export default function DateCalculatorPage() {
+  const t = useTranslations('toolui')
+  const locale = useLocale()
   const [mode,setMode]=useState<Mode>('diff')
   const [date1,setDate1]=useState(new Date().toISOString().slice(0,10))
   const [date2,setDate2]=useState(new Date(Date.now()+86400000*100).toISOString().slice(0,10))
@@ -23,11 +27,11 @@ export default function DateCalculatorPage() {
     d.setFullYear(d.getFullYear()+sign*addYears)
     d.setMonth(d.getMonth()+sign*addMonths)
     d.setDate(d.getDate()+sign*addDays)
-    return d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
+    return d.toLocaleDateString(LOC[locale]||'en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
   }
   const result=mode==='diff'?diff():null
   const resultDate=mode!=='diff'?addSub(mode==='add'?1:-1):null
-  const MODES:Array<{v:Mode;l:string}>=[{v:'diff',l:'Date Difference'},{v:'add',l:'Add to Date'},{v:'subtract',l:'Subtract from Date'}]
+  const MODES:Array<{v:Mode;l:string}>=[{v:'diff',l:t('dt_diff')},{v:'add',l:t('dt_add')},{v:'subtract',l:t('dt_sub')}]
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto px-4 space-y-4">
@@ -39,18 +43,18 @@ export default function DateCalculatorPage() {
         </div>
         {mode==='diff'?(
           <div className="grid grid-cols-2 gap-3">
-            <div><label className="block text-xs text-gray-500 mb-1">Start date</label>
+            <div><label className="block text-xs text-gray-500 mb-1">{t('dt_start')}</label>
               <input type="date" value={date1} onChange={e=>setDate1(e.target.value)} className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"/></div>
-            <div><label className="block text-xs text-gray-500 mb-1">End date</label>
+            <div><label className="block text-xs text-gray-500 mb-1">{t('dt_end')}</label>
               <input type="date" value={date2} onChange={e=>setDate2(e.target.value)} className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"/></div>
           </div>
         ):(
           <div className="space-y-3">
-            <div><label className="block text-xs text-gray-500 mb-1">Base date</label>
+            <div><label className="block text-xs text-gray-500 mb-1">{t('dt_base')}</label>
               <input type="date" value={baseDate} onChange={e=>setBaseDate(e.target.value)} className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"/></div>
             <div className="grid grid-cols-3 gap-2">
-              {([['Years',addYears,setAddYears],['Months',addMonths,setAddMonths],['Days',addDays,setAddDays]] as const).map(([l,v,s])=>(
-                <div key={l}><label className="block text-xs text-gray-500 mb-1">{l}</label>
+              {([['dt_years',addYears,setAddYears],['dt_months',addMonths,setAddMonths],['dt_days',addDays,setAddDays]] as const).map(([l,v,s])=>(
+                <div key={l}><label className="block text-xs text-gray-500 mb-1">{t(l)}</label>
                   <input type="number" value={v} onChange={e=>(s as any)(Number(e.target.value))} min="0"
                     className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-center font-bold focus:outline-none focus:border-blue-400"/></div>
               ))}
@@ -59,12 +63,12 @@ export default function DateCalculatorPage() {
         )}
         {mode==='diff'&&result&&(
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 space-y-3">
-            <p className="text-xs font-medium text-blue-600">Difference</p>
-            <p className="text-3xl font-bold text-blue-700">{result.totalDays.toLocaleString()} days</p>
+            <p className="text-xs font-medium text-blue-600">{t('dt_difference')}</p>
+            <p className="text-3xl font-bold text-blue-700">{result.totalDays.toLocaleString()} {t('ag_days')}</p>
             <div className="grid grid-cols-2 gap-2">
-              {([['Years',result.years],['Months',result.months],['Weeks',result.totalWeeks],['Remaining days',result.days],['Total hours',result.hours.toLocaleString()],['Total minutes',result.minutes.toLocaleString()]] as const).map(([l,v])=>(
+              {([['dt_years',result.years],['dt_months',result.months],['dt_weeks',result.totalWeeks],['dt_rdays',result.days],['ag_thours',result.hours.toLocaleString()],['ag_tmins',result.minutes.toLocaleString()]] as const).map(([l,v])=>(
                 <div key={l} className="bg-white/70 rounded-xl px-3 py-2">
-                  <p className="font-bold text-gray-800">{v}</p><p className="text-xs text-gray-500">{l}</p>
+                  <p className="font-bold text-gray-800">{v}</p><p className="text-xs text-gray-500">{t(l)}</p>
                 </div>
               ))}
             </div>
@@ -72,7 +76,7 @@ export default function DateCalculatorPage() {
         )}
         {mode!=='diff'&&resultDate&&(
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 text-center">
-            <p className="text-xs font-medium text-blue-600 mb-1">Result date</p>
+            <p className="text-xs font-medium text-blue-600 mb-1">{t('dt_result')}</p>
             <p className="text-xl font-bold text-blue-700">{resultDate}</p>
           </div>
         )}

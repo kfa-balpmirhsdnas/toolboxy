@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -23,6 +24,7 @@ function formulas(sex: 'male' | 'female', heightCm: number) {
 }
 
 export default function IdealWeightPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [sex, setSex] = useState<'male' | 'female'>('male')
   const [h, setH] = useState('')
 
@@ -35,13 +37,13 @@ export default function IdealWeightPage({ params }: { params: { lang: string } }
         <div className="flex gap-2">
           {(['male', 'female'] as const).map((s) => (
             <button key={s} onClick={() => setSex(s)}
-              className={`text-sm font-medium px-4 py-1.5 rounded-lg border capitalize transition-colors ${
+              className={`text-sm font-medium px-4 py-1.5 rounded-lg border transition-colors ${
                 sex === s ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-400'
-              }`}>{s}</button>
+              }`}>{t('cal_'+s)}</button>
           ))}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Height (cm)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('bmi_height')} (cm)</label>
           <input type="number" value={h} onChange={(e) => setH(e.target.value)}
             className="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
         </div>
@@ -50,13 +52,13 @@ export default function IdealWeightPage({ params }: { params: { lang: string } }
           <div className="border border-gray-200 rounded-xl overflow-hidden">
             {rows.map((r) => (
               <div key={r.name} className="flex items-center justify-between px-4 py-2.5 text-sm border-b border-gray-100 last:border-0">
-                <span className="text-gray-600">{r.name} formula</span>
+                <span className="text-gray-600">{r.name} {t('iw_formula')}</span>
                 <span className="font-semibold text-gray-900">{r.kg.toFixed(1)} kg <span className="text-gray-400 font-normal">/ {(r.kg * 2.20462).toFixed(1)} lb</span></span>
               </div>
             ))}
           </div>
         )}
-        <p className="text-xs text-gray-400">Estimates from common clinical formulas · not medical advice.</p>
+        <p className="text-xs text-gray-400">{t('iw_disclaimer')}</p>
       </div>
 
     </ToolLayout>

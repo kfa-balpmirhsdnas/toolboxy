@@ -2372,6 +2372,21 @@
       "Choose a GPA scale (e.g. 4.0).",
       "Enter each course, grade and credits.",
       "See your cumulative GPA."
+    ],
+    "ideal-weight-calculator": [
+      "Choose your sex.",
+      "Enter your height in cm.",
+      "Compare ideal-weight estimates from several formulas."
+    ],
+    "grade-calculator": [
+      "Choose simple-average or weighted mode.",
+      "Enter each assignment's score and max (and weight).",
+      "See your overall grade and letter."
+    ],
+    "date-calculator": [
+      "Choose a mode (difference, add or subtract).",
+      "Enter the dates and durations.",
+      "See the difference or resulting date."
     ]
   },
   "games": {
@@ -3620,7 +3635,36 @@
     "gp_courses": "Courses:",
     "gp_d_math": "Mathematics",
     "gp_d_eng": "English",
-    "gp_d_phys": "Physics"
+    "gp_d_phys": "Physics",
+    "iw_formula": "formula",
+    "iw_disclaimer": "Estimates from common clinical formulas · not medical advice.",
+    "gd_title": "Grade Calculator",
+    "gd_subtitle": "Calculate your overall grade from multiple assignments with optional weighting",
+    "gd_simple": "Simple Average",
+    "gd_weighted": "Weighted",
+    "gd_assignment": "Assignment",
+    "gd_score": "Score",
+    "gd_max": "Max",
+    "gd_weight": "Weight %",
+    "gd_assignment_ph": "Assignment name",
+    "gd_add": "+ Add Assignment",
+    "gd_overall": "Overall Grade",
+    "gd_d_mid": "Midterm",
+    "gd_d_final": "Final",
+    "gd_d_hw": "Homework",
+    "dt_diff": "Date Difference",
+    "dt_add": "Add to Date",
+    "dt_sub": "Subtract from Date",
+    "dt_start": "Start date",
+    "dt_end": "End date",
+    "dt_base": "Base date",
+    "dt_years": "Years",
+    "dt_months": "Months",
+    "dt_days": "Days",
+    "dt_weeks": "Weeks",
+    "dt_rdays": "Remaining days",
+    "dt_difference": "Difference",
+    "dt_result": "Result date"
   },
   "toolTags": {
     "spinner-wheel": [
