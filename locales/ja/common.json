@@ -3032,6 +3032,16 @@
       "現在の年齢と退職年齢を入力します。",
       "貯蓄・毎月の積立額・利回りを入力します。",
       "退職時の予想貯蓄額を確認します。"
+    ],
+    "target-heart-rate-calculator": [
+      "年齢を入力します。",
+      "必要なら安静時心拍数も入力します。",
+      "強度別の目標心拍ゾーンを確認します。"
+    ],
+    "ovulation-calculator": [
+      "最終月経の開始日を入力します。",
+      "生理周期の長さを入力します。",
+      "推定排卵日と妊娠可能期間を確認します。"
     ]
   },
   "games": {
@@ -4761,7 +4771,24 @@
     "rc_savings": "現在の貯蓄",
     "rc_monthly": "毎月の積立額",
     "rc_fv": "退職時の貯蓄",
-    "rc_growth": "成長分"
+    "rc_growth": "成長分",
+    "thr_z_warmup": "ウォームアップ",
+    "thr_z_fatburn": "脂肪燃焼",
+    "thr_z_aerobic": "有酸素",
+    "thr_z_anaerobic": "無酸素",
+    "thr_z_max": "最大",
+    "thr_age": "年齢",
+    "thr_rest": "安静時心拍数 (任意)",
+    "thr_maxhr": "最大心拍数",
+    "thr_karvonen": "カルボーネン (心拍予備)",
+    "thr_pctmax": "最大心拍数の%",
+    "thr_estimate": "推定値のみ。",
+    "ov_lmp": "最終月経の開始日",
+    "ov_cycle": "生理周期 (日)",
+    "ov_ovulation": "推定排卵日",
+    "ov_fertile": "妊娠可能期間",
+    "ov_next": "次の生理",
+    "ov_disclaimer": "暦による推定 · 避妊法ではなく、医療助言でもありません。"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

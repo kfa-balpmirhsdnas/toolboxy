@@ -3065,6 +3065,16 @@
       "현재 나이와 은퇴 나이를 입력하세요.",
       "현재 저축액·매월 납입금·수익률을 입력하세요.",
       "은퇴 시 예상 저축액을 확인하세요."
+    ],
+    "target-heart-rate-calculator": [
+      "나이를 입력하세요.",
+      "원하면 안정 시 심박수도 입력하세요.",
+      "운동 강도별 목표 심박수 구간을 확인하세요."
+    ],
+    "ovulation-calculator": [
+      "마지막 생리 시작일을 입력하세요.",
+      "생리주기 길이를 입력하세요.",
+      "예상 배란일과 가임기를 확인하세요."
     ]
   },
   "games": {
@@ -4794,7 +4804,24 @@
     "rc_savings": "현재 저축액",
     "rc_monthly": "매월 납입금",
     "rc_fv": "은퇴 시 저축액",
-    "rc_growth": "수익"
+    "rc_growth": "수익",
+    "thr_z_warmup": "준비 운동",
+    "thr_z_fatburn": "지방 연소",
+    "thr_z_aerobic": "유산소",
+    "thr_z_anaerobic": "무산소",
+    "thr_z_max": "최대",
+    "thr_age": "나이",
+    "thr_rest": "안정 시 심박수 (선택)",
+    "thr_maxhr": "최대 심박수",
+    "thr_karvonen": "카르보넨 (심박 예비율)",
+    "thr_pctmax": "최대 심박수 %",
+    "thr_estimate": "참고용 추정치.",
+    "ov_lmp": "마지막 생리 시작일",
+    "ov_cycle": "생리주기 (일)",
+    "ov_ovulation": "예상 배란일",
+    "ov_fertile": "가임기",
+    "ov_next": "다음 생리",
+    "ov_disclaimer": "달력 기반 추정 · 피임 수단이 아니며 의학적 조언이 아닙니다."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

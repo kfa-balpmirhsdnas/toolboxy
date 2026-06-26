@@ -2727,6 +2727,16 @@
       "Enter your current and retirement age.",
       "Enter savings, monthly contribution and return.",
       "See your projected savings at retirement."
+    ],
+    "target-heart-rate-calculator": [
+      "Enter your age.",
+      "Optionally enter your resting heart rate.",
+      "See target heart-rate zones for each intensity."
+    ],
+    "ovulation-calculator": [
+      "Enter the first day of your last period.",
+      "Enter your cycle length.",
+      "See the estimated ovulation and fertile window."
     ]
   },
   "games": {
@@ -4456,7 +4466,24 @@
     "rc_savings": "Current savings",
     "rc_monthly": "Monthly contribution",
     "rc_fv": "Savings at retirement",
-    "rc_growth": "Growth"
+    "rc_growth": "Growth",
+    "thr_z_warmup": "Warm-up",
+    "thr_z_fatburn": "Fat burn",
+    "thr_z_aerobic": "Aerobic",
+    "thr_z_anaerobic": "Anaerobic",
+    "thr_z_max": "Maximum",
+    "thr_age": "Age",
+    "thr_rest": "Resting HR (optional)",
+    "thr_maxhr": "Max heart rate",
+    "thr_karvonen": "Karvonen (heart-rate reserve)",
+    "thr_pctmax": "% of max HR",
+    "thr_estimate": "estimate only.",
+    "ov_lmp": "First day of last period",
+    "ov_cycle": "Cycle length (days)",
+    "ov_ovulation": "Estimated ovulation",
+    "ov_fertile": "Fertile window",
+    "ov_next": "Next period",
+    "ov_disclaimer": "Calendar estimate · not a contraceptive method, not medical advice."
   },
   "toolTags": {
     "spinner-wheel": [
