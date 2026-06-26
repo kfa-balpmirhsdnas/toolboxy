@@ -2687,6 +2687,16 @@
       "Upload an image.",
       "Click on the image to pick a color.",
       "Click a picked color to copy it."
+    ],
+    "percentage-calculator": [
+      "Pick the percentage formula you need.",
+      "Enter the two values.",
+      "Read the result instantly."
+    ],
+    "tip-calculator": [
+      "Enter the bill amount.",
+      "Choose tip percentage and number of people.",
+      "See the tip amount and per-person total."
     ]
   },
   "games": {
@@ -4352,7 +4362,24 @@
     "cpe_drop": "Drop an image or click to upload",
     "cpe_extracting": "Extracting colors...",
     "icp_upload": "Upload an image to pick colors",
-    "icp_picked": "Picked Colors"
+    "icp_picked": "Picked Colors",
+    "pc_t1": "X% of Y",
+    "pc_t2": "X is what % of Y?",
+    "pc_t3": "% change from X to Y",
+    "pc_t4": "Increase by %",
+    "pc_of": "% of",
+    "pc_iswhat": "is what % of",
+    "pc_from": "From",
+    "pc_to": "to",
+    "pc_incby": "increased by",
+    "pc_result": "Result:",
+    "tc_bill": "Bill Amount",
+    "tc_tippct": "Tip Percentage",
+    "tc_people": "Number of People",
+    "tc_tipamt": "Tip Amount",
+    "tc_perperson": "/ person",
+    "tc_total": "Total",
+    "tc_per_person_label": "/ Person"
   },
   "toolTags": {
     "spinner-wheel": [

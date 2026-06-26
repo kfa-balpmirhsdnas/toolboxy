@@ -1,10 +1,12 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('percentage-calculator')!
 function fmt(n:number):string{return isFinite(n)?parseFloat(n.toFixed(6)).toString():'N/A'}
 export default function PercentageCalculatorPage() {
+  const t = useTranslations('toolui')
   const [a1,setA1]=useState('25')
   const [b1,setB1]=useState('200')
   const [a2,setA2]=useState('50')
@@ -25,7 +27,7 @@ export default function PercentageCalculatorPage() {
       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{title}</p>
       <div className="flex items-center gap-2 flex-wrap text-sm text-gray-700 mb-3">{children}</div>
       <div className="bg-blue-50 rounded-xl px-4 py-2.5 flex items-center gap-2">
-        <span className="text-xs text-blue-500">Result:</span>
+        <span className="text-xs text-blue-500">{t('pc_result')}</span>
         <span className="text-xl font-bold text-blue-700 font-mono">{result}{unit||''}</span>
       </div>
     </div>
@@ -33,17 +35,17 @@ export default function PercentageCalculatorPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4 space-y-3">
-        <Card title="X% of Y" result={r2} unit="">
-          <Input val={a2} set={setA2}/> <span>% of</span> <Input val={b2} set={setB2}/>
+        <Card title={t('pc_t1')} result={r2} unit="">
+          <Input val={a2} set={setA2}/> <span>{t('pc_of')}</span> <Input val={b2} set={setB2}/>
         </Card>
-        <Card title="X is what % of Y?" result={r1} unit="%">
-          <Input val={a1} set={setA1}/> <span>is what % of</span> <Input val={b1} set={setB1}/>
+        <Card title={t('pc_t2')} result={r1} unit="%">
+          <Input val={a1} set={setA1}/> <span>{t('pc_iswhat')}</span> <Input val={b1} set={setB1}/>
         </Card>
-        <Card title="% change from X to Y" result={r3} unit="%">
-          <span>From</span> <Input val={b3} set={setB3}/> <span>to</span> <Input val={a3} set={setA3}/>
+        <Card title={t('pc_t3')} result={r3} unit="%">
+          <span>{t('pc_from')}</span> <Input val={b3} set={setB3}/> <span>{t('pc_to')}</span> <Input val={a3} set={setA3}/>
         </Card>
-        <Card title="Increase by %" result={r4}>
-          <Input val={a4} set={setA4}/> <span>increased by</span> <Input val={b4} set={setB4}/> <span>%</span>
+        <Card title={t('pc_t4')} result={r4}>
+          <Input val={a4} set={setA4}/> <span>{t('pc_incby')}</span> <Input val={b4} set={setB4}/> <span>%</span>
         </Card>
       </div>
     </ToolLayout>
