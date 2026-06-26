@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -26,11 +27,12 @@ function gpaColor(gpa:number,max:number):string{
 const tool = getToolBySlug('gpa-calculator')!
 
 export default function GpaCalculatorPage() {
+  const t = useTranslations('toolui')
   const [scale,setScale]=useState<Scale>('4.0')
-  const [courses,setCourses]=useState<Course[]>([
-    {id:1,name:'Mathematics',grade:'A',credits:'3'},
-    {id:2,name:'English',grade:'B+',credits:'3'},
-    {id:3,name:'Physics',grade:'A-',credits:'4'},
+  const [courses,setCourses]=useState<Course[]>(()=>[
+    {id:1,name:t('gp_d_math'),grade:'A',credits:'3'},
+    {id:2,name:t('gp_d_eng'),grade:'B+',credits:'3'},
+    {id:3,name:t('gp_d_phys'),grade:'A-',credits:'4'},
   ])
   const [nextId,setNextId]=useState(4)
 
@@ -54,21 +56,21 @@ export default function GpaCalculatorPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">GPA Calculator</h1>
-        <p className="text-gray-500 mb-8">Calculate your GPA across multiple courses with credit weighting</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('gp_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('gp_subtitle')}</p>
         <div className="flex gap-2 mb-4">
-          <span className="text-sm font-medium text-gray-700 self-center">Scale:</span>
+          <span className="text-sm font-medium text-gray-700 self-center">{t('gp_scale')}</span>
           {(['4.0','5.0','10.0','100'] as Scale[]).map(s=>(
             <button key={s} onClick={()=>setScale(s)} className={'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors '+(scale===s?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-700')}>{s}</button>
           ))}
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 space-y-2">
           <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 text-xs font-medium text-gray-500 px-1">
-            <span>Course</span><span>Grade</span><span>Credits</span><span/>
+            <span>{t('gp_course')}</span><span>{t('gp_grade')}</span><span>{t('gp_credits')}</span><span/>
           </div>
           {courses.map(c=>(
             <div key={c.id} className="grid grid-cols-[1fr_auto_auto_auto] gap-2 items-center">
-              <input value={c.name} onChange={e=>update(c.id,'name',e.target.value)} placeholder="Course name"
+              <input value={c.name} onChange={e=>update(c.id,'name',e.target.value)} placeholder={t('gp_course_ph')}
                 className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
               <select value={c.grade} onChange={e=>update(c.id,'grade',e.target.value)}
                 className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none">
@@ -79,17 +81,17 @@ export default function GpaCalculatorPage() {
               <button onClick={()=>remove(c.id)} className="text-gray-400 hover:text-red-500">\u00D7</button>
             </div>
           ))}
-          <button onClick={add} className="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg">+ Add Course</button>
+          <button onClick={add} className="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg">{t('gp_add')}</button>
         </div>
         {totalCredits>0&&(
           <div className="mt-4 bg-white rounded-2xl border border-gray-200 p-5 flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Cumulative GPA ({scale} scale)</p>
+              <p className="text-sm text-gray-500">{t('gp_cumulative')} ({scale} {t('gp_scale_word')})</p>
               <p className={'text-5xl font-black '+gpaColor(gpa,maxGpa)}>{gpa.toFixed(2)}</p>
             </div>
             <div className="text-right text-sm text-gray-500">
-              <p>Total Credits: <strong>{totalCredits}</strong></p>
-              <p>Courses: <strong>{courses.length}</strong></p>
+              <p>{t('gp_total_credits')} <strong>{totalCredits}</strong></p>
+              <p>{t('gp_courses')} <strong>{courses.length}</strong></p>
             </div>
           </div>
         )}
