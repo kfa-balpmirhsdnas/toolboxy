@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
@@ -8,8 +8,10 @@ import { getToolBySlug } from '@/lib/tools/registry'
 import { IDIOMS, type Idiom } from '@/lib/gosaseongeo'
 
 const tool = getToolBySlug('idiom-quiz')!
-const N = 20, PTS = 5
+const N = 20, BASE = 5, MAX = N * (BASE + 5)
 const sample = <T,>(a: T[], n: number) => [...a].sort(() => Math.random() - 0.5).slice(0, n)
+// Speed bonus (0–5) by how fast the answer came in.
+const speedBonus = (ms: number) => (ms < 2000 ? 5 : ms < 3500 ? 4 : ms < 5000 ? 3 : ms < 7000 ? 2 : ms < 10000 ? 1 : 0)
 
 type Q = { answer: Idiom; choices: Idiom[] }
 
@@ -19,18 +21,28 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
   const [idx, setIdx] = useState(0)
   const [picked, setPicked] = useState<string | null>(null)
   const [score, setScore] = useState(0)
+  const [correct, setCorrect] = useState(0)
+  const [lastPts, setLastPts] = useState(0)
+  const qStart = useRef(Date.now())
 
   function start() {
     const qs = sample(IDIOMS, N).map((answer) => ({
       answer,
       choices: sample([answer, ...sample(IDIOMS.filter((i) => i.id !== answer.id), 3)], 4),
     }))
-    setQuiz(qs); setIdx(0); setScore(0); setPicked(null)
+    setQuiz(qs); setIdx(0); setScore(0); setCorrect(0); setLastPts(0); setPicked(null); qStart.current = Date.now()
   }
   useEffect(() => { start() }, [])
 
-  function choose(i: Idiom) { if (picked) return; setPicked(i.id); if (i.id === quiz[idx].answer.id) setScore((n) => n + PTS) }
-  function next() { setPicked(null); setIdx((n) => n + 1) }
+  function choose(i: Idiom) {
+    if (picked) return
+    setPicked(i.id)
+    if (i.id === quiz[idx].answer.id) {
+      const p = BASE + speedBonus(Date.now() - qStart.current)
+      setScore((n) => n + p); setCorrect((n) => n + 1); setLastPts(p)
+    } else setLastPts(0)
+  }
+  function next() { setPicked(null); setLastPts(0); setIdx((n) => n + 1); qStart.current = Date.now() }
 
   if (!quiz.length) return null
   const finished = idx >= quiz.length
@@ -47,8 +59,8 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
           <>
             <div className="rounded-2xl border-2 border-brand-100 bg-brand-50 py-8 px-4">
               <div className="text-sm text-brand-700">{t('quiz_done')}</div>
-              <div className="text-4xl font-extrabold text-brand-700 mt-2">{score} <span className="text-xl text-brand-400">/ {N * PTS}</span></div>
-              <div className="text-xs text-gray-500 mt-2">{score / PTS} / {N}</div>
+              <div className="text-4xl font-extrabold text-brand-700 mt-2">{score} <span className="text-xl text-brand-400">/ {MAX}</span></div>
+              <div className="text-xs text-gray-500 mt-2">{correct} / {N}</div>
             </div>
             <button onClick={start} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">↻ {t('quiz_again')}</button>
           </>
@@ -77,7 +89,12 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
               })}
             </div>
 
-            {picked && <button onClick={next} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{idx + 1 < N ? `${t('iq_next')} →` : `${t('quiz_finish')} →`}</button>}
+            {picked && (
+              <div className="space-y-3">
+                <div className={`text-sm font-bold ${lastPts > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>{lastPts > 0 ? `+${lastPts}${lastPts > BASE ? ' ⚡' : ''}` : '+0'}</div>
+                <button onClick={next} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{idx + 1 < N ? `${t('iq_next')} →` : `${t('quiz_finish')} →`}</button>
+              </div>
+            )}
           </>
         )}
 
