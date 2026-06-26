@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -13,6 +14,7 @@ interface El { id: number; type: 'text' | 'emoji'; value: string; x: number; y: 
 let nextId = 1
 
 export default function AddTextToImagePage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [src, setSrc] = useState('')
   const [nat, setNat] = useState({ w: 0, h: 0 })
   const [els, setEls] = useState<El[]>([])
@@ -96,7 +98,7 @@ export default function AddTextToImagePage({ params }: { params: { lang: string 
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
             <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
-            <p className="text-4xl mb-2">✍️</p><p className="text-sm font-medium text-gray-600">Drop an image or click to upload</p>
+            <p className="text-4xl mb-2">✍️</p><p className="text-sm font-medium text-gray-600">{t('ati_drop')}</p>
           </div>
         ) : (
           <>
@@ -119,9 +121,9 @@ export default function AddTextToImagePage({ params }: { params: { lang: string 
             </div>
 
             <div className="flex gap-2">
-              <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add('text', text)} placeholder="Type text, then Add"
+              <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add('text', text)} placeholder={t('ati_ph')}
                 className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-              <button onClick={() => add('text', text)} className="shrink-0 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Add text</button>
+              <button onClick={() => add('text', text)} className="shrink-0 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">{t('ati_addtext')}</button>
             </div>
             <div className="flex flex-wrap gap-1">
               {EMOJIS.map((em) => <button key={em} onClick={() => add('emoji', em)} className="text-2xl hover:scale-110 transition-transform">{em}</button>)}
@@ -129,20 +131,20 @@ export default function AddTextToImagePage({ params }: { params: { lang: string 
 
             {selected && (
               <div className="rounded-xl border border-gray-200 p-3 flex flex-wrap items-center gap-3">
-                <span className="text-xs text-gray-500">Selected:</span>
-                <label className="text-xs text-gray-600 flex items-center gap-1">Size
+                <span className="text-xs text-gray-500">{t('ati_selected')}</span>
+                <label className="text-xs text-gray-600 flex items-center gap-1">{t('ui_size')}
                   <input type="range" min={0.04} max={0.5} step={0.01} value={selected.size} onChange={(e) => patch(selected.id, { size: +e.target.value })} />
                 </label>
                 {selected.type === 'text' && <input type="color" value={selected.color} onChange={(e) => patch(selected.id, { color: e.target.value })} className="h-7 w-9 rounded border border-gray-200" />}
-                <button onClick={() => remove(selected.id)} className="text-xs text-red-600 hover:underline">Delete</button>
+                <button onClick={() => remove(selected.id)} className="text-xs text-red-600 hover:underline">{t('ati_delete')}</button>
               </div>
             )}
 
             <div className="flex gap-2">
-              <button onClick={download} className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ Download PNG</button>
-              <button onClick={() => { setSrc(''); setEls([]) }} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">Change image</button>
+              <button onClick={download} className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('ati_downloadpng')}</button>
+              <button onClick={() => { setSrc(''); setEls([]) }} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">{t('ati_changeimg')}</button>
             </div>
-            <p className="text-xs text-gray-400">Drag any text or emoji to position it. Processed entirely in your browser.</p>
+            <p className="text-xs text-gray-400">{t('ati_note')}</p>
           </>
         )}
       </div>

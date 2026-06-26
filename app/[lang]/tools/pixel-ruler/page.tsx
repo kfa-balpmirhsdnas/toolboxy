@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
@@ -7,6 +8,7 @@ import { trackToolUsed } from '@/lib/gtag'
 const tool = getToolBySlug('pixel-ruler')!
 
 export default function PixelRulerPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [dpi, setDpi] = useState(96)
   const [unit, setUnit] = useState<'px'|'cm'|'in'>('px')
   const [rulerLen, setRulerLen] = useState(800)
@@ -68,7 +70,7 @@ export default function PixelRulerPage({ params }: { params: { lang: string } })
               className="w-16 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center" />
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-xs text-gray-500">Length</label>
+            <label className="text-xs text-gray-500">{t('pr_length')}</label>
             <input type="number" value={rulerLen} min={200} max={1600} step={50} onChange={e=>setRulerLen(parseInt(e.target.value)||800)}
               className="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center" />
             <span className="text-xs text-gray-400">px</span>
@@ -96,7 +98,7 @@ export default function PixelRulerPage({ params }: { params: { lang: string } })
             </div>
           )}
         </div>
-        <p className="text-xs text-gray-400">Move mouse over the ruler to measure. Screen DPI auto-detected: {dpi}px/in.</p>
+        <p className="text-xs text-gray-400">{t('pr_note',{dpi})}</p>
       </div>
     </ToolLayout>
   )

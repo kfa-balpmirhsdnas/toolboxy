@@ -3067,6 +3067,16 @@
       "Press start and share your screen.",
       "Stop the recording.",
       "Download the WebM file."
+    ],
+    "add-text-to-image": [
+      "Upload an image.",
+      "Add text or emoji and drag to place.",
+      "Download as PNG."
+    ],
+    "pixel-ruler": [
+      "Set the unit and DPI.",
+      "Move the mouse over the ruler.",
+      "Read the px, cm or inch measurement."
     ]
   },
   "games": {
@@ -5273,7 +5283,17 @@
     "sr_start": "● Start recording",
     "sr_stop": "■ Stop recording",
     "sr_download": "Download .webm",
-    "sr_note": "Records your screen (and system/mic audio if allowed) to a WebM file, entirely in your browser. Nothing is uploaded."
+    "sr_note": "Records your screen (and system/mic audio if allowed) to a WebM file, entirely in your browser. Nothing is uploaded.",
+    "ati_drop": "Drop an image or click to upload",
+    "ati_ph": "Type text, then Add",
+    "ati_addtext": "Add text",
+    "ati_selected": "Selected:",
+    "ati_delete": "Delete",
+    "ati_downloadpng": "Download PNG",
+    "ati_changeimg": "Change image",
+    "ati_note": "Drag any text or emoji to position it. Processed entirely in your browser.",
+    "pr_length": "Length",
+    "pr_note": "Move mouse over the ruler to measure. Screen DPI auto-detected: {dpi}px/in."
   },
   "toolTags": {
     "spinner-wheel": [
