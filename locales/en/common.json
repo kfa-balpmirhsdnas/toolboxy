@@ -3018,7 +3018,23 @@
     "cx_to_csv": "Will convert Excel → CSV",
     "cx_convert": "Convert & download",
     "cx_error": "Could not read the file. Please check it is a valid CSV or Excel file.",
-    "cx_note": "CSV → Excel builds an .xlsx; Excel → CSV exports the first sheet (with a UTF-8 BOM so it opens cleanly). Everything runs in your browser — files are never uploaded."
+    "cx_note": "CSV → Excel builds an .xlsx; Excel → CSV exports the first sheet (with a UTF-8 BOM so it opens cleanly). Everything runs in your browser — files are never uploaded.",
+    "og_title_label": "Page Title",
+    "og_desc_label": "Description",
+    "og_image_label": "Image URL",
+    "og_url_label": "Page URL",
+    "og_site_label": "Site Name",
+    "og_twcard": "Twitter card",
+    "og_meta": "Meta Tags",
+    "og_copy": "Copy",
+    "og_copied": "✓ Copied",
+    "og_ph_title": "Your page title",
+    "og_ph_desc": "Brief description...",
+    "og_ph_url": "https://example.com",
+    "og_ph_site": "My Website",
+    "og_def_title": "My Amazing Page Title",
+    "og_def_desc": "This is a compelling description that will appear in social media previews when people share your link.",
+    "og_def_site": "My Website"
   },
   "toolTags": {
     "spinner-wheel": [

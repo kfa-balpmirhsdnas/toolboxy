@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -7,11 +8,12 @@ import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 const tool = getToolBySlug('open-graph-preview')!
 
 export default function OpenGraphPreviewPage({ params }: { params: { lang: string } }) {
-  const [title, setTitle] = useState('My Amazing Page Title')
-  const [description, setDescription] = useState('This is a compelling description that will appear in social media previews when people share your link.')
+  const t = useTranslations('toolui')
+  const [title, setTitle] = useState(t('og_def_title'))
+  const [description, setDescription] = useState(t('og_def_desc'))
   const [imageUrl, setImageUrl] = useState('https://placehold.co/1200x630/6366f1/ffffff?text=OG+Image')
   const [siteUrl, setSiteUrl] = useState('https://example.com')
-  const [siteName, setSiteName] = useState('My Website')
+  const [siteName, setSiteName] = useState(t('og_def_site'))
   const [twitterCard, setTwitterCard] = useState<'summary'|'summary_large_image'>('summary_large_image')
   const [tab, setTab] = useState<'facebook'|'twitter'|'linkedin'>('facebook')
   const [copied, setCopied] = useState(false)
@@ -37,11 +39,11 @@ export default function OpenGraphPreviewPage({ params }: { params: { lang: strin
   async function copy() { await navigator.clipboard.writeText(metaTags); trackToolCopy('open-graph-preview'); setCopied(true); setTimeout(()=>setCopied(false),1500) }
 
   const FIELDS = [
-    { label:'Page Title', value:title, set:setTitle, placeholder:'Your page title' },
-    { label:'Description', value:description, set:setDescription, placeholder:'Brief description...' },
-    { label:'Image URL', value:imageUrl, set:setImageUrl, placeholder:'https://...' },
-    { label:'Page URL', value:siteUrl, set:setSiteUrl, placeholder:'https://example.com' },
-    { label:'Site Name', value:siteName, set:setSiteName, placeholder:'My Website' },
+    { id:'title', label:t('og_title_label'), value:title, set:setTitle, placeholder:t('og_ph_title') },
+    { id:'desc', label:t('og_desc_label'), value:description, set:setDescription, placeholder:t('og_ph_desc') },
+    { id:'image', label:t('og_image_label'), value:imageUrl, set:setImageUrl, placeholder:'https://...' },
+    { id:'url', label:t('og_url_label'), value:siteUrl, set:setSiteUrl, placeholder:t('og_ph_url') },
+    { id:'site', label:t('og_site_label'), value:siteName, set:setSiteName, placeholder:t('og_ph_site') },
   ]
 
   return (
@@ -49,9 +51,9 @@ export default function OpenGraphPreviewPage({ params }: { params: { lang: strin
       <div className="space-y-4">
         <div className="space-y-2">
           {FIELDS.map(f=>(
-            <div key={f.label} className="flex gap-2 items-start">
+            <div key={f.id} className="flex gap-2 items-start">
               <label className="text-xs font-medium text-gray-600 w-24 pt-2 shrink-0">{f.label}</label>
-              {f.label==='Description' ? (
+              {f.id==='desc' ? (
                 <textarea value={f.value} onChange={e=>{f.set(e.target.value);track()}} rows={2} placeholder={f.placeholder}
                   className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none" />
               ) : (
@@ -61,7 +63,7 @@ export default function OpenGraphPreviewPage({ params }: { params: { lang: strin
             </div>
           ))}
           <div className="flex gap-2 items-center">
-            <label className="text-xs font-medium text-gray-600 w-24 shrink-0">Twitter card</label>
+            <label className="text-xs font-medium text-gray-600 w-24 shrink-0">{t('og_twcard')}</label>
             <div className="flex gap-1">
               {(['summary','summary_large_image'] as const).map(v=>(
                 <button key={v} onClick={()=>{setTwitterCard(v);track()}}
@@ -116,8 +118,8 @@ export default function OpenGraphPreviewPage({ params }: { params: { lang: strin
         </div>
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-medium text-gray-600">Meta Tags</label>
-            <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'✓ Copied':'Copy'}</button>
+            <label className="text-xs font-medium text-gray-600">{t('og_meta')}</label>
+            <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?t('og_copied'):t('og_copy')}</button>
           </div>
           <pre className="p-4 bg-gray-900 text-green-400 text-xs rounded-xl font-mono overflow-x-auto">{metaTags}</pre>
         </div>
