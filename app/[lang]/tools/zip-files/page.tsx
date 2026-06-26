@@ -18,7 +18,6 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
   const [out, setOut] = useState<{ url: string; size: number } | null>(null)
   const [busy, setBusy] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const dirRef = useRef<HTMLInputElement>(null)
 
   function defaultName(arr: File[]): string {
     const rel = relPath(arr[0])
@@ -102,8 +101,6 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
           <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => { add(e.target.files); e.target.value = '' }} />
           <p className="text-4xl mb-2">🗂️</p><p className="text-sm font-medium text-gray-600">{t('zf_drop')}</p>
         </div>
-        <button type="button" onClick={() => dirRef.current?.click()} className="w-full py-2 text-sm border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">📁 {t('zf_folder')}</button>
-        <input ref={dirRef} type="file" multiple className="hidden" {...({ webkitdirectory: '', directory: '' } as Record<string, string>)} onChange={(e) => { add(e.target.files); e.target.value = '' }} />
 
         {files.length > 0 && (
           <>
