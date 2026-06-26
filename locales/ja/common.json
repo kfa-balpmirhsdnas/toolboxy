@@ -2942,6 +2942,16 @@
       "元のパスと対象URLを入力します。",
       "301／302のステータスコードを選びます。",
       "生成された.htaccessルールをコピーします。"
+    ],
+    "html-to-markdown": [
+      "HTMLを貼り付けます。",
+      "「変換」を押します。",
+      "Markdown出力をコピーします。"
+    ],
+    "html-table-generator": [
+      "行数・列数を設定します。",
+      "ヘッダー・枠線・ストライプを選びます。",
+      "生成されたHTML表をコピーします。"
     ]
   },
   "games": {
@@ -4548,7 +4558,16 @@
     "spec_label": "CSSセレクタ (1行に1つ)",
     "spec_examples": "例:",
     "htr_force": "HTTPS + www を強制",
-    "htr_add": "+ リダイレクトを追加"
+    "htr_add": "+ リダイレクトを追加",
+    "h2m_output": "Markdown出力",
+    "ui_convert": "変換",
+    "htg_rows": "行:",
+    "htg_cols": "列:",
+    "htg_header": "ヘッダー行",
+    "htg_borders": "枠線",
+    "htg_striped": "ストライプ",
+    "htg_preview": "プレビュー",
+    "htg_copyhtml": "HTMLをコピー"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

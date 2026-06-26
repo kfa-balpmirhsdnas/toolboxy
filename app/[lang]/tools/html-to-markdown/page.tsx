@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
@@ -27,7 +28,8 @@ function convert(html:string):string{
 const DEMO='<h1>Title</h1><p>This is <strong>bold</strong> and <em>italic</em>.</p><ul><li>Item 1</li><li>Item 2</li></ul>'
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='html-to-markdown')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='html-to-markdown')
   const [input,setInput]=useState(DEMO)
   const [output,setOutput]=useState('')
   return (
@@ -35,13 +37,13 @@ export default function Page(){
       <div className='space-y-4'>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div>
-            <label className='block text-sm font-medium mb-1'>HTML Input</label>
+            <label className='block text-sm font-medium mb-1'>{t('hts_input')}</label>
             <textarea value={input} onChange={e=>setInput(e.target.value)}
               className='w-full h-48 p-3 border rounded font-mono text-sm resize-y'
-              placeholder='Paste HTML here...'/>
+              placeholder={t('hts_ph')}/>
           </div>
           <div>
-            <label className='block text-sm font-medium mb-1'>Markdown Output</label>
+            <label className='block text-sm font-medium mb-1'>{t('h2m_output')}</label>
             <textarea readOnly value={output}
               className='w-full h-48 p-3 border rounded font-mono text-sm bg-gray-50 resize-y'/>
           </div>
@@ -49,10 +51,10 @@ export default function Page(){
         <div className='flex gap-3'>
           <button onClick={()=>setOutput(convert(input))}
             className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>
-            Convert
+            {t('ui_convert')}
           </button>
           {output&&<button onClick={()=>navigator.clipboard.writeText(output)}
-            className='px-4 py-2 bg-gray-200 rounded hover:bg-gray-300'>Copy</button>}
+            className='px-4 py-2 bg-gray-200 rounded hover:bg-gray-300'>{t('ui_copy')}</button>}
         </div>
       </div>
     </ToolLayout>

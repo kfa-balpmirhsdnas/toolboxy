@@ -2637,6 +2637,16 @@
       "Enter the source path and target URL.",
       "Choose a 301 or 302 status code.",
       "Copy the generated .htaccess rules."
+    ],
+    "html-to-markdown": [
+      "Paste your HTML.",
+      "Press Convert.",
+      "Copy the Markdown output."
+    ],
+    "html-table-generator": [
+      "Set the number of rows and columns.",
+      "Choose header, borders and striped options.",
+      "Copy the generated HTML table."
     ]
   },
   "games": {
@@ -4243,7 +4253,16 @@
     "spec_label": "CSS Selectors (one per line)",
     "spec_examples": "Examples:",
     "htr_force": "Force HTTPS + www",
-    "htr_add": "+ Add redirect"
+    "htr_add": "+ Add redirect",
+    "h2m_output": "Markdown Output",
+    "ui_convert": "Convert",
+    "htg_rows": "Rows:",
+    "htg_cols": "Columns:",
+    "htg_header": "Header row",
+    "htg_borders": "Borders",
+    "htg_striped": "Striped",
+    "htg_preview": "Preview",
+    "htg_copyhtml": "Copy HTML"
   },
   "toolTags": {
     "spinner-wheel": [
