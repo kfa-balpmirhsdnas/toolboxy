@@ -3264,7 +3264,7 @@
     "uz_less": "접기",
     "uz_extracted": "✓ ‘{folder}’ 폴더에 {n}개 파일을 풀었어요.",
     "zf_done": "✓ {n}개 파일을 ‘{name}’(으)로 압축해 내려받았어요.",
-    "uz_makefolder": "선택한 폴더 하위에 압축파일명으로 폴더 생성"
+    "uz_makefolder": "압축파일명으로 폴더 자동 생성"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

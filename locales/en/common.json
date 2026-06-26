@@ -2931,7 +2931,7 @@
     "uz_less": "Show less",
     "uz_extracted": "✓ Extracted {n} files into the “{folder}” folder.",
     "zf_done": "✓ Compressed {n} files into “{name}” and downloaded it.",
-    "uz_makefolder": "Create a folder named after the zip"
+    "uz_makefolder": "Auto-create a folder named after the zip"
   },
   "toolTags": {
     "spinner-wheel": [
