@@ -3017,6 +3017,16 @@
       "Choose what to find: pace, time or distance.",
       "Enter the known values.",
       "See the calculated result."
+    ],
+    "loan-calculator": [
+      "Enter loan amount, rate and term.",
+      "See the monthly payment and total interest.",
+      "Expand the amortization schedule."
+    ],
+    "tone-generator": [
+      "Set the frequency.",
+      "Choose a waveform and volume.",
+      "Press play to hear the tone."
     ]
   },
   "games": {
@@ -5152,7 +5162,28 @@
     "pc_time": "Time (h:m:s)",
     "pc_pace": "Pace (min:sec per {u})",
     "pc_r_pace": "Pace",
-    "pc_finish": "Finish Time"
+    "pc_finish": "Finish Time",
+    "lc_amount": "Loan Amount (USD)",
+    "lc_rate": "Annual Interest Rate (%)",
+    "lc_term": "Loan Term (years)",
+    "lc_monthly": "Monthly Payment",
+    "lc_principal": "Principal",
+    "lc_totalinterest": "Total Interest",
+    "lc_totalcost": "Total Cost",
+    "lc_interest": "Interest",
+    "lc_hideamort": "Hide amortization schedule",
+    "lc_showamort": "Show amortization schedule",
+    "lc_month": "Month",
+    "lc_payment": "Payment",
+    "lc_balance": "Balance",
+    "tg_sine": "sine",
+    "tg_square": "square",
+    "tg_triangle": "triangle",
+    "tg_sawtooth": "sawtooth",
+    "tg_volume": "Volume",
+    "tg_stop": "Stop",
+    "tg_play": "Play tone",
+    "tg_warn": "⚠ Start at a low volume. High frequencies and volumes can damage hearing and speakers."
   },
   "toolTags": {
     "spinner-wheel": [

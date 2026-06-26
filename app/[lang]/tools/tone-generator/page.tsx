@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
@@ -10,6 +11,7 @@ const tool = getToolBySlug('tone-generator')!
 type Wave = 'sine' | 'square' | 'triangle' | 'sawtooth'
 
 export default function ToneGeneratorPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [freq, setFreq] = useState(440)
   const [wave, setWave] = useState<Wave>('sine')
   const [vol, setVol] = useState(0.3)
@@ -70,20 +72,20 @@ export default function ToneGeneratorPage({ params }: { params: { lang: string }
             <button key={w} onClick={() => update(freq, w, vol)}
               className={`text-sm font-medium px-3 py-1.5 rounded-lg border capitalize transition-colors ${
                 wave === w ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-400'
-              }`}>{w}</button>
+              }`}>{t('tg_'+w)}</button>
           ))}
         </div>
 
         <div>
-          <label className="block text-sm text-gray-600 mb-1">Volume {Math.round(vol * 100)}%</label>
+          <label className="block text-sm text-gray-600 mb-1">{t('tg_volume')} {Math.round(vol * 100)}%</label>
           <input type="range" min={0} max={1} step={0.01} value={vol} onChange={(e) => update(freq, wave, +e.target.value)} className="w-full" />
         </div>
 
         <button onClick={playing ? stop : play}
           className={`w-full py-3 text-sm font-semibold rounded-xl text-white transition-colors ${playing ? 'bg-red-600 hover:bg-red-700' : 'bg-brand-600 hover:bg-brand-700'}`}>
-          {playing ? '■ Stop' : '▶ Play tone'}
+          {playing ? '■ '+t('tg_stop') : '▶ '+t('tg_play')}
         </button>
-        <p className="text-xs text-gray-400">⚠ Start at a low volume. High frequencies and volumes can damage hearing and speakers.</p>
+        <p className="text-xs text-gray-400">{t('tg_warn')}</p>
       </div>
 
     </ToolLayout>

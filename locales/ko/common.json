@@ -3355,6 +3355,16 @@
       "구할 값(페이스·시간·거리)을 고르세요.",
       "아는 값을 입력하세요.",
       "계산된 결과를 확인하세요."
+    ],
+    "loan-calculator": [
+      "대출 금액·이자율·기간을 입력하세요.",
+      "월 상환액과 총 이자를 확인하세요.",
+      "상환 일정을 펼쳐 보세요."
+    ],
+    "tone-generator": [
+      "주파수를 설정하세요.",
+      "파형과 볼륨을 고르세요.",
+      "재생을 눌러 톤을 들으세요."
     ]
   },
   "games": {
@@ -5490,7 +5500,28 @@
     "pc_time": "시간 (시:분:초)",
     "pc_pace": "페이스 ({u}당 분:초)",
     "pc_r_pace": "페이스",
-    "pc_finish": "완주 시간"
+    "pc_finish": "완주 시간",
+    "lc_amount": "대출 금액 (USD)",
+    "lc_rate": "연 이자율 (%)",
+    "lc_term": "대출 기간 (년)",
+    "lc_monthly": "월 상환액",
+    "lc_principal": "원금",
+    "lc_totalinterest": "총 이자",
+    "lc_totalcost": "총 비용",
+    "lc_interest": "이자",
+    "lc_hideamort": "상환 일정 숨기기",
+    "lc_showamort": "상환 일정 보기",
+    "lc_month": "개월",
+    "lc_payment": "납입액",
+    "lc_balance": "잔액",
+    "tg_sine": "사인파",
+    "tg_square": "사각파",
+    "tg_triangle": "삼각파",
+    "tg_sawtooth": "톱니파",
+    "tg_volume": "볼륨",
+    "tg_stop": "정지",
+    "tg_play": "재생",
+    "tg_warn": "⚠ 낮은 볼륨에서 시작하세요. 높은 주파수와 볼륨은 청력과 스피커를 손상시킬 수 있습니다."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

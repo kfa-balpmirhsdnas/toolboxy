@@ -1,9 +1,11 @@
 'use client'
 import { useState, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('loan-calculator')!
 export default function LoanCalculatorPage() {
+  const t = useTranslations('toolui')
   const [principal,setPrincipal]=useState(250000)
   const [rate,setRate]=useState(6.5)
   const [years,setYears]=useState(30)
@@ -27,14 +29,14 @@ export default function LoanCalculatorPage() {
     <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4 space-y-4">
         <div className="grid grid-cols-1 gap-3">
-          <div><label className="block text-xs text-gray-500 mb-1">Loan Amount (USD)</label>
+          <div><label className="block text-xs text-gray-500 mb-1">{t('lc_amount')}</label>
             <input type="number" value={principal} onChange={e=>setPrincipal(Number(e.target.value))} min="0"
               className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-xl text-center font-bold focus:outline-none focus:border-blue-400"/></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><label className="block text-xs text-gray-500 mb-1">Annual Interest Rate (%)</label>
+            <div><label className="block text-xs text-gray-500 mb-1">{t('lc_rate')}</label>
               <input type="number" value={rate} onChange={e=>setRate(Number(e.target.value))} min="0" max="50" step="0.1"
                 className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-center font-bold focus:outline-none focus:border-blue-400"/></div>
-            <div><label className="block text-xs text-gray-500 mb-1">Loan Term (years)</label>
+            <div><label className="block text-xs text-gray-500 mb-1">{t('lc_term')}</label>
               <input type="number" value={years} onChange={e=>setYears(Number(e.target.value))} min="1" max="50"
                 className="w-full rounded-xl border border-gray-300 px-3 py-2.5 font-mono text-center font-bold focus:outline-none focus:border-blue-400"/></div>
           </div>
@@ -48,12 +50,12 @@ export default function LoanCalculatorPage() {
           ))}
         </div>
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5">
-          <p className="text-xs text-blue-600 font-medium mb-3">Monthly Payment</p>
+          <p className="text-xs text-blue-600 font-medium mb-3">{t('lc_monthly')}</p>
           <p className="text-4xl font-bold text-blue-700 mb-4">{fmt(result.monthly)}</p>
           <div className="grid grid-cols-3 gap-3 text-center text-sm">
-            {[['Principal',fmt(principal),'text-gray-800'],['Total Interest',fmt(result.totalInterest),'text-red-600'],['Total Cost',fmt(result.total),'text-gray-800']].map(([l,v,cls])=>(
+            {[['lc_principal',fmt(principal),'text-gray-800'],['lc_totalinterest',fmt(result.totalInterest),'text-red-600'],['lc_totalcost',fmt(result.total),'text-gray-800']].map(([l,v,cls])=>(
               <div key={l} className="bg-white/70 rounded-xl py-2.5">
-                <p className={'font-bold '+cls}>{v}</p><p className="text-xs text-gray-500">{l}</p>
+                <p className={'font-bold '+cls}>{v}</p><p className="text-xs text-gray-500">{t(l)}</p>
               </div>
             ))}
           </div>
@@ -61,20 +63,20 @@ export default function LoanCalculatorPage() {
             <div className="h-full bg-blue-600 rounded-full" style={{width:(principal/result.total*100)+'%'}}/>
           </div>
           <div className="flex justify-between text-xs mt-1">
-            <span className="text-blue-700">Principal {Math.round(principal/result.total*100)}%</span>
-            <span className="text-red-500">Interest {Math.round(result.totalInterest/result.total*100)}%</span>
+            <span className="text-blue-700">{t('lc_principal')} {Math.round(principal/result.total*100)}%</span>
+            <span className="text-red-500">{t('lc_interest')} {Math.round(result.totalInterest/result.total*100)}%</span>
           </div>
         </div>
         {result.schedule.length>0&&(
           <div>
             <button onClick={()=>setShowSchedule(s=>!s)} className="text-sm text-blue-600 hover:underline">
-              {showSchedule?'Hide':'Show'} amortization schedule
+              {showSchedule?t('lc_hideamort'):t('lc_showamort')}
             </button>
             {showSchedule&&(
               <div className="mt-2 max-h-64 overflow-y-auto rounded-xl border border-gray-200">
                 <table className="w-full text-xs">
                   <thead className="sticky top-0 bg-gray-50"><tr>
-                    {['Month','Payment','Principal','Interest','Balance'].map(h=><th key={h} className="px-2 py-2 text-left font-semibold text-gray-600">{h}</th>)}
+                    {['lc_month','lc_payment','lc_principal','lc_interest','lc_balance'].map(h=><th key={h} className="px-2 py-2 text-left font-semibold text-gray-600">{t(h)}</th>)}
                   </tr></thead>
                   <tbody>
                     {result.schedule.map((row,i)=>(
