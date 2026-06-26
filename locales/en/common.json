@@ -794,15 +794,27 @@
     "spinner-wheel": {
       "intro": "Enter options and spin the wheel to pick one at random.",
       "faq": [
-        { "q": "How many options can I add?", "a": "There's no hard limit, but with too many the labels get small, so around 12 reads best." },
-        { "q": "Is the result predetermined?", "a": "No. It's chosen at random in your browser each spin, and every option has an equal chance." }
+        {
+          "q": "How many options can I add?",
+          "a": "There's no hard limit, but with too many the labels get small, so around 12 reads best."
+        },
+        {
+          "q": "Is the result predetermined?",
+          "a": "No. It's chosen at random in your browser each spin, and every option has an equal chance."
+        }
       ]
     },
     "ladder-game": {
       "intro": "Enter names and results and follow the ladder to match them at random.",
       "faq": [
-        { "q": "Can the names and results counts differ?", "a": "No, they must be equal. If the counts differ, the ladder won't be shown." },
-        { "q": "Are the results rigged?", "a": "No. The ladder is generated at random each time, and you can rebuild it with 'Reshuffle ladder'." }
+        {
+          "q": "Can the names and results counts differ?",
+          "a": "No, they must be equal. If the counts differ, the ladder won't be shown."
+        },
+        {
+          "q": "Are the results rigged?",
+          "a": "No. The ladder is generated at random each time, and you can rebuild it with 'Reshuffle ladder'."
+        }
       ]
     },
     "text-to-speech": {
@@ -2242,7 +2254,7 @@
     "mp_drop": "Drop PDFs or click to add",
     "mp_merging": "Merging…",
     "mp_merge_n": "Merge {n} PDFs",
-    "mp_note": "Merged in your browser in the order shown — files are never uploaded.",
+    "mp_note": "Approximate, based on the synodic month (~29.53 days); the real phase may differ slightly.",
     "ic_drop": "Drop image here or click to select",
     "ic_supported": "JPG, PNG, WebP, HEIC supported",
     "ic_maxsize": "Max Size (MB)",
@@ -2357,7 +2369,7 @@
     "cs_rate": "Speed",
     "cs_source": "The original Hanja and its Korean reading are public domain; the meaning is ToolBoxy's own plain rendering and differs in wording from any standard translation. Mantras (진언/다라니) are transliterations and are left untranslated.",
     "dd_count": "Recitations",
-    "dd_target": "Goal",
+    "dd_target": "Target date",
     "dd_reset": "Reset",
     "tts_title": "Text to Speech (TTS)",
     "tts_subtitle": "Free tool that reads your text aloud in a natural voice. Adjust voice, speed, pitch, and volume — right in your browser, no install.",
@@ -2478,7 +2490,6 @@
     "mp_illum": "Illumination",
     "mp_age": "Moon age",
     "mp_day": "d",
-    "mp_note": "Approximate, based on the synodic month (~29.53 days); the real phase may differ slightly.",
     "mp_p_new": "New Moon",
     "mp_p_waxcres": "Waxing Crescent",
     "mp_p_first": "First Quarter",
@@ -2548,7 +2559,6 @@
     "dd_subtitle": "Count the days until (or since) a target date.",
     "dd_label": "Name (optional)",
     "dd_label_ph": "e.g. Exam, Anniversary",
-    "dd_target": "Target date",
     "dd_left": "{n} days to go",
     "dd_passed": "{n} days ago",
     "dd_today": "It's today!",
@@ -2916,12 +2926,48 @@
     "cs_top": "Back to top"
   },
   "toolTags": {
-    "spinner-wheel": ["spinner wheel", "wheel of names", "random picker", "wheel spinner", "decision wheel"],
-    "ladder-game": ["ladder game", "amidakuji", "ghost leg", "random matching", "name picker"],
-    "text-to-speech": ["text to speech", "TTS", "voice generator", "read aloud", "speech synthesis"],
-    "daedarani": ["Great Compassion Dharani", "Daedarani", "Nilakantha Dharani", "108 recitations", "dharani"],
-    "banyasimgyeong": ["Heart Sutra", "Banya-simgyeong", "Prajnaparamita", "Buddhist sutra", "sutra recitation"],
-    "cheonsugyeong": ["Cheonsugyeong", "Thousand-Hands Sutra", "Great Compassion Dharani", "Buddhist sutra", "sutra recitation"]
+    "spinner-wheel": [
+      "spinner wheel",
+      "wheel of names",
+      "random picker",
+      "wheel spinner",
+      "decision wheel"
+    ],
+    "ladder-game": [
+      "ladder game",
+      "amidakuji",
+      "ghost leg",
+      "random matching",
+      "name picker"
+    ],
+    "text-to-speech": [
+      "text to speech",
+      "TTS",
+      "voice generator",
+      "read aloud",
+      "speech synthesis"
+    ],
+    "daedarani": [
+      "Great Compassion Dharani",
+      "Daedarani",
+      "Nilakantha Dharani",
+      "108 recitations",
+      "dharani"
+    ],
+    "banyasimgyeong": [
+      "Heart Sutra",
+      "Banya-simgyeong",
+      "Prajnaparamita",
+      "Buddhist sutra",
+      "sutra recitation"
+    ],
+    "cheonsugyeong": [
+      "Cheonsugyeong",
+      "Thousand-Hands Sutra",
+      "Great Compassion Dharani",
+      "Buddhist sutra",
+      "sutra recitation"
+    ]
   },
   "toolNames": {
     "periodic-table": "Periodic Table",
@@ -3006,5 +3052,45 @@
     "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",
     "video-to-audio": "Very large videos (several hundred MB+) may fail due to browser memory limits.",
     "audio-trimmer": "Very large files may fail due to browser memory limits."
+  },
+  "dashboard": {
+    "title_fallback": "My Dashboard",
+    "current_plan": "Current Plan",
+    "uploads_per_day": "Uploads / day",
+    "max_file_size": "Max file size",
+    "batch_size": "Batch size",
+    "batch_value": "{count} files",
+    "manage_subscription": "Manage Subscription",
+    "opening": "Opening…",
+    "game_records": "My Game Records",
+    "no_records": "No records yet. Play a game like <reaction>Reaction Time</reaction> or <click>Click Speed</click> and submit your score to see it here.",
+    "plays": "{count, plural, one {# play} other {# plays}}",
+    "plan_free": "Free",
+    "plan_pro": "Pro",
+    "plan_business": "Business",
+    "features": {
+      "free": [
+        "10 uploads/day",
+        "10MB max file size",
+        "All basic tools",
+        "No watermark"
+      ],
+      "pro": [
+        "500 uploads/day",
+        "100MB max file size",
+        "Batch processing (20 files)",
+        "Priority processing",
+        "API access"
+      ],
+      "business": [
+        "Unlimited uploads",
+        "500MB max file size",
+        "Batch processing (100 files)",
+        "Priority processing",
+        "API access",
+        "Team sharing (5 seats)",
+        "Dedicated support"
+      ]
+    }
   }
 }

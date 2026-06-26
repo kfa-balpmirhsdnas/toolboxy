@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { auth } from '@/lib/firebase/client'
 import { onAuthStateChanged, type User } from 'firebase/auth'
 import { PLANS, type PlanId } from '@/lib/stripe/plans'
@@ -29,6 +30,7 @@ const PLAN_BADGE: Record<PlanId, { label: string; color: string }> = {
 
 export default function DashboardPage({ params }: { params: { lang: string } }) {
   const router = useRouter()
+  const t = useTranslations('dashboard')
   const [user, setUser] = useState<User | null>(null)
   const [sub, setSub] = useState<SubscriptionData | null>(null)
   const [records, setRecords] = useState<GameRecord[]>([])
@@ -110,7 +112,7 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
           )}
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {user?.displayName ?? 'My Dashboard'}
+              {user?.displayName ?? t('title_fallback')}
             </h1>
             <p className="text-gray-500 text-sm">{user?.email}</p>
           </div>
@@ -119,31 +121,31 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
         {/* Plan Card */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900 text-lg">Current Plan</h2>
+            <h2 className="font-semibold text-gray-900 text-lg">{t('current_plan')}</h2>
             <span className={`text-sm font-bold px-3 py-1 rounded-full ${badge.color}`}>
-              {badge.label}
+              {t(`plan_${plan}`)}
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
             <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-xs text-gray-500 mb-1">Uploads / day</p>
+              <p className="text-xs text-gray-500 mb-1">{t('uploads_per_day')}</p>
               <p className="font-bold text-gray-900 text-lg">
                 {planData.limits.uploadsPerDay === -1 ? '∞' : planData.limits.uploadsPerDay}
               </p>
             </div>
             <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-xs text-gray-500 mb-1">Max file size</p>
+              <p className="text-xs text-gray-500 mb-1">{t('max_file_size')}</p>
               <p className="font-bold text-gray-900 text-lg">{planData.limits.maxFileSizeMB} MB</p>
             </div>
             <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-xs text-gray-500 mb-1">Batch size</p>
-              <p className="font-bold text-gray-900 text-lg">{planData.limits.batchSize} files</p>
+              <p className="text-xs text-gray-500 mb-1">{t('batch_size')}</p>
+              <p className="font-bold text-gray-900 text-lg">{t('batch_value', { count: planData.limits.batchSize })}</p>
             </div>
           </div>
 
           <ul className="space-y-2 mb-6">
-            {planData.features.map((f) => (
+            {(t.raw(`features.${plan}`) as string[]).map((f) => (
               <li key={f} className="flex items-center gap-2 text-sm text-gray-700">
                 <span className="text-green-500 font-bold">✓</span> {f}
               </li>
@@ -156,20 +158,20 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
               disabled={portalLoading}
               className="btn-secondary w-full py-2.5 text-sm font-semibold disabled:opacity-60"
             >
-              {portalLoading ? 'Opening…' : 'Manage Subscription'}
+              {portalLoading ? t('opening') : t('manage_subscription')}
             </button>
           )}
         </div>
 
         {/* My game records */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-          <h2 className="font-semibold text-gray-900 text-lg mb-4">🎮 My Game Records</h2>
+          <h2 className="font-semibold text-gray-900 text-lg mb-4">🎮 {t('game_records')}</h2>
           {records.length === 0 ? (
             <p className="text-sm text-gray-500">
-              No records yet. Play a game like{' '}
-              <Link href={`/${params.lang}/tools/reaction-time-test`} className="text-brand-600 hover:underline">Reaction Time</Link>{' '}or{' '}
-              <Link href={`/${params.lang}/tools/click-speed-test`} className="text-brand-600 hover:underline">Click Speed</Link>{' '}
-              and submit your score to see it here.
+              {t.rich('no_records', {
+                reaction: (c) => <Link href={`/${params.lang}/tools/reaction-time-test`} className="text-brand-600 hover:underline">{c}</Link>,
+                click: (c) => <Link href={`/${params.lang}/tools/click-speed-test`} className="text-brand-600 hover:underline">{c}</Link>,
+              })}
             </p>
           ) : (
             <div className="divide-y divide-gray-100">
@@ -180,7 +182,7 @@ export default function DashboardPage({ params }: { params: { lang: string } }) 
                     <Link href={`/${params.lang}/tools/${r.game}`} className="flex-1 text-sm font-medium text-gray-800 hover:text-brand-600">
                       {meta?.label ?? r.game}
                     </Link>
-                    <span className="text-xs text-gray-400">{r.attempts} {r.attempts === 1 ? 'play' : 'plays'}</span>
+                    <span className="text-xs text-gray-400">{t('plays', { count: r.attempts })}</span>
                     <span className="text-sm font-bold text-brand-700 w-24 text-right">
                       {r.best != null ? `${r.best}${meta?.unit ?? ''}` : '—'}
                     </span>
