@@ -3057,6 +3057,16 @@
       "Upload a JPG/JPEG image.",
       "Press convert.",
       "Convert to PNG and download."
+    ],
+    "image-to-pdf": [
+      "Add one or more images.",
+      "Check the order.",
+      "Create the PDF and download."
+    ],
+    "screen-recorder": [
+      "Press start and share your screen.",
+      "Stop the recording.",
+      "Download the WebM file."
     ]
   },
   "games": {
@@ -5249,7 +5259,21 @@
     "jtp_drop": "Drop JPG/JPEG here or click to select",
     "jtp_lossless": "Converted to lossless PNG in your browser",
     "jtp_ready": "PNG ready!",
-    "jtp_download": "Download .png"
+    "jtp_download": "Download .png",
+    "itp_drop": "Drop images or click to add",
+    "itp_pageorder": "Each image becomes one PDF page, in order",
+    "itp_building": "Building PDF…",
+    "itp_create": "Create PDF ({n} images)",
+    "itp_privacy": "All processing happens in your browser — images are never uploaded.",
+    "sr_unsupported": "Screen recording isn’t supported on this browser. Use Chrome or Edge on a desktop computer (it doesn’t work on phones).",
+    "sr_cancelled": "Screen sharing was cancelled or blocked.",
+    "sr_failed": "Could not start screen recording.",
+    "sr_desktoponly": "Screen recording works on desktop only",
+    "sr_desktopdesc": "Your browser can’t capture the screen. Open this page in Chrome, Edge or Firefox on a desktop computer — phones and most in-app browsers don’t support it.",
+    "sr_start": "● Start recording",
+    "sr_stop": "■ Stop recording",
+    "sr_download": "Download .webm",
+    "sr_note": "Records your screen (and system/mic audio if allowed) to a WebM file, entirely in your browser. Nothing is uploaded."
   },
   "toolTags": {
     "spinner-wheel": [

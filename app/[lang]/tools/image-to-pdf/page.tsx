@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -27,6 +28,7 @@ function toPngBytes(file: File): Promise<{ bytes: Uint8Array; w: number; h: numb
 }
 
 export default function ImageToPdfPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [files, setFiles] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -70,8 +72,8 @@ export default function ImageToPdfPage({ params }: { params: { lang: string } })
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
           <input ref={inputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => add(e.target.files)} />
           <p className="text-4xl mb-2">📄</p>
-          <p className="text-sm font-medium text-gray-600">Drop images or click to add</p>
-          <p className="text-xs text-gray-400 mt-1">Each image becomes one PDF page, in order</p>
+          <p className="text-sm font-medium text-gray-600">{t('itp_drop')}</p>
+          <p className="text-xs text-gray-400 mt-1">{t('itp_pageorder')}</p>
         </div>
 
         {files.length > 0 && (
@@ -87,11 +89,11 @@ export default function ImageToPdfPage({ params }: { params: { lang: string } })
             </div>
             <button onClick={build} disabled={loading}
               className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors">
-              {loading ? 'Building PDF…' : `Create PDF (${files.length} ${files.length === 1 ? 'image' : 'images'})`}
+              {loading ? t('itp_building') : t('itp_create',{n:files.length})}
             </button>
           </div>
         )}
-        <p className="text-xs text-gray-400">All processing happens in your browser — images are never uploaded.</p>
+        <p className="text-xs text-gray-400">{t('itp_privacy')}</p>
       </div>
 
     </ToolLayout>
