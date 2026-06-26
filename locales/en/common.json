@@ -2667,6 +2667,16 @@
       "Set columns, rows and gaps.",
       "Fine-tune the grid-template values.",
       "Copy the generated CSS Grid code."
+    ],
+    "css-box-model-visualizer": [
+      "Set width, height and box-sizing.",
+      "Adjust margin, border and padding.",
+      "Copy the generated CSS."
+    ],
+    "css-animation-generator": [
+      "Pick an animation preset.",
+      "Adjust duration, timing and iteration.",
+      "Copy the generated CSS."
     ]
   },
   "games": {
@@ -4306,7 +4316,28 @@
     "cgr_columns": "Columns",
     "cgr_rows": "Rows",
     "cgr_colgap": "Column Gap",
-    "cgr_rowgap": "Row Gap"
+    "cgr_rowgap": "Row Gap",
+    "bmv_all": "All:",
+    "bmv_top": "Top",
+    "bmv_right": "Right",
+    "bmv_bottom": "Bottom",
+    "bmv_left": "Left",
+    "bmv_margin": "MARGIN",
+    "bmv_border": "BORDER",
+    "bmv_padding": "PADDING",
+    "bmv_totalw": "Total W:",
+    "bmv_totalh": "Total H:",
+    "bmv_contentw": "Content W:",
+    "bmv_contenth": "Content H:",
+    "cag_p_fade": "Fade In",
+    "cag_p_slide": "Slide Up",
+    "cag_p_bounce": "Bounce",
+    "cag_p_spin": "Spin",
+    "cag_p_pulse": "Pulse",
+    "cag_p_shake": "Shake",
+    "cag_duration": "Duration",
+    "cag_timing": "Timing",
+    "cag_iteration": "Iteration"
   },
   "toolTags": {
     "spinner-wheel": [

@@ -2972,6 +2972,16 @@
       "列・行数と間隔を設定します。",
       "grid-template値を直接調整できます。",
       "生成されたCSS Gridコードをコピーします。"
+    ],
+    "css-box-model-visualizer": [
+      "幅・高さ・box-sizingを設定します。",
+      "マージン・ボーダー・パディングを調整します。",
+      "生成されたCSSをコピーします。"
+    ],
+    "css-animation-generator": [
+      "アニメーションのプリセットを選びます。",
+      "再生時間・タイミング・繰り返しを調整します。",
+      "生成されたCSSをコピーします。"
     ]
   },
   "games": {
@@ -4611,7 +4621,28 @@
     "cgr_columns": "列",
     "cgr_rows": "行",
     "cgr_colgap": "列の間隔",
-    "cgr_rowgap": "行の間隔"
+    "cgr_rowgap": "行の間隔",
+    "bmv_all": "全体:",
+    "bmv_top": "上",
+    "bmv_right": "右",
+    "bmv_bottom": "下",
+    "bmv_left": "左",
+    "bmv_margin": "マージン",
+    "bmv_border": "ボーダー",
+    "bmv_padding": "パディング",
+    "bmv_totalw": "全幅:",
+    "bmv_totalh": "全高:",
+    "bmv_contentw": "コンテンツ幅:",
+    "bmv_contenth": "コンテンツ高さ:",
+    "cag_p_fade": "フェードイン",
+    "cag_p_slide": "スライドアップ",
+    "cag_p_bounce": "バウンス",
+    "cag_p_spin": "回転",
+    "cag_p_pulse": "パルス",
+    "cag_p_shake": "シェイク",
+    "cag_duration": "再生時間",
+    "cag_timing": "タイミング",
+    "cag_iteration": "繰り返し"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

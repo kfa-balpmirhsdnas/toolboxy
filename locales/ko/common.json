@@ -3005,6 +3005,16 @@
       "열·행 수와 간격을 설정하세요.",
       "grid-template 값을 직접 조정할 수도 있어요.",
       "생성된 CSS Grid 코드를 복사하세요."
+    ],
+    "css-box-model-visualizer": [
+      "너비·높이·box-sizing을 설정하세요.",
+      "마진·테두리·패딩을 조절하세요.",
+      "생성된 CSS를 복사하세요."
+    ],
+    "css-animation-generator": [
+      "애니메이션 프리셋을 고르세요.",
+      "지속 시간·타이밍·반복을 조절하세요.",
+      "생성된 CSS를 복사하세요."
     ]
   },
   "games": {
@@ -4644,7 +4654,28 @@
     "cgr_columns": "열",
     "cgr_rows": "행",
     "cgr_colgap": "열 간격",
-    "cgr_rowgap": "행 간격"
+    "cgr_rowgap": "행 간격",
+    "bmv_all": "전체:",
+    "bmv_top": "위",
+    "bmv_right": "오른쪽",
+    "bmv_bottom": "아래",
+    "bmv_left": "왼쪽",
+    "bmv_margin": "마진",
+    "bmv_border": "테두리",
+    "bmv_padding": "패딩",
+    "bmv_totalw": "전체 너비:",
+    "bmv_totalh": "전체 높이:",
+    "bmv_contentw": "콘텐츠 너비:",
+    "bmv_contenth": "콘텐츠 높이:",
+    "cag_p_fade": "페이드 인",
+    "cag_p_slide": "슬라이드 업",
+    "cag_p_bounce": "바운스",
+    "cag_p_spin": "회전",
+    "cag_p_pulse": "펄스",
+    "cag_p_shake": "흔들기",
+    "cag_duration": "지속 시간",
+    "cag_timing": "타이밍",
+    "cag_iteration": "반복"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
