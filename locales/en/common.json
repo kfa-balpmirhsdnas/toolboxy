@@ -2252,6 +2252,16 @@
       "Choose tax-exclusive or tax-inclusive mode.",
       "Enter the amount and tax rate.",
       "See the pre-tax, tax and total."
+    ],
+    "reading-time-calculator": [
+      "Paste your text.",
+      "Choose a reading speed.",
+      "See the estimated reading time."
+    ],
+    "password-strength-checker": [
+      "Type a password.",
+      "See its strength and which rules it meets.",
+      "Check the estimated time to crack it."
     ]
   },
   "games": {
@@ -3162,7 +3172,46 @@
     "tx_rate": "Tax rate",
     "tx_pretax": "Pre-tax amount",
     "tx_tax": "Tax",
-    "tx_total": "Total"
+    "tx_total": "Total",
+    "rt_title": "Reading Time Calculator",
+    "rt_subtitle": "Estimate how long it takes to read any text",
+    "rt_paste": "Paste Your Text",
+    "rt_ph": "Paste an article, blog post, or any text here...",
+    "rt_speed": "Reading Speed",
+    "rt_est": "estimated reading time",
+    "rt_table": "Reading Times at Different Speeds",
+    "rt_wpm0": "Slow (150 wpm)",
+    "rt_wpm1": "Average (238 wpm)",
+    "rt_wpm2": "Fast (350 wpm)",
+    "rt_wpm3": "Speed Reader (700 wpm)",
+    "rt_sec": " sec",
+    "rt_min": " min",
+    "rt_hour": " hr",
+    "ps_password": "Password",
+    "ps_ph": "Enter password to check...",
+    "ps_show": "Show",
+    "ps_hide": "Hide",
+    "ps_crack_label": "Time to crack (10B guesses/sec)",
+    "ps_empty": "Type a password above to check its strength",
+    "ps_vweak": "Very Weak",
+    "ps_weak": "Weak",
+    "ps_fair": "Fair",
+    "ps_strong": "Strong",
+    "ps_vstrong": "Very Strong",
+    "ps_chk_len8": "At least 8 characters",
+    "ps_chk_len12": "At least 12 characters",
+    "ps_chk_upper": "Uppercase letters (A-Z)",
+    "ps_chk_lower": "Lowercase letters (a-z)",
+    "ps_chk_num": "Numbers (0-9)",
+    "ps_chk_special": "Special characters (!@#...)",
+    "ps_chk_nocommon": "No common patterns",
+    "ps_crack_lt_min": "Less than a minute",
+    "ps_crack_min": " minutes",
+    "ps_crack_hours": " hours",
+    "ps_crack_days": " days",
+    "ps_crack_months": " months",
+    "ps_crack_years": " years",
+    "ps_crack_cent": "Centuries"
   },
   "toolTags": {
     "spinner-wheel": [
