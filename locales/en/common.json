@@ -2577,6 +2577,16 @@
       "Browse categories or search.",
       "Click emojis to add to your collection.",
       "Copy them all at once."
+    ],
+    "character-frequency": [
+      "Choose character or word mode.",
+      "Enter your text.",
+      "See the frequency bars sorted by count."
+    ],
+    "character-map": [
+      "Choose a block or search.",
+      "Click the character you want.",
+      "The clicked character is copied."
     ]
   },
   "games": {
@@ -4116,7 +4126,19 @@
     "aa_subtitle": "Turn text into large ASCII art letters. Works great in terminals, readmes, and banners.",
     "aa_text": "Text (max 15 characters)",
     "aa_char": "Character:",
-    "aa_ph": "Type something above..."
+    "aa_ph": "Type something above...",
+    "cf_chars": "Characters",
+    "cf_words": "Words",
+    "cf_space": "(space)",
+    "cf_top": "Showing top 30 of {n} unique {unit}",
+    "cf_unit_char": "characters",
+    "cf_unit_word": "words",
+    "cmap_search": "Search...",
+    "cmap_r_latin": "Basic Latin",
+    "cmap_r_latinext": "Latin Extended",
+    "cmap_r_greek": "Greek",
+    "cmap_r_arrows": "Arrows",
+    "cmap_r_math": "Math"
   },
   "toolTags": {
     "spinner-wheel": [

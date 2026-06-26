@@ -1,10 +1,12 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='character-frequency')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='character-frequency')
   const [input,setInput]=useState('Hello World')
   const [mode,setMode]=useState<'char'|'word'>('char')
 
@@ -25,17 +27,17 @@ export default function Page(){
           {(['char','word'] as const).map(m=>(
             <button key={m} onClick={()=>setMode(m)}
               className={'px-3 py-1 rounded text-sm '+(mode===m?'bg-blue-600 text-white':'bg-gray-100 hover:bg-gray-200')}>
-              {m==='char'?'Characters':'Words'}
+              {m==='char'?t('cf_chars'):t('cf_words')}
             </button>
           ))}
         </div>
         <textarea value={input} onChange={e=>setInput(e.target.value)}
           className='w-full h-28 p-3 border rounded font-mono text-sm resize-y'
-          placeholder='Type or paste text...'/>
+          placeholder={t('ui_text_ph')}/>
         <div className='space-y-1 max-h-64 overflow-auto'>
           {sorted.slice(0,30).map(([k,v])=>(
             <div key={k} className='flex items-center gap-2'>
-              <span className='font-mono w-12 text-right text-sm'>{k===" "?'(space)':k}</span>
+              <span className='font-mono w-12 text-right text-sm'>{k===" "?t('cf_space'):k}</span>
               <div className='flex-1 bg-gray-100 rounded h-5'>
                 <div className='bg-blue-500 h-5 rounded' style={{width:(v/max*100)+'%'}}/>
               </div>
@@ -43,7 +45,7 @@ export default function Page(){
             </div>
           ))}
         </div>
-        <p className='text-xs text-gray-400'>Showing top 30 of {sorted.length} unique {mode==='char'?'characters':'words'}</p>
+        <p className='text-xs text-gray-400'>{t('cf_top',{n:sorted.length,unit:mode==='char'?t('cf_unit_char'):t('cf_unit_word')})}</p>
       </div>
     </ToolLayout>
   )
