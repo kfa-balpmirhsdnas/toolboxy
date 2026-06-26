@@ -2572,6 +2572,11 @@
       "Pick Check or Find mode.",
       "Enter a word (and a second one to check).",
       "See if they are anagrams or list found anagrams."
+    ],
+    "emoji-picker": [
+      "Browse categories or search.",
+      "Click emojis to add to your collection.",
+      "Copy them all at once."
     ]
   },
   "games": {
@@ -4094,7 +4099,24 @@
     "as_yes": "They are anagrams!",
     "as_no": "Not anagrams",
     "as_found": "Found {n} anagram(s) in our word list:",
-    "as_none": "No anagrams found in our word list for \"{w}\""
+    "as_none": "No anagrams found in our word list for \"{w}\"",
+    "ep_title": "Emoji Picker",
+    "ep_subtitle": "Browse, search, and copy emojis. Click to add to your collection.",
+    "ep_search": "Search emojis...",
+    "ep_copied": "copied!",
+    "ep_results": "results",
+    "ep_c_smileys": "Smileys",
+    "ep_c_gestures": "Gestures",
+    "ep_c_animals": "Animals",
+    "ep_c_food": "Food",
+    "ep_c_travel": "Travel",
+    "ep_c_objects": "Objects",
+    "ep_c_symbols": "Symbols",
+    "aa_title": "ASCII Art Generator",
+    "aa_subtitle": "Turn text into large ASCII art letters. Works great in terminals, readmes, and banners.",
+    "aa_text": "Text (max 15 characters)",
+    "aa_char": "Character:",
+    "aa_ph": "Type something above..."
   },
   "toolTags": {
     "spinner-wheel": [
