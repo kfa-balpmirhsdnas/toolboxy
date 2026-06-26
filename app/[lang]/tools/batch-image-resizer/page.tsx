@@ -88,7 +88,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
           )}
         </div>
 
-        <BatchImageProcessor slug="batch-image-resizer" processFn={processFn} zipBaseName="resized" initialFiles={seed} onComplete={setResults} />
+        <BatchImageProcessor slug="batch-image-resizer" processFn={processFn} zipBaseName="resized" ctaLabel={(n) => t('bir_cta', { n })} initialFiles={seed} onComplete={setResults} />
         <BatchToolNav current="batch-image-resizer" lang={params.lang} results={results} />
       </div>
     </ToolLayout>

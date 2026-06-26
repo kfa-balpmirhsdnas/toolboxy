@@ -60,8 +60,11 @@ interface Props {
   zipBaseName?: string
   /** Accept attribute / drop filter. Defaults to "image/*". */
   accept?: string
-  /** Optional override for the process button label (else "Process N images"). */
-  ctaLabel?: string
+  /**
+   * Optional override for the process button label (else "Process N images").
+   * A function receives the current file count for count-aware labels.
+   */
+  ctaLabel?: string | ((n: number) => string)
   /**
    * Optional live name preview. When provided, each input thumbnail's caption
    * shows the computed output name (updating as the function identity changes),
@@ -332,7 +335,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
           ) : (
             <button onClick={run}
               className="w-full py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors">
-              {ctaLabel || t('bip_process', { n: items.length })}
+              {typeof ctaLabel === 'function' ? ctaLabel(items.length) : (ctaLabel || t('bip_process', { n: items.length }))}
             </button>
           )}
         </div>

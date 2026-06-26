@@ -6376,7 +6376,8 @@
     "brn_chars": "chars",
     "brn_cta": "Rename & zip",
     "bnav_continue": "Continue with these {n} results in:",
-    "bnav_related": "Related batch tools"
+    "bnav_related": "Related batch tools",
+    "bir_cta": "Process {n} images"
   },
   "toolTags": {
     "spinner-wheel": [

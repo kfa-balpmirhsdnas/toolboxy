@@ -1954,7 +1954,7 @@
     "encoding-converter": "텍스트 인코딩 변환기",
     "csv-to-excel": "CSV ↔ Excel 변환기",
     "online-notepad": "온라인 메모장",
-    "batch-image-resizer": "이미지 일괄 리사이즈",
+    "batch-image-resizer": "이미지 일괄 크기변경",
     "batch-image-converter": "이미지 일괄 변환",
     "batch-image-compressor": "이미지 일괄 압축",
     "batch-image-watermark": "이미지 일괄 워터마크",
@@ -6701,9 +6701,9 @@
     "bip_done_n": "{n}장 완료",
     "bip_download_all": "전체 다운로드 (.zip)",
     "bip_zipping": "압축 중…",
-    "bir_mode_maxside": "최대 크기(긴 변)",
-    "bir_mode_dimensions": "가로 / 세로",
-    "bir_mode_percent": "퍼센트",
+    "bir_mode_maxside": "특정 축",
+    "bir_mode_dimensions": "해상도",
+    "bir_mode_percent": "비율",
     "bir_longest_side": "긴 변",
     "bir_downscale_only": "(축소만)",
     "bir_auto": "자동",
@@ -6762,7 +6762,8 @@
     "brn_chars": "글자",
     "brn_cta": "이름변경 & zip",
     "bnav_continue": "이 결과 {n}개로 이어서 작업:",
-    "bnav_related": "관련 일괄 도구"
+    "bnav_related": "관련 일괄 도구",
+    "bir_cta": "{n}장 변환하기"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
