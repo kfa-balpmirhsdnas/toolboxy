@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolCopy } from '@/lib/gtag'
@@ -10,6 +11,7 @@ const tool = getToolBySlug('schema-markup-generator')!
 type SchemaType = 'Organization' | 'Article' | 'Product' | 'FAQPage'
 
 export default function SchemaMarkupPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [type, setType] = useState<SchemaType>('Organization')
   const [f, setF] = useState<Record<string, string>>({})
   const [copied, setCopied] = useState(false)
@@ -53,11 +55,11 @@ export default function SchemaMarkupPage({ params }: { params: { lang: string } 
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2">
-          {(['Organization', 'Article', 'Product', 'FAQPage'] as SchemaType[]).map((t) => (
-            <button key={t} onClick={() => { setType(t); setF({}) }}
+          {(['Organization', 'Article', 'Product', 'FAQPage'] as SchemaType[]).map((st) => (
+            <button key={st} onClick={() => { setType(st); setF({}) }}
               className={`text-sm font-medium px-3 py-1.5 rounded-lg border transition-colors ${
-                type === t ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-400'
-              }`}>{t}</button>
+                type === st ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-400'
+              }`}>{st}</button>
           ))}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -72,7 +74,7 @@ export default function SchemaMarkupPage({ params }: { params: { lang: string } 
 
         <div className="relative">
           <pre className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono text-gray-800 whitespace-pre-wrap overflow-x-auto max-h-80">{output}</pre>
-          <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? '✓ Copied' : 'Copy'}</button>
+          <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? '✓ '+t('ui_copied') : t('ui_copy')}</button>
         </div>
       </div>
 

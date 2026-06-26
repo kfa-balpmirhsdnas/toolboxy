@@ -3702,6 +3702,56 @@
       "カテゴリで絞り込みます。",
       "ランダムな名言を取得します。",
       "お気に入りに保存またはコピーします。"
+    ],
+    "git-commit-generator": [
+      "タイプとスコープを選びます。",
+      "件名と本文を書きます。",
+      "コミットメッセージをコピーします。"
+    ],
+    "javascript-minifier": [
+      "JavaScriptを貼り付けます。",
+      "削除する項目を選びます。",
+      "圧縮された出力をコピーします。"
+    ],
+    "salary-converter": [
+      "金額と期間を入力します。",
+      "週あたりの時間と日数を設定します。",
+      "時給から年収まで確認します。"
+    ],
+    "unit-converter": [
+      "カテゴリを選びます。",
+      "値と単位を入力します。",
+      "すべての変換を確認します。"
+    ],
+    "typing-speed-test": [
+      "クリックしてテキストを入力します。",
+      "WPMと正確度がリアルタイム更新されます。",
+      "いつでも新しいテキストを試せます。"
+    ],
+    "image-color-extractor": [
+      "画像をアップロードします。",
+      "主要な色が抽出されます。",
+      "色をクリックしてコピーします。"
+    ],
+    "pomodoro-timer": [
+      "集中または休憩を選びます。",
+      "タイマーを開始します。",
+      "セッションを記録します。"
+    ],
+    "zodiac-sign": [
+      "生年月日を入力します。",
+      "星座を確認します。",
+      "特性と元素を読みます。"
+    ],
+    "matrix-calculator": [
+      "行列のサイズと値を設定します。",
+      "演算を選びます。",
+      "結果の行列を確認します。"
+    ],
+    "schema-markup-generator": [
+      "スキーマタイプを選びます。",
+      "フィールドを入力します。",
+      "JSON-LDマークアップをコピーします。"
     ]
   },
   "games": {
@@ -6267,7 +6317,73 @@
     "rqg_subtitle": "歴史上の偉大な人物の心に響く名言を見つけましょう",
     "rqg_all": "すべて",
     "rqg_next": "次へ",
-    "rqg_favorites": "お気に入り ({n})"
+    "rqg_favorites": "お気に入り ({n})",
+    "gcg_scope": "スコープ (任意)",
+    "gcg_subject": "件名",
+    "gcg_subject_ph": "短い説明 (命令形)",
+    "gcg_body_ph": "詳細な説明...",
+    "gcg_breaking": "破壊的変更 (!)",
+    "gcg_generated": "生成されたコミットメッセージ",
+    "jsm_comments": "コメントを削除",
+    "jsm_whitespace": "空白を削除",
+    "jsm_semicolons": "末尾のセミコロンを削除",
+    "jsm_code": "JavaScriptコード",
+    "jsm_minified": "圧縮済み",
+    "jsm_savings": "削減",
+    "jsm_output": "圧縮出力",
+    "sal_per": "単位",
+    "sal_p_hour": "時間",
+    "sal_p_day": "日",
+    "sal_p_week": "週",
+    "sal_p_month": "月",
+    "sal_p_year": "年",
+    "sal_hpw": "週あたり時間",
+    "sal_dpw": "週あたり日数",
+    "sal_row": "{u}あたり",
+    "sal_note": "税引前総支給額の換算 · 週{h}時間、年52週基準。",
+    "uc2_length": "長さ",
+    "uc2_weight": "重さ",
+    "uc2_temp": "温度",
+    "uc2_area": "面積",
+    "uc2_volume": "体積",
+    "uc2_speed": "速度",
+    "uc2_data": "データ",
+    "uc2_from": "変換元",
+    "uc2_to": "変換先",
+    "uc2_all": "{v} {u} からのすべての変換",
+    "tst_ph": "ここをクリックして入力を始めてください...",
+    "tst_accuracy": "正確度",
+    "tst_time": "時間",
+    "tst_complete": "テスト完了!",
+    "tst_result": "正確度{acc}%で{wpm} WPM",
+    "tst_newtext": "新しいテキスト",
+    "tst_text": "テキスト {n}",
+    "ice_formats": "PNG, JPG, GIF, WebP対応",
+    "ice_extracting": "色を抽出中...",
+    "ice_top": "上位{n}色",
+    "pom_focus": "集中",
+    "pom_short": "短い休憩",
+    "pom_long": "長い休憩",
+    "pom_sessions": "完了したセッション:",
+    "pom_hide": "隠す",
+    "pom_editdur": "時間を編集",
+    "pom_min": "分",
+    "zod_title": "星座ファインダー",
+    "zod_subtitle": "生年月日から星座と性格・元素・支配星を調べます",
+    "zod_dob": "生年月日",
+    "zod_traits": "主な特性",
+    "mtx_err_dim": "行列のサイズが同じである必要があります",
+    "mtx_err_cols": "Aの列数がBの行数と等しい必要があります",
+    "mtx_err_2x2": "2x2のみ",
+    "mtx_a": "行列 A",
+    "mtx_b": "行列 B",
+    "mtx_op_add": "A + B",
+    "mtx_op_sub": "A - B",
+    "mtx_op_mul": "A × B",
+    "mtx_op_transA": "A 転置",
+    "mtx_op_transB": "B 転置",
+    "mtx_op_detA": "det(A) 2x2",
+    "mtx_result": "結果 ({r}×{c})"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

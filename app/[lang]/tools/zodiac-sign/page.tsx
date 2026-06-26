@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -33,6 +34,7 @@ const ELEM_COLORS:Record<string,string>={Fire:'text-red-500',Earth:'text-green-6
 const tool = getToolBySlug('zodiac-sign')!
 
 export default function ZodiacSignPage() {
+  const t = useTranslations('toolui')
   const [date,setDate]=useState('')
 
   const d=date?new Date(date):null
@@ -41,10 +43,10 @@ export default function ZodiacSignPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Zodiac Sign Finder</h1>
-        <p className="text-gray-500 mb-8">Find your zodiac sign and discover your traits, element, and ruling planet</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('zod_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('zod_subtitle')}</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('zod_dob')}</label>
           <input type="date" value={date} onChange={e=>setDate(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500" />
         </div>
@@ -63,9 +65,9 @@ export default function ZodiacSignPage() {
             </div>
             <p className="text-gray-600 text-sm leading-relaxed">{sign.desc}</p>
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Key Traits</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">{t('zod_traits')}</h3>
               <div className="flex flex-wrap gap-2">
-                {sign.traits.map(t=>(<span key={t} className="bg-brand-50 text-brand-700 text-sm px-3 py-1 rounded-full border border-brand-100">{t}</span>))}
+                {sign.traits.map(tr2=>(<span key={tr2} className="bg-brand-50 text-brand-700 text-sm px-3 py-1 rounded-full border border-brand-100">{tr2}</span>))}
               </div>
             </div>
           </div>

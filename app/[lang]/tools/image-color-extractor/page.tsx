@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('image-color-extractor')!
@@ -16,6 +17,7 @@ function getTopColors(data:Uint8ClampedArray,k:number):string[]{
 }
 function isLight(hex:string):boolean{const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(0.299*r+0.587*g+0.114*b)>128}
 export default function ImageColorExtractorPage() {
+  const t = useTranslations('toolui')
   const [colors,setColors]=useState<string[]>([])
   const [preview,setPreview]=useState<string|null>(null)
   const [loading,setLoading]=useState(false)
@@ -58,22 +60,22 @@ export default function ImageColorExtractorPage() {
           ):(
             <div className="space-y-2">
               <p className="text-3xl">🖼️</p>
-              <p className="text-gray-600 font-medium">Drop an image or click to upload</p>
-              <p className="text-xs text-gray-400">PNG, JPG, GIF, WebP supported</p>
+              <p className="text-gray-600 font-medium">{t('ati_drop')}</p>
+              <p className="text-xs text-gray-400">{t('ice_formats')}</p>
             </div>
           )}
         </div>
-        {loading&&<p className="text-center text-gray-500 animate-pulse">Extracting colors...</p>}
+        {loading&&<p className="text-center text-gray-500 animate-pulse">{t('ice_extracting')}</p>}
         {colors.length>0&&(
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-3">Top {colors.length} colors</p>
+            <p className="text-sm font-medium text-gray-700 mb-3">{t('ice_top',{n:colors.length})}</p>
             <div className="grid grid-cols-4 gap-2">
               {colors.map((c,i)=>(
                 <div key={i} className="rounded-xl overflow-hidden border border-gray-200 cursor-pointer hover:shadow-md transition" onClick={()=>copy(c)}>
                   <div className="h-14" style={{background:c}}/>
                   <div className="px-1.5 py-1.5 text-center">
                     <p className="text-xs font-mono font-bold text-gray-700">{c.toUpperCase()}</p>
-                    <p className="text-xs text-gray-400">{copied===c?'Copied!':'Copy'}</p>
+                    <p className="text-xs text-gray-400">{copied===c?t('ui_copied'):t('ui_copy')}</p>
                   </div>
                 </div>
               ))}

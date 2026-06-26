@@ -3397,6 +3397,56 @@
       "Filter by category.",
       "Get a random quote.",
       "Save favorites or copy."
+    ],
+    "git-commit-generator": [
+      "Pick a type and scope.",
+      "Write the subject and body.",
+      "Copy the commit message."
+    ],
+    "javascript-minifier": [
+      "Paste your JavaScript.",
+      "Choose what to remove.",
+      "Copy the minified output."
+    ],
+    "salary-converter": [
+      "Enter an amount and period.",
+      "Set hours and days per week.",
+      "See hourly to yearly pay."
+    ],
+    "unit-converter": [
+      "Choose a category.",
+      "Enter a value and units.",
+      "See all conversions."
+    ],
+    "typing-speed-test": [
+      "Click and type the text.",
+      "Your WPM and accuracy update live.",
+      "Try a new text anytime."
+    ],
+    "image-color-extractor": [
+      "Upload an image.",
+      "Top colors are extracted.",
+      "Click a swatch to copy."
+    ],
+    "pomodoro-timer": [
+      "Choose focus or break.",
+      "Start the timer.",
+      "Track your sessions."
+    ],
+    "zodiac-sign": [
+      "Enter your birth date.",
+      "See your zodiac sign.",
+      "Read its traits and element."
+    ],
+    "matrix-calculator": [
+      "Set matrix sizes and values.",
+      "Pick an operation.",
+      "See the result matrix."
+    ],
+    "schema-markup-generator": [
+      "Choose a schema type.",
+      "Fill in the fields.",
+      "Copy the JSON-LD markup."
     ]
   },
   "games": {
@@ -5962,7 +6012,73 @@
     "rqg_subtitle": "Discover inspiring quotes from history's greatest minds",
     "rqg_all": "All",
     "rqg_next": "Next",
-    "rqg_favorites": "Favorites ({n})"
+    "rqg_favorites": "Favorites ({n})",
+    "gcg_scope": "Scope (optional)",
+    "gcg_subject": "Subject",
+    "gcg_subject_ph": "Short description (imperative mood)",
+    "gcg_body_ph": "Detailed description...",
+    "gcg_breaking": "Breaking change (!)",
+    "gcg_generated": "Generated Commit Message",
+    "jsm_comments": "Remove comments",
+    "jsm_whitespace": "Remove whitespace",
+    "jsm_semicolons": "Remove last semicolons",
+    "jsm_code": "JavaScript code",
+    "jsm_minified": "Minified",
+    "jsm_savings": "Savings",
+    "jsm_output": "Minified output",
+    "sal_per": "Per",
+    "sal_p_hour": "hour",
+    "sal_p_day": "day",
+    "sal_p_week": "week",
+    "sal_p_month": "month",
+    "sal_p_year": "year",
+    "sal_hpw": "Hours / week",
+    "sal_dpw": "Days / week",
+    "sal_row": "Per {u}",
+    "sal_note": "Gross pay conversion (before tax) · based on {h}h/week, 52 weeks/year.",
+    "uc2_length": "Length",
+    "uc2_weight": "Weight",
+    "uc2_temp": "Temperature",
+    "uc2_area": "Area",
+    "uc2_volume": "Volume",
+    "uc2_speed": "Speed",
+    "uc2_data": "Data",
+    "uc2_from": "From",
+    "uc2_to": "To",
+    "uc2_all": "All conversions from {v} {u}",
+    "tst_ph": "Click here and start typing...",
+    "tst_accuracy": "Accuracy",
+    "tst_time": "Time",
+    "tst_complete": "Test complete!",
+    "tst_result": "{wpm} WPM at {acc}% accuracy",
+    "tst_newtext": "New text",
+    "tst_text": "Text {n}",
+    "ice_formats": "PNG, JPG, GIF, WebP supported",
+    "ice_extracting": "Extracting colors...",
+    "ice_top": "Top {n} colors",
+    "pom_focus": "Focus",
+    "pom_short": "Short Break",
+    "pom_long": "Long Break",
+    "pom_sessions": "Sessions completed:",
+    "pom_hide": "Hide",
+    "pom_editdur": "Edit durations",
+    "pom_min": "min",
+    "zod_title": "Zodiac Sign Finder",
+    "zod_subtitle": "Find your zodiac sign and discover your traits, element, and ruling planet",
+    "zod_dob": "Date of Birth",
+    "zod_traits": "Key Traits",
+    "mtx_err_dim": "Matrices must have same dimensions",
+    "mtx_err_cols": "Cols of A must equal rows of B",
+    "mtx_err_2x2": "2x2 only",
+    "mtx_a": "Matrix A",
+    "mtx_b": "Matrix B",
+    "mtx_op_add": "A + B",
+    "mtx_op_sub": "A - B",
+    "mtx_op_mul": "A × B",
+    "mtx_op_transA": "Transpose A",
+    "mtx_op_transB": "Transpose B",
+    "mtx_op_detA": "det(A) 2x2",
+    "mtx_result": "Result ({r}×{c})"
   },
   "toolTags": {
     "spinner-wheel": [

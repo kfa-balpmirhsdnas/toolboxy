@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('typing-speed-test')!
@@ -11,6 +12,7 @@ const TEXTS=[
   'The only way to do great work is to love what you do. If you have not found it yet keep looking and do not settle.',
 ]
 export default function TypingSpeedTestPage() {
+  const tr = useTranslations('toolui')
   const [text,setText]=useState(TEXTS[0])
   const [typed,setTyped]=useState('')
   const [started,setStarted]=useState(false)
@@ -52,22 +54,22 @@ export default function TypingSpeedTestPage() {
         <textarea ref={inputRef} value={typed} onChange={e=>onChange(e.target.value)}
           disabled={finished} rows={3}
           className="w-full rounded-xl border-2 border-gray-300 px-3 py-2.5 font-mono text-sm resize-none focus:outline-none focus:border-blue-400 disabled:opacity-50"
-          placeholder={started?'':'Click here and start typing...'}/>
+          placeholder={started?'':tr('tst_ph')}/>
         <div className="grid grid-cols-4 gap-2 text-center">
-          {[['WPM',started||finished?wpm:'—'],['Accuracy',accuracy+'%'],['Time',(elapsed/1000).toFixed(1)+'s'],['Words',words]].map(([l,v])=>(
+          {[['WPM',started||finished?wpm:'—'],['tst_accuracy',accuracy+'%'],['tst_time',(elapsed/1000).toFixed(1)+'s'],['lip_words',words]].map(([l,v])=>(
             <div key={l} className={'rounded-xl py-3 '+(finished?'bg-green-50':'bg-gray-50')}>
               <p className={'text-xl font-bold '+(finished?'text-green-700':'text-gray-800')}>{v}</p>
-              <p className="text-xs text-gray-500">{l}</p>
+              <p className="text-xs text-gray-500">{l==='WPM'?'WPM':tr(l as string)}</p>
             </div>
           ))}
         </div>
         {finished&&<div className="text-center bg-green-50 rounded-2xl py-4 border-2 border-green-300">
-          <p className="text-2xl font-bold text-green-700">Test complete!</p>
-          <p className="text-sm text-green-600 mt-1">{wpm} WPM at {accuracy}% accuracy</p>
+          <p className="text-2xl font-bold text-green-700">{tr('tst_complete')}</p>
+          <p className="text-sm text-green-600 mt-1">{tr('tst_result',{wpm,acc:accuracy})}</p>
         </div>}
         <div className="flex gap-2 flex-wrap justify-center">
-          <button onClick={()=>restart()} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">New text</button>
-          {TEXTS.map((_,i)=><button key={i} onClick={()=>restart(i)} className="px-3 py-2 border border-gray-200 rounded-lg text-xs text-gray-600 hover:bg-gray-50">Text {i+1}</button>)}
+          <button onClick={()=>restart()} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">{tr('tst_newtext')}</button>
+          {TEXTS.map((_,i)=><button key={i} onClick={()=>restart(i)} className="px-3 py-2 border border-gray-200 rounded-lg text-xs text-gray-600 hover:bg-gray-50">{tr('tst_text',{n:i+1})}</button>)}
         </div>
       </div>
     </ToolLayout>

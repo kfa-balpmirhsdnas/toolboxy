@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('matrix-calculator')!
@@ -14,6 +15,7 @@ function mul(a:Matrix,b:Matrix):Matrix{
 function transpose(a:Matrix):Matrix{return a[0].map((_,i)=>a.map(r=>r[i]))}
 function det2(a:Matrix):number{return a[0][0]*a[1][1]-a[0][1]*a[1][0]}
 export default function MatrixCalculatorPage() {
+  const t = useTranslations('toolui')
   const [rA,setRA]=useState(2),[cA,setCA]=useState(2)
   const [rB,setRB]=useState(2),[cB,setCB]=useState(2)
   const [mA,setMA]=useState<Matrix>(makeMatrix(2,2))
@@ -26,11 +28,11 @@ export default function MatrixCalculatorPage() {
   const doOp=(op:string)=>{
     setErr('')
     try{
-      if(op==='add'||op==='sub'){if(rA!==rB||cA!==cB)throw new Error('Matrices must have same dimensions');setResult(op==='add'?add(mA,mB):sub(mA,mB))}
-      else if(op==='mul'){if(cA!==rB)throw new Error('Cols of A must equal rows of B');setResult(mul(mA,mB))}
+      if(op==='add'||op==='sub'){if(rA!==rB||cA!==cB)throw new Error(t('mtx_err_dim'));setResult(op==='add'?add(mA,mB):sub(mA,mB))}
+      else if(op==='mul'){if(cA!==rB)throw new Error(t('mtx_err_cols'));setResult(mul(mA,mB))}
       else if(op==='transA'){setResult(transpose(mA))}
       else if(op==='transB'){setResult(transpose(mB))}
-      else if(op==='detA'){if(rA!==2||cA!==2)throw new Error('2x2 only');setResult([[det2(mA)]])}
+      else if(op==='detA'){if(rA!==2||cA!==2)throw new Error(t('mtx_err_2x2'));setResult([[det2(mA)]])}
     }catch(e){setErr((e as Error).message);setResult(null)}
   }
   const MGrid=({m,setM,label}:{m:Matrix;setM:(v:Matrix)=>void;label:string})=>(
@@ -50,32 +52,32 @@ export default function MatrixCalculatorPage() {
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
             <div className="flex gap-2 items-center text-xs text-gray-500">
-              <span>Rows:</span>
+              <span>{t('mtt_rows')}:</span>
               <select value={rA} onChange={e=>resizeA(Number(e.target.value),cA)} className="rounded border border-gray-200 px-1 py-0.5">{[1,2,3,4].map(v=><option key={v} value={v}>{v}</option>)}</select>
-              <span>Cols:</span>
+              <span>{t('mtt_cols')}:</span>
               <select value={cA} onChange={e=>resizeA(rA,Number(e.target.value))} className="rounded border border-gray-200 px-1 py-0.5">{[1,2,3,4].map(v=><option key={v} value={v}>{v}</option>)}</select>
             </div>
-            <MGrid m={mA} setM={setMA} label="Matrix A"/>
+            <MGrid m={mA} setM={setMA} label={t('mtx_a')}/>
           </div>
           <div className="space-y-2">
             <div className="flex gap-2 items-center text-xs text-gray-500">
-              <span>Rows:</span>
+              <span>{t('mtt_rows')}:</span>
               <select value={rB} onChange={e=>resizeB(Number(e.target.value),cB)} className="rounded border border-gray-200 px-1 py-0.5">{[1,2,3,4].map(v=><option key={v} value={v}>{v}</option>)}</select>
-              <span>Cols:</span>
+              <span>{t('mtt_cols')}:</span>
               <select value={cB} onChange={e=>resizeB(rB,Number(e.target.value))} className="rounded border border-gray-200 px-1 py-0.5">{[1,2,3,4].map(v=><option key={v} value={v}>{v}</option>)}</select>
             </div>
-            <MGrid m={mB} setM={setMB} label="Matrix B"/>
+            <MGrid m={mB} setM={setMB} label={t('mtx_b')}/>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          {[['add','A + B'],['sub','A - B'],['mul','A × B'],['transA','Transpose A'],['transB','Transpose B'],['detA','det(A) 2x2']].map(([op,label])=>(
-            <button key={op} onClick={()=>doOp(op)} className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">{label}</button>
+          {[['add','mtx_op_add'],['sub','mtx_op_sub'],['mul','mtx_op_mul'],['transA','mtx_op_transA'],['transB','mtx_op_transB'],['detA','mtx_op_detA']].map(([op,label])=>(
+            <button key={op} onClick={()=>doOp(op)} className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">{t(label)}</button>
           ))}
         </div>
         {err&&<p className="text-red-500 text-sm">{err}</p>}
         {result&&(
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Result ({result.length}×{result[0].length})</p>
+            <p className="text-sm font-medium text-gray-700 mb-2">{t('mtx_result',{r:result.length,c:result[0].length})}</p>
             <div className="inline-block" style={{display:'grid',gridTemplateColumns:`repeat(${result[0]?.length||1},1fr)`,gap:'4px'}}>
               {result.map((row,ri)=>row.map((v,ci)=>(
                 <div key={ri+'-'+ci} className="w-16 rounded bg-blue-50 border border-blue-200 px-2 py-1.5 text-center font-mono text-sm text-blue-800">{parseFloat(v.toFixed(6))}</div>

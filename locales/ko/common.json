@@ -3735,6 +3735,56 @@
       "카테고리로 필터링하세요.",
       "랜덤 명언을 받으세요.",
       "즐겨찾기에 저장하거나 복사하세요."
+    ],
+    "git-commit-generator": [
+      "타입과 범위를 고르세요.",
+      "제목과 본문을 작성하세요.",
+      "커밋 메시지를 복사하세요."
+    ],
+    "javascript-minifier": [
+      "JavaScript를 붙여넣으세요.",
+      "제거할 항목을 고르세요.",
+      "압축된 출력을 복사하세요."
+    ],
+    "salary-converter": [
+      "금액과 기간을 입력하세요.",
+      "주당 시간과 일수를 설정하세요.",
+      "시급부터 연봉까지 확인하세요."
+    ],
+    "unit-converter": [
+      "카테고리를 고르세요.",
+      "값과 단위를 입력하세요.",
+      "모든 변환을 확인하세요."
+    ],
+    "typing-speed-test": [
+      "클릭하고 텍스트를 입력하세요.",
+      "WPM과 정확도가 실시간 갱신됩니다.",
+      "언제든 새 텍스트를 시도하세요."
+    ],
+    "image-color-extractor": [
+      "이미지를 올리세요.",
+      "주요 색상이 추출됩니다.",
+      "색을 클릭해 복사하세요."
+    ],
+    "pomodoro-timer": [
+      "집중 또는 휴식을 고르세요.",
+      "타이머를 시작하세요.",
+      "세션을 추적하세요."
+    ],
+    "zodiac-sign": [
+      "생년월일을 입력하세요.",
+      "별자리를 확인하세요.",
+      "특성과 원소를 읽어보세요."
+    ],
+    "matrix-calculator": [
+      "행렬 크기와 값을 설정하세요.",
+      "연산을 고르세요.",
+      "결과 행렬을 확인하세요."
+    ],
+    "schema-markup-generator": [
+      "스키마 유형을 고르세요.",
+      "필드를 채우세요.",
+      "JSON-LD 마크업을 복사하세요."
     ]
   },
   "games": {
@@ -6300,7 +6350,73 @@
     "rqg_subtitle": "역사상 위대한 인물들의 영감을 주는 명언을 만나보세요",
     "rqg_all": "전체",
     "rqg_next": "다음",
-    "rqg_favorites": "즐겨찾기 ({n})"
+    "rqg_favorites": "즐겨찾기 ({n})",
+    "gcg_scope": "범위 (선택)",
+    "gcg_subject": "제목",
+    "gcg_subject_ph": "짧은 설명 (명령형)",
+    "gcg_body_ph": "자세한 설명...",
+    "gcg_breaking": "주요 변경 (!)",
+    "gcg_generated": "생성된 커밋 메시지",
+    "jsm_comments": "주석 제거",
+    "jsm_whitespace": "공백 제거",
+    "jsm_semicolons": "마지막 세미콜론 제거",
+    "jsm_code": "JavaScript 코드",
+    "jsm_minified": "압축됨",
+    "jsm_savings": "절감",
+    "jsm_output": "압축 출력",
+    "sal_per": "단위",
+    "sal_p_hour": "시간",
+    "sal_p_day": "일",
+    "sal_p_week": "주",
+    "sal_p_month": "월",
+    "sal_p_year": "년",
+    "sal_hpw": "주당 시간",
+    "sal_dpw": "주당 일수",
+    "sal_row": "{u}당",
+    "sal_note": "세전 총급여 환산 · 주 {h}시간, 연 52주 기준.",
+    "uc2_length": "길이",
+    "uc2_weight": "무게",
+    "uc2_temp": "온도",
+    "uc2_area": "넓이",
+    "uc2_volume": "부피",
+    "uc2_speed": "속도",
+    "uc2_data": "데이터",
+    "uc2_from": "변환 전",
+    "uc2_to": "변환 후",
+    "uc2_all": "{v} {u}에서 모든 변환",
+    "tst_ph": "여기를 클릭하고 입력을 시작하세요...",
+    "tst_accuracy": "정확도",
+    "tst_time": "시간",
+    "tst_complete": "테스트 완료!",
+    "tst_result": "정확도 {acc}%로 {wpm} WPM",
+    "tst_newtext": "새 텍스트",
+    "tst_text": "텍스트 {n}",
+    "ice_formats": "PNG, JPG, GIF, WebP 지원",
+    "ice_extracting": "색상 추출 중...",
+    "ice_top": "상위 {n}개 색상",
+    "pom_focus": "집중",
+    "pom_short": "짧은 휴식",
+    "pom_long": "긴 휴식",
+    "pom_sessions": "완료한 세션:",
+    "pom_hide": "숨기기",
+    "pom_editdur": "시간 편집",
+    "pom_min": "분",
+    "zod_title": "별자리 찾기",
+    "zod_subtitle": "생년월일로 별자리와 성격·원소·지배 행성을 알아보세요",
+    "zod_dob": "생년월일",
+    "zod_traits": "주요 특성",
+    "mtx_err_dim": "행렬의 크기가 같아야 합니다",
+    "mtx_err_cols": "A의 열 수가 B의 행 수와 같아야 합니다",
+    "mtx_err_2x2": "2x2만 가능",
+    "mtx_a": "행렬 A",
+    "mtx_b": "행렬 B",
+    "mtx_op_add": "A + B",
+    "mtx_op_sub": "A - B",
+    "mtx_op_mul": "A × B",
+    "mtx_op_transA": "A 전치",
+    "mtx_op_transB": "B 전치",
+    "mtx_op_detA": "det(A) 2x2",
+    "mtx_result": "결과 ({r}×{c})"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
