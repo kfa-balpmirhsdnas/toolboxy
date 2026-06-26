@@ -786,7 +786,8 @@
     "social-image-sizes": "Free guide to recommended image sizes for Instagram, YouTube, TikTok and more.",
     "engagement-rate-calculator": "Free calculator for social media engagement rate from followers, likes and comments.",
     "encoding-converter": "Free tool to fix garbled text by converting files between EUC-KR/CP949, UTF-8, Shift_JIS and more — in your browser.",
-    "csv-to-excel": "Free tool to convert CSV to Excel (.xlsx) and Excel back to CSV, right in your browser."
+    "csv-to-excel": "Free tool to convert CSV to Excel (.xlsx) and Excel back to CSV, right in your browser.",
+    "online-notepad": "A simple online notepad that autosaves to your browser. Write notes, count words, and download as a text file — no login, nothing uploaded."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -3482,6 +3483,11 @@
       "Add your habits.",
       "Tap to mark each day done.",
       "Build your streaks."
+    ],
+    "online-notepad": [
+      "Type or paste your notes in the editor.",
+      "Everything saves automatically in your browser as you type.",
+      "Download as a .txt file or copy when you are done."
     ]
   },
   "games": {
@@ -6190,7 +6196,17 @@
     "ht_wed": "Wed",
     "ht_thu": "Thu",
     "ht_fri": "Fri",
-    "ht_sat": "Sat"
+    "ht_sat": "Sat",
+    "np_placeholder": "Start typing… your notes save automatically in this browser.",
+    "np_autosaved": "Saved to this browser",
+    "np_saving": "Saving…",
+    "np_words": "{n} words",
+    "np_chars": "{n} characters",
+    "np_lines": "{n} lines",
+    "np_download": "Download .txt",
+    "np_copied": "Copied!",
+    "np_clearconfirm": "Clear all text? This cannot be undone.",
+    "np_note": "Your notes are saved only in this browser (localStorage) — nothing is uploaded."
   },
   "toolTags": {
     "spinner-wheel": [
@@ -6234,6 +6250,13 @@
       "Great Compassion Dharani",
       "Buddhist sutra",
       "sutra recitation"
+    ],
+    "online-notepad": [
+      "online notepad",
+      "notepad",
+      "notes",
+      "text editor",
+      "autosave"
     ]
   },
   "toolNames": {
@@ -6318,7 +6341,8 @@
     "social-image-sizes": "Social Media Image Sizes",
     "engagement-rate-calculator": "Engagement Rate Calculator",
     "encoding-converter": "Text Encoding Converter",
-    "csv-to-excel": "CSV ↔ Excel Converter"
+    "csv-to-excel": "CSV ↔ Excel Converter",
+    "online-notepad": "Online Notepad"
   },
   "howtoNote": {
     "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",

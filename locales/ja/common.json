@@ -753,7 +753,8 @@
     "social-image-sizes": "Instagram・YouTube・TikTokなどの推奨画像サイズをまとめた無料ガイド。",
     "engagement-rate-calculator": "フォロワー・いいね・コメントからSNSのエンゲージメント率を計算する無料ツール。",
     "encoding-converter": "EUC-KR↔UTF-8などファイルの文字コードを変換し文字化けを直す無料ツール。ブラウザ内で処理。",
-    "csv-to-excel": "CSVをExcel(xlsx)に、ExcelをCSVに変換する無料ツール。ブラウザ内で処理。"
+    "csv-to-excel": "CSVをExcel(xlsx)に、ExcelをCSVに変換する無料ツール。ブラウザ内で処理。",
+    "online-notepad": "ブラウザに自動保存されるシンプルなオンラインメモ帳。メモを書き、文字数を数え、テキストファイルとして保存。ログイン不要、アップロードなし。"
   },
   "gate": {
     "title": "ToolBoxyをもっと活用しよう",
@@ -1512,6 +1513,13 @@
       "千手陀羅尼",
       "読誦",
       "観音経"
+    ],
+    "online-notepad": [
+      "オンラインメモ帳",
+      "メモ帳",
+      "メモ",
+      "テキストエディタ",
+      "自動保存"
     ]
   },
   "toolNames": {
@@ -1806,7 +1814,8 @@
     "social-image-sizes": "SNS画像サイズガイド",
     "engagement-rate-calculator": "エンゲージメント率計算",
     "encoding-converter": "文字コード変換",
-    "csv-to-excel": "CSV ↔ Excel 変換"
+    "csv-to-excel": "CSV ↔ Excel 変換",
+    "online-notepad": "オンラインメモ帳"
   },
   "toolAbout": {
     "resistor-color-code": "抵抗のカラーバンドから抵抗値を読み取るツールです。4本または5本を選び、各バンドの色を選択すると、抵抗値（Ω・kΩ・MΩ・GΩ）と許容差（±%）を計算し、抵抗の図にバンドをプレビュー表示します。電子部品を扱うときにカラーコードをすばやく確認できます。すべてブラウザ内で処理され、インストール不要で無料です。",
@@ -3787,6 +3796,11 @@
       "習慣を追加します。",
       "毎日完了をタップします。",
       "連続記録を積み上げます。"
+    ],
+    "online-notepad": [
+      "エディタにメモを入力または貼り付けます。",
+      "入力すると自動的にブラウザに保存されます。",
+      "完了したら .txt ファイルとして保存またはコピーします。"
     ]
   },
   "games": {
@@ -6495,7 +6509,17 @@
     "ht_wed": "水",
     "ht_thu": "木",
     "ht_fri": "金",
-    "ht_sat": "土"
+    "ht_sat": "土",
+    "np_placeholder": "入力を始めましょう… メモはこのブラウザに自動保存されます。",
+    "np_autosaved": "このブラウザに保存しました",
+    "np_saving": "保存中…",
+    "np_words": "{n}語",
+    "np_chars": "{n}文字",
+    "np_lines": "{n}行",
+    "np_download": ".txt をダウンロード",
+    "np_copied": "コピーしました",
+    "np_clearconfirm": "すべての文字を消去しますか？元に戻せません。",
+    "np_note": "メモはこのブラウザ（localStorage）にのみ保存され、アップロードされません。"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

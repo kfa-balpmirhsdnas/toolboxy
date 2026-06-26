@@ -65,6 +65,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'online-notepad',category:'text',also:['utility'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['온라인 메모장','메모장','notepad','online notepad','notes','메모','text editor','자동 저장'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'encoding-converter',category:'file',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['인코딩 변환','euc-kr utf-8','한글 깨짐','text encoding converter','charset converter'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'csv-to-excel',category:'file',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['csv to excel','엑셀 변환','csv xlsx','excel to csv','csv 엑셀 변환'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'nickname-generator',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['닉네임 생성기','아이디 추천','아이디 만들기','username generator','nickname generator'],maxFileSizeMB:{free:0,pro:0} },

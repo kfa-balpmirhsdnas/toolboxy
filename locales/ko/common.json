@@ -786,7 +786,8 @@
     "social-image-sizes": "인스타·유튜브·틱톡 등 플랫폼별 권장 이미지 크기를 정리한 무료 가이드. 클릭하면 크기 복사.",
     "engagement-rate-calculator": "팔로워·좋아요·댓글로 SNS 참여율(인게이지먼트)을 계산하는 무료 계산기.",
     "encoding-converter": "EUC-KR↔UTF-8 등 파일 인코딩을 바꿔 한글 깨짐을 고치는 무료 도구. 브라우저에서 바로.",
-    "csv-to-excel": "CSV를 엑셀(xlsx)로, 엑셀을 CSV로 바꾸는 무료 변환 도구. 브라우저에서 바로."
+    "csv-to-excel": "CSV를 엑셀(xlsx)로, 엑셀을 CSV로 바꾸는 무료 변환 도구. 브라우저에서 바로.",
+    "online-notepad": "브라우저에 자동 저장되는 간단한 온라인 메모장. 메모 작성, 글자 수 확인, 텍스트 파일 저장까지. 로그인 없이, 업로드 없이."
   },
   "gate": {
     "title": "ToolBoxy를 더 활용하세요",
@@ -1545,6 +1546,13 @@
       "천수경 해석",
       "천수경 독송",
       "한글 천수경"
+    ],
+    "online-notepad": [
+      "온라인 메모장",
+      "메모장",
+      "메모",
+      "텍스트 편집기",
+      "자동 저장"
     ]
   },
   "toolNames": {
@@ -1839,7 +1847,8 @@
     "social-image-sizes": "SNS 이미지 규격 가이드",
     "engagement-rate-calculator": "참여율 계산기",
     "encoding-converter": "텍스트 인코딩 변환기",
-    "csv-to-excel": "CSV ↔ Excel 변환기"
+    "csv-to-excel": "CSV ↔ Excel 변환기",
+    "online-notepad": "온라인 메모장"
   },
   "toolAbout": {
     "resistor-color-code": "저항의 색띠를 보고 저항값을 읽어 주는 도구예요. 4띠 또는 5띠를 고르고 각 띠의 색을 선택하면, 저항값(Ω·kΩ·MΩ·GΩ)과 허용오차(±%)를 계산하고 저항 그림에 색띠를 미리 보여 줍니다. 전자 부품을 다룰 때 색 코드를 빠르게 확인할 수 있어요. 모든 계산은 브라우저에서 처리되어 설치 없이 무료입니다.",
@@ -3820,6 +3829,11 @@
       "습관을 추가하세요.",
       "매일 완료를 탭하세요.",
       "연속 기록을 쌓으세요."
+    ],
+    "online-notepad": [
+      "편집기에 메모를 입력하거나 붙여넣습니다.",
+      "입력하는 대로 브라우저에 자동 저장됩니다.",
+      "완료되면 .txt 파일로 다운로드하거나 복사합니다."
     ]
   },
   "games": {
@@ -6528,7 +6542,17 @@
     "ht_wed": "수",
     "ht_thu": "목",
     "ht_fri": "금",
-    "ht_sat": "토"
+    "ht_sat": "토",
+    "np_placeholder": "입력을 시작하세요… 메모는 이 브라우저에 자동 저장됩니다.",
+    "np_autosaved": "이 브라우저에 저장됨",
+    "np_saving": "저장 중…",
+    "np_words": "단어 {n}개",
+    "np_chars": "글자 {n}자",
+    "np_lines": "{n}줄",
+    "np_download": ".txt 다운로드",
+    "np_copied": "복사됨",
+    "np_clearconfirm": "모든 내용을 지울까요? 되돌릴 수 없습니다.",
+    "np_note": "메모는 이 브라우저(localStorage)에만 저장되며 업로드되지 않습니다."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
