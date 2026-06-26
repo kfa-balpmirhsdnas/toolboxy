@@ -8,10 +8,12 @@ import path from 'path'
 const SIZE = 512
 const OUT = 'public/icons'
 const FONT = (s) => `700 ${s}px "Malgun Gothic","Yu Gothic UI","Segoe UI",sans-serif`
-// Slight corner rounding: softens the sharp square on desktop installs, yet small
-// enough that a phone launcher's own (larger) mask crops past it — so mobile is
-// unaffected. Corners become transparent.
-const CORNER = 58
+// Each icon is emitted twice: a rounded "<slug>.png" for desktop ('any' purpose,
+// shown as-is so the square needs softening) and a full-bleed square
+// "<slug>-maskable.png" for mobile ('maskable', where the launcher applies its own
+// mask). Decoupling them lets desktop round clearly without the phone mask revealing
+// transparent corners.
+const CORNER = 100
 
 function roundRect(x) {
   const r = CORNER
@@ -24,8 +26,8 @@ function roundRect(x) {
   x.closePath()
 }
 
-function bg(x) {
-  roundRect(x); x.clip()
+function bg(x, rounded) {
+  if (rounded) { roundRect(x); x.clip() }
   // azure-blue gradient matching the Samsung-Wear reference: distinctly bright/light
   // at the top, deepening toward the bottom.
   const g = x.createLinearGradient(0, 0, 0, SIZE)
@@ -33,9 +35,9 @@ function bg(x) {
   x.fillStyle = g; x.fillRect(0, 0, SIZE, SIZE)
 }
 
-function textIcon(label, file) {
+function textIcon(label, file, rounded) {
   const c = createCanvas(SIZE, SIZE); const x = c.getContext('2d')
-  bg(x)
+  bg(x, rounded)
   const lines = label.split('\n')
   let fs = 300; x.font = FONT(fs)
   const widest = () => Math.max(...lines.map((l) => x.measureText(l).width))
@@ -50,7 +52,7 @@ function textIcon(label, file) {
 
 // Re-skin a shape icon: keep its exact white shape (extracted from the old flat
 // icon) but on the gradient and scaled down ~25%.
-async function shapeIcon(src, file, scale = 0.66) {
+async function shapeIcon(src, file, rounded, scale = 0.66) {
   const img = await loadImage(path.join('scripts/icon-src', src)) // flat original (kept for re-runs)
   const t = createCanvas(SIZE, SIZE); const tx = t.getContext('2d')
   tx.drawImage(img, 0, 0, SIZE, SIZE)
@@ -61,7 +63,7 @@ async function shapeIcon(src, file, scale = 0.66) {
   }
   tx.putImageData(d, 0, 0)
   const c = createCanvas(SIZE, SIZE); const x = c.getContext('2d')
-  bg(x)
+  bg(x, rounded)
   const s = SIZE * scale, off = (SIZE - s) / 2
   x.shadowColor = 'rgba(255,255,255,0.3)'; x.shadowBlur = 12
   x.drawImage(t, off, off, s, s)
@@ -88,9 +90,13 @@ const SINGLE = {
   'unzip': '압축\n풀기',
 }
 
+// Emit both the rounded desktop icon and the full-bleed maskable icon for mobile.
+function textBoth(label, slug) { textIcon(label, `${slug}.png`, true); textIcon(label, `${slug}-maskable.png`, false) }
+async function shapeBoth(src, slug) { await shapeIcon(src, `${slug}.png`, true); await shapeIcon(src, `${slug}-maskable.png`, false) }
+
 let n = 0
-for (const [slug, labels] of Object.entries(DICT)) LOCS.forEach((loc, i) => { textIcon(labels[i], `${slug}-${loc}.png`); n++ })
-for (const [slug, label] of Object.entries(SINGLE)) { textIcon(label, `${slug}.png`); n++ }
-await shapeIcon('white-noise-machine.png', 'white-noise-machine.png'); n++
-await shapeIcon('cheonsugyeong.png', 'cheonsugyeong.png'); n++
+for (const [slug, labels] of Object.entries(DICT)) LOCS.forEach((loc, i) => { textBoth(labels[i], `${slug}-${loc}`); n += 2 })
+for (const [slug, label] of Object.entries(SINGLE)) { textBoth(label, slug); n += 2 }
+await shapeBoth('white-noise-machine.png', 'white-noise-machine'); n += 2
+await shapeBoth('cheonsugyeong.png', 'cheonsugyeong'); n += 2
 console.log(`generated ${n} icons`)
