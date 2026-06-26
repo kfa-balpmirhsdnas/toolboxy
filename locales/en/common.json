@@ -2287,6 +2287,21 @@
       "Enter a number in 'Check Number' to test primality.",
       "See its factorization and the previous/next prime.",
       "Switch to 'List Primes' to list all primes up to a limit."
+    ],
+    "speed-calculator": [
+      "Choose what to solve for (speed, distance or time).",
+      "Enter the other values and units.",
+      "See the result and the speed reference."
+    ],
+    "fuel-economy-calculator": [
+      "Enter the distance and unit.",
+      "Enter the fuel used.",
+      "See economy (L/100km, MPG, km/L) and cost."
+    ],
+    "electricity-cost-calculator": [
+      "Enter the device wattage and daily hours of use.",
+      "Enter your rate and days per month.",
+      "See the daily, monthly and yearly cost."
     ]
   },
   "games": {
@@ -3290,7 +3305,35 @@
     "pn_prev": "Previous prime",
     "pn_next": "Next prime",
     "pn_listup": "List primes up to (max 1000)",
-    "pn_found": "primes found"
+    "pn_found": "primes found",
+    "sp_calc": "Calculate",
+    "sp_speed": "Speed",
+    "sp_distance": "Distance",
+    "sp_time": "Time",
+    "sp_unit": "Unit",
+    "sp_hours": "hours",
+    "sp_ref": "Speed reference",
+    "sp_r_walk": "Walking",
+    "sp_r_cycle": "Cycling",
+    "sp_r_city": "Car (city)",
+    "sp_r_hwy": "Car (highway)",
+    "sp_r_train": "Train",
+    "sp_r_air": "Aircraft",
+    "sp_r_sound": "Sound",
+    "sp_r_light": "Light",
+    "fe_title": "Fuel Economy Calculator",
+    "fe_subtitle": "Calculate fuel efficiency in L/100km, MPG, and km/L with trip cost estimation",
+    "fe_fuel": "Fuel Used",
+    "fe_price": "Fuel Price (optional)",
+    "fe_cost100": "Cost per 100 km",
+    "ec_power": "Power (Watts)",
+    "ec_hours": "Hours Used Per Day",
+    "ec_rate": "Electricity Rate ($/kWh)",
+    "ec_days": "Days Per Month",
+    "ec_daily": "Daily",
+    "ec_monthly": "Monthly",
+    "ec_yearly": "Yearly",
+    "ec_formula": "Formula: (Watts / 1000) × Hours × Rate × Days"
   },
   "toolTags": {
     "spinner-wheel": [
