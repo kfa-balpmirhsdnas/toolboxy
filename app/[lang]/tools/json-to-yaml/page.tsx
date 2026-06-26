@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
@@ -37,6 +38,7 @@ function jsonToYaml(obj: unknown, indent = 0): string {
 }
 
 export default function JsonToYamlPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('{"name":"Alice","age":30,"hobbies":["reading","coding"],"address":{"city":"Seoul","country":"Korea"}}')
   const [copied, setCopied] = useState(false)
   const tracked = useRef(false)
@@ -47,7 +49,7 @@ export default function JsonToYamlPage({ params }: { params: { lang: string } })
   try {
     const parsed = JSON.parse(input)
     output = jsonToYaml(parsed)
-  } catch(e:unknown) { error = e instanceof Error ? e.message : 'Invalid JSON' }
+  } catch(e:unknown) { error = e instanceof Error ? e.message : t('jm_invalid') }
 
   async function copy() { await navigator.clipboard.writeText(output); trackToolCopy('json-to-yaml'); setCopied(true); setTimeout(()=>setCopied(false),1500) }
   function download() {
@@ -59,20 +61,20 @@ export default function JsonToYamlPage({ params }: { params: { lang: string } })
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">JSON Input</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1">{t('jm_input')}</label>
           <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} rows={14} placeholder='{"key": "value"}'
             className={'w-full px-4 py-3 border rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none ' + (error?'border-red-300':'border-gray-200')} />
           {error && <p className="text-xs text-red-600 mt-0.5">{error}</p>}
         </div>
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-medium text-gray-600">YAML Output</label>
+            <label className="text-xs font-medium text-gray-600">{t('jty_yamloutput')}</label>
             <div className="flex gap-2">
-              {output && <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'✓ Copied':'Copy'}</button>}
-              {output && <button onClick={download} className="text-xs text-gray-500 hover:text-gray-700">Download</button>}
+              {output && <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'✓ '+t('ui_copied'):t('ui_copy')}</button>}
+              {output && <button onClick={download} className="text-xs text-gray-500 hover:text-gray-700">{t('ui_download')}</button>}
             </div>
           </div>
-          <pre className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono overflow-auto h-56">{output || <span className="text-gray-400 italic">YAML will appear here...</span>}</pre>
+          <pre className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono overflow-auto h-56">{output || <span className="text-gray-400 italic">{t('jty_placeholder')}</span>}</pre>
         </div>
       </div>
     </ToolLayout>

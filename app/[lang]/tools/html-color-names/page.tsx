@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -45,6 +46,7 @@ const COLORS = [
 const tool = getToolBySlug('html-color-names')!
 
 export default function HTMLColorNamesPage() {
+  const t = useTranslations('toolui')
   const [search, setSearch] = useState('')
   const [copied, setCopied] = useState('')
 
@@ -61,13 +63,13 @@ export default function HTMLColorNamesPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">HTML Color Names</h1>
-        <p className="text-gray-500 mb-6">All 140+ CSS named colors with their hex values. Click to copy.</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('hcn_title')}</h1>
+        <p className="text-gray-500 mb-6">{t('hcn_subtitle')}</p>
         <div className="bg-white rounded-xl shadow p-6 space-y-4">
-          <input type="text" placeholder="Search by name or hex..."
+          <input type="text" placeholder={t('hcc_ph')}
             className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={search} onChange={e => setSearch(e.target.value)} />
-          {copied && <p className="text-xs text-center text-green-600 font-medium">{copied} copied!</p>}
+          {copied && <p className="text-xs text-center text-green-600 font-medium">{t('hcn_copied',{name:copied})}</p>}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
             {filtered.map(([name, hex]) => (
               <button key={name} onClick={() => copy(hex)}
@@ -80,7 +82,7 @@ export default function HTMLColorNamesPage() {
               </button>
             ))}
           </div>
-          {filtered.length === 0 && <p className="text-center text-gray-400 py-8">No colors found</p>}
+          {filtered.length === 0 && <p className="text-center text-gray-400 py-8">{t('hcn_none')}</p>}
         </div>
       </div>
     </ToolLayout>

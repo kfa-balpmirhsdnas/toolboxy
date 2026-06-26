@@ -3297,6 +3297,56 @@
       "Choose a conversion direction.",
       "Type hiragana or katakana.",
       "Copy the converted result."
+    ],
+    "number-to-words": [
+      "Enter a number.",
+      "See it spelled out.",
+      "Copy cardinal or ordinal form."
+    ],
+    "split-pdf": [
+      "Upload a PDF.",
+      "Enter the page ranges.",
+      "Extract and download them."
+    ],
+    "sleep-calculator": [
+      "Choose wake-up or bedtime.",
+      "Enter your time.",
+      "Pick a cycle-aligned time."
+    ],
+    "water-intake-calculator": [
+      "Enter your weight.",
+      "Pick activity and climate.",
+      "See your daily water target."
+    ],
+    "json-to-yaml": [
+      "Paste your JSON.",
+      "It's converted to YAML.",
+      "Copy or download the YAML."
+    ],
+    "json-to-xml": [
+      "Paste your JSON.",
+      "Set the root element.",
+      "Copy the XML output."
+    ],
+    "text-encryption": [
+      "Pick a cipher method.",
+      "Enter text and options.",
+      "Copy the encrypted output."
+    ],
+    "keyboard-shortcut-tester": [
+      "Click the capture box.",
+      "Press any key or shortcut.",
+      "See the keys and codes."
+    ],
+    "random-palette-generator": [
+      "Pick a color scheme.",
+      "Generate and lock favorites.",
+      "Copy the hex codes."
+    ],
+    "html-color-names": [
+      "Search by name or hex.",
+      "Browse the CSS named colors.",
+      "Click a color to copy its hex."
     ]
   },
   "games": {
@@ -5748,7 +5798,88 @@
     "jvd_note": "Validates JSON syntax and pretty-prints valid JSON · Updates on button click",
     "up_sample": "Sample",
     "up_params": "Query parameters ({n})",
-    "hkc_note": "{n} chars · Instant, in-browser conversion."
+    "hkc_note": "{n} chars · Instant, in-browser conversion.",
+    "ntw_ph": "Enter a number",
+    "ntw_invalid": "Must be an integer up to 999 trillion",
+    "ntw_cardinal": "Cardinal",
+    "ntw_ordinal": "Ordinal",
+    "spdf_pages": "{n} pages",
+    "spdf_label": "Pages to extract (e.g. 1-3, 5, 8-10)",
+    "spdf_selected": "{n} of {m} pages selected",
+    "spdf_extracting": "Extracting…",
+    "spdf_extract": "Extract pages",
+    "slc_title": "Sleep Calculator",
+    "slc_subtitle": "Find the ideal sleep or wake-up times based on 90-minute sleep cycles",
+    "slc_wantwake": "I want to wake up at...",
+    "slc_wantsleep": "I want to sleep at...",
+    "slc_waketime": "Wake-up time",
+    "slc_bedtime": "Bedtime",
+    "slc_note": "Assumes ~14 minutes to fall asleep. Each sleep cycle is 90 minutes.",
+    "slc_bedtimes": "Ideal bedtimes → wake up at {time}",
+    "slc_waketimes": "Wake-up times → go to bed at {time}",
+    "slc_cycles": "{n} cycles",
+    "slc_sleep": "{h}h of sleep",
+    "slc_recommended": "Recommended",
+    "wic_title": "Water Intake Calculator",
+    "wic_subtitle": "Calculate your recommended daily water intake based on weight, activity, and climate",
+    "wic_weight": "Body Weight",
+    "wic_activity": "Activity Level",
+    "wic_a_sed": "Sedentary",
+    "wic_a_light": "Lightly active",
+    "wic_a_mod": "Moderately active",
+    "wic_a_active": "Very active",
+    "wic_a_intense": "Extremely active",
+    "wic_d_sed": "Little or no exercise",
+    "wic_d_light": "1-3 days/week",
+    "wic_d_mod": "3-5 days/week",
+    "wic_d_active": "6-7 days/week",
+    "wic_d_intense": "Hard exercise + physical job",
+    "wic_climate": "Climate",
+    "wic_c_cold": "Cold",
+    "wic_c_temperate": "Temperate",
+    "wic_c_warm": "Warm",
+    "wic_c_hot": "Hot",
+    "wic_c_humid": "Humid",
+    "wic_recommended": "Recommended Daily Intake",
+    "wic_uscups": "US cups",
+    "wic_glasses": "250ml glasses",
+    "wic_disclaimer": "This is an estimate. Consult a healthcare provider for personalized advice.",
+    "jty_yamloutput": "YAML Output",
+    "jty_placeholder": "YAML will appear here...",
+    "jtx_title": "JSON to XML Converter",
+    "jtx_subtitle": "Convert JSON data to well-formed XML instantly.",
+    "jtx_root": "Root element:",
+    "jtx_loadexample": "Load Example",
+    "jtx_xmloutput": "XML Output",
+    "jtx_copyxml": "Copy XML",
+    "jtx_fixerrors": "⚠ Fix JSON errors first",
+    "txe_encrypt": "Encrypt",
+    "txe_decrypt": "Decrypt",
+    "txe_d_caesar": "Shift alphabet by N",
+    "txe_d_rot13": "Shift by 13 (self-inverse)",
+    "txe_d_atbash": "Reverse alphabet (self-inverse)",
+    "txe_d_xor": "XOR with key (base64 output)",
+    "txe_d_base64": "Encode/decode base64",
+    "txe_shift": "Shift",
+    "txe_key": "Key",
+    "kst_listening": "🎹 Listening for keyboard input...",
+    "kst_press": "Press any key or shortcut",
+    "kst_click": "Click here to start capturing keyboard shortcuts",
+    "kst_captured": "Captured events",
+    "rpg_random": "Random",
+    "rpg_analogous": "Analogous",
+    "rpg_complementary": "Complementary",
+    "rpg_triadic": "Triadic",
+    "rpg_monochromatic": "Monochromatic",
+    "rpg_pastel": "Pastel",
+    "rpg_colors": "Colors:",
+    "rpg_lock": "Lock",
+    "rpg_unlock": "Unlock",
+    "rpg_copyall": "Copy all hex codes",
+    "hcn_title": "HTML Color Names",
+    "hcn_subtitle": "All 140+ CSS named colors with their hex values. Click to copy.",
+    "hcn_copied": "{name} copied!",
+    "hcn_none": "No colors found"
   },
   "toolTags": {
     "spinner-wheel": [

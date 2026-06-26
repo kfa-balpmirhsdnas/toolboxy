@@ -1,5 +1,6 @@
 'use client'
 import { useState, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('random-palette-generator')!
@@ -22,6 +23,7 @@ function genPalette(scheme:Scheme,count:number):string[]{
   return[]
 }
 export default function RandomPaletteGeneratorPage() {
+  const t = useTranslations('toolui')
   const [scheme,setScheme]=useState<Scheme>('random')
   const [count,setCount]=useState(5)
   const [palette,setPalette]=useState(()=>genPalette('random',5))
@@ -41,24 +43,24 @@ export default function RandomPaletteGeneratorPage() {
         <div className="flex flex-wrap gap-1.5">
           {SCHEMES.map(s=>(
             <button key={s} onClick={()=>setScheme(s)}
-              className={'px-3 py-1.5 rounded-full border text-xs capitalize font-medium transition '+(scheme===s?'bg-blue-600 text-white border-blue-600':'border-gray-200 text-gray-600 hover:bg-gray-50')}>{s}</button>
+              className={'px-3 py-1.5 rounded-full border text-xs capitalize font-medium transition '+(scheme===s?'bg-blue-600 text-white border-blue-600':'border-gray-200 text-gray-600 hover:bg-gray-50')}>{t('rpg_'+s)}</button>
           ))}
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-sm text-gray-600">Colors:</label>
+          <label className="text-sm text-gray-600">{t('rpg_colors')}</label>
           {[3,4,5,6].map(n=>(
             <button key={n} onClick={()=>{setCount(n);setLocked(Array(n).fill(false));setPalette(genPalette(scheme,n))}}
               className={'w-9 h-9 rounded-xl border font-bold text-sm transition '+(count===n?'bg-blue-600 text-white border-blue-600':'border-gray-300 text-gray-600 hover:bg-gray-50')}>{n}</button>
           ))}
           <button onClick={gen} className="ml-auto flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 active:scale-95">
-            Generate
+            {t('ui_generate')}
           </button>
         </div>
         <div className="flex gap-2 h-48 rounded-2xl overflow-hidden">
           {palette.slice(0,count).map((color,i)=>(
             <div key={i} className="flex-1 flex flex-col items-center justify-end pb-3 gap-1.5 cursor-pointer transition hover:flex-[1.5]" style={{backgroundColor:color}}>
               <button onClick={()=>toggleLock(i)}
-                className="text-lg opacity-80 hover:opacity-100 transition" title={locked[i]?'Unlock':'Lock'}>
+                className="text-lg opacity-80 hover:opacity-100 transition" title={locked[i]?t('rpg_unlock'):t('rpg_lock')}>
                 {locked[i]?'🔒':'🔓'}
               </button>
               <button onClick={()=>copy(color)}
@@ -69,7 +71,7 @@ export default function RandomPaletteGeneratorPage() {
           ))}
         </div>
         <button onClick={copyAll} className="w-full py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50">
-          {copied===palette.join(', ')?'Copied!':'Copy all hex codes'}
+          {copied===palette.join(', ')?t('ui_copied'):t('rpg_copyall')}
         </button>
       </div>
     </ToolLayout>

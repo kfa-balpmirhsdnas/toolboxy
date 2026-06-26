@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
@@ -14,6 +15,7 @@ const KEY_DISPLAY: Record<string,string> = {
 }
 
 export default function KeyboardShortcutTesterPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [events, setEvents] = useState<KeyEvent[]>([])
   const [listening, setListening] = useState(false)
   const tracked = useRef(false)
@@ -54,18 +56,18 @@ export default function KeyboardShortcutTesterPage({ params }: { params: { lang:
           className={'flex items-center justify-center rounded-2xl border-2 transition-colors cursor-pointer min-h-28 focus:outline-none ' + (listening?'border-brand-400 bg-brand-50':'border-dashed border-gray-300 hover:border-gray-400')}>
           {listening ? (
             <div className="text-center">
-              <p className="text-brand-600 font-semibold">🎹 Listening for keyboard input...</p>
-              <p className="text-xs text-gray-500 mt-1">Press any key or shortcut</p>
+              <p className="text-brand-600 font-semibold">{t('kst_listening')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('kst_press')}</p>
             </div>
           ) : (
-            <p className="text-gray-400 text-sm">Click here to start capturing keyboard shortcuts</p>
+            <p className="text-gray-400 text-sm">{t('kst_click')}</p>
           )}
         </div>
         {events.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-medium text-gray-600">Captured events</p>
-              <button onClick={()=>setEvents([])} className="text-xs text-gray-400 hover:text-gray-600">Clear</button>
+              <p className="text-xs font-medium text-gray-600">{t('kst_captured')}</p>
+              <button onClick={()=>setEvents([])} className="text-xs text-gray-400 hover:text-gray-600">{t('ui_clear')}</button>
             </div>
             {events.map((ev,i)=>(
               <div key={i} className={'p-3 rounded-xl border ' + (i===0?'border-brand-200 bg-brand-50':'border-gray-100 bg-gray-50')}>

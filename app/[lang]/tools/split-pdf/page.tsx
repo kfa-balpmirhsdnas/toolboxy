@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -20,6 +21,7 @@ function parseRanges(spec: string, total: number): number[] {
 }
 
 export default function SplitPdfPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [file, setFile] = useState<File | null>(null)
   const [pageCount, setPageCount] = useState(0)
   const [spec, setSpec] = useState('')
@@ -61,24 +63,24 @@ export default function SplitPdfPage({ params }: { params: { lang: string } }) {
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
           <input ref={inputRef} type="file" accept="application/pdf" className="hidden" onChange={(e) => e.target.files?.[0] && handle(e.target.files[0])} />
           <p className="text-4xl mb-2">📄</p>
-          <p className="text-sm font-medium text-gray-600">{file ? `${file.name} · ${pageCount} pages` : 'Drop a PDF or click to select'}</p>
+          <p className="text-sm font-medium text-gray-600">{file ? `${file.name} · ${t('spdf_pages',{n:pageCount})}` : t('rp_drop')}</p>
         </div>
 
         {pageCount > 0 && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pages to extract (e.g. 1-3, 5, 8-10)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('spdf_label')}</label>
               <input value={spec} onChange={(e) => setSpec(e.target.value)}
                 className="w-full p-3 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
-              <p className="text-xs text-gray-400 mt-1">{parseRanges(spec, pageCount).length} of {pageCount} pages selected</p>
+              <p className="text-xs text-gray-400 mt-1">{t('spdf_selected',{n:parseRanges(spec, pageCount).length,m:pageCount})}</p>
             </div>
             <button onClick={extract} disabled={loading || !parseRanges(spec, pageCount).length}
               className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors">
-              {loading ? 'Extracting…' : 'Extract pages'}
+              {loading ? t('spdf_extracting') : t('spdf_extract')}
             </button>
           </>
         )}
-        <p className="text-xs text-gray-400">Processed entirely in your browser.</p>
+        <p className="text-xs text-gray-400">{t('cc_note')}</p>
       </div>
 
     </ToolLayout>

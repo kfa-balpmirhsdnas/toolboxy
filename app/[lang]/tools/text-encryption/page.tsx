@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('text-encryption')!
@@ -18,6 +19,7 @@ function atbashEnc(text:string):string{
 }
 type Method='caesar'|'rot13'|'atbash'|'xor'|'base64'
 export default function TextEncryptionPage() {
+  const t = useTranslations('toolui')
   const [method,setMethod]=useState<Method>('caesar')
   const [input,setInput]=useState('Hello World')
   const [mode,setMode]=useState<'encrypt'|'decrypt'>('encrypt')
@@ -36,18 +38,18 @@ export default function TextEncryptionPage() {
   }
   const copy=()=>{navigator.clipboard.writeText(output());setCopied(true);setTimeout(()=>setCopied(false),1500)}
   const METHODS=[
-    {id:'caesar' as Method,label:'Caesar Cipher',desc:'Shift alphabet by N'},
-    {id:'rot13' as Method,label:'ROT13',desc:'Shift by 13 (self-inverse)'},
-    {id:'atbash' as Method,label:'Atbash',desc:'Reverse alphabet (self-inverse)'},
-    {id:'xor' as Method,label:'XOR',desc:'XOR with key (base64 output)'},
-    {id:'base64' as Method,label:'Base64',desc:'Encode/decode base64'},
+    {id:'caesar' as Method,label:'Caesar Cipher',desc:'txe_d_caesar'},
+    {id:'rot13' as Method,label:'ROT13',desc:'txe_d_rot13'},
+    {id:'atbash' as Method,label:'Atbash',desc:'txe_d_atbash'},
+    {id:'xor' as Method,label:'XOR',desc:'txe_d_xor'},
+    {id:'base64' as Method,label:'Base64',desc:'txe_d_base64'},
   ]
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4 space-y-4">
         <div className="flex rounded-lg overflow-hidden border border-gray-300">
-          <button onClick={()=>setMode('encrypt')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='encrypt'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Encrypt</button>
-          <button onClick={()=>setMode('decrypt')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='decrypt'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Decrypt</button>
+          <button onClick={()=>setMode('encrypt')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='encrypt'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>{t('txe_encrypt')}</button>
+          <button onClick={()=>setMode('decrypt')} className={'flex-1 py-2 text-sm font-medium transition '+(mode==='decrypt'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>{t('txe_decrypt')}</button>
         </div>
         <div className="grid grid-cols-1 gap-1.5">
           {METHODS.map(m=>(
@@ -56,25 +58,25 @@ export default function TextEncryptionPage() {
               <div className={'w-4 h-4 rounded-full border-2 flex-shrink-0 '+(method===m.id?'bg-blue-600 border-blue-600':'border-gray-400')}/>
               <div>
                 <span className="text-sm font-medium text-gray-800">{m.label}</span>
-                <span className="text-xs text-gray-500 ml-2">{m.desc}</span>
+                <span className="text-xs text-gray-500 ml-2">{t(m.desc)}</span>
               </div>
             </button>
           ))}
         </div>
         {method==='caesar'&&(
-          <div><div className="flex justify-between text-xs mb-1"><span className="text-gray-600">Shift</span><span className="font-mono text-blue-600">{shift}</span></div>
+          <div><div className="flex justify-between text-xs mb-1"><span className="text-gray-600">{t('txe_shift')}</span><span className="font-mono text-blue-600">{shift}</span></div>
             <input type="range" min="1" max="25" value={shift} onChange={e=>setShift(Number(e.target.value))} className="w-full"/></div>
         )}
         {method==='xor'&&(
-          <div><label className="block text-xs text-gray-600 mb-1">Key</label>
+          <div><label className="block text-xs text-gray-600 mb-1">{t('txe_key')}</label>
             <input value={key} onChange={e=>setKey(e.target.value)} className="w-full rounded border border-gray-300 px-3 py-1.5 font-mono text-sm"/></div>
         )}
-        <div><label className="block text-sm font-medium text-gray-700 mb-1">Input</label>
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('ui_input')}</label>
           <textarea value={input} onChange={e=>setInput(e.target.value)} rows={4} className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-sm resize-none"/></div>
         <div>
           <div className="flex justify-between mb-1">
-            <label className="text-sm font-medium text-gray-700">Output</label>
-            <button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?'Copied!':'Copy'}</button>
+            <label className="text-sm font-medium text-gray-700">{t('ui_output')}</label>
+            <button onClick={copy} className="text-xs text-blue-600 hover:underline">{copied?t('ui_copied'):t('ui_copy')}</button>
           </div>
           <textarea readOnly value={output()} rows={4} className="w-full rounded border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-sm resize-none"/>
         </div>
