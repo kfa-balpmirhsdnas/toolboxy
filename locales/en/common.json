@@ -3347,6 +3347,56 @@
       "Search by name or hex.",
       "Browse the CSS named colors.",
       "Click a color to copy its hex."
+    ],
+    "url-encoder": [
+      "Paste a URL or text.",
+      "Choose encode or decode.",
+      "Copy the result."
+    ],
+    "text-line-numberer": [
+      "Paste your text.",
+      "Set start, step and separator.",
+      "Copy the numbered lines."
+    ],
+    "rotate-image": [
+      "Upload an image.",
+      "Rotate or flip it.",
+      "Download as PNG."
+    ],
+    "pdf-page-numbers": [
+      "Upload a PDF.",
+      "Choose a position.",
+      "Download the numbered PDF."
+    ],
+    "remove-pdf-pages": [
+      "Upload a PDF.",
+      "Enter pages to remove.",
+      "Download the trimmed PDF."
+    ],
+    "json-to-typescript": [
+      "Paste your JSON.",
+      "Click convert.",
+      "Copy the TypeScript interface."
+    ],
+    "xml-to-json": [
+      "Paste your XML.",
+      "Click convert.",
+      "Copy the JSON output."
+    ],
+    "hangul-romaja-converter": [
+      "Type Hangul text.",
+      "It converts to Romaja automatically.",
+      "Copy the converted result."
+    ],
+    "table-generator": [
+      "Set rows and columns.",
+      "Choose a format (Markdown, HTML, CSV).",
+      "Copy the generated table."
+    ],
+    "random-quote-generator": [
+      "Filter by category.",
+      "Get a random quote.",
+      "Save favorites or copy."
     ]
   },
   "games": {
@@ -5879,7 +5929,40 @@
     "hcn_title": "HTML Color Names",
     "hcn_subtitle": "All 140+ CSS named colors with their hex values. Click to copy.",
     "hcn_copied": "{name} copied!",
-    "hcn_none": "No colors found"
+    "hcn_none": "No colors found",
+    "ue_title": "URL Encoder / Decoder",
+    "ue_subtitle": "Encode or decode URL strings and components",
+    "ue_component": "Component mode (encodeURIComponent — encodes / ? # & = too)",
+    "ue_swap": "Swap",
+    "ue_common": "Common Encodings",
+    "tln_ph": "Enter text...",
+    "tln_start": "Start number",
+    "tln_step": "Step",
+    "tln_pad": "Pad length",
+    "tln_numempty": "Number empty lines",
+    "ri_left": "Left",
+    "ri_right": "Right",
+    "ri_fliph": "Flip H",
+    "ri_flipv": "Flip V",
+    "ppn_bc": "Bottom center",
+    "ppn_br": "Bottom right",
+    "ppn_tr": "Top right",
+    "ppn_add": "Add page numbers",
+    "ppn_note": "Adds “page / total” to every page · processed entirely in your browser.",
+    "rpp_label": "Pages to remove (e.g. 2, 5-7)",
+    "rpp_status": "{n} pages will be removed · {m} kept",
+    "rpp_processing": "Processing…",
+    "rpp_remove": "Remove pages",
+    "jtt_convert": "Convert to TypeScript",
+    "jtt_interface": "TypeScript Interface",
+    "xtj_convert": "Convert XML to JSON",
+    "hrc_note": "{n} chars · Revised Romanization. Per-syllable conversion — pronunciation assimilation between syllables is not applied.",
+    "tg2_copy": "Copy Table",
+    "rqg_title": "Quote Generator",
+    "rqg_subtitle": "Discover inspiring quotes from history's greatest minds",
+    "rqg_all": "All",
+    "rqg_next": "Next",
+    "rqg_favorites": "Favorites ({n})"
   },
   "toolTags": {
     "spinner-wheel": [

@@ -1,10 +1,12 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='table-generator')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='table-generator')
   const [rows,setRows]=useState(3)
   const [cols,setCols]=useState(3)
   const [format,setFormat]=useState<'html'|'markdown'|'csv'>('markdown')
@@ -57,13 +59,13 @@ export default function Page(){
       <div className='space-y-4'>
         <div className='flex gap-4 flex-wrap'>
           <label className='flex items-center gap-2 text-sm'>
-            Rows: <input type='number' min={1} max={20} value={rows} onChange={e=>setRows(Number(e.target.value))} className='border rounded px-2 py-1 w-16'/>
+            {t('mtt_rows')}: <input type='number' min={1} max={20} value={rows} onChange={e=>setRows(Number(e.target.value))} className='border rounded px-2 py-1 w-16'/>
           </label>
           <label className='flex items-center gap-2 text-sm'>
-            Cols: <input type='number' min={1} max={10} value={cols} onChange={e=>setCols(Number(e.target.value))} className='border rounded px-2 py-1 w-16'/>
+            {t('mtt_cols')}: <input type='number' min={1} max={10} value={cols} onChange={e=>setCols(Number(e.target.value))} className='border rounded px-2 py-1 w-16'/>
           </label>
           <label className='flex items-center gap-2 text-sm'>
-            <input type='checkbox' checked={hasHeader} onChange={e=>setHasHeader(e.target.checked)}/> Header
+            <input type='checkbox' checked={hasHeader} onChange={e=>setHasHeader(e.target.checked)}/> {t('mtt_header')}
           </label>
         </div>
         <div className='flex gap-2'>
@@ -78,7 +80,7 @@ export default function Page(){
           className='w-full h-48 p-3 border rounded font-mono text-sm bg-gray-50 resize-y'/>
         <button onClick={()=>navigator.clipboard.writeText(output)}
           className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm'>
-          Copy Table
+          {t('tg2_copy')}
         </button>
       </div>
     </ToolLayout>

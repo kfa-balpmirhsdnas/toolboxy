@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -42,6 +43,7 @@ const CATEGORIES=[...new Set(QUOTES.map(q=>q.category))]
 const tool = getToolBySlug('random-quote-generator')!
 
 export default function RandomQuoteGeneratorPage() {
+  const t = useTranslations('toolui')
   const [category,setCategory]=useState('All')
   const [current,setCurrent]=useState(0)
   const [copied,setCopied]=useState(false)
@@ -62,33 +64,33 @@ export default function RandomQuoteGeneratorPage() {
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Quote Generator</h1>
-        <p className="text-gray-500 mb-8">Discover inspiring quotes from history\'s greatest minds</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('rqg_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('rqg_subtitle')}</p>
         <div className="flex flex-wrap gap-2 mb-4">
           {(['All',...CATEGORIES]).map(c=>(
             <button key={c} onClick={()=>setCategory(c)} className={'px-3 py-1.5 text-sm rounded-full font-medium transition-colors '+(category===c?'bg-brand-500 text-white':'bg-white border border-gray-200 text-gray-600 hover:border-brand-300')}>
-              {c}
+              {c==='All'?t('rqg_all'):c}
             </button>
           ))}
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 relative min-h-[220px] flex flex-col justify-between">
           <div>
-            <div className="text-5xl text-brand-200 font-serif mb-4">\u201C</div>
+            <div className="text-5xl text-brand-200 font-serif mb-4">&ldquo;</div>
             <p className="text-lg text-gray-800 leading-relaxed italic">{quote.text}</p>
-            <p className="text-sm text-gray-500 mt-4">\u2014 {quote.author}</p>
+            <p className="text-sm text-gray-500 mt-4">&mdash; {quote.author}</p>
           </div>
           <div className="flex items-center gap-2 mt-6">
             <span className="text-xs bg-brand-50 text-brand-600 px-2 py-0.5 rounded-full">{quote.category}</span>
             <div className="flex-1" />
             <button onClick={toggleFav} className={'text-xl '+(isFav?'text-red-500':'text-gray-300 hover:text-red-400')}>{isFav?'\u2665':'\u2661'}</button>
-            <button onClick={copy} className="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg">{copied?'\u2713':'Copy'}</button>
-            <button onClick={random} className="text-xs px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-lg">Random</button>
-            <button onClick={next} className="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg">Next</button>
+            <button onClick={copy} className="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg">{copied?'\u2713':t('ui_copy')}</button>
+            <button onClick={random} className="text-xs px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-lg">{t('rng_random')}</button>
+            <button onClick={next} className="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg">{t('rqg_next')}</button>
           </div>
         </div>
         {favorites.length>0&&(
           <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5">
-            <h2 className="font-semibold text-gray-800 mb-3">Favorites ({favorites.length})</h2>
+            <h2 className="font-semibold text-gray-800 mb-3">{t('rqg_favorites',{n:favorites.length})}</h2>
             <div className="space-y-3">
               {favorites.map(i=>(<div key={i} className="text-sm text-gray-600 italic border-l-2 border-brand-300 pl-3">{QUOTES[i].text}<span className="block text-xs text-gray-400 mt-0.5 not-italic">\u2014 {QUOTES[i].author}</span></div>))}
             </div>

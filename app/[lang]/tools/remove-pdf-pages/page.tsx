@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -19,6 +20,7 @@ function parseRanges(spec: string, total: number): Set<number> {
 }
 
 export default function RemovePdfPagesPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [file, setFile] = useState<File | null>(null)
   const [pageCount, setPageCount] = useState(0)
   const [spec, setSpec] = useState('')
@@ -60,24 +62,24 @@ export default function RemovePdfPagesPage({ params }: { params: { lang: string 
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
           <input ref={inputRef} type="file" accept="application/pdf" className="hidden" onChange={(e) => e.target.files?.[0] && handle(e.target.files[0])} />
           <p className="text-4xl mb-2">📄</p>
-          <p className="text-sm font-medium text-gray-600">{file ? `${file.name} · ${pageCount} pages` : 'Drop a PDF or click to select'}</p>
+          <p className="text-sm font-medium text-gray-600">{file ? `${file.name} · ${t('spdf_pages',{n:pageCount})}` : t('rp_drop')}</p>
         </div>
 
         {pageCount > 0 && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pages to remove (e.g. 2, 5-7)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('rpp_label')}</label>
               <input value={spec} onChange={(e) => setSpec(e.target.value)} placeholder="2, 5-7"
                 className="w-full p-3 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
-              <p className="text-xs text-gray-400 mt-1">{removeSet.size} pages will be removed · {pageCount - removeSet.size} kept</p>
+              <p className="text-xs text-gray-400 mt-1">{t('rpp_status',{n:removeSet.size,m:pageCount - removeSet.size})}</p>
             </div>
             <button onClick={run} disabled={loading || !removeSet.size || removeSet.size >= pageCount}
               className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors">
-              {loading ? 'Processing…' : 'Remove pages'}
+              {loading ? t('rpp_processing') : t('rpp_remove')}
             </button>
           </>
         )}
-        <p className="text-xs text-gray-400">Processed entirely in your browser.</p>
+        <p className="text-xs text-gray-400">{t('cc_note')}</p>
       </div>
 
     </ToolLayout>

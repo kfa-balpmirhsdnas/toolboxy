@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -27,6 +28,7 @@ function hangulToRomaja(input: string): string {
 }
 
 export default function HangulRomajaPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const [copied, setCopied] = useState(false)
 
@@ -58,13 +60,13 @@ export default function HangulRomajaPage({ params }: { params: { lang: string } 
           />
           {output && (
             <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">
-              {copied ? '✓ Copied' : 'Copy'}
+              {copied ? '✓ '+t('ui_copied') : t('ui_copy')}
             </button>
           )}
         </div>
 
         <p className="text-xs text-gray-400">
-          {input.length} chars · Revised Romanization. Per-syllable conversion — pronunciation assimilation between syllables is not applied.
+          {t('hrc_note',{n:input.length})}
         </p>
       </div>
 

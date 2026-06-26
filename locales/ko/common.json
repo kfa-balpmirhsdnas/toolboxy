@@ -3685,6 +3685,56 @@
       "이름이나 hex로 검색하세요.",
       "CSS 명명 색상을 둘러보세요.",
       "색을 클릭해 hex를 복사하세요."
+    ],
+    "url-encoder": [
+      "URL이나 텍스트를 붙여넣으세요.",
+      "인코딩 또는 디코딩을 고르세요.",
+      "결과를 복사하세요."
+    ],
+    "text-line-numberer": [
+      "텍스트를 붙여넣으세요.",
+      "시작·증가·구분자를 설정하세요.",
+      "번호가 매겨진 줄을 복사하세요."
+    ],
+    "rotate-image": [
+      "이미지를 올리세요.",
+      "회전하거나 반전하세요.",
+      "PNG로 다운로드하세요."
+    ],
+    "pdf-page-numbers": [
+      "PDF를 올리세요.",
+      "위치를 고르세요.",
+      "번호가 매겨진 PDF를 다운로드하세요."
+    ],
+    "remove-pdf-pages": [
+      "PDF를 올리세요.",
+      "제거할 페이지를 입력하세요.",
+      "편집된 PDF를 다운로드하세요."
+    ],
+    "json-to-typescript": [
+      "JSON을 붙여넣으세요.",
+      "변환을 클릭하세요.",
+      "TypeScript 인터페이스를 복사하세요."
+    ],
+    "xml-to-json": [
+      "XML을 붙여넣으세요.",
+      "변환을 클릭하세요.",
+      "JSON 출력을 복사하세요."
+    ],
+    "hangul-romaja-converter": [
+      "한글을 입력하세요.",
+      "로마자로 자동 변환됩니다.",
+      "변환 결과를 복사하세요."
+    ],
+    "table-generator": [
+      "행과 열 수를 정하세요.",
+      "형식(Markdown·HTML·CSV)을 고르세요.",
+      "생성된 표를 복사하세요."
+    ],
+    "random-quote-generator": [
+      "카테고리로 필터링하세요.",
+      "랜덤 명언을 받으세요.",
+      "즐겨찾기에 저장하거나 복사하세요."
     ]
   },
   "games": {
@@ -6217,7 +6267,40 @@
     "hcn_title": "HTML 색상 이름",
     "hcn_subtitle": "140개 이상의 CSS 명명 색상과 hex 값. 클릭하여 복사하세요.",
     "hcn_copied": "{name} 복사됨!",
-    "hcn_none": "색상을 찾을 수 없습니다"
+    "hcn_none": "색상을 찾을 수 없습니다",
+    "ue_title": "URL 인코더 / 디코더",
+    "ue_subtitle": "URL 문자열과 구성 요소를 인코딩하거나 디코딩합니다",
+    "ue_component": "구성 요소 모드 (encodeURIComponent — / ? # & = 도 인코딩)",
+    "ue_swap": "교체",
+    "ue_common": "자주 쓰는 인코딩",
+    "tln_ph": "텍스트를 입력하세요...",
+    "tln_start": "시작 번호",
+    "tln_step": "증가",
+    "tln_pad": "자릿수 채움",
+    "tln_numempty": "빈 줄도 번호 매기기",
+    "ri_left": "왼쪽",
+    "ri_right": "오른쪽",
+    "ri_fliph": "좌우 반전",
+    "ri_flipv": "상하 반전",
+    "ppn_bc": "하단 중앙",
+    "ppn_br": "하단 오른쪽",
+    "ppn_tr": "상단 오른쪽",
+    "ppn_add": "페이지 번호 추가",
+    "ppn_note": "모든 페이지에 “페이지 / 전체”를 추가합니다 · 브라우저에서 전부 처리됩니다.",
+    "rpp_label": "제거할 페이지 (예: 2, 5-7)",
+    "rpp_status": "{n}페이지 제거 · {m}페이지 유지",
+    "rpp_processing": "처리 중…",
+    "rpp_remove": "페이지 제거",
+    "jtt_convert": "TypeScript로 변환",
+    "jtt_interface": "TypeScript 인터페이스",
+    "xtj_convert": "XML을 JSON으로 변환",
+    "hrc_note": "{n}자 · 국어의 로마자 표기법. 음절 단위 변환 — 음절 간 발음 동화는 적용되지 않습니다.",
+    "tg2_copy": "표 복사",
+    "rqg_title": "명언 생성기",
+    "rqg_subtitle": "역사상 위대한 인물들의 영감을 주는 명언을 만나보세요",
+    "rqg_all": "전체",
+    "rqg_next": "다음",
+    "rqg_favorites": "즐겨찾기 ({n})"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

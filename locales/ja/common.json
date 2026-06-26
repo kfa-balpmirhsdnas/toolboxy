@@ -3652,6 +3652,56 @@
       "名前またはhexで検索します。",
       "CSS名前付き色を閲覧します。",
       "色をクリックしてhexをコピーします。"
+    ],
+    "url-encoder": [
+      "URLまたはテキストを貼り付けます。",
+      "エンコードまたはデコードを選びます。",
+      "結果をコピーします。"
+    ],
+    "text-line-numberer": [
+      "テキストを貼り付けます。",
+      "開始・増分・区切りを設定します。",
+      "番号付きの行をコピーします。"
+    ],
+    "rotate-image": [
+      "画像をアップロードします。",
+      "回転または反転します。",
+      "PNGとしてダウンロードします。"
+    ],
+    "pdf-page-numbers": [
+      "PDFをアップロードします。",
+      "位置を選びます。",
+      "番号付きPDFをダウンロードします。"
+    ],
+    "remove-pdf-pages": [
+      "PDFをアップロードします。",
+      "削除するページを入力します。",
+      "編集したPDFをダウンロードします。"
+    ],
+    "json-to-typescript": [
+      "JSONを貼り付けます。",
+      "変換をクリックします。",
+      "TypeScriptインターフェースをコピーします。"
+    ],
+    "xml-to-json": [
+      "XMLを貼り付けます。",
+      "変換をクリックします。",
+      "JSON出力をコピーします。"
+    ],
+    "hangul-romaja-converter": [
+      "ハングルを入力します。",
+      "自動でローマ字に変換されます。",
+      "変換結果をコピーします。"
+    ],
+    "table-generator": [
+      "行数と列数を決めます。",
+      "形式(Markdown・HTML・CSV)を選びます。",
+      "生成された表をコピーします。"
+    ],
+    "random-quote-generator": [
+      "カテゴリで絞り込みます。",
+      "ランダムな名言を取得します。",
+      "お気に入りに保存またはコピーします。"
     ]
   },
   "games": {
@@ -6184,7 +6234,40 @@
     "hcn_title": "HTMLカラー名",
     "hcn_subtitle": "140以上のCSS名前付き色とhex値。クリックでコピー。",
     "hcn_copied": "{name} をコピーしました!",
-    "hcn_none": "色が見つかりません"
+    "hcn_none": "色が見つかりません",
+    "ue_title": "URLエンコーダー / デコーダー",
+    "ue_subtitle": "URL文字列とコンポーネントをエンコード・デコードします",
+    "ue_component": "コンポーネントモード (encodeURIComponent — / ? # & = もエンコード)",
+    "ue_swap": "入れ替え",
+    "ue_common": "よく使うエンコード",
+    "tln_ph": "テキストを入力...",
+    "tln_start": "開始番号",
+    "tln_step": "増分",
+    "tln_pad": "ゼロ埋め桁数",
+    "tln_numempty": "空行も番号を付ける",
+    "ri_left": "左",
+    "ri_right": "右",
+    "ri_fliph": "左右反転",
+    "ri_flipv": "上下反転",
+    "ppn_bc": "下中央",
+    "ppn_br": "下右",
+    "ppn_tr": "上右",
+    "ppn_add": "ページ番号を追加",
+    "ppn_note": "全ページに「ページ / 合計」を追加 · ブラウザ内ですべて処理されます。",
+    "rpp_label": "削除するページ (例: 2, 5-7)",
+    "rpp_status": "{n}ページ削除 · {m}ページ保持",
+    "rpp_processing": "処理中…",
+    "rpp_remove": "ページを削除",
+    "jtt_convert": "TypeScriptに変換",
+    "jtt_interface": "TypeScriptインターフェース",
+    "xtj_convert": "XMLをJSONに変換",
+    "hrc_note": "{n}文字 · 改訂ローマ字表記。音節単位の変換 — 音節間の発音同化は適用されません。",
+    "tg2_copy": "テーブルをコピー",
+    "rqg_title": "名言ジェネレーター",
+    "rqg_subtitle": "歴史上の偉大な人物の心に響く名言を見つけましょう",
+    "rqg_all": "すべて",
+    "rqg_next": "次へ",
+    "rqg_favorites": "お気に入り ({n})"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

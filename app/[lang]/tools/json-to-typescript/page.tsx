@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
@@ -32,7 +33,8 @@ function jsonToTs(obj:unknown,name='Root',indent=0):string{
 }
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='json-to-typescript')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='json-to-typescript')
   const [input,setInput]=useState('{"name":"Alice","age":30,"tags":["dev","designer"]}')
   const [output,setOutput]=useState('')
   const [error,setError]=useState('')
@@ -43,7 +45,7 @@ export default function Page(){
       setOutput(jsonToTs(obj))
       setError('')
     }catch(e){
-      setError('Invalid JSON: '+(e as Error).message)
+      setError(t('jm_invalid')+': '+(e as Error).message)
     }
   }
 
@@ -51,7 +53,7 @@ export default function Page(){
     <ToolLayout tool={tool}>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">JSON Input</label>
+          <label className="block text-sm font-medium mb-1">{t('jm_input')}</label>
           <textarea value={input} onChange={e=>setInput(e.target.value)}
             className="w-full h-36 p-3 border rounded font-mono text-sm resize-y"
             placeholder='{"key": "value"}'/>
@@ -59,14 +61,14 @@ export default function Page(){
         {error&&<p className="text-red-500 text-sm">{error}</p>}
         <button onClick={convert}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-          Convert to TypeScript
+          {t('jtt_convert')}
         </button>
         {output&&(
           <div>
-            <label className="block text-sm font-medium mb-1">TypeScript Interface</label>
+            <label className="block text-sm font-medium mb-1">{t('jtt_interface')}</label>
             <pre className="bg-gray-900 text-green-400 p-4 rounded font-mono text-sm overflow-auto whitespace-pre">{output}</pre>
             <button onClick={()=>navigator.clipboard.writeText(output)}
-              className="mt-2 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">Copy</button>
+              className="mt-2 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">{t('ui_copy')}</button>
           </div>
         )}
       </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -10,6 +11,7 @@ const tool = getToolBySlug('pdf-page-numbers')!
 type Pos = 'bottom-center' | 'bottom-right' | 'top-right'
 
 export default function PdfPageNumbersPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [file, setFile] = useState<File | null>(null)
   const [pos, setPos] = useState<Pos>('bottom-center')
   const [loading, setLoading] = useState(false)
@@ -51,26 +53,26 @@ export default function PdfPageNumbersPage({ params }: { params: { lang: string 
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
           <input ref={inputRef} type="file" accept="application/pdf" className="hidden" onChange={(e) => e.target.files?.[0] && handle(e.target.files[0])} />
           <p className="text-4xl mb-2">🔢</p>
-          <p className="text-sm font-medium text-gray-600">{file ? file.name : 'Drop a PDF or click to select'}</p>
+          <p className="text-sm font-medium text-gray-600">{file ? file.name : t('rp_drop')}</p>
         </div>
         {file && (
           <>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Position</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">{t('ttr_position')}</label>
               <select value={pos} onChange={(e) => setPos(e.target.value as Pos)}
                 className="w-full rounded-xl border border-gray-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
-                <option value="bottom-center">Bottom center</option>
-                <option value="bottom-right">Bottom right</option>
-                <option value="top-right">Top right</option>
+                <option value="bottom-center">{t('ppn_bc')}</option>
+                <option value="bottom-right">{t('ppn_br')}</option>
+                <option value="top-right">{t('ppn_tr')}</option>
               </select>
             </div>
             <button onClick={apply} disabled={loading}
               className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40">
-              {loading ? 'Adding…' : 'Add page numbers'}
+              {loading ? t('wmp_adding') : t('ppn_add')}
             </button>
           </>
         )}
-        <p className="text-xs text-gray-400">Adds “page / total” to every page · processed entirely in your browser.</p>
+        <p className="text-xs text-gray-400">{t('ppn_note')}</p>
       </div>
     </ToolLayout>
   )
