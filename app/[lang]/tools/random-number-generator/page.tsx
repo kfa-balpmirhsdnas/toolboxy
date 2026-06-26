@@ -1,9 +1,11 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('random-number-generator')!
 export default function RandomNumberGeneratorPage() {
+  const t = useTranslations('toolui')
   const [min,setMin]=useState(1)
   const [max,setMax]=useState(100)
   const [count,setCount]=useState(1)
@@ -13,7 +15,7 @@ export default function RandomNumberGeneratorPage() {
   const generate=()=>{
     if(min>=max)return
     const range=max-min+1
-    if(unique&&count>range){alert('Cannot generate more unique numbers than range size');return}
+    if(unique&&count>range){alert(t('rng_alert'));return}
     const pool=Array.from({length:range},(_,i)=>min+i)
     if(unique){
       for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
@@ -27,21 +29,21 @@ export default function RandomNumberGeneratorPage() {
     <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4 space-y-5">
         <div className="grid grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Min</label>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('st_min')}</label>
             <input type="number" value={min} onChange={e=>setMin(Number(e.target.value))} className="w-full rounded border border-gray-300 px-3 py-2"/></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Max</label>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('st_max')}</label>
             <input type="number" value={max} onChange={e=>setMax(Number(e.target.value))} className="w-full rounded border border-gray-300 px-3 py-2"/></div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">How many numbers? ({count})</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('rng_howmany')} ({count})</label>
           <input type="range" min="1" max="100" value={count} onChange={e=>setCount(Number(e.target.value))} className="w-full"/>
         </div>
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={unique} onChange={e=>setUnique(e.target.checked)} className="rounded"/>
-          <span className="text-sm text-gray-700">No duplicates (unique)</span>
+          <span className="text-sm text-gray-700">{t('rng_unique')}</span>
         </label>
         <button onClick={generate} className="w-full bg-blue-600 text-white rounded-lg py-2.5 font-semibold hover:bg-blue-700">
-          Generate
+          {t('ui_generate')}
         </button>
         {numbers.length>0&&(
           <div>
@@ -59,7 +61,7 @@ export default function RandomNumberGeneratorPage() {
               </div>
             )}
             <button onClick={copy} className="mt-3 w-full border border-gray-300 rounded-lg py-2 text-sm hover:bg-gray-50">
-              {copied?'Copied!':'Copy numbers'}
+              {copied?t('ui_copied'):t('rng_copynums')}
             </button>
           </div>
         )}

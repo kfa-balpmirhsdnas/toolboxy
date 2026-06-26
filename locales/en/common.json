@@ -2767,6 +2767,16 @@
       "Enter the text to spell.",
       "See each letter's NATO code word.",
       "Expand the full alphabet chart if needed."
+    ],
+    "random-number-generator": [
+      "Set the min and max values.",
+      "Choose how many and whether to allow duplicates.",
+      "Press Generate to create random numbers."
+    ],
+    "number-sorter": [
+      "Enter your numbers.",
+      "Choose separator and order.",
+      "Press Sort to see the result."
     ]
   },
   "games": {
@@ -4553,7 +4563,21 @@
     "tts_examples": "Quick examples",
     "nato_label": "Text to spell",
     "nato_ph": "Enter text to spell phonetically",
-    "nato_full": "full NATO alphabet"
+    "nato_full": "full NATO alphabet",
+    "rng_alert": "Cannot generate more unique numbers than range size",
+    "rng_howmany": "How many numbers?",
+    "rng_unique": "No duplicates (unique)",
+    "rng_copynums": "Copy numbers",
+    "ns_sep": "Separator",
+    "ns_newline": "Newline",
+    "ns_comma": "Comma",
+    "ns_space": "Space",
+    "ns_order": "Order",
+    "ns_asc": "Ascending",
+    "ns_desc": "Descending",
+    "ns_numbers": "Numbers",
+    "ns_sorted": "Sorted",
+    "ns_sort": "Sort"
   },
   "toolTags": {
     "spinner-wheel": [
