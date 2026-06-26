@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 function rand255(){return Math.floor(Math.random()*256)}
@@ -13,18 +14,19 @@ function genPalette(base:string,type:string):string[]{
 }
 const TYPES=['analogous','complementary','triadic','random']
 export default function Page(){
+  const t = useTranslations('toolui')
   const [base,setBase]=useState('#3b82f6')
   const [type,setType]=useState('analogous')
   const [palette,setPalette]=useState(()=>genPalette('#3b82f6','analogous'))
   const [copied,setCopied]=useState('')
-  const tool=TOOLS.find(t=>t.slug==='color-palette-generator')
+  const tool=TOOLS.find(x=>x.slug==='color-palette-generator')
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4 space-y-4">
         <div className="flex gap-3 flex-wrap items-center">
-          <label className="flex items-center gap-2 text-sm">Base<input type="color" value={base} onChange={e=>setBase(e.target.value)} className="w-10 h-10 rounded cursor-pointer"/></label>
-          <div className="flex gap-1">{TYPES.map(t=><button key={t} onClick={()=>setType(t)} className={'px-3 py-1 rounded text-xs font-medium border '+(type===t?'bg-blue-600 text-white border-blue-600':'border-gray-300')}>{t}</button>)}</div>
-          <button onClick={()=>setPalette(genPalette(base,type))} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium">Generate</button>
+          <label className="flex items-center gap-2 text-sm">{t('csg_base')}<input type="color" value={base} onChange={e=>setBase(e.target.value)} className="w-10 h-10 rounded cursor-pointer"/></label>
+          <div className="flex gap-1">{TYPES.map(ty=><button key={ty} onClick={()=>setType(ty)} className={'px-3 py-1 rounded text-xs font-medium border '+(type===ty?'bg-blue-600 text-white border-blue-600':'border-gray-300')}>{t('cpg_'+ty)}</button>)}</div>
+          <button onClick={()=>setPalette(genPalette(base,type))} className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium">{t('ui_generate')}</button>
         </div>
         <div className="flex gap-3 flex-wrap">
           {palette.map((c,i)=>(
@@ -35,7 +37,7 @@ export default function Page(){
             </div>
           ))}
         </div>
-        {copied&&<p className="text-sm text-blue-600 text-center">Copied {copied.toUpperCase()}</p>}
+        {copied&&<p className="text-sm text-blue-600 text-center">{t('cpg_copied')} {copied.toUpperCase()}</p>}
       </div>
     </ToolLayout>
   )

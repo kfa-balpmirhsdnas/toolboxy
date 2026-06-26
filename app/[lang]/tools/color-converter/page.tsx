@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
@@ -26,14 +27,15 @@ function rgbToHsl(r:number,g:number,b:number){
 }
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='color-converter')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='color-converter')
   const [hex,setHex]=useState('#3b82f6')
   const [error,setError]=useState('')
 
   function handleHex(v:string){
     setHex(v)
     setError('')
-    if(!/^#[0-9a-fA-F]{6}$/.test(v)){setError('Enter a valid hex color e.g. #3b82f6')}
+    if(!/^#[0-9a-fA-F]{6}$/.test(v)){setError(t('cvt_invalid'))}
   }
 
   const valid=/^#[0-9a-fA-F]{6}$/.test(hex)
@@ -45,7 +47,7 @@ export default function Page(){
       <div className="space-y-4">
         <div className="flex gap-3 items-start flex-wrap">
           <div>
-            <label className="block text-sm font-medium mb-1">HEX Color</label>
+            <label className="block text-sm font-medium mb-1">{t('cvt_hex')}</label>
             <input
               type="text"
               value={hex}
@@ -65,13 +67,13 @@ export default function Page(){
               {label:'HEX',val:hex.toUpperCase()},
               {label:'RGB',val:`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`},
               {label:'HSL',val:`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`},
-              {label:'RGB Values',val:`R: ${rgb.r}  G: ${rgb.g}  B: ${rgb.b}`},
+              {label:t('cvt_rgbvals'),val:`R: ${rgb.r}  G: ${rgb.g}  B: ${rgb.b}`},
             ].map(({label,val})=>(
               <div key={label} className="flex justify-between items-center bg-gray-50 border rounded px-3 py-2">
                 <span className="font-medium text-sm w-24">{label}</span>
                 <span className="font-mono text-sm flex-1">{val}</span>
                 <button onClick={()=>navigator.clipboard.writeText(val)}
-                  className="text-xs text-blue-500 hover:underline ml-2">Copy</button>
+                  className="text-xs text-blue-500 hover:underline ml-2">{t('ui_copy')}</button>
               </div>
             ))}
           </div>

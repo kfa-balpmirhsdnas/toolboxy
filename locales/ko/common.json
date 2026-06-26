@@ -2785,6 +2785,21 @@
       "색을 고르거나 HEX를 입력하세요.",
       "가장 가까운 색 이름을 보여줍니다.",
       "상위 5개 후보와 거리도 확인하세요."
+    ],
+    "color-converter": [
+      "HEX 색상 코드를 입력하세요.",
+      "RGB·HSL 등으로 변환된 값을 확인하세요.",
+      "복사 버튼으로 원하는 형식을 복사하세요."
+    ],
+    "color-shades-generator": [
+      "기준 색을 고르세요.",
+      "단계 수를 조절하세요.",
+      "밝은·어두운 색조를 클릭해 복사하세요."
+    ],
+    "color-palette-generator": [
+      "기준 색을 고르세요.",
+      "배색 유형(유사색·보색·삼색·랜덤)을 고르세요.",
+      "생성된 팔레트를 클릭해 복사하세요."
     ]
   },
   "games": {
@@ -4168,7 +4183,20 @@
     "cmx_mid": "중간 색",
     "cnf_closest": "가장 가까운 색 이름",
     "cnf_best": "최적 일치",
-    "cnf_dist": "거리"
+    "cnf_dist": "거리",
+    "cvt_invalid": "올바른 HEX 색상을 입력하세요 (예: #3b82f6)",
+    "cvt_hex": "HEX 색상",
+    "cvt_rgbvals": "RGB 값",
+    "csg_base": "기준 색",
+    "csg_copyall": "전체 복사",
+    "csg_tints": "틴트 (밝게)",
+    "csg_shades": "셰이드 (어둡게)",
+    "cpg_analogous": "유사색",
+    "cpg_complementary": "보색",
+    "cpg_triadic": "삼색",
+    "cpg_random": "랜덤",
+    "ui_generate": "생성",
+    "cpg_copied": "복사됨"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

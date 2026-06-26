@@ -2752,6 +2752,21 @@
       "色を選ぶかHEXを入力します。",
       "最も近い色名を表示します。",
       "上位5候補と距離も確認します。"
+    ],
+    "color-converter": [
+      "HEXカラーコードを入力します。",
+      "RGB・HSLなどに変換された値を確認します。",
+      "コピーボタンで任意の形式をコピーします。"
+    ],
+    "color-shades-generator": [
+      "ベースカラーを選びます。",
+      "ステップ数を調整します。",
+      "ティントやシェードをクリックしてコピーします。"
+    ],
+    "color-palette-generator": [
+      "ベースカラーを選びます。",
+      "配色（類似色・補色など）を選びます。",
+      "スウォッチをクリックしてコピーします。"
     ]
   },
   "games": {
@@ -4135,7 +4150,20 @@
     "cmx_mid": "中間色",
     "cnf_closest": "最も近い色名",
     "cnf_best": "最も近い",
-    "cnf_dist": "距離"
+    "cnf_dist": "距離",
+    "cvt_invalid": "正しいHEXカラーを入力してください（例: #3b82f6）",
+    "cvt_hex": "HEXカラー",
+    "cvt_rgbvals": "RGB値",
+    "csg_base": "ベースカラー",
+    "csg_copyall": "すべてコピー",
+    "csg_tints": "ティント (明るく)",
+    "csg_shades": "シェード (暗く)",
+    "cpg_analogous": "類似色",
+    "cpg_complementary": "補色",
+    "cpg_triadic": "トライアド",
+    "cpg_random": "ランダム",
+    "ui_generate": "生成",
+    "cpg_copied": "コピーしました"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

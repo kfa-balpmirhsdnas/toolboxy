@@ -2447,6 +2447,21 @@
       "Pick a color or type a hex.",
       "See its closest named color.",
       "Check the top 5 candidates and distances."
+    ],
+    "color-converter": [
+      "Enter a HEX color code.",
+      "See it converted to RGB, HSL and more.",
+      "Copy any format with the copy button."
+    ],
+    "color-shades-generator": [
+      "Pick a base color.",
+      "Adjust the number of steps.",
+      "Click any tint or shade to copy it."
+    ],
+    "color-palette-generator": [
+      "Pick a base color.",
+      "Choose a scheme (analogous, complementary, etc.).",
+      "Click a swatch to copy it."
     ]
   },
   "games": {
@@ -3830,7 +3845,20 @@
     "cmx_mid": "Mid color",
     "cnf_closest": "Closest named colors",
     "cnf_best": "Best match",
-    "cnf_dist": "dist"
+    "cnf_dist": "dist",
+    "cvt_invalid": "Enter a valid hex color e.g. #3b82f6",
+    "cvt_hex": "HEX Color",
+    "cvt_rgbvals": "RGB Values",
+    "csg_base": "Base Color",
+    "csg_copyall": "Copy All",
+    "csg_tints": "Tints (lighter)",
+    "csg_shades": "Shades (darker)",
+    "cpg_analogous": "Analogous",
+    "cpg_complementary": "Complementary",
+    "cpg_triadic": "Triadic",
+    "cpg_random": "Random",
+    "ui_generate": "Generate",
+    "cpg_copied": "Copied"
   },
   "toolTags": {
     "spinner-wheel": [

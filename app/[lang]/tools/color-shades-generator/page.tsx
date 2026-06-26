@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 function hexToRgb(hex){const m=hex.replace('#','').match(/.{2}/g);return m?{r:parseInt(m[0],16),g:parseInt(m[1],16),b:parseInt(m[2],16)}:{r:0,g:0,b:0}}
@@ -11,6 +12,7 @@ function mixWith(base,mix,steps,total){
   })
 }
 export default function Page(){
+  const t = useTranslations('toolui')
   const [base,setBase]=useState('#3b82f6')
   const [steps,setSteps]=useState(5)
   const [copied,setCopied]=useState('')
@@ -19,7 +21,7 @@ export default function Page(){
   const darks=mixWith(rgb,[0,0,0],steps+1,steps+1).slice(1)
   const allColors=[...lights,base,...darks]
   const copyAll=()=>{const all=allColors.join(', ');navigator.clipboard?.writeText(all);setCopied('all')}
-  const tool=TOOLS.find(t=>t.slug==='color-shades-generator')
+  const tool=TOOLS.find(x=>x.slug==='color-shades-generator')
   const renderSwatches=(colors,title)=>(
     <div>
       <p className="text-xs font-semibold text-gray-600 mb-2">{title}</p>
@@ -38,20 +40,20 @@ export default function Page(){
     <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4 space-y-5">
         <div className="flex gap-4 items-center">
-          <label className="flex items-center gap-2 text-sm text-gray-700">Base Color
+          <label className="flex items-center gap-2 text-sm text-gray-700">{t('csg_base')}
             <input type="color" value={base} onChange={e=>setBase(e.target.value)} className="w-10 h-10 rounded cursor-pointer"/></label>
-          <label className="flex items-center gap-2 text-sm text-gray-700">Steps
+          <label className="flex items-center gap-2 text-sm text-gray-700">{t('cmx_steps')}
             <input type="number" min={2} max={10} value={steps} onChange={e=>setSteps(+e.target.value)} className="w-16 rounded border border-gray-300 px-2 py-1 text-sm"/></label>
-          <button onClick={copyAll} className="ml-auto px-3 py-1.5 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">{copied==='all'?'Copied!':'Copy All'}</button>
+          <button onClick={copyAll} className="ml-auto px-3 py-1.5 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">{copied==='all'?t('ui_copied'):t('csg_copyall')}</button>
         </div>
-        {renderSwatches(lights,'Tints (lighter)')}
+        {renderSwatches(lights,t('csg_tints'))}
         <div className="flex items-center gap-3">
           <div className="flex-1 h-px bg-gray-200"/>
           <div className="w-16 h-16 rounded-xl border-2 border-gray-300 shadow" style={{backgroundColor:base}}/>
           <span className="font-mono text-sm text-gray-700">{base.toUpperCase()}</span>
           <div className="flex-1 h-px bg-gray-200"/>
         </div>
-        {renderSwatches(darks,'Shades (darker)')}
+        {renderSwatches(darks,t('csg_shades'))}
       </div>
     </ToolLayout>
   )
