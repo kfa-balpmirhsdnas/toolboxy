@@ -2212,6 +2212,31 @@
       "Drop a .csv or .xlsx file.",
       "The direction is detected automatically.",
       "Click Convert to download the result."
+    ],
+    "open-graph-preview": [
+      "Fill in the title, description, image URL and more.",
+      "Check the Facebook / Twitter / LinkedIn previews.",
+      "Copy the generated meta tags into your site’s <head>."
+    ],
+    "bmi-calculator": [
+      "Choose units (metric or imperial).",
+      "Enter your height and weight.",
+      "See your BMI, category and ideal weight range."
+    ],
+    "word-counter": [
+      "Type or paste your text.",
+      "See character, word, sentence and read-time stats.",
+      "Review the most-used words too."
+    ],
+    "number-formatter": [
+      "Enter a number.",
+      "Pick a style (decimal, currency, percent, scientific).",
+      "Copy the formatted result for each locale."
+    ],
+    "case-converter": [
+      "Enter your text.",
+      "Find the case you want (camelCase, snake_case, etc.).",
+      "Copy the converted result."
     ]
   },
   "games": {
