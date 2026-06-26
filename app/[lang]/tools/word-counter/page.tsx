@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -7,6 +8,7 @@ import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('word-counter')!
 
 export default function WordCounterPage() {
+  const t = useTranslations('toolui')
   const [text, setText] = useState('')
 
   const chars       = text.length
@@ -26,24 +28,24 @@ export default function WordCounterPage() {
   const topWords=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10)
 
   const stats=[
-    {label:'Characters',val:chars.toLocaleString()},
-    {label:'No Spaces',val:charsNoSpace.toLocaleString()},
-    {label:'Words',val:words.toLocaleString()},
-    {label:'Sentences',val:sentences.toLocaleString()},
-    {label:'Paragraphs',val:paragraphs.toLocaleString()},
-    {label:'Lines',val:lines.toLocaleString()},
-    {label:'Avg Word Len',val:avgWordLen},
-    {label:'Read Time',val:readMin>0?readMin+'m '+readSec+'s':readSec+'s'},
+    {label:t('wc_chars'),val:chars.toLocaleString()},
+    {label:t('wc_nospace'),val:charsNoSpace.toLocaleString()},
+    {label:t('wc_words'),val:words.toLocaleString()},
+    {label:t('wc_sentences'),val:sentences.toLocaleString()},
+    {label:t('wc_paragraphs'),val:paragraphs.toLocaleString()},
+    {label:t('wc_lines'),val:lines.toLocaleString()},
+    {label:t('wc_avglen'),val:avgWordLen},
+    {label:t('wc_readtime'),val:readMin>0?readMin+'m '+readSec+'s':readSec+'s'},
   ]
 
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Word Counter</h1>
-        <p className="text-gray-500 mb-8">Count words, characters, sentences, and get detailed text statistics instantly</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('wc_title')}</h1>
+        <p className="text-gray-500 mb-8">{t('wc_subtitle')}</p>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           <textarea value={text} onChange={e=>setText(e.target.value)} rows={10}
-            placeholder="Type or paste your text here..."
+            placeholder={t('wc_ph')}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
         </div>
         <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -56,7 +58,7 @@ export default function WordCounterPage() {
         </div>
         {topWords.length>0&&(
           <div className="mt-4 bg-white rounded-2xl border border-gray-200 p-5">
-            <h2 className="font-semibold text-gray-800 mb-3">Top Words (3+ letters)</h2>
+            <h2 className="font-semibold text-gray-800 mb-3">{t('wc_topwords')}</h2>
             <div className="flex flex-wrap gap-2">
               {topWords.map(([w,c])=>(
                 <div key={w} className="flex items-center gap-1.5 bg-brand-50 border border-brand-100 rounded-full px-3 py-1">
