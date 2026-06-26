@@ -26,9 +26,10 @@ function roundRect(x) {
 
 function bg(x) {
   roundRect(x); x.clip()
-  // azure-blue gradient matching the Samsung-Wear reference (lighter top → deeper bottom)
+  // azure-blue gradient matching the Samsung-Wear reference: distinctly bright/light
+  // at the top, deepening toward the bottom.
   const g = x.createLinearGradient(0, 0, 0, SIZE)
-  g.addColorStop(0, '#3E9DF5'); g.addColorStop(1, '#1A6BEC')
+  g.addColorStop(0, '#5BB1FF'); g.addColorStop(0.5, '#2E89F2'); g.addColorStop(1, '#1660E6')
   x.fillStyle = g; x.fillRect(0, 0, SIZE, SIZE)
 }
 
@@ -38,8 +39,8 @@ function textIcon(label, file) {
   const lines = label.split('\n')
   let fs = 300; x.font = FONT(fs)
   const widest = () => Math.max(...lines.map((l) => x.measureText(l).width))
-  while (widest() > SIZE * 0.54 && fs > 12) { fs -= 4; x.font = FONT(fs) }
-  while (lines.length * fs * 1.06 > SIZE * 0.62 && fs > 12) { fs -= 4; x.font = FONT(fs) }
+  while (widest() > SIZE * 0.44 && fs > 12) { fs -= 4; x.font = FONT(fs) }
+  while (lines.length * fs * 1.06 > SIZE * 0.5 && fs > 12) { fs -= 4; x.font = FONT(fs) }
   x.fillStyle = '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle'
   x.shadowColor = 'rgba(255,255,255,0.45)'; x.shadowBlur = fs * 0.08
   const lh = fs * 1.06, y0 = SIZE / 2 - (lines.length * lh) / 2 + lh / 2
@@ -49,7 +50,7 @@ function textIcon(label, file) {
 
 // Re-skin a shape icon: keep its exact white shape (extracted from the old flat
 // icon) but on the gradient and scaled down ~25%.
-async function shapeIcon(src, file, scale = 0.74) {
+async function shapeIcon(src, file, scale = 0.66) {
   const img = await loadImage(path.join('scripts/icon-src', src)) // flat original (kept for re-runs)
   const t = createCanvas(SIZE, SIZE); const tx = t.getContext('2d')
   tx.drawImage(img, 0, 0, SIZE, SIZE)
