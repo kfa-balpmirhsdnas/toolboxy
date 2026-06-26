@@ -1,10 +1,12 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('css-box-shadow-generator')!
-const PRESETS=[{label:'Soft',x:0,y:4,blur:6,spread:-1,color:'rgba(0,0,0,0.1)',inset:false},{label:'Hard',x:4,y:4,blur:0,spread:0,color:'rgba(0,0,0,0.25)',inset:false},{label:'Large',x:0,y:20,blur:25,spread:-5,color:'rgba(0,0,0,0.1)',inset:false},{label:'Glow',x:0,y:0,blur:15,spread:0,color:'rgba(59,130,246,0.5)',inset:false},{label:'Inner',x:0,y:2,blur:4,spread:0,color:'rgba(0,0,0,0.2)',inset:true},{label:'None',x:0,y:0,blur:0,spread:0,color:'rgba(0,0,0,0)',inset:false}]
+const PRESETS=[{k:'soft',x:0,y:4,blur:6,spread:-1,color:'rgba(0,0,0,0.1)',inset:false},{k:'hard',x:4,y:4,blur:0,spread:0,color:'rgba(0,0,0,0.25)',inset:false},{k:'large',x:0,y:20,blur:25,spread:-5,color:'rgba(0,0,0,0.1)',inset:false},{k:'glow',x:0,y:0,blur:15,spread:0,color:'rgba(59,130,246,0.5)',inset:false},{k:'inner',x:0,y:2,blur:4,spread:0,color:'rgba(0,0,0,0.2)',inset:true},{k:'none',x:0,y:0,blur:0,spread:0,color:'rgba(0,0,0,0)',inset:false}]
 export default function CssBoxShadowGeneratorPage() {
+  const t = useTranslations('toolui')
   const [x,setX]=useState(0)
   const [y,setY]=useState(4)
   const [blur,setBlur]=useState(6)
@@ -28,27 +30,27 @@ export default function CssBoxShadowGeneratorPage() {
       <div className="max-w-md mx-auto px-4 space-y-4">
         <div className="flex flex-wrap gap-1.5">
           {PRESETS.map(p=>(
-            <button key={p.label} onClick={()=>{setX(p.x);setY(p.y);setBlur(p.blur);setSpread(p.spread);setColor(p.color);setInset(p.inset)}}
-              className="text-xs px-2.5 py-1 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600">{p.label}</button>
+            <button key={p.k} onClick={()=>{setX(p.x);setY(p.y);setBlur(p.blur);setSpread(p.spread);setColor(p.color);setInset(p.inset)}}
+              className="text-xs px-2.5 py-1 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600">{t('bx_p_'+p.k)}</button>
           ))}
         </div>
         <div className="space-y-3">
-          <Slider label="Offset X" value={x} onChange={setX} min={-50} max={50}/>
-          <Slider label="Offset Y" value={y} onChange={setY} min={-50} max={50}/>
-          <Slider label="Blur" value={blur} onChange={setBlur} min={0} max={100}/>
-          <Slider label="Spread" value={spread} onChange={setSpread} min={-50} max={50}/>
+          <Slider label={t('bx_x')} value={x} onChange={setX} min={-50} max={50}/>
+          <Slider label={t('bx_y')} value={y} onChange={setY} min={-50} max={50}/>
+          <Slider label={t('bx_blur')} value={blur} onChange={setBlur} min={0} max={100}/>
+          <Slider label={t('bx_spread')} value={spread} onChange={setSpread} min={-50} max={50}/>
           <div className="flex items-center gap-3">
-            <label className="text-xs font-medium text-gray-600 w-16">Color</label>
+            <label className="text-xs font-medium text-gray-600 w-16">{t('ui_color')}</label>
             <input type="color" value={color.length===9?color.slice(0,7):color} onChange={e=>setColor(e.target.value)} className="w-10 h-8 rounded border border-gray-200 cursor-pointer p-0.5"/>
             <input value={color} onChange={e=>setColor(e.target.value)} className="flex-1 rounded-lg border border-gray-200 px-2 py-1 font-mono text-xs focus:outline-none"/>
           </div>
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={inset} onChange={e=>setInset(e.target.checked)} className="rounded"/>
-            <span className="text-xs font-medium text-gray-600">Inset shadow</span>
+            <span className="text-xs font-medium text-gray-600">{t('bx_inset')}</span>
           </label>
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-xs font-medium text-gray-600">Card bg:</label>
+          <label className="text-xs font-medium text-gray-600">{t('bx_bg')}</label>
           <input type="color" value={bg} onChange={e=>setBg(e.target.value)} className="w-8 h-8 rounded border border-gray-200 cursor-pointer p-0.5"/>
         </div>
         <div className="flex items-center justify-center py-12 bg-gray-100 rounded-2xl">
@@ -57,7 +59,7 @@ export default function CssBoxShadowGeneratorPage() {
         <div className="bg-gray-900 rounded-xl overflow-hidden">
           <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
             <code className="text-green-400 text-xs">{css}</code>
-            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'✓':'Copy'}</button>
+            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'✓':t('ui_copy')}</button>
           </div>
         </div>
       </div>

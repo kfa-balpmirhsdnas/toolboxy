@@ -2337,6 +2337,11 @@
       "Enter a regex pattern and flags.",
       "Type a test string to highlight matches.",
       "Use presets for common patterns."
+    ],
+    "css-box-shadow-generator": [
+      "Pick a preset or adjust the shadow with sliders.",
+      "Set the color and toggle inset.",
+      "Copy the generated box-shadow CSS."
     ]
   },
   "games": {
@@ -3445,7 +3450,27 @@
     "rx_test": "Test string",
     "rx_highlight": "Matches highlighted",
     "rx_matches": "matches",
-    "rx_more": "more"
+    "rx_more": "more",
+    "bx_p_soft": "Soft",
+    "bx_p_hard": "Hard",
+    "bx_p_large": "Large",
+    "bx_p_glow": "Glow",
+    "bx_p_inner": "Inner",
+    "bx_p_none": "None",
+    "bx_x": "Offset X",
+    "bx_y": "Offset Y",
+    "bx_blur": "Blur",
+    "bx_spread": "Spread",
+    "ui_color": "Color",
+    "bx_inset": "Inset shadow",
+    "bx_bg": "Card bg:",
+    "cu_title": "cURL Builder",
+    "cu_subtitle": "Build cURL commands visually",
+    "cu_query": "Query Params",
+    "cu_add": "+ Add",
+    "cu_headers": "Headers",
+    "cu_body": "Request Body",
+    "cu_generated": "Generated Command"
   },
   "toolTags": {
     "spinner-wheel": [

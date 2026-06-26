@@ -2642,6 +2642,11 @@
       "正規表現パターンとフラグを入力します。",
       "テスト文字列を入れると一致がハイライトされます。",
       "プリセットでよく使うパターンを適用します。"
+    ],
+    "css-box-shadow-generator": [
+      "プリセットを選ぶかスライダーで影を調整します。",
+      "色と内側の影を設定します。",
+      "生成された box-shadow CSS をコピーします。"
     ]
   },
   "games": {
@@ -3750,7 +3755,27 @@
     "rx_test": "テスト文字列",
     "rx_highlight": "一致をハイライト",
     "rx_matches": "件一致",
-    "rx_more": "件"
+    "rx_more": "件",
+    "bx_p_soft": "ソフト",
+    "bx_p_hard": "ハード",
+    "bx_p_large": "大",
+    "bx_p_glow": "グロー",
+    "bx_p_inner": "内側",
+    "bx_p_none": "なし",
+    "bx_x": "Xオフセット",
+    "bx_y": "Yオフセット",
+    "bx_blur": "ぼかし",
+    "bx_spread": "広がり",
+    "ui_color": "色",
+    "bx_inset": "内側の影",
+    "bx_bg": "カード背景:",
+    "cu_title": "cURLビルダー",
+    "cu_subtitle": "cURLコマンドを視覚的に作成します",
+    "cu_query": "クエリパラメータ",
+    "cu_add": "+ 追加",
+    "cu_headers": "ヘッダー",
+    "cu_body": "リクエストボディ",
+    "cu_generated": "生成されたコマンド"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

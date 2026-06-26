@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -7,6 +8,7 @@ import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('curl-builder')!
 
 export default function CurlBuilderPage() {
+  const t = useTranslations('toolui')
   const [method, setMethod] = useState('GET')
   const [url, setUrl] = useState('https://api.example.com/data')
   const [headers, setHeaders] = useState([{ key: 'Content-Type', value: 'application/json' }])
@@ -50,8 +52,8 @@ export default function CurlBuilderPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-2">cURL Builder</h1>
-      <p className="text-gray-500 mb-8">Build cURL commands visually</p>
+      <h1 className="text-3xl font-bold mb-2">{t('cu_title')}</h1>
+      <p className="text-gray-500 mb-8">{t('cu_subtitle')}</p>
 
       <div className="space-y-6">
         <div className="flex gap-3">
@@ -68,8 +70,8 @@ export default function CurlBuilderPage() {
 
         <div>
           <div className="flex justify-between mb-2">
-            <span className="font-semibold">Query Params</span>
-            <button onClick={addParam} className="text-sm text-blue-600 hover:underline">+ Add</button>
+            <span className="font-semibold">{t('cu_query')}</span>
+            <button onClick={addParam} className="text-sm text-blue-600 hover:underline">{t('cu_add')}</button>
           </div>
           {queryParams.map((p, i) => (
             <div key={i} className="flex gap-2 mb-2">
@@ -84,8 +86,8 @@ export default function CurlBuilderPage() {
 
         <div>
           <div className="flex justify-between mb-2">
-            <span className="font-semibold">Headers</span>
-            <button onClick={addHeader} className="text-sm text-blue-600 hover:underline">+ Add</button>
+            <span className="font-semibold">{t('cu_headers')}</span>
+            <button onClick={addHeader} className="text-sm text-blue-600 hover:underline">{t('cu_add')}</button>
           </div>
           {headers.map((h, i) => (
             <div key={i} className="flex gap-2 mb-2">
@@ -100,7 +102,7 @@ export default function CurlBuilderPage() {
 
         {method !== 'GET' && method !== 'HEAD' && (
           <div>
-            <label className="font-semibold block mb-2">Request Body</label>
+            <label className="font-semibold block mb-2">{t('cu_body')}</label>
             <textarea value={bodyText} onChange={e => setBodyText(e.target.value)}
               className="w-full border rounded px-3 py-2 font-mono text-sm h-32"
               placeholder='{"key": "value"}' />
@@ -109,10 +111,10 @@ export default function CurlBuilderPage() {
 
         <div>
           <div className="flex justify-between mb-2">
-            <span className="font-semibold">Generated Command</span>
+            <span className="font-semibold">{t('cu_generated')}</span>
             <button onClick={copy}
               className="text-sm px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
-              {copied ? 'Copied!' : 'Copy'}
+              {copied ? t('ui_copied') : t('ui_copy')}
             </button>
           </div>
           <pre className="bg-gray-900 text-green-300 p-4 rounded overflow-x-auto text-sm whitespace-pre-wrap">
