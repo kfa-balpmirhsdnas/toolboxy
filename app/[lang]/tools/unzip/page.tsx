@@ -61,7 +61,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
         const folder = (name.replace(/\.zip$/i, '') || 'extracted').replace(/[\\/:*?"<>|]+/g, '_')
         const dir = await root.getDirectoryHandle(folder, { create: true })
         for (const e of entries) await writeInto(dir, e.name, e.data)
-        setDone({ folder, n: entries.length })
+        setDone({ folder: `${root.name}/${folder}`, n: entries.length }) // include the picked parent so it's easy to locate
         trackToolDownload('unzip', 'folder')
         return
       } catch (err) {
