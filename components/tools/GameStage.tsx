@@ -66,24 +66,54 @@ export function useGameStage() {
   return { phase, label, muteOn, toggleMute, begin, finish, reset, playing: phase === 'playing', started: phase === 'playing' || phase === 'finished' }
 }
 
+const GS_KEYFRAMES =
+  '@keyframes gsCount{0%{transform:scale(0.45);opacity:0}18%{transform:scale(0.8);opacity:1}100%{transform:scale(2);opacity:0}}' +
+  '@keyframes gsGo{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.25);opacity:1}70%{transform:scale(0.95)}100%{transform:scale(1.08);opacity:1}}' +
+  '@keyframes gsGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.5)}}' +
+  '@keyframes gsBounceIn{0%{transform:scale(0.2);opacity:0}45%{transform:scale(1.35)}65%{transform:scale(0.92)}82%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}' +
+  '@keyframes gsShimmer{to{background-position:200% center}}' +
+  '@keyframes gsRing{0%{transform:scale(0.3);opacity:0.85}100%{transform:scale(2.6);opacity:0}}'
+
+// Vivid per-label colour (white is too flat for a countdown).
+const GS_COLORS: Record<string, string> = { '3': '#38bdf8', '2': '#fb7185', '1': '#facc15', 'START!': '#4ade80' }
+
 /** Countdown + FINISH overlay. Covers the nearest positioned ancestor. */
 export function GameStageOverlay({ stage, finishLabel = 'FINISH!!' }: { stage: Stage; finishLabel?: string }) {
   const [showFinish, setShowFinish] = useState(false)
   useEffect(() => {
-    if (stage.phase === 'finished') { setShowFinish(true); const id = setTimeout(() => setShowFinish(false), 1700); return () => clearTimeout(id) }
+    if (stage.phase === 'finished') { setShowFinish(true); const id = setTimeout(() => setShowFinish(false), 2200); return () => clearTimeout(id) }
     setShowFinish(false)
   }, [stage.phase])
 
   const finishing = stage.phase === 'finished'
   if (stage.phase !== 'count' && !(finishing && showFinish)) return null
+
+  const isGo = stage.label === 'START!'
+  const col = GS_COLORS[stage.label] || '#fff'
+
   return (
-    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/55 pointer-events-none rounded-xl">
-      <span key={finishing ? 'fin' : stage.label}
-        className={`font-extrabold tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.55)] ${finishing ? 'text-5xl text-amber-300' : stage.label === 'START!' ? 'text-5xl text-emerald-300' : 'text-8xl text-white'}`}
-        style={{ animation: 'gsPop 0.4s cubic-bezier(0.2,0.9,0.3,1.3)' }}>
-        {finishing ? finishLabel : stage.label}
-      </span>
-      <style>{'@keyframes gsPop{0%{transform:scale(0.3);opacity:0}55%{transform:scale(1.18);opacity:1}100%{transform:scale(1);opacity:1}}'}</style>
+    <div className="absolute inset-0 z-20 flex items-center justify-center overflow-hidden rounded-xl pointer-events-none" style={{ background: 'rgba(0,0,0,0.5)' }}>
+      {finishing ? (
+        <>
+          <span className="absolute rounded-full" style={{ width: 110, height: 110, border: '6px solid #fbbf24', animation: 'gsRing 1.1s ease-out infinite' }} />
+          <span className="absolute rounded-full" style={{ width: 110, height: 110, border: '6px solid #f472b6', animation: 'gsRing 1.1s ease-out 0.4s infinite' }} />
+          <span key="fin" className="relative font-extrabold tracking-wider" style={{
+            fontSize: '3.4rem',
+            backgroundImage: 'linear-gradient(90deg,#f43f5e,#fbbf24,#4ade80,#38bdf8,#a78bfa,#f43f5e)',
+            backgroundSize: '200% auto', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+            animation: 'gsBounceIn 0.65s cubic-bezier(0.2,0.9,0.3,1.4), gsShimmer 1.5s linear infinite',
+            filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.45))',
+          }}>{finishLabel}</span>
+        </>
+      ) : (
+        <span key={stage.label} className="font-extrabold" style={{
+          color: col,
+          fontSize: isGo ? '4.5rem' : '8rem',
+          textShadow: `0 0 18px ${col}, 0 0 38px ${col}, 0 2px 6px rgba(0,0,0,0.4)`,
+          animation: isGo ? 'gsGo 0.5s cubic-bezier(0.2,0.9,0.3,1.5) forwards, gsGlow 0.7s ease-in-out infinite' : 'gsCount 0.62s ease-out forwards',
+        }}>{stage.label}</span>
+      )}
+      <style>{GS_KEYFRAMES}</style>
     </div>
   )
 }
