@@ -2797,6 +2797,16 @@
       "Enter the text to repeat.",
       "Set repeat count and separator.",
       "Copy the generated result."
+    ],
+    "uuid-bulk-generator": [
+      "Set how many UUIDs to generate.",
+      "Choose a format (uppercase, no dashes, etc.).",
+      "Generate and copy them all."
+    ],
+    "text-rotate": [
+      "Choose flip or reverse mode.",
+      "Enter your text.",
+      "Copy the transformed output."
     ]
   },
   "games": {
@@ -4616,7 +4626,18 @@
     "tr_label": "Text to repeat",
     "tr_count": "Repeat count",
     "tr_custom_sep": "Custom separator",
-    "tr_stats": "{c} chars, {r} repetitions"
+    "tr_stats": "{c} chars, {r} repetitions",
+    "ubg_default": "Default",
+    "ubg_upper": "UPPERCASE",
+    "ubg_nodash": "No dashes",
+    "ubg_braces": "Braces",
+    "ubg_count": "Count",
+    "ubg_format": "Format",
+    "ubg_generate": "Generate {n} UUIDs",
+    "ui_copy_all": "Copy All",
+    "trot_flip": "Flip Upside Down",
+    "trot_reverse": "Reverse",
+    "trot_copyout": "Copy Output"
   },
   "toolTags": {
     "spinner-wheel": [

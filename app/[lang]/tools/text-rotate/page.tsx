@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -20,6 +21,7 @@ const reverseChars = (t: string) => t.split('').reverse().join('')
 const mirrorH = (t: string) => t.split('').reverse().map(c => MIRROR[c.toLowerCase()] || MIRROR[c] || c).join('')
 
 export default function TextRotatePage() {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('Hello World')
   const [mode, setMode] = useState<'reverse'|'flip'>('flip')
 
@@ -32,19 +34,19 @@ export default function TextRotatePage() {
           {(['flip', 'reverse'] as const).map(m => (
             <button key={m} onClick={() => setMode(m)}
               className={['px-4 py-2 rounded text-sm font-medium', mode === m ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700'].join(' ')}>
-              {m === 'flip' ? 'Flip Upside Down' : 'Reverse'}
+              {m === 'flip' ? t('trot_flip') : t('trot_reverse')}
             </button>
           ))}
         </div>
         <textarea value={input} onChange={e => setInput(e.target.value)}
-          className="w-full border rounded px-3 py-2 text-sm h-28" placeholder="Enter text..." />
+          className="w-full border rounded px-3 py-2 text-sm h-28" placeholder={t('ui_text_ph')} />
         <div className="bg-gray-50 border rounded p-4">
-          <p className="text-xs text-gray-500 mb-1">Output</p>
+          <p className="text-xs text-gray-500 mb-1">{t('ui_output')}</p>
           <p className="font-mono text-lg break-all">{output}</p>
         </div>
         <button onClick={() => navigator.clipboard.writeText(output)}
           className="px-4 py-2 bg-indigo-600 text-white rounded text-sm">
-          Copy Output
+          {t('trot_copyout')}
         </button>
       </div>
     </ToolLayout>

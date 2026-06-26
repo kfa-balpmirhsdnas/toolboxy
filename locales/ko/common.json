@@ -3135,6 +3135,16 @@
       "반복할 텍스트를 입력하세요.",
       "반복 횟수와 구분자를 설정하세요.",
       "생성된 결과를 복사하세요."
+    ],
+    "uuid-bulk-generator": [
+      "생성할 UUID 개수를 정하세요.",
+      "형식(대문자·하이픈 없음 등)을 고르세요.",
+      "'생성'을 누르고 전체 복사하세요."
+    ],
+    "text-rotate": [
+      "뒤집기/거꾸로 모드를 고르세요.",
+      "텍스트를 입력하세요.",
+      "변환된 출력을 복사하세요."
     ]
   },
   "games": {
@@ -4954,7 +4964,18 @@
     "tr_label": "반복할 텍스트",
     "tr_count": "반복 횟수",
     "tr_custom_sep": "사용자 지정 구분자",
-    "tr_stats": "{c}자, {r}회 반복"
+    "tr_stats": "{c}자, {r}회 반복",
+    "ubg_default": "기본",
+    "ubg_upper": "대문자",
+    "ubg_nodash": "하이픈 없음",
+    "ubg_braces": "중괄호",
+    "ubg_count": "개수",
+    "ubg_format": "형식",
+    "ubg_generate": "UUID {n}개 생성",
+    "ui_copy_all": "전체 복사",
+    "trot_flip": "위아래 뒤집기",
+    "trot_reverse": "거꾸로",
+    "trot_copyout": "출력 복사"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
