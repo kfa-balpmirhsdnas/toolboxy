@@ -1,10 +1,12 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('json-tree-viewer')!
 const SAMPLE='{"user":{"name":"Alice","age":30,"roles":["admin","editor"],"address":{"city":"New York","zip":"10001"}},"settings":{"theme":"dark","notifications":true,"language":"en"},"metadata":{"created":"2024-01-01","version":2}}'
 function TreeNode({data,depth=0,label}:{data:unknown;depth?:number;label?:string}) {
+  const t = useTranslations('toolui')
   const [open,setOpen]=useState(depth<2)
   const isObj=typeof data==='object'&&data!==null&&!Array.isArray(data)
   const isArr=Array.isArray(data)
@@ -23,7 +25,7 @@ function TreeNode({data,depth=0,label}:{data:unknown;depth?:number;label?:string
         <span className="text-gray-400 text-xs w-3">{open?'▾':'▸'}</span>
         {label!==undefined&&<span className="text-purple-600 font-medium text-xs">"{label}": </span>}
         <span className="text-gray-500 text-xs">{isArr?'[':'{'}</span>
-        {!open&&<span className="text-gray-400 text-xs ml-1">{cnt} {isArr?'items':'keys'}</span>}
+        {!open&&<span className="text-gray-400 text-xs ml-1">{cnt} {isArr?t('jtv_items'):t('jtv_keys')}</span>}
         {!open&&<span className="text-gray-500 text-xs">{isArr?']':'}'}</span>}
       </button>
       {open&&(
@@ -37,6 +39,7 @@ function TreeNode({data,depth=0,label}:{data:unknown;depth?:number;label?:string
   )
 }
 export default function JsonTreeViewerPage() {
+  const t = useTranslations('toolui')
   const [input,setInput]=useState(SAMPLE)
   const [error,setError]=useState('')
   const [parsed,setParsed]=useState<unknown>(null)
@@ -51,8 +54,8 @@ export default function JsonTreeViewerPage() {
     <ToolLayout tool={tool}>
       <div className="max-w-xl mx-auto px-4 space-y-3">
         <div className="flex rounded-lg overflow-hidden border border-gray-300">
-          <button onClick={()=>setTab('input')} className={'flex-1 py-2 text-sm font-medium transition '+(tab==='input'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>JSON Input</button>
-          <button onClick={()=>setTab('tree')} className={'flex-1 py-2 text-sm font-medium transition '+(tab==='tree'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>Tree View</button>
+          <button onClick={()=>setTab('input')} className={'flex-1 py-2 text-sm font-medium transition '+(tab==='input'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>{t('jm_input')}</button>
+          <button onClick={()=>setTab('tree')} className={'flex-1 py-2 text-sm font-medium transition '+(tab==='tree'?'bg-blue-600 text-white':'bg-white text-gray-700 hover:bg-gray-50')}>{t('jtv_tree')}</button>
         </div>
         {tab==='input'?(
           <div>
@@ -60,11 +63,11 @@ export default function JsonTreeViewerPage() {
               className={'w-full rounded-xl border px-3 py-2.5 font-mono text-sm resize-none focus:outline-none '+(error?'border-red-300 bg-red-50':'border-gray-300 focus:border-blue-400')}
               placeholder='{"key": "value"}'/>
             {error&&<p className="text-red-500 text-xs mt-1">{error}</p>}
-            {parsed!==null&&<p className="text-green-600 text-xs mt-1">Valid JSON</p>}
+            {parsed!==null&&<p className="text-green-600 text-xs mt-1">{t('jtv_valid')}</p>}
           </div>
         ):(
           <div className="bg-gray-50 rounded-xl p-4 min-h-48 font-mono text-sm overflow-auto max-h-96">
-            {parsed!==null?<TreeNode data={parsed} depth={0}/>:<div className="text-gray-400 text-sm">{error||'Enter valid JSON in the Input tab'}</div>}
+            {parsed!==null?<TreeNode data={parsed} depth={0}/>:<div className="text-gray-400 text-sm">{error||t('jtv_empty')}</div>}
           </div>
         )}
       </div>

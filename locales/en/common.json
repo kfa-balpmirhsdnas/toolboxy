@@ -3147,6 +3147,56 @@
       "Type A-Z text.",
       "Block ASCII art is generated.",
       "Copy the result."
+    ],
+    "json-tree-viewer": [
+      "Paste your JSON.",
+      "Switch to Tree View.",
+      "Expand and collapse nodes."
+    ],
+    "barcode-generator": [
+      "Enter text or a URL.",
+      "Adjust the scale.",
+      "Download the barcode SVG."
+    ],
+    "email-extractor": [
+      "Paste your text.",
+      "Toggle remove duplicates.",
+      "Copy the found emails."
+    ],
+    "text-to-handwriting": [
+      "Type your text.",
+      "Pick size, ink and paper color.",
+      "Download as PNG."
+    ],
+    "email-qr-generator": [
+      "Enter the recipient email.",
+      "Add an optional subject and body.",
+      "Scan or download the QR code."
+    ],
+    "phone-qr-generator": [
+      "Choose call or SMS.",
+      "Enter the phone number.",
+      "Scan or download the QR code."
+    ],
+    "wifi-qr-generator": [
+      "Enter the network name and password.",
+      "Choose the security type.",
+      "Scan to join the Wi-Fi."
+    ],
+    "vcard-qr-generator": [
+      "Fill in the contact details.",
+      "A vCard QR is generated.",
+      "Scan to save the contact."
+    ],
+    "circle-crop": [
+      "Upload an image.",
+      "It's cropped to a circle automatically.",
+      "Download as PNG."
+    ],
+    "blur-image": [
+      "Upload an image.",
+      "Adjust the blur amount.",
+      "Download the blurred image."
     ]
   },
   "games": {
@@ -3636,7 +3686,7 @@
     "cc_search": "Search by country name or code",
     "cc_copied": "Copied!",
     "cc_none": "No results.",
-    "cc_note": "Tap a code to copy it. Add it before the number when calling internationally.",
+    "cc_note": "Processed entirely in your browser.",
     "fq_title": "Flag Quiz",
     "fq_subtitle": "Look at the flag and guess the country.",
     "fq_next": "Next",
@@ -5441,7 +5491,46 @@
     "sv_sample": "Sample",
     "taa_ph": "Type text (A-Z, max 20 chars)",
     "taa_empty": "Enter text above",
-    "taa_copy": "Copy ASCII Art"
+    "taa_copy": "Copy ASCII Art",
+    "jtv_items": "items",
+    "jtv_keys": "keys",
+    "jtv_tree": "Tree View",
+    "jtv_valid": "Valid JSON",
+    "jtv_empty": "Enter valid JSON in the Input tab",
+    "bc_texturl": "Text / URL",
+    "bc_scale": "Scale",
+    "ee_title": "Email Extractor",
+    "ee_subtitle": "Extract all email addresses from any block of text",
+    "ee_paste": "Paste Text",
+    "ee_ph": "Paste any text containing email addresses here...",
+    "ee_dedup": "Remove duplicates",
+    "ee_found": "{n} email(s) found",
+    "ee_none": "No email addresses found in the text",
+    "tth_ink": "Ink",
+    "tth_paper": "Paper",
+    "eqr_to": "To (email address)",
+    "eqr_subject": "Subject (optional)",
+    "eqr_body": "Body (optional)",
+    "eqr_hint": "Enter an email address to generate the QR code.",
+    "pqr_call": "Call (tel:)",
+    "pqr_sms": "SMS",
+    "pqr_number": "Phone number",
+    "pqr_message": "Message (optional)",
+    "pqr_hint": "Enter a phone number to generate the QR code.",
+    "wqr_ssid": "Network name (SSID)",
+    "wqr_password": "Password",
+    "wqr_security": "Security",
+    "wqr_none": "None",
+    "wqr_hidden": "Hidden network",
+    "wqr_hint": "Enter your network name to generate the QR code.",
+    "vqr_name": "Full name",
+    "vqr_phone": "Phone",
+    "vqr_email": "Email",
+    "vqr_org": "Organization",
+    "vqr_website": "Website",
+    "vqr_hint": "Fill in a name, phone or email to generate the contact QR.",
+    "cc_desc": "Cropped to a circle with transparent corners (PNG)",
+    "bi_blur": "Blur"
   },
   "toolTags": {
     "spinner-wheel": [

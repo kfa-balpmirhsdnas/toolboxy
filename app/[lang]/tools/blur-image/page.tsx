@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -8,6 +9,7 @@ import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 const tool = getToolBySlug('blur-image')!
 
 export default function BlurImagePage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [src, setSrc] = useState('')
   const [blur, setBlur] = useState(8)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -47,22 +49,22 @@ export default function BlurImagePage({ params }: { params: { lang: string } }) 
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
             <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
-            <p className="text-4xl mb-2">🌫</p><p className="text-sm font-medium text-gray-600">Drop an image or click to upload</p>
+            <p className="text-4xl mb-2">🌫</p><p className="text-sm font-medium text-gray-600">{t('ati_drop')}</p>
           </div>
         ) : (
           <>
             <canvas ref={canvasRef} className="w-full max-h-72 object-contain rounded-xl border border-gray-200 bg-gray-100" />
             <div>
-              <label className="text-sm text-gray-600">Blur: {blur}px</label>
+              <label className="text-sm text-gray-600">{t('bi_blur')}: {blur}px</label>
               <input type="range" min={0} max={40} value={blur} onChange={(e) => setBlur(+e.target.value)} className="w-full" />
             </div>
             <div className="flex gap-2">
-              <button onClick={download} className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ Download PNG</button>
-              <button onClick={() => setSrc('')} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">Change image</button>
+              <button onClick={download} className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('ati_downloadpng')}</button>
+              <button onClick={() => setSrc('')} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">{t('ati_changeimg')}</button>
             </div>
           </>
         )}
-        <p className="text-xs text-gray-400 text-center">Processed entirely in your browser.</p>
+        <p className="text-xs text-gray-400 text-center">{t('cc_note')}</p>
       </div>
     </ToolLayout>
   )
