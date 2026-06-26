@@ -66,6 +66,11 @@ export function useGameStage() {
 
   const begin = useCallback(() => {
     ac() // unlock/resume audio within the click gesture
+    // On mobile, pull the game to the top so the board + countdown have room.
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      const el = document.querySelector('[data-game-stage]') as HTMLElement | null
+      if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 8; window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' }) }
+    }
     clear(); setPhase('count'); setLabel('3'); countdownBeeps()
     ;([[600, '2'], [1200, '1'], [1800, 'START!']] as [number, string][]).forEach(([ms, txt]) => timers.current.push(window.setTimeout(() => setLabel(txt), ms)))
     timers.current.push(window.setTimeout(() => setPhase('playing'), 2400))
@@ -88,13 +93,25 @@ const GS_KEYFRAMES =
 // Vivid per-label colour (white is too flat for a countdown).
 const GS_COLORS: Record<string, string> = { '3': '#38bdf8', '2': '#fb7185', '1': '#facc15', 'START!': '#4ade80' }
 
-/** Countdown + FINISH overlay. Covers the nearest positioned ancestor. */
-export function GameStageOverlay({ stage, finishLabel = 'FINISH!!' }: { stage: Stage; finishLabel?: string }) {
+/** Countdown + FINISH overlay (+ optional idle Start button). Covers the nearest positioned ancestor. */
+export function GameStageOverlay({ stage, showStart = true, startLabel = '▶ START', finishLabel = 'FINISH!!' }: { stage: Stage; showStart?: boolean; startLabel?: string; finishLabel?: string }) {
   const [showFinish, setShowFinish] = useState(false)
   useEffect(() => {
     if (stage.phase === 'finished') { setShowFinish(true); const id = setTimeout(() => setShowFinish(false), 2200); return () => clearTimeout(id) }
     setShowFinish(false)
   }, [stage.phase])
+
+  if (stage.phase === 'idle') {
+    if (!showStart) return null
+    return (
+      <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl" style={{ background: 'rgba(0,0,0,0.32)' }}>
+        <button type="button" onClick={stage.begin}
+          className="px-8 py-3 rounded-full bg-brand-600 text-white text-lg font-bold shadow-lg hover:bg-brand-700 active:scale-95 transition">{startLabel}</button>
+        <button type="button" onClick={stage.toggleMute} aria-label="toggle sound"
+          className="absolute top-2 right-2 text-lg leading-none opacity-80 hover:opacity-100">{stage.muteOn ? '🔇' : '🔊'}</button>
+      </div>
+    )
+  }
 
   const finishing = stage.phase === 'finished'
   if (stage.phase !== 'count' && !(finishing && showFinish)) return null

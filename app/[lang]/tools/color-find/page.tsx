@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
+import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('color-find')!
@@ -25,21 +26,23 @@ export default function ColorFindPage({ params }: { params: { lang: string } }) 
   const [time, setTime] = useState(30)
   const [over, setOver] = useState(false)
   const [best, setBest] = useState(0)
+  const stage = useGameStage()
 
   const start = useCallback(() => { setLevel(1); setBoard(makeLevel(1)); setTime(30); setOver(false) }, [])
   useEffect(() => { setBest(+(localStorage.getItem('colorfind-best') || 0)) }, [])
-  useEffect(() => { if (over) return; const id = setInterval(() => setTime((tm) => { if (tm <= 0.1) { setOver(true); return 0 } return tm - 0.1 }), 100); return () => clearInterval(id) }, [over])
-  useEffect(() => { if (over) setBest((b) => { const nb = Math.max(b, level); localStorage.setItem('colorfind-best', String(nb)); return nb }) }, [over]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (stage.phase === 'playing') start() }, [stage.phase, start])
+  useEffect(() => { if (over || !stage.playing) return; const id = setInterval(() => setTime((tm) => { if (tm <= 0.1) { setOver(true); return 0 } return tm - 0.1 }), 100); return () => clearInterval(id) }, [over, stage.playing])
+  useEffect(() => { if (over) { setBest((b) => { const nb = Math.max(b, level); localStorage.setItem('colorfind-best', String(nb)); return nb }); stage.finish() } }, [over]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function pick(i: number) {
-    if (over) return
+    if (over || !stage.playing) return
     if (i === board.oddIdx) { const nl = level + 1; setLevel(nl); setBoard(makeLevel(nl)); setTime((tm) => Math.min(30, tm + 1)) }
     else setTime((tm) => Math.max(0, tm - 3))
   }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-xs mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="max-w-xs mx-auto space-y-4 text-center select-none">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('cf2_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('cf2_subtitle')}</p>
@@ -47,14 +50,17 @@ export default function ColorFindPage({ params }: { params: { lang: string } }) 
 
         <div className="flex justify-between text-sm text-gray-600"><span>{t('cf2_level')}: <b className="text-brand-600">{level}</b></span><span>{t('cf2_time')}: <b>{time.toFixed(0)}s</b></span></div>
 
-        <div className="grid gap-1.5 mx-auto" style={{ gridTemplateColumns: `repeat(${board.size}, 1fr)`, width: 280, height: 280, opacity: over ? 0.3 : 1 }}>
-          {Array.from({ length: board.size * board.size }).map((_, i) => (
-            <button key={i} onClick={() => pick(i)} className="rounded-md" style={{ background: i === board.oddIdx ? board.odd : board.base }} />
-          ))}
+        <div className="relative mx-auto" style={{ width: 280 }}>
+          <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${board.size}, 1fr)`, width: 280, height: 280, opacity: over ? 0.3 : 1 }}>
+            {Array.from({ length: board.size * board.size }).map((_, i) => (
+              <button key={i} onClick={() => pick(i)} className="rounded-md" style={{ background: i === board.oddIdx ? board.odd : board.base }} />
+            ))}
+          </div>
+          <GameStageOverlay stage={stage} />
         </div>
 
         {over && <div className="rounded-xl bg-rose-50 text-rose-700 py-3 font-semibold">{t('cf2_over', { level })}</div>}
-        <button onClick={start} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{over ? t('cf2_retry') : t('cf2_new')}</button>
+        <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{over ? t('cf2_retry') : t('cf2_new')}</button>
         <p className="text-xs text-gray-400">{t('cf2_note')}</p>
       </div>
       <Leaderboard game="color-find" score={best || null} better="higher" />

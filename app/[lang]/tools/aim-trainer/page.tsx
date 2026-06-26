@@ -34,7 +34,7 @@ export default function AimTrainerPage({ params }: { params: { lang: string } })
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-sm mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="max-w-sm mx-auto space-y-4 text-center select-none">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('at_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('at_subtitle')}</p>
@@ -53,7 +53,7 @@ export default function AimTrainerPage({ params }: { params: { lang: string } })
           ) : (
             <button onClick={stage.begin} className="absolute inset-0 flex items-center justify-center text-brand-600 font-semibold">{stage.phase === 'finished' ? t('at_result', { hits, n: (hits / DURATION).toFixed(1) }) : t('at_start')}</button>
           )}
-          <GameStageOverlay stage={stage} />
+          <GameStageOverlay stage={stage} showStart={false} />
         </div>
         <p className="text-xs text-gray-400">{t('at_note')}</p>
       </div>
