@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
+import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { choseong } from '@/lib/gosaseongeo'
 
@@ -32,11 +33,15 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
   const [correct, setCorrect] = useState(0)
   const [lastPts, setLastPts] = useState(0)
   const qStart = useRef(Date.now())
+  const stage = useGameStage()
 
   function start() { setQuiz(sample(WORDS, Math.min(N, WORDS.length))); setIdx(0); setInput(''); setResult(''); setScore(0); setCorrect(0); setLastPts(0); qStart.current = Date.now() }
   useEffect(() => { start() }, [])
+  useEffect(() => { if (stage.phase === 'playing') start() }, [stage.phase]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (quiz.length > 0 && idx >= quiz.length) stage.finish() }, [idx, quiz.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function submit() {
+    if (!stage.playing) return
     if (result) { setIdx((n) => n + 1); setInput(''); setResult(''); setLastPts(0); qStart.current = Date.now(); return }
     const ok = input.trim() === quiz[idx][0]
     setResult(ok ? 'ok' : 'no')
@@ -48,12 +53,13 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-sm mx-auto space-y-4 text-center">
+      <div data-game-stage className="max-w-sm mx-auto space-y-4 text-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('cq_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('cq_subtitle')}</p>
         </div>
 
+        <div className="relative">
         {finished ? (
           <>
             <div className="rounded-2xl border-2 border-brand-100 bg-brand-50 py-8 px-4">
@@ -61,7 +67,7 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
               <div className="text-4xl font-extrabold text-brand-700 mt-2">{score} <span className="text-xl text-brand-400">/ {MAX}</span></div>
               <div className="text-xs text-gray-500 mt-2">{correct} / {N}</div>
             </div>
-            <button onClick={start} className="w-full px-5 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">↻ {t('quiz_again')}</button>
+            <button onClick={stage.begin} className="w-full px-5 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">↻ {t('quiz_again')}</button>
           </>
         ) : (
           <>
@@ -86,6 +92,8 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
             <p className="text-xs text-gray-400">{t('cq_note')}</p>
           </>
         )}
+          <GameStageOverlay stage={stage} />
+        </div>
 
         <Leaderboard game="choseong-quiz" score={finished && score > 0 ? score : null} better="higher" />
       </div>

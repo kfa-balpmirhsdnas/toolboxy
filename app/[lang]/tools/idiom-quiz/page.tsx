@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
+import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { IDIOMS, type Idiom } from '@/lib/gosaseongeo'
 
@@ -24,6 +25,7 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
   const [correct, setCorrect] = useState(0)
   const [lastPts, setLastPts] = useState(0)
   const qStart = useRef(Date.now())
+  const stage = useGameStage()
 
   function start() {
     const qs = sample(IDIOMS, N).map((answer) => ({
@@ -33,9 +35,11 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
     setQuiz(qs); setIdx(0); setScore(0); setCorrect(0); setLastPts(0); setPicked(null); qStart.current = Date.now()
   }
   useEffect(() => { start() }, [])
+  useEffect(() => { if (stage.phase === 'playing') start() }, [stage.phase]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (quiz.length > 0 && idx >= quiz.length) stage.finish() }, [idx, quiz.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function choose(i: Idiom) {
-    if (picked) return
+    if (picked || !stage.playing) return
     setPicked(i.id)
     if (i.id === quiz[idx].answer.id) {
       const p = BASE + speedBonus(Date.now() - qStart.current)
@@ -49,12 +53,13 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-md mx-auto space-y-5 text-center">
+      <div data-game-stage className="max-w-md mx-auto space-y-5 text-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('iq_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('iq_subtitle')}</p>
         </div>
 
+        <div className="relative">
         {finished ? (
           <>
             <div className="rounded-2xl border-2 border-brand-100 bg-brand-50 py-8 px-4">
@@ -62,7 +67,7 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
               <div className="text-4xl font-extrabold text-brand-700 mt-2">{score} <span className="text-xl text-brand-400">/ {MAX}</span></div>
               <div className="text-xs text-gray-500 mt-2">{correct} / {N}</div>
             </div>
-            <button onClick={start} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">↻ {t('quiz_again')}</button>
+            <button onClick={stage.begin} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">↻ {t('quiz_again')}</button>
           </>
         ) : (
           <>
@@ -97,6 +102,8 @@ export default function IdiomQuizPage({ params }: { params: { lang: string } }) 
             )}
           </>
         )}
+          <GameStageOverlay stage={stage} />
+        </div>
 
         <Leaderboard game="idiom-quiz" score={finished && score > 0 ? score : null} better="higher" />
       </div>
