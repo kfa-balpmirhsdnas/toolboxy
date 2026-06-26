@@ -3292,6 +3292,16 @@
       "名前の種類を選びます。",
       "個数とオプションを設定します。",
       "生成された名前をコピーします。"
+    ],
+    "mime-type-checker": [
+      "拡張子またはMIMEタイプを入力します。",
+      "完全一致と類似項目を確認します。",
+      "MIMEタイプをクリックしてコピーします。"
+    ],
+    "html-color-codes": [
+      "色名またはhexで検索します。",
+      "色グループで絞り込みます。",
+      "色をクリックしてhexをコピーします。"
     ]
   },
   "games": {
@@ -5369,7 +5379,33 @@
     "rng_middle": "ミドルネームの頭文字",
     "rng_gennames": "名前を生成",
     "rng_generated": "{n}個の名前を生成",
-    "rng_regen": "再生成"
+    "rng_regen": "再生成",
+    "mtc_ph": "拡張子 (例: pdf) または MIMEタイプ (例: image/png)",
+    "mtc_similar": "類似の拡張子",
+    "mtc_matching": "一致するMIMEタイプ",
+    "mtc_cat_image": "画像",
+    "mtc_cat_document": "文書",
+    "mtc_cat_spreadsheet": "スプレッドシート",
+    "mtc_cat_presentation": "プレゼンテーション",
+    "mtc_cat_audio": "音声",
+    "mtc_cat_video": "動画",
+    "mtc_cat_text": "テキスト",
+    "mtc_cat_data": "データ",
+    "mtc_cat_archive": "アーカイブ",
+    "mtc_cat_binary": "バイナリ",
+    "mtc_cat_font": "フォント",
+    "hcc_ph": "色名またはhexで検索...",
+    "hcc_shown": "{n}色を表示",
+    "hcc_g_all": "すべて",
+    "hcc_g_red": "赤",
+    "hcc_g_pink": "ピンク",
+    "hcc_g_orange": "オレンジ",
+    "hcc_g_yellow": "黄",
+    "hcc_g_green": "緑",
+    "hcc_g_blue": "青",
+    "hcc_g_purple": "紫",
+    "hcc_g_gray": "グレー",
+    "hcc_g_white": "白"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

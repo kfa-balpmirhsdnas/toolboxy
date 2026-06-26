@@ -2987,6 +2987,16 @@
       "Choose a name type.",
       "Set the count and options.",
       "Copy the generated names."
+    ],
+    "mime-type-checker": [
+      "Enter an extension or MIME type.",
+      "See exact and similar matches.",
+      "Click a MIME type to copy it."
+    ],
+    "html-color-codes": [
+      "Search by color name or hex.",
+      "Filter by color group.",
+      "Click a color to copy its hex."
     ]
   },
   "games": {
@@ -5064,7 +5074,33 @@
     "rng_middle": "Middle initial",
     "rng_gennames": "Generate Names",
     "rng_generated": "{n} names generated",
-    "rng_regen": "Regenerate"
+    "rng_regen": "Regenerate",
+    "mtc_ph": "Extension (e.g. pdf) or MIME type (e.g. image/png)",
+    "mtc_similar": "Similar extensions",
+    "mtc_matching": "Matching MIME types",
+    "mtc_cat_image": "Image",
+    "mtc_cat_document": "Document",
+    "mtc_cat_spreadsheet": "Spreadsheet",
+    "mtc_cat_presentation": "Presentation",
+    "mtc_cat_audio": "Audio",
+    "mtc_cat_video": "Video",
+    "mtc_cat_text": "Text",
+    "mtc_cat_data": "Data",
+    "mtc_cat_archive": "Archive",
+    "mtc_cat_binary": "Binary",
+    "mtc_cat_font": "Font",
+    "hcc_ph": "Search color name or hex...",
+    "hcc_shown": "{n} colors shown",
+    "hcc_g_all": "All",
+    "hcc_g_red": "Red",
+    "hcc_g_pink": "Pink",
+    "hcc_g_orange": "Orange",
+    "hcc_g_yellow": "Yellow",
+    "hcc_g_green": "Green",
+    "hcc_g_blue": "Blue",
+    "hcc_g_purple": "Purple",
+    "hcc_g_gray": "Gray",
+    "hcc_g_white": "White"
   },
   "toolTags": {
     "spinner-wheel": [

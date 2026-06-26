@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('html-color-codes')!
@@ -59,6 +60,7 @@ const COLORS:{name:string;hex:string;group:string}[]=[
 const GROUPS=['all','red','pink','orange','yellow','green','blue','purple','gray','white']
 function isLight(hex:string):boolean{const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(0.299*r+0.587*g+0.114*b)>160}
 export default function HtmlColorCodesPage() {
+  const t = useTranslations('toolui')
   const [search,setSearch]=useState('')
   const [group,setGroup]=useState('all')
   const [copied,setCopied]=useState('')
@@ -68,12 +70,12 @@ export default function HtmlColorCodesPage() {
     <ToolLayout tool={tool}>
       <div className="max-w-2xl mx-auto px-4 space-y-4">
         <input value={search} onChange={e=>setSearch(e.target.value)}
-          placeholder="Search color name or hex..." className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:border-blue-400"/>
+          placeholder={t('hcc_ph')} className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:border-blue-400"/>
         <div className="flex flex-wrap gap-1.5">
           {GROUPS.map(g=>(
             <button key={g} onClick={()=>setGroup(g)}
               className={'px-3 py-1 rounded-full text-xs font-medium capitalize transition border '+(group===g?'bg-blue-600 text-white border-blue-600':'border-gray-200 hover:bg-gray-50 text-gray-600')}>
-              {g}
+              {t('hcc_g_'+g)}
             </button>
           ))}
         </div>
@@ -84,12 +86,12 @@ export default function HtmlColorCodesPage() {
               <div className="h-12" style={{background:c.hex}}/>
               <div className="px-2 py-1.5">
                 <p className="text-xs font-medium text-gray-800 truncate">{c.name}</p>
-                <p className="text-xs font-mono text-gray-500">{copied===c.hex?'Copied!':c.hex}</p>
+                <p className="text-xs font-mono text-gray-500">{copied===c.hex?t('ui_copied'):c.hex}</p>
               </div>
             </button>
           ))}
         </div>
-        <p className="text-xs text-gray-400 text-center">{filtered.length} colors shown</p>
+        <p className="text-xs text-gray-400 text-center">{t('hcc_shown',{n:filtered.length})}</p>
       </div>
     </ToolLayout>
   )

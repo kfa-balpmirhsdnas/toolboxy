@@ -3325,6 +3325,16 @@
       "이름 유형을 고르세요.",
       "개수와 옵션을 설정하세요.",
       "생성된 이름을 복사하세요."
+    ],
+    "mime-type-checker": [
+      "확장자나 MIME 타입을 입력하세요.",
+      "일치 및 비슷한 항목을 확인하세요.",
+      "MIME 타입을 클릭해 복사하세요."
+    ],
+    "html-color-codes": [
+      "색상 이름이나 hex로 검색하세요.",
+      "색상 그룹으로 필터링하세요.",
+      "색상을 클릭해 hex를 복사하세요."
     ]
   },
   "games": {
@@ -5402,7 +5412,33 @@
     "rng_middle": "가운데 이니셜",
     "rng_gennames": "이름 생성",
     "rng_generated": "{n}개 이름 생성됨",
-    "rng_regen": "다시 생성"
+    "rng_regen": "다시 생성",
+    "mtc_ph": "확장자 (예: pdf) 또는 MIME 타입 (예: image/png)",
+    "mtc_similar": "비슷한 확장자",
+    "mtc_matching": "일치하는 MIME 타입",
+    "mtc_cat_image": "이미지",
+    "mtc_cat_document": "문서",
+    "mtc_cat_spreadsheet": "스프레드시트",
+    "mtc_cat_presentation": "프레젠테이션",
+    "mtc_cat_audio": "오디오",
+    "mtc_cat_video": "비디오",
+    "mtc_cat_text": "텍스트",
+    "mtc_cat_data": "데이터",
+    "mtc_cat_archive": "압축",
+    "mtc_cat_binary": "바이너리",
+    "mtc_cat_font": "폰트",
+    "hcc_ph": "색상 이름이나 hex 검색...",
+    "hcc_shown": "{n}개 색상 표시",
+    "hcc_g_all": "전체",
+    "hcc_g_red": "빨강",
+    "hcc_g_pink": "분홍",
+    "hcc_g_orange": "주황",
+    "hcc_g_yellow": "노랑",
+    "hcc_g_green": "초록",
+    "hcc_g_blue": "파랑",
+    "hcc_g_purple": "보라",
+    "hcc_g_gray": "회색",
+    "hcc_g_white": "흰색"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

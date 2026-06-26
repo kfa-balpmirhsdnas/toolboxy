@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -63,6 +64,7 @@ const CATEGORY_COLORS: Record<string,string> = {
 }
 
 export default function MimeTypeCheckerPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [query, setQuery] = useState('')
   const [copied, setCopied] = useState<string|null>(null)
   const tracked = useRef(false)
@@ -87,25 +89,25 @@ export default function MimeTypeCheckerPage({ params }: { params: { lang: string
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
-        <input value={query} onChange={e=>{setQuery(e.target.value);track()}} placeholder="Extension (e.g. pdf) or MIME type (e.g. image/png)"
+        <input value={query} onChange={e=>{setQuery(e.target.value);track()}} placeholder={t('mtc_ph')}
           className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
         
         {exactMatch && (
           <div className="p-4 bg-brand-50 border border-brand-200 rounded-2xl space-y-2">
             <div className="flex items-center gap-2">
-              <span className={'text-xs px-2 py-0.5 rounded-full font-medium ' + (CATEGORY_COLORS[exactMatch.category]||'bg-gray-100 text-gray-700')}>{exactMatch.category}</span>
+              <span className={'text-xs px-2 py-0.5 rounded-full font-medium ' + (CATEGORY_COLORS[exactMatch.category]||'bg-gray-100 text-gray-700')}>{t('mtc_cat_'+exactMatch.category.toLowerCase())}</span>
               <span className="text-sm font-medium text-gray-800">{exactMatch.desc}</span>
             </div>
             <div onClick={()=>copy(exactMatch.mime,'mime')} className="flex items-center justify-between p-3 bg-white rounded-xl border border-brand-100 cursor-pointer hover:border-brand-300">
               <span className="text-sm font-mono text-brand-700">{exactMatch.mime}</span>
-              <span className="text-xs text-brand-400">{copied==='mime'?'\u2713':'Copy'}</span>
+              <span className="text-xs text-brand-400">{copied==='mime'?'\u2713':t('ui_copy')}</span>
             </div>
           </div>
         )}
 
         {similar.length > 0 && (
           <div className="space-y-1">
-            <p className="text-xs font-medium text-gray-500">Similar extensions</p>
+            <p className="text-xs font-medium text-gray-500">{t('mtc_similar')}</p>
             {similar.map(([ext,info])=>(
               <div key={ext} onClick={()=>copy(info.mime,ext)} className="flex items-center gap-3 p-2.5 bg-gray-50 border border-gray-200 rounded-xl hover:border-brand-300 transition-colors cursor-pointer">
                 <span className="font-mono text-xs text-gray-500 w-12">.{ext}</span>
@@ -119,7 +121,7 @@ export default function MimeTypeCheckerPage({ params }: { params: { lang: string
         
         {mimeMatches.length > 0 && (
           <div className="space-y-1">
-            <p className="text-xs font-medium text-gray-500">Matching MIME types</p>
+            <p className="text-xs font-medium text-gray-500">{t('mtc_matching')}</p>
             {mimeMatches.map(([ext,info])=>(
               <div key={ext} onClick={()=>copy(info.mime,'m'+ext)} className="flex items-center gap-3 p-2.5 bg-gray-50 border border-gray-200 rounded-xl hover:border-brand-300 transition-colors cursor-pointer">
                 <span className="font-mono text-xs text-gray-500 w-12">.{ext}</span>
@@ -136,7 +138,7 @@ export default function MimeTypeCheckerPage({ params }: { params: { lang: string
               <div key={ext} onClick={()=>setQuery(ext)}
                 className="p-2 bg-gray-50 border border-gray-200 rounded-xl text-center cursor-pointer hover:border-brand-300 transition-colors">
                 <div className="text-xs font-mono font-medium text-gray-700">.{ext}</div>
-                <div className={'text-xs mt-0.5 px-1 rounded-full inline-block ' + (CATEGORY_COLORS[info.category]||'')}>{info.category}</div>
+                <div className={'text-xs mt-0.5 px-1 rounded-full inline-block ' + (CATEGORY_COLORS[info.category]||'')}>{t('mtc_cat_'+info.category.toLowerCase())}</div>
               </div>
             ))}
           </div>
