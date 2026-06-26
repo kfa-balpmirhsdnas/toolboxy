@@ -2512,6 +2512,21 @@
       "Paste your JSON.",
       "Choose minify or format mode.",
       "Copy the result."
+    ],
+    "base64-encoder": [
+      "Enter the text to encode.",
+      "The Base64 result appears in real-time.",
+      "Copy the result."
+    ],
+    "base64-decoder": [
+      "Paste a Base64 string.",
+      "The decoded text appears in real-time.",
+      "Copy the result."
+    ],
+    "binary-text-converter": [
+      "Choose text→code or code→text, and binary/hex.",
+      "Enter your text or code.",
+      "Copy the converted output."
     ]
   },
   "games": {
@@ -3956,7 +3971,25 @@
     "jm_indent": "Indent",
     "jm_spaces": "spaces",
     "jm_input": "JSON Input",
-    "jm_invalid": "Invalid JSON"
+    "jm_invalid": "Invalid JSON",
+    "b64_input": "Plain Text Input",
+    "b64_ph": "Enter text to encode…",
+    "b64_label": "BASE64 ENCODED",
+    "b64_note": "Supports Unicode / UTF-8 · Output updates in real-time",
+    "b64d_input": "Base64 Input",
+    "b64d_ph": "Paste Base64 encoded string here…",
+    "b64d_invalid": "⚠ Invalid Base64 input",
+    "b64d_label": "DECODED TEXT",
+    "btc_title": "Binary Text Converter",
+    "btc_subtitle": "Convert text to binary or hexadecimal representation and decode it back",
+    "btc_t2c": "Text → Code",
+    "btc_c2t": "Code → Text",
+    "btc_binary": "Binary",
+    "btc_hex": "Hex",
+    "btc_text": "Text",
+    "btc_code": "Code",
+    "btc_invalid_bin": "Invalid binary input",
+    "btc_invalid_hex": "Invalid hex input"
   },
   "toolTags": {
     "spinner-wheel": [
