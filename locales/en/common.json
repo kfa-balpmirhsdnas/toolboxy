@@ -2536,15 +2536,15 @@
     "zf_making": "Zipping…",
     "zf_download": "Save ZIP",
     "zf_clear": "Clear",
-    "zf_note": "Pick several files and bundle them into one downloadable ZIP. Everything is processed in your browser — your files are never uploaded.",
+    "zf_note": "Pick several files or a whole folder and bundle them into one ZIP, downloaded automatically. Everything is processed in your browser — your files are never uploaded.",
     "uz_title": "Unzip (Extract ZIP)",
     "uz_subtitle": "Open a ZIP file and pull out the files inside.",
     "uz_drop": "Drop a ZIP file or click to upload",
     "uz_entries": "{n} files",
-    "uz_downloadall": "Download all",
+    "uz_downloadall": "Extract all",
     "uz_error": "Couldn't extract. Please check it's a valid ZIP file.",
     "uz_empty": "No files inside the ZIP.",
-    "uz_note": "Lists the files inside a ZIP so you can download them one by one or all at once. Everything is processed in your browser — your files are never uploaded. (Password-protected ZIPs aren't supported.)",
+    "uz_note": "Lists the files inside a ZIP. \"Extract all\" creates a folder named after the zip and extracts everything into it (on supported browsers; otherwise files download individually). Everything is processed in your browser — your files are never uploaded. (Password-protected ZIPs aren’t supported.)",
     "ma_title": "Korean Age Calculator (만 나이)",
     "ma_subtitle": "Enter your birthdate to get your age in full years instantly.",
     "ma_birthdate": "Birthdate",
@@ -2923,7 +2923,9 @@
     "cs_favonly": "Saved",
     "cs_fav": "Save",
     "cs_fav_empty": "No saved lines yet. Tap the ☆ next to a line to save it.",
-    "cs_top": "Back to top"
+    "cs_top": "Back to top",
+    "zf_folder": "Select a folder",
+    "zf_name": "Zip file name"
   },
   "toolTags": {
     "spinner-wheel": [

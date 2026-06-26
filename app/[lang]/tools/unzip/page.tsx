@@ -37,7 +37,37 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = e.name.split('/').pop() || e.name; a.click()
     trackToolDownload('unzip', 'file')
   }
-  function downloadAll() { entries.forEach((e, i) => setTimeout(() => download(e), i * 200)) }
+
+  // Write one entry into a chosen directory, creating sub-folders for nested paths.
+  async function writeInto(dir: FileSystemDirectoryHandle, pathStr: string, data: Uint8Array) {
+    const parts = pathStr.split('/').filter(Boolean)
+    const fname = parts.pop()!
+    let d = dir
+    for (const p of parts) d = await d.getDirectoryHandle(p, { create: true })
+    const fh = await d.getFileHandle(fname, { create: true })
+    const w = await fh.createWritable()
+    await w.write(data as unknown as BufferSource); await w.close()
+  }
+
+  async function extractAll() {
+    // Preferred (desktop Chromium): create a folder named after the zip and extract into it.
+    const picker = (window as unknown as { showDirectoryPicker?: (o?: object) => Promise<FileSystemDirectoryHandle> }).showDirectoryPicker
+    if (picker) {
+      try {
+        const root = await picker({ mode: 'readwrite' })
+        const folder = (name.replace(/\.zip$/i, '') || 'extracted').replace(/[\\/:*?"<>|]+/g, '_')
+        const dir = await root.getDirectoryHandle(folder, { create: true })
+        for (const e of entries) await writeInto(dir, e.name, e.data)
+        trackToolDownload('unzip', 'folder')
+        return
+      } catch (err) {
+        if ((err as { name?: string }).name === 'AbortError') return // user cancelled the picker
+        console.error(err) // fall through to per-file download
+      }
+    }
+    // Fallback (Firefox/Safari/mobile): download each file individually.
+    entries.forEach((e, i) => setTimeout(() => download(e), i * 200))
+  }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -59,7 +89,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
           <>
             <div className="flex items-center justify-between">
               <p className="text-xs text-gray-400">{t('uz_entries', { n: entries.length })}</p>
-              <button onClick={downloadAll} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">⬇ {t('uz_downloadall')}</button>
+              <button onClick={extractAll} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">📂 {t('uz_downloadall')}</button>
             </div>
             <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-72 overflow-auto">
               {entries.map((e, i) => (

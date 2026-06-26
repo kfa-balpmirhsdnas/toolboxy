@@ -8,16 +8,34 @@ import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
 const tool = getToolBySlug('zip-files')!
 const fmt = (b: number) => (b < 1024 ? b + ' B' : b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(2) + ' MB')
+const relPath = (f: File) => (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name
+const baseName = (s: string) => s.replace(/\.[^./\\]+$/, '')
 
 export default function ZipFilesPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const [files, setFiles] = useState<File[]>([])
+  const [zipName, setZipName] = useState('')
   const [out, setOut] = useState<{ url: string; size: number } | null>(null)
   const [busy, setBusy] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const dirRef = useRef<HTMLInputElement>(null)
 
-  function add(list: FileList | null) { if (!list) return; setFiles((f) => [...f, ...Array.from(list)]); setOut(null) }
+  function defaultName(arr: File[]): string {
+    const rel = relPath(arr[0])
+    return rel.includes('/') ? rel.split('/')[0] : baseName(arr[0].name) // folder name, else first file
+  }
+  function add(list: FileList | null) {
+    if (!list || !list.length) return
+    const arr = Array.from(list)
+    setFiles((f) => [...f, ...arr])
+    setZipName((z) => z || defaultName(arr))
+    setOut(null)
+  }
   function removeAt(i: number) { setFiles((f) => f.filter((_, k) => k !== i)); setOut(null) }
+  function clearAll() { setFiles([]); setZipName(''); setOut(null) }
+
+  const fileName = () => `${(zipName || 'archive').replace(/[\\/:*?"<>|]+/g, '').trim() || 'archive'}.zip`
+  function triggerDownload(url: string) { const a = document.createElement('a'); a.href = url; a.download = fileName(); a.click(); trackToolDownload('zip-files', 'zip') }
 
   async function make() {
     if (!files.length) return
@@ -26,16 +44,16 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
       const { zipSync } = await import('fflate')
       const data: Record<string, Uint8Array> = {}
       for (const f of files) {
-        let name = f.name, i = 1
-        while (name in data) { const d = f.name.lastIndexOf('.'); name = d > 0 ? `${f.name.slice(0, d)} (${i})${f.name.slice(d)}` : `${f.name} (${i})`; i++ }
-        data[name] = new Uint8Array(await f.arrayBuffer())
+        const orig = relPath(f); let key = orig, i = 1
+        while (key in data) { const d = orig.lastIndexOf('.'); key = d > 0 ? `${orig.slice(0, d)} (${i})${orig.slice(d)}` : `${orig} (${i})`; i++ }
+        data[key] = new Uint8Array(await f.arrayBuffer())
       }
-      const zipped = zipSync(data, { level: 6 })
-      const blob = new Blob([zipped], { type: 'application/zip' })
-      setOut({ url: URL.createObjectURL(blob), size: blob.size })
+      const blob = new Blob([zipSync(data, { level: 6 })], { type: 'application/zip' })
+      const url = URL.createObjectURL(blob)
+      setOut({ url, size: blob.size })
+      triggerDownload(url) // auto-download once it's ready
     } catch (e) { console.error(e) } finally { setBusy(false) }
   }
-  function download() { if (!out) return; const a = document.createElement('a'); a.href = out.url; a.download = 'archive.zip'; a.click(); trackToolDownload('zip-files', 'zip') }
 
   const totalSize = files.reduce((s, f) => s + f.size, 0)
 
@@ -52,30 +70,42 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
           <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => { add(e.target.files); e.target.value = '' }} />
           <p className="text-4xl mb-2">🗂️</p><p className="text-sm font-medium text-gray-600">{t('zf_drop')}</p>
         </div>
+        <button type="button" onClick={() => dirRef.current?.click()} className="w-full py-2 text-sm border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">📁 {t('zf_folder')}</button>
+        <input ref={dirRef} type="file" multiple className="hidden" {...({ webkitdirectory: '', directory: '' } as Record<string, string>)} onChange={(e) => { add(e.target.files); e.target.value = '' }} />
 
         {files.length > 0 && (
           <>
             <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-60 overflow-auto">
               {files.map((f, i) => (
                 <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
-                  <span className="flex-1 truncate text-gray-700">{f.name}</span>
+                  <span className="flex-1 truncate text-gray-700">{relPath(f)}</span>
                   <span className="text-gray-400 shrink-0">{fmt(f.size)}</span>
                   <button onClick={() => removeAt(i)} className="text-gray-300 hover:text-rose-500 shrink-0">✕</button>
                 </div>
               ))}
             </div>
             <p className="text-xs text-gray-400">{t('zf_files', { n: files.length })} · {fmt(totalSize)}</p>
+
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">{t('zf_name')}</label>
+              <div className="flex items-center gap-1">
+                <input value={zipName} onChange={(e) => setZipName(e.target.value)} placeholder="archive" type="text"
+                  className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                <span className="text-sm text-gray-400">.zip</span>
+              </div>
+            </div>
+
             <div className="flex gap-2">
               <button onClick={make} disabled={busy} className="px-5 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50">{busy ? t('zf_making') : t('zf_make')}</button>
-              <button onClick={() => { setFiles([]); setOut(null) }} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">{t('zf_clear')}</button>
+              <button onClick={clearAll} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">{t('zf_clear')}</button>
             </div>
           </>
         )}
 
         {out && (
           <div className="rounded-xl border-2 border-green-200 bg-green-50 p-3 flex items-center justify-between">
-            <span className="text-sm text-gray-600">archive.zip · {fmt(out.size)}</span>
-            <button onClick={download} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('zf_download')}</button>
+            <span className="text-sm text-gray-600 truncate">{fileName()} · {fmt(out.size)}</span>
+            <button onClick={() => triggerDownload(out.url)} className="shrink-0 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('zf_download')}</button>
           </div>
         )}
         <p className="text-xs text-gray-400">{t('zf_note')}</p>
