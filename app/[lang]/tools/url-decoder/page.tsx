@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -8,13 +9,14 @@ import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 const tool = getToolBySlug('url-decoder')!
 
 export default function UrlDecoderPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const [copied, setCopied] = useState(false)
   const trackedRef = useRef(false)
 
   const output = (() => {
     if (!input) return ''
-    try { return decodeURIComponent(input) } catch { return '⚠ Invalid URL-encoded input' }
+    try { return decodeURIComponent(input) } catch { return t('ud_invalid') }
   })()
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function UrlDecoderPage({ params }: { params: { lang: string } })
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Encoded URL / Text</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">{t('ud_label')}</label>
           <textarea
             value={input}
             onChange={(e) => { setInput(e.target.value); trackedRef.current = false }}
@@ -47,7 +49,7 @@ export default function UrlDecoderPage({ params }: { params: { lang: string } })
           <>
             <div className="flex items-center gap-2">
               <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400 font-medium px-2">DECODED</span>
+              <span className="text-xs text-gray-400 font-medium px-2">{t('ud_decoded')}</span>
               <div className="flex-1 h-px bg-gray-200" />
             </div>
             <div className="relative">
@@ -58,13 +60,13 @@ export default function UrlDecoderPage({ params }: { params: { lang: string } })
               />
               {!output.startsWith('⚠') && (
                 <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">
-                  {copied ? '✓ Copied' : 'Copy'}
+                  {copied ? '✓ '+t('ui_copied') : t('ui_copy')}
                 </button>
               )}
             </div>
           </>
         )}
-        <p className="text-xs text-gray-400">Uses <code>decodeURIComponent</code> · Updates in real-time</p>
+        <p className="text-xs text-gray-400">{t('ud_uses')} <code>decodeURIComponent</code> · {t('ud_realtime')}</p>
       </div>
     </ToolLayout>
   )

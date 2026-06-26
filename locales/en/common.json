@@ -3117,6 +3117,16 @@
       "Enter the text to reverse.",
       "Choose characters, words or lines.",
       "Copy the reversed result."
+    ],
+    "url-decoder": [
+      "Paste an encoded URL or text.",
+      "It decodes in real-time.",
+      "Copy the decoded result."
+    ],
+    "utm-builder": [
+      "Enter your website URL.",
+      "Fill campaign source, medium and name.",
+      "Copy the generated UTM link."
     ]
   },
   "games": {
@@ -5387,7 +5397,18 @@
     "tr_chars": "Reverse Characters",
     "tr_words": "Reverse Words",
     "tr_lines": "Reverse Lines",
-    "tr_ph": "Enter text to reverse..."
+    "tr_ph": "Enter text to reverse...",
+    "ud_invalid": "⚠ Invalid URL-encoded input",
+    "ud_label": "Encoded URL / Text",
+    "ud_decoded": "DECODED",
+    "ud_uses": "Uses",
+    "ud_realtime": "Updates in real-time",
+    "utm_url": "Website URL",
+    "utm_source": "Campaign source",
+    "utm_medium": "Campaign medium",
+    "utm_campaign": "Campaign name",
+    "utm_term": "Term (optional)",
+    "utm_content": "Content (optional)"
   },
   "toolTags": {
     "spinner-wheel": [

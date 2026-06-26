@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolCopy } from '@/lib/gtag'
@@ -8,6 +9,7 @@ import { trackToolCopy } from '@/lib/gtag'
 const tool = getToolBySlug('utm-builder')!
 
 export default function UtmBuilderPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [base, setBase] = useState('')
   const [src, setSrc] = useState('')
   const [medium, setMedium] = useState('')
@@ -38,7 +40,7 @@ export default function UtmBuilderPage({ params }: { params: { lang: string } })
 
   const field = (label: string, v: string, set: (s: string) => void, ph: string) => (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{t(label)}</label>
       <input value={v} onChange={(e) => set(e.target.value)} placeholder={ph}
         className="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
     </div>
@@ -47,21 +49,21 @@ export default function UtmBuilderPage({ params }: { params: { lang: string } })
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-3">
-        {field('Website URL', base, setBase, 'https://example.com/page')}
+        {field('utm_url', base, setBase, 'https://example.com/page')}
         <div className="grid grid-cols-2 gap-3">
-          {field('Campaign source', src, setSrc, 'google, newsletter')}
-          {field('Campaign medium', medium, setMedium, 'cpc, email, social')}
+          {field('utm_source', src, setSrc, 'google, newsletter')}
+          {field('utm_medium', medium, setMedium, 'cpc, email, social')}
         </div>
-        {field('Campaign name', campaign, setCampaign, 'spring_sale')}
+        {field('utm_campaign', campaign, setCampaign, 'spring_sale')}
         <div className="grid grid-cols-2 gap-3">
-          {field('Term (optional)', term, setTerm, 'keyword')}
-          {field('Content (optional)', content, setContent, 'banner_a')}
+          {field('utm_term', term, setTerm, 'keyword')}
+          {field('utm_content', content, setContent, 'banner_a')}
         </div>
 
         {output && (
           <div className="relative">
             <div className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono text-brand-700 break-all">{output}</div>
-            <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? '✓ Copied' : 'Copy'}</button>
+            <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? '✓ '+t('ui_copied') : t('ui_copy')}</button>
           </div>
         )}
       </div>
