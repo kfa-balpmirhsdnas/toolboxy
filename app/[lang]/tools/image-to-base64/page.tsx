@@ -1,9 +1,11 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('image-to-base64')!
 export default function ImageToBase64Page() {
+  const t = useTranslations('toolui')
   const [dataUrl,setDataUrl]=useState('')
   const [fileName,setFileName]=useState('')
   const [fileSize,setFileSize]=useState(0)
@@ -42,33 +44,33 @@ export default function ImageToBase64Page() {
           ):(
             <div>
               <p className="text-4xl mb-2">🖼️</p>
-              <p className="text-sm text-gray-500">Drop an image or click to upload</p>
-              <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF, WebP, SVG — max 5 MB</p>
+              <p className="text-sm text-gray-500">{t('ati_drop')}</p>
+              <p className="text-xs text-gray-400 mt-1">{t('itb_formats')}</p>
             </div>
           )}
         </div>
         {dataUrl&&(
           <>
             <div className="flex gap-3 text-sm text-center">
-              {[['File',Math.round(fileSize/1024)+' KB'],['Base64',Math.round(b64Size/1024)+' KB'],['Overhead','+'+overhead+'%']].map(([l,v])=>(
+              {[['itb_file',Math.round(fileSize/1024)+' KB'],['itb_base64',Math.round(b64Size/1024)+' KB'],['itb_overhead','+'+overhead+'%']].map(([l,v])=>(
                 <div key={l} className="flex-1 bg-gray-50 rounded-xl py-2">
-                  <p className="font-bold text-gray-800">{v}</p><p className="text-xs text-gray-500">{l}</p>
+                  <p className="font-bold text-gray-800">{v}</p><p className="text-xs text-gray-500">{t(l)}</p>
                 </div>
               ))}
             </div>
             <div>
               <div className="flex gap-1 mb-2">
-                {TABS.map(t=>(
-                  <button key={t} onClick={()=>setTab(t)}
-                    className={'px-3 py-1 rounded-lg text-xs font-medium transition '+(tab===t?'bg-blue-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                    {t==='dataUrl'?'Data URL':t==='base64'?'Base64 only':t==='css'?'CSS':'HTML'}
+                {TABS.map(tb=>(
+                  <button key={tb} onClick={()=>setTab(tb)}
+                    className={'px-3 py-1 rounded-lg text-xs font-medium transition '+(tab===tb?'bg-blue-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
+                    {tb==='dataUrl'?t('itb_dataurl'):tb==='base64'?t('itb_base64only'):tb==='css'?'CSS':'HTML'}
                   </button>
                 ))}
               </div>
               <div className="relative bg-gray-900 rounded-xl overflow-hidden">
                 <button onClick={()=>copy(tab)}
                   className="absolute top-2 right-2 text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
-                  {copied===tab?'Copied!':'Copy'}
+                  {copied===tab?t('ui_copied'):t('ui_copy')}
                 </button>
                 <pre className="px-4 py-8 text-green-400 font-mono text-xs overflow-x-auto max-h-48 whitespace-pre-wrap break-all">{outputs[tab]}</pre>
               </div>

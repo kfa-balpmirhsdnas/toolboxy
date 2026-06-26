@@ -1,12 +1,14 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
 interface Item{desc:string;qty:string;price:string}
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='invoice-generator')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='invoice-generator')
   const [from,setFrom]=useState('Your Company')
   const [to,setTo]=useState('Client Name')
   const [invNum,setInvNum]=useState('INV-001')
@@ -31,22 +33,22 @@ export default function Page(){
       <div className="space-y-4 max-w-2xl">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">From</label>
+            <label className="block text-sm font-medium mb-1">{t('ig_from')}</label>
             <input value={from} onChange={e=>setFrom(e.target.value)}
               className="w-full border rounded px-3 py-2"/>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">To</label>
+            <label className="block text-sm font-medium mb-1">{t('ig_to')}</label>
             <input value={to} onChange={e=>setTo(e.target.value)}
               className="w-full border rounded px-3 py-2"/>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Invoice #</label>
+            <label className="block text-sm font-medium mb-1">{t('ig_invnum')}</label>
             <input value={invNum} onChange={e=>setInvNum(e.target.value)}
               className="w-full border rounded px-3 py-2"/>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Date</label>
+            <label className="block text-sm font-medium mb-1">{t('ig_date')}</label>
             <input type="date" value={date} onChange={e=>setDate(e.target.value)}
               className="w-full border rounded px-3 py-2"/>
           </div>
@@ -55,10 +57,10 @@ export default function Page(){
           <table className="w-full text-sm">
             <thead className="bg-gray-100">
               <tr>
-                <th className="text-left px-3 py-2">Description</th>
-                <th className="text-right px-3 py-2">Qty</th>
-                <th className="text-right px-3 py-2">Price</th>
-                <th className="text-right px-3 py-2">Amount</th>
+                <th className="text-left px-3 py-2">{t('ig_desc')}</th>
+                <th className="text-right px-3 py-2">{t('ig_qty')}</th>
+                <th className="text-right px-3 py-2">{t('ig_price')}</th>
+                <th className="text-right px-3 py-2">{t('ig_amount')}</th>
                 <th className="px-2"/>
               </tr>
             </thead>
@@ -84,21 +86,21 @@ export default function Page(){
             </tbody>
           </table>
         </div>
-        <button onClick={addItem} className="text-sm text-blue-600 hover:underline">+ Add Item</button>
+        <button onClick={addItem} className="text-sm text-blue-600 hover:underline">{t('ig_additem')}</button>
         <div className="flex justify-end">
           <div className="space-y-1 text-sm w-48">
-            <div className="flex justify-between"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+            <div className="flex justify-between"><span>{t('ig_subtotal')}</span><span>${subtotal.toFixed(2)}</span></div>
             <div className="flex justify-between items-center">
-              <span>Tax (%)</span>
+              <span>{t('ig_tax')}</span>
               <input type="number" value={tax} onChange={e=>setTax(e.target.value)}
                 className="w-16 border rounded px-2 py-0.5 text-right"/>
             </div>
-            <div className="flex justify-between font-bold border-t pt-1"><span>Total</span><span>${total.toFixed(2)}</span></div>
+            <div className="flex justify-between font-bold border-t pt-1"><span>{t('tc_total')}</span><span>${total.toFixed(2)}</span></div>
           </div>
         </div>
         <button onClick={print}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-          Print / Save PDF
+          {t('ig_print')}
         </button>
       </div>
     </ToolLayout>

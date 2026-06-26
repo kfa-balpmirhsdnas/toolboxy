@@ -3425,6 +3425,16 @@
       "시작·끝·증가값을 설정하세요.",
       "구분자·접두사·접미사를 고르세요.",
       "수열을 복사하거나 다운로드하세요."
+    ],
+    "invoice-generator": [
+      "보내는 사람·받는 사람·날짜를 입력하세요.",
+      "항목과 세금을 추가하세요.",
+      "인쇄하거나 PDF로 저장하세요."
+    ],
+    "image-to-base64": [
+      "이미지를 올리세요.",
+      "Data URL·Base64·CSS·HTML 탭을 고르세요.",
+      "원하는 형식을 복사하세요."
     ]
   },
   "games": {
@@ -5657,7 +5667,25 @@
     "nsg_suffix": "접미사",
     "nsg_zeropad": "0으로 자릿수 맞춤",
     "nsg_generated": "{n}개 숫자 생성됨",
-    "nsg_toomany2": "숫자가 너무 많습니다 (최대 10,000). 범위나 증가값을 조절하세요."
+    "nsg_toomany2": "숫자가 너무 많습니다 (최대 10,000). 범위나 증가값을 조절하세요.",
+    "ig_from": "보내는 사람",
+    "ig_to": "받는 사람",
+    "ig_invnum": "송장 번호",
+    "ig_date": "날짜",
+    "ig_desc": "설명",
+    "ig_qty": "수량",
+    "ig_price": "단가",
+    "ig_amount": "금액",
+    "ig_additem": "+ 항목 추가",
+    "ig_subtotal": "소계",
+    "ig_tax": "세금 (%)",
+    "ig_print": "인쇄 / PDF 저장",
+    "itb_formats": "PNG, JPG, GIF, WebP, SVG — 최대 5 MB",
+    "itb_file": "파일",
+    "itb_base64": "Base64",
+    "itb_overhead": "오버헤드",
+    "itb_dataurl": "데이터 URL",
+    "itb_base64only": "Base64만"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

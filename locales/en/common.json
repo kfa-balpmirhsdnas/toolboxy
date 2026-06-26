@@ -3087,6 +3087,16 @@
       "Set start, end and step.",
       "Choose separator, prefix and suffix.",
       "Copy or download the sequence."
+    ],
+    "invoice-generator": [
+      "Enter sender, recipient and date.",
+      "Add line items and tax.",
+      "Print or save as PDF."
+    ],
+    "image-to-base64": [
+      "Upload an image.",
+      "Pick Data URL, Base64, CSS or HTML tab.",
+      "Copy the format you need."
     ]
   },
   "games": {
@@ -5319,7 +5329,25 @@
     "nsg_suffix": "Suffix",
     "nsg_zeropad": "Zero-pad numbers",
     "nsg_generated": "{n} numbers generated",
-    "nsg_toomany2": "Too many numbers (max 10,000). Adjust range or step."
+    "nsg_toomany2": "Too many numbers (max 10,000). Adjust range or step.",
+    "ig_from": "From",
+    "ig_to": "To",
+    "ig_invnum": "Invoice #",
+    "ig_date": "Date",
+    "ig_desc": "Description",
+    "ig_qty": "Qty",
+    "ig_price": "Price",
+    "ig_amount": "Amount",
+    "ig_additem": "+ Add Item",
+    "ig_subtotal": "Subtotal",
+    "ig_tax": "Tax (%)",
+    "ig_print": "Print / Save PDF",
+    "itb_formats": "PNG, JPG, GIF, WebP, SVG — max 5 MB",
+    "itb_file": "File",
+    "itb_base64": "Base64",
+    "itb_overhead": "Overhead",
+    "itb_dataurl": "Data URL",
+    "itb_base64only": "Base64 only"
   },
   "toolTags": {
     "spinner-wheel": [

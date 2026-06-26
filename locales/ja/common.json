@@ -3392,6 +3392,16 @@
       "開始・終了・増分を設定します。",
       "区切り・接頭辞・接尾辞を選びます。",
       "数列をコピーまたはダウンロードします。"
+    ],
+    "invoice-generator": [
+      "差出人・宛先・日付を入力します。",
+      "項目と税を追加します。",
+      "印刷またはPDFで保存します。"
+    ],
+    "image-to-base64": [
+      "画像をアップロードします。",
+      "データURL・Base64・CSS・HTMLタブを選びます。",
+      "必要な形式をコピーします。"
     ]
   },
   "games": {
@@ -5624,7 +5634,25 @@
     "nsg_suffix": "接尾辞",
     "nsg_zeropad": "ゼロ埋め",
     "nsg_generated": "{n}個の数を生成",
-    "nsg_toomany2": "数が多すぎます (最大10,000)。範囲または増分を調整してください。"
+    "nsg_toomany2": "数が多すぎます (最大10,000)。範囲または増分を調整してください。",
+    "ig_from": "差出人",
+    "ig_to": "宛先",
+    "ig_invnum": "請求書番号",
+    "ig_date": "日付",
+    "ig_desc": "説明",
+    "ig_qty": "数量",
+    "ig_price": "単価",
+    "ig_amount": "金額",
+    "ig_additem": "+ 項目を追加",
+    "ig_subtotal": "小計",
+    "ig_tax": "税 (%)",
+    "ig_print": "印刷 / PDF保存",
+    "itb_formats": "PNG, JPG, GIF, WebP, SVG — 最大5 MB",
+    "itb_file": "ファイル",
+    "itb_base64": "Base64",
+    "itb_overhead": "オーバーヘッド",
+    "itb_dataurl": "データURL",
+    "itb_base64only": "Base64のみ"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
