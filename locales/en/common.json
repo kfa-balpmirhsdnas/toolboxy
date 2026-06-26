@@ -2542,6 +2542,16 @@
       "Enter text or drop a file.",
       "MD5 and SHA hashes are generated automatically.",
       "Copy the hash you need."
+    ],
+    "checksum-generator": [
+      "Choose a file or text.",
+      "Press Generate Checksums.",
+      "Paste an expected hash to verify integrity."
+    ],
+    "json-diff": [
+      "Paste two JSONs (A and B).",
+      "Press Compare.",
+      "See added, removed and changed entries."
     ]
   },
   "games": {
@@ -4026,7 +4036,19 @@
     "cz_about_desc": "A substitution cipher that shifts each letter by a fixed number of positions in the alphabet. ROT-13 (shift=13) is its own inverse.",
     "hg_ph": "Enter text to hash…",
     "hg_drop": "Drop a file or click to checksum it",
-    "hg_computing": "Computing…"
+    "hg_computing": "Computing…",
+    "cks_file": "File",
+    "cks_select": "Click to select any file",
+    "cks_private": "File never leaves your browser",
+    "cks_generate": "Generate Checksums",
+    "cks_verify": "Verify Checksum",
+    "cks_verify_ph": "Paste expected hash to verify...",
+    "cks_match": "✓ Match — file is intact",
+    "cks_nomatch": "❌ No match — file may be corrupted or tampered",
+    "jd_a": "A (Original)",
+    "jd_b": "B (Modified)",
+    "jd_nodiff": "✓ No differences found — JSONs are identical.",
+    "jd_found": "difference(s) found:"
   },
   "toolTags": {
     "spinner-wheel": [

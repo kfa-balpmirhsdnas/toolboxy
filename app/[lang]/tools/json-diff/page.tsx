@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
@@ -32,6 +33,7 @@ function deepDiff(a: unknown, b: unknown, path = ''): string[] {
 }
 
 export default function JsonDiffPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [jsonA, setJsonA] = useState('')
   const [jsonB, setJsonB] = useState('')
   const [result, setResult] = useState<string[]|null>(null)
@@ -42,8 +44,8 @@ export default function JsonDiffPage({ params }: { params: { lang: string } }) {
     if (!tracked.current) { trackToolUsed('json-diff'); tracked.current = true }
     const errs: {a?:string,b?:string} = {}
     let pa: unknown, pb: unknown
-    try { pa = JSON.parse(jsonA) } catch(e: unknown) { errs.a = e instanceof Error ? e.message : 'Invalid JSON' }
-    try { pb = JSON.parse(jsonB) } catch(e: unknown) { errs.b = e instanceof Error ? e.message : 'Invalid JSON' }
+    try { pa = JSON.parse(jsonA) } catch(e: unknown) { errs.a = e instanceof Error ? e.message : t('jm_invalid') }
+    try { pb = JSON.parse(jsonB) } catch(e: unknown) { errs.b = e instanceof Error ? e.message : t('jm_invalid') }
     setErrors(errs)
     if (!errs.a && !errs.b) setResult(deepDiff(pa, pb))
   }
@@ -52,9 +54,9 @@ export default function JsonDiffPage({ params }: { params: { lang: string } }) {
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          {[['A (Original)',jsonA,setJsonA,'a'],['B (Modified)',jsonB,setJsonB,'b']].map(([label,val,setter,key]) => (
+          {[['jd_a',jsonA,setJsonA,'a'],['jd_b',jsonB,setJsonB,'b']].map(([label,val,setter,key]) => (
             <div key={String(key)}>
-              <label className="block text-xs font-medium text-gray-600 mb-1">{String(label)}</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t(String(label))}</label>
               <textarea value={String(val)} onChange={e=>(setter as React.Dispatch<React.SetStateAction<string>>)(e.target.value)}
                 placeholder={'{"key": "value"}'}
                 rows={8}
@@ -63,14 +65,14 @@ export default function JsonDiffPage({ params }: { params: { lang: string } }) {
             </div>
           ))}
         </div>
-        <button onClick={compare} className="px-6 py-2 bg-brand-600 text-white rounded-xl font-semibold hover:bg-brand-700 transition-colors">Compare</button>
+        <button onClick={compare} className="px-6 py-2 bg-brand-600 text-white rounded-xl font-semibold hover:bg-brand-700 transition-colors">{t('df_compare')}</button>
         {result !== null && (
           <div>
             {result.length === 0 ? (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm font-medium">\u2713 No differences found — JSONs are identical.</div>
+              <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm font-medium">{t('jd_nodiff')}</div>
             ) : (
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-gray-700">{result.length} difference{result.length>1?'s':''} found:</p>
+                <p className="text-sm font-semibold text-gray-700">{result.length} {t('jd_found')}</p>
                 {result.map((r,i) => (
                   <div key={i} className={'p-3 rounded-xl border text-xs font-mono whitespace-pre-wrap ' + (r.startsWith('Added')?'bg-green-50 border-green-200 text-green-800':r.startsWith('Removed')?'bg-red-50 border-red-200 text-red-800':'bg-yellow-50 border-yellow-200 text-yellow-800')}>
                     {r}

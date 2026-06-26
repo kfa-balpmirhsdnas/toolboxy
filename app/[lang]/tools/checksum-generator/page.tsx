@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -20,6 +21,7 @@ async function hashBuffer(buf: ArrayBuffer, algo: Algo): Promise<string> {
 }
 
 export default function ChecksumGeneratorPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [file, setFile] = useState<File|null>(null)
   const [text, setText] = useState('')
   const [mode, setMode] = useState<'file'|'text'>('file')
@@ -70,7 +72,7 @@ export default function ChecksumGeneratorPage({ params }: { params: { lang: stri
           {(['file','text'] as const).map(m => (
             <button key={m} onClick={() => { setMode(m); setHashes({}) }}
               className={'px-4 py-2 rounded-lg text-sm font-medium transition-colors ' + (mode===m ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {m === 'file' ? 'File' : 'Text'}
+              {m === 'file' ? t('cks_file') : t('btc_text')}
             </button>
           ))}
         </div>
@@ -85,14 +87,14 @@ export default function ChecksumGeneratorPage({ params }: { params: { lang: stri
             ) : (
               <>
                 <p className="text-3xl mb-2">&#x1F4C4;</p>
-                <p className="text-sm font-medium text-gray-600">Click to select any file</p>
-                <p className="text-xs text-gray-400 mt-1">File never leaves your browser</p>
+                <p className="text-sm font-medium text-gray-600">{t('cks_select')}</p>
+                <p className="text-xs text-gray-400 mt-1">{t('cks_private')}</p>
               </>
             )}
           </div>
         ) : (
           <textarea value={text} onChange={e => { setText(e.target.value); setHashes({}) }}
-            rows={4} placeholder="Enter text to hash..."
+            rows={4} placeholder={t('hg_ph')}
             className="w-full p-4 border border-gray-200 rounded-xl resize-none text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
         )}
         <button
@@ -100,7 +102,7 @@ export default function ChecksumGeneratorPage({ params }: { params: { lang: stri
           disabled={(mode==='file' ? !file : !text.trim()) || loading}
           className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors"
         >
-          {loading ? 'Computing...' : 'Generate Checksums'}
+          {loading ? t('hg_computing') : t('cks_generate')}
         </button>
         {Object.keys(hashes).length > 0 && (
           <div className="space-y-2">
@@ -110,7 +112,7 @@ export default function ChecksumGeneratorPage({ params }: { params: { lang: stri
                   <span className="text-xs font-semibold text-gray-500 uppercase">{algo}</span>
                   <button onClick={() => copy(hashes[algo], algo)}
                     className="text-xs text-brand-600 hover:underline">
-                    {copied===algo ? '&#x2713; Copied' : 'Copy'}
+                    {copied===algo ? t('ui_copied') : t('ui_copy')}
                   </button>
                 </div>
                 <p className="text-xs font-mono text-gray-700 break-all">{hashes[algo]}</p>
@@ -120,13 +122,13 @@ export default function ChecksumGeneratorPage({ params }: { params: { lang: stri
         )}
         {/* Verify */}
         <div className="pt-2 border-t border-gray-100">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Verify Checksum</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('cks_verify')}</label>
           <input value={verify} onChange={e => setVerify(e.target.value)}
-            placeholder="Paste expected hash to verify..."
+            placeholder={t('cks_verify_ph')}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" />
           {verifyMatch !== null && Object.keys(hashes).length > 0 && (
             <p className={'mt-2 text-sm font-semibold ' + (verifyMatch ? 'text-green-600' : 'text-red-600')}>
-              {verifyMatch ? '&#x2713; Match — file is intact' : '&#x274C; No match — file may be corrupted or tampered'}
+              {verifyMatch ? t('cks_match') : t('cks_nomatch')}
             </p>
           )}
         </div>
