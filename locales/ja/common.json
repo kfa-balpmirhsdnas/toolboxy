@@ -3182,6 +3182,16 @@
       "Markdownを入力します。",
       "HTMLとプレビューを切り替えます。",
       "変換されたHTMLをコピーします。"
+    ],
+    "scientific-calculator": [
+      "数式を入力するかボタンを押します。",
+      "DEG/RADと関数を使います。",
+      "'='で計算し履歴を確認します。"
+    ],
+    "meta-tag-generator": [
+      "タイトル・説明・URLなどを入力します。",
+      "メタタグが自動生成されます。",
+      "生成されたHTMLタグをコピーします。"
     ]
   },
   "games": {
@@ -5071,7 +5081,18 @@
     "yv_ph": "検証するYAMLを貼り付け...",
     "yv_valid": "有効なYAML ({n}行)",
     "yv_invalid": "無効",
-    "mdp_md": "Markdown"
+    "mdp_md": "Markdown",
+    "sci_title": "関数電卓",
+    "sci_ph": "数式を入力...",
+    "sci_history": "履歴",
+    "sci_error": "エラー",
+    "mtg_title": "タイトル",
+    "mtg_desc": "説明",
+    "mtg_url": "URL",
+    "mtg_ogimg": "OG画像",
+    "mtg_keywords": "キーワード",
+    "mtg_author": "作成者",
+    "mtg_tags": "生成されたタグ"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

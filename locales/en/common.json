@@ -2877,6 +2877,16 @@
       "Type your Markdown.",
       "Switch between HTML and Preview.",
       "Copy the converted HTML."
+    ],
+    "scientific-calculator": [
+      "Type an expression or tap buttons.",
+      "Use DEG/RAD and functions.",
+      "Press '=' and see the history."
+    ],
+    "meta-tag-generator": [
+      "Enter title, description, URL and more.",
+      "Meta tags are generated automatically.",
+      "Copy the generated HTML tags."
     ]
   },
   "games": {
@@ -4766,7 +4776,18 @@
     "yv_ph": "Paste YAML to validate...",
     "yv_valid": "Valid YAML ({n} lines)",
     "yv_invalid": "Invalid",
-    "mdp_md": "Markdown"
+    "mdp_md": "Markdown",
+    "sci_title": "Scientific Calculator",
+    "sci_ph": "Enter expression...",
+    "sci_history": "History",
+    "sci_error": "Error",
+    "mtg_title": "Title",
+    "mtg_desc": "Description",
+    "mtg_url": "URL",
+    "mtg_ogimg": "OG Image",
+    "mtg_keywords": "Keywords",
+    "mtg_author": "Author",
+    "mtg_tags": "Generated Tags"
   },
   "toolTags": {
     "spinner-wheel": [

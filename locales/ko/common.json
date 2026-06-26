@@ -3215,6 +3215,16 @@
       "마크다운을 입력하세요.",
       "HTML 또는 미리보기를 전환하세요.",
       "변환된 HTML을 복사하세요."
+    ],
+    "scientific-calculator": [
+      "수식을 입력하거나 버튼을 누르세요.",
+      "DEG/RAD와 함수를 사용하세요.",
+      "'='로 계산하고 기록을 확인하세요."
+    ],
+    "meta-tag-generator": [
+      "제목·설명·URL 등을 입력하세요.",
+      "메타 태그가 자동 생성됩니다.",
+      "생성된 HTML 태그를 복사하세요."
     ]
   },
   "games": {
@@ -5104,7 +5114,18 @@
     "yv_ph": "검증할 YAML을 붙여넣으세요...",
     "yv_valid": "유효한 YAML ({n}줄)",
     "yv_invalid": "유효하지 않음",
-    "mdp_md": "마크다운"
+    "mdp_md": "마크다운",
+    "sci_title": "공학용 계산기",
+    "sci_ph": "수식을 입력하세요...",
+    "sci_history": "기록",
+    "sci_error": "오류",
+    "mtg_title": "제목",
+    "mtg_desc": "설명",
+    "mtg_url": "URL",
+    "mtg_ogimg": "OG 이미지",
+    "mtg_keywords": "키워드",
+    "mtg_author": "작성자",
+    "mtg_tags": "생성된 태그"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
