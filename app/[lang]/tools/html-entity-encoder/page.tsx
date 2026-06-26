@@ -1,5 +1,6 @@
 'use client'
 import {useState} from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
 
@@ -13,7 +14,8 @@ function decode(s:string):string{
 }
 
 export default function Page(){
-  const tool=TOOLS.find(t=>t.slug==='html-entity-encoder')
+  const t = useTranslations('toolui')
+  const tool=TOOLS.find(x=>x.slug==='html-entity-encoder')
   const [input,setInput]=useState('<div class="hello">Hello & World</div>')
   const [mode,setMode]=useState<'encode'|'decode'>('encode')
   const output=mode==='encode'?encode(input):decode(input)
@@ -24,24 +26,24 @@ export default function Page(){
           {(['encode','decode'] as const).map(m=>(
             <button key={m} onClick={()=>setMode(m)}
               className={'px-4 py-2 rounded text-sm '+(mode===m?'bg-blue-600 text-white':'bg-gray-100 hover:bg-gray-200')}>
-              {m==='encode'?'Encode':'Decode'}
+              {m==='encode'?t('ui_encode'):t('ui_decode')}
             </button>
           ))}
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div>
-            <label className='block text-sm font-medium mb-1'>Input</label>
+            <label className='block text-sm font-medium mb-1'>{t('ui_input')}</label>
             <textarea value={input} onChange={e=>setInput(e.target.value)}
               className='w-full h-40 p-3 border rounded font-mono text-sm resize-y'/>
           </div>
           <div>
-            <label className='block text-sm font-medium mb-1'>Output</label>
+            <label className='block text-sm font-medium mb-1'>{t('ui_output')}</label>
             <textarea readOnly value={output}
               className='w-full h-40 p-3 border rounded font-mono text-sm bg-gray-50 resize-y'/>
           </div>
         </div>
         <button onClick={()=>navigator.clipboard.writeText(output)}
-          className='px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm'>Copy</button>
+          className='px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm'>{t('ui_copy')}</button>
       </div>
     </ToolLayout>
   )

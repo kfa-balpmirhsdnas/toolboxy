@@ -2497,6 +2497,21 @@
       "Enter a value and unit.",
       "Set the base font and viewport size.",
       "Copy the value in any CSS unit."
+    ],
+    "html-minifier": [
+      "Paste your HTML.",
+      "Comments and whitespace are removed automatically.",
+      "Copy the minified HTML."
+    ],
+    "html-entity-encoder": [
+      "Choose encode or decode mode.",
+      "Enter your text.",
+      "Copy the converted HTML entities."
+    ],
+    "json-minifier": [
+      "Paste your JSON.",
+      "Choose minify or format mode.",
+      "Copy the result."
     ]
   },
   "games": {
@@ -3932,7 +3947,16 @@
     "jf_bytes": "bytes",
     "ui_value": "Value",
     "cuc_base": "Base font:",
-    "cuc_viewport": "Viewport:"
+    "cuc_viewport": "Viewport:",
+    "hm_saved": "saved",
+    "ui_encode": "Encode",
+    "ui_decode": "Decode",
+    "ui_output": "Output",
+    "jm_format": "Format/Prettify",
+    "jm_indent": "Indent",
+    "jm_spaces": "spaces",
+    "jm_input": "JSON Input",
+    "jm_invalid": "Invalid JSON"
   },
   "toolTags": {
     "spinner-wheel": [
