@@ -2527,6 +2527,16 @@
       "Choose text→code or code→text, and binary/hex.",
       "Enter your text or code.",
       "Copy the converted output."
+    ],
+    "diff-checker": [
+      "Paste the original and modified text.",
+      "Press Compare.",
+      "See added and removed lines highlighted."
+    ],
+    "html-formatter": [
+      "Paste your HTML.",
+      "Choose the indent size.",
+      "Copy or download the formatted HTML."
     ]
   },
   "games": {
@@ -3989,7 +3999,19 @@
     "btc_text": "Text",
     "btc_code": "Code",
     "btc_invalid_bin": "Invalid binary input",
-    "btc_invalid_hex": "Invalid hex input"
+    "btc_invalid_hex": "Invalid hex input",
+    "df_modified": "Modified",
+    "df_ph_orig": "Paste original text...",
+    "df_ph_mod": "Paste modified text...",
+    "df_compare": "Compare",
+    "df_added": "added",
+    "df_removed": "removed",
+    "df_edit": "Edit",
+    "hf_error": "Error formatting HTML",
+    "hf_indent_size": "Indent size",
+    "hf_ph": "Paste HTML to format...",
+    "hf_formatted": "Formatted Output",
+    "ui_download": "Download"
   },
   "toolTags": {
     "spinner-wheel": [

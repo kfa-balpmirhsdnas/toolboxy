@@ -2865,6 +2865,16 @@
       "텍스트→코드 또는 코드→텍스트와 2진/16진을 고르세요.",
       "텍스트나 코드를 입력하세요.",
       "변환된 결과를 복사하세요."
+    ],
+    "diff-checker": [
+      "원본과 수정본 텍스트를 붙여넣으세요.",
+      "'비교'를 누르세요.",
+      "추가·삭제된 줄을 색으로 확인하세요."
+    ],
+    "html-formatter": [
+      "HTML을 붙여넣으세요.",
+      "들여쓰기 크기를 고르세요.",
+      "정렬된 HTML을 복사하거나 다운로드하세요."
     ]
   },
   "games": {
@@ -4327,7 +4337,19 @@
     "btc_text": "텍스트",
     "btc_code": "코드",
     "btc_invalid_bin": "잘못된 2진 입력",
-    "btc_invalid_hex": "잘못된 16진 입력"
+    "btc_invalid_hex": "잘못된 16진 입력",
+    "df_modified": "수정본",
+    "df_ph_orig": "원본 텍스트를 붙여넣으세요...",
+    "df_ph_mod": "수정된 텍스트를 붙여넣으세요...",
+    "df_compare": "비교",
+    "df_added": "추가",
+    "df_removed": "삭제",
+    "df_edit": "편집",
+    "hf_error": "HTML 포맷 오류",
+    "hf_indent_size": "들여쓰기 크기",
+    "hf_ph": "포맷할 HTML을 붙여넣으세요...",
+    "hf_formatted": "정렬된 결과",
+    "ui_download": "다운로드"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

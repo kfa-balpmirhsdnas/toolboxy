@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
@@ -35,6 +36,7 @@ function formatHtml(html: string, indent: number): string {
 }
 
 export default function HtmlFormatterPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const [indent, setIndent] = useState(2)
   const [copied, setCopied] = useState(false)
@@ -44,7 +46,7 @@ export default function HtmlFormatterPage({ params }: { params: { lang: string }
     if (!tracked.current) { trackToolUsed('html-formatter'); tracked.current = true }
   }
 
-  const output = input.trim() ? (() => { try { return formatHtml(input, indent) } catch { return 'Error formatting HTML' } })() : ''
+  const output = input.trim() ? (() => { try { return formatHtml(input, indent) } catch { return t('hf_error') } })() : ''
 
   async function copy() {
     await navigator.clipboard.writeText(output)
@@ -64,26 +66,26 @@ export default function HtmlFormatterPage({ params }: { params: { lang: string }
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div className="flex gap-3 items-center">
-          <label className="text-xs font-medium text-gray-600">Indent size</label>
+          <label className="text-xs font-medium text-gray-600">{t('hf_indent_size')}</label>
           {[2,4].map(n => (
             <button key={n} onClick={()=>setIndent(n)}
               className={'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (indent===n?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {n} spaces
+              {n} {t('jm_spaces')}
             </button>
           ))}
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">HTML Input</label>
-          <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} placeholder="Paste HTML to format..." rows={7}
+          <label className="block text-xs font-medium text-gray-600 mb-1">{t('hts_input')}</label>
+          <textarea value={input} onChange={e=>{setInput(e.target.value);track()}} placeholder={t('hf_ph')} rows={7}
             className="w-full px-4 py-3 border border-gray-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none" />
         </div>
         {output && (
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">Formatted Output</label>
+              <label className="text-xs font-medium text-gray-600">{t('hf_formatted')}</label>
               <div className="flex gap-2">
-                <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'\u2713 Copied':'Copy'}</button>
-                <button onClick={download} className="text-xs text-brand-600 hover:underline">Download</button>
+                <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?t('ui_copied'):t('ui_copy')}</button>
+                <button onClick={download} className="text-xs text-brand-600 hover:underline">{t('ui_download')}</button>
               </div>
             </div>
             <pre className="p-4 bg-gray-900 text-green-400 text-xs rounded-xl font-mono overflow-x-auto max-h-64">
