@@ -3107,6 +3107,16 @@
       "Paste your text.",
       "Choose a removal mode.",
       "Copy the cleaned result."
+    ],
+    "stopwatch": [
+      "Press start to begin timing.",
+      "Tap lap to record splits.",
+      "Pause or reset to control it."
+    ],
+    "text-reverser": [
+      "Enter the text to reverse.",
+      "Choose characters, words or lines.",
+      "Copy the reversed result."
     ]
   },
   "games": {
@@ -5369,7 +5379,15 @@
     "wsr_tabs": "Tabs to Spaces",
     "wsr_ph": "Paste text with whitespace...",
     "wsr_remove": "Remove Whitespace",
-    "wsr_copyresult": "Copy Result"
+    "wsr_copyresult": "Copy Result",
+    "sw_lap": "Lap",
+    "sw_pause": "Pause",
+    "sw_start": "Start",
+    "sw_history": "Lap history ({n})",
+    "tr_chars": "Reverse Characters",
+    "tr_words": "Reverse Words",
+    "tr_lines": "Reverse Lines",
+    "tr_ph": "Enter text to reverse..."
   },
   "toolTags": {
     "spinner-wheel": [

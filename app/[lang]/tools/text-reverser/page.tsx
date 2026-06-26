@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
@@ -15,6 +16,7 @@ function reverseText(text: string, mode: Mode): string {
 }
 
 export default function TextReverserPage({ params }: { params: { lang: string } }) {
+  const t = useTranslations('toolui')
   const [input, setInput] = useState('')
   const [mode, setMode] = useState<Mode>('chars')
   const [copied, setCopied] = useState(false)
@@ -37,25 +39,25 @@ export default function TextReverserPage({ params }: { params: { lang: string } 
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
         <div className="flex gap-2 flex-wrap">
-          {([['chars','Reverse Characters'],['words','Reverse Words'],['lines','Reverse Lines']] as [Mode,string][]).map(([m,label]) => (
+          {([['chars','tr_chars'],['words','tr_words'],['lines','tr_lines']] as [Mode,string][]).map(([m,label]) => (
             <button key={m} onClick={() => setMode(m)}
               className={'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (mode===m ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-              {label}
+              {t(label)}
             </button>
           ))}
         </div>
         <textarea
           value={input}
           onChange={e => { setInput(e.target.value); track() }}
-          placeholder="Enter text to reverse..."
+          placeholder={t('tr_ph')}
           rows={5}
           className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none"
         />
         {output && (
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-gray-600">Result</label>
-              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied ? '\u2713 Copied' : 'Copy'}</button>
+              <label className="text-xs font-medium text-gray-600">{t('ce_result')}</label>
+              <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied ? '\u2713 '+t('ui_copied') : t('ui_copy')}</button>
             </div>
             <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 whitespace-pre-wrap break-all">
               {output}
