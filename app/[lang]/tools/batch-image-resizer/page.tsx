@@ -11,7 +11,7 @@ import { resizeImage, type ResizeMode, type ResizeAxis } from '@/lib/batch-image
 
 const tool = getToolBySlug('batch-image-resizer')!
 const PCT_PRESETS = [10, 25, 50, 75, 100, 150, 200]
-const QUAL_PRESETS = [100, 95, 90, 85, 75, 50, 30, 10]
+const QUAL_PRESETS = [10, 30, 50, 75, 85, 90, 95, 100]
 
 export default function BatchImageResizerPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
@@ -148,7 +148,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
                 <option value="" disabled hidden></option>
                 {QUAL_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
               </select>
-              <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(e.target.value)} disabled={!adjustQuality} style={{ direction: 'rtl' }} className="flex-1 accent-brand-600" />
+              <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(e.target.value)} disabled={!adjustQuality} className="flex-1 accent-brand-600" />
               <span className="w-12 text-right text-gray-500">{quality}%</span>
             </div>
           </div>
