@@ -50,7 +50,7 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
         </div>
 
         {/* detail card */}
-        <div ref={cardRef} className="scroll-mt-20 sm:sticky sm:top-16 sm:z-10 rounded-2xl border-2 p-4 flex flex-col sm:flex-row gap-4 shadow-sm" style={{ borderColor: COLORS[sel.cat], background: `linear-gradient(${COLORS[sel.cat]}22, ${COLORS[sel.cat]}22), #fff` }}>
+        <div ref={cardRef} className="scroll-mt-20 sm:sticky sm:top-16 sm:z-20 rounded-2xl border-2 p-4 flex flex-col sm:flex-row gap-4 shadow-sm" style={{ borderColor: COLORS[sel.cat], background: `linear-gradient(${COLORS[sel.cat]}22, ${COLORS[sel.cat]}22), #fff` }}>
          <div className="flex-1 min-w-0">
           <div className="flex items-center gap-4">
             <div className="shrink-0 w-20 h-20 rounded-xl flex flex-col items-center justify-center" style={{ background: COLORS[sel.cat] }}>
