@@ -98,9 +98,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     let i = 2; while (used.has(`${base}_${i}`)) i++; return `${base}_${i}`
   }
 
-  // Track auth — TXT download is for signed-in users only.
+  // Track auth — TXT download is for signed-in users only (the button looks the
+  // same for everyone; guests are routed to login when they click it).
   useEffect(() => onAuthStateChanged(auth, (u) => setUser(u)), [])
-  const guest = user === null
 
   // Restore on mount, migrating the legacy single note if present.
   useEffect(() => {
@@ -321,9 +321,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
 
         <div className="flex gap-2 flex-wrap">
           <button onClick={download} disabled={!text}
-            title={guest ? t('np_dl_login') : undefined}
             className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            {guest ? `🔒 ${t('np_dl_login')}` : `⬇ ${t('np_download')}`}
+            ⬇ {t('np_download')}
           </button>
           <button onClick={copy} disabled={!text}
             className="px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
