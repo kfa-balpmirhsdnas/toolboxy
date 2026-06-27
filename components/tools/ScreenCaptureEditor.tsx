@@ -32,6 +32,7 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   const draftRef = useRef<Shape | null>(null)
   const lwRef = useRef(4)
   const fontRef = useRef(28)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [tool, setTool] = useState<Tool>('arrow')
   const [color, setColor] = useState(COLORS[0])
@@ -39,6 +40,15 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   const [editing, setEditing] = useState<{ x: number; y: number; value: string } | null>(null)
   const [count, setCount] = useState(0) // bump to refresh toolbar (undo enabled etc.)
   const bump = () => setCount((c) => c + 1)
+
+  // Focus the text box when it opens. autoFocus alone can fail for an input
+  // rendered from a pointer event; rAF runs after the click settles so focus sticks.
+  useEffect(() => {
+    if (!editing) return
+    const id = requestAnimationFrame(() => inputRef.current?.focus())
+    return () => cancelAnimationFrame(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing?.x, editing?.y])
 
   // (Re)initialise the base image whenever a new capture comes in.
   useEffect(() => {
@@ -107,7 +117,7 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
     return c
   }
 
-  function pos(e: React.PointerEvent) {
+  function pos(e: { clientX: number; clientY: number }) {
     const c = dispRef.current!, r = c.getBoundingClientRect()
     return { x: (e.clientX - r.left) * (c.width / r.width), y: (e.clientY - r.top) * (c.height / r.height) }
   }
@@ -123,11 +133,14 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   }
 
   function onDown(e: React.PointerEvent) {
-    if (editing) return
-    const p = pos(e)
-    if (tool === 'text') { setEditing({ x: p.x, y: p.y, value: '' }); return }
-    startRef.current = p
+    if (editing || tool === 'text') return // text opens on click (after the press), so mouseup can't blur it shut
+    startRef.current = pos(e)
     try { dispRef.current!.setPointerCapture(e.pointerId) } catch { /* not capturable (e.g. synthetic) */ }
+  }
+  function onClick(e: React.MouseEvent) {
+    // Place the text box on click — by now the full press is over, so the
+    // freshly-focused input won't be blurred shut by the trailing mouseup.
+    if (tool === 'text' && !editing) setEditing({ x: pos(e).x, y: pos(e).y, value: '' })
   }
   function onMove(e: React.PointerEvent) {
     const s = startRef.current
@@ -232,16 +245,19 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
         <div className="relative inline-block">
           <canvas
             ref={dispRef}
-            onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp}
+            onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onClick={onClick}
             className={'block mx-auto max-w-full max-h-[60vh] w-auto rounded-xl border border-gray-200 touch-none ' + (tool === 'text' ? 'cursor-text' : 'cursor-crosshair')}
           />
           {editing && (
             <input
+              ref={inputRef}
               autoFocus
               value={editing.value}
               onChange={(e) => setEditing({ ...editing, value: e.target.value })}
               onKeyDown={(e) => { if (e.key === 'Enter') commitText(); if (e.key === 'Escape') setEditing(null) }}
               onBlur={commitText}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
               placeholder={t('sc_ed_text_ph')}
               className="absolute -translate-y-1 px-1 py-0.5 border border-brand-400 rounded bg-white/90 text-sm outline-none"
               style={{ left: `${(editing.x / dims.w) * 100}%`, top: `${(editing.y / dims.h) * 100}%`, color }}
