@@ -70,6 +70,8 @@ export default function BatchImageWatermarkPage({ params }: { params: { lang: st
               ))}
             </div>
 
+            {/* Fixed height so the content box doesn't shift when switching text/logo (mobile too). */}
+            <div className="min-h-[5.5rem]">
             {type === 'text' && (
               <div className="space-y-3">
                 <input value={text} onChange={(e) => setText(e.target.value)} placeholder={t('bwm_text_ph')} className={inp + ' w-full'} />
@@ -78,10 +80,10 @@ export default function BatchImageWatermarkPage({ params }: { params: { lang: st
                     {t('bwm_color')}
                     <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-9 h-9 rounded border border-gray-200 cursor-pointer" />
                   </label>
-                  <label className="flex items-center gap-2 flex-1 min-w-0">
+                  <label className="flex items-center gap-2">
                     {t('bwm_size')}
-                    <input type="range" min={1} max={20} value={fontPct} onChange={(e) => setFontPct(e.target.value)} className="flex-1 accent-brand-600" />
-                    <span className="text-gray-500 w-9 shrink-0 text-right">{fontPct}%</span>
+                    <input type="range" min={1} max={20} value={fontPct} onChange={(e) => setFontPct(e.target.value)} className="w-16 sm:w-24 accent-brand-600" />
+                    <span className="text-gray-500 w-9 text-right">{fontPct}%</span>
                   </label>
                 </div>
               </div>
@@ -98,26 +100,25 @@ export default function BatchImageWatermarkPage({ params }: { params: { lang: st
                 </div>
                 <label className="flex items-center gap-2 text-sm text-gray-700">
                   {t('bwm_logo_size')}
-                  <input type="range" min={2} max={60} value={logoScalePct} onChange={(e) => setLogoScalePct(e.target.value)} className="accent-brand-600" />
+                  <input type="range" min={2} max={60} value={logoScalePct} onChange={(e) => setLogoScalePct(e.target.value)} className="w-24 accent-brand-600" />
                   <span className="text-gray-500 w-9">{logoScalePct}%</span>
                 </label>
               </div>
             )}
+            </div>
           </div>
 
           {/* Style box: opacity + position */}
           <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
             <p className="text-sm font-medium text-gray-700">{t('bwm_box_style')}</p>
-            <div>
-              <p className="text-sm text-gray-600 mb-1.5">{t('bwm_opacity')}</p>
-              <div className="flex items-center gap-3 text-sm text-gray-700">
-                <select value={OPACITY_PRESETS.includes(Number(opacity)) ? opacity : ''} onChange={(e) => setOpacity(e.target.value)} className={selCls}>
-                  <option value="" disabled hidden></option>
-                  {OPACITY_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
-                </select>
-                <input type="range" min={1} max={100} value={opacity} onChange={(e) => setOpacity(e.target.value)} className="flex-1 accent-brand-600" />
-                <span className="w-12 text-right text-gray-500">{opacity}%</span>
-              </div>
+            <div className="flex items-center gap-2 text-sm text-gray-700">
+              <span className="shrink-0">{t('bwm_opacity')}</span>
+              <select value={OPACITY_PRESETS.includes(Number(opacity)) ? opacity : ''} onChange={(e) => setOpacity(e.target.value)} className={selCls}>
+                <option value="" disabled hidden></option>
+                {OPACITY_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
+              </select>
+              <input type="range" min={1} max={100} value={opacity} onChange={(e) => setOpacity(e.target.value)} className="flex-1 accent-brand-600" />
+              <span className="w-10 text-right text-gray-500 shrink-0">{opacity}%</span>
             </div>
 
             <div className="flex items-center gap-3">
