@@ -57,7 +57,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
   ]
   const numInput = 'w-24 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
   // Narrower input for W/H so they + the keep-ratio checkbox fit one row, even on mobile.
-  const dimInput = 'w-14 sm:w-28 px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
+  const dimInput = 'w-[62px] sm:w-28 px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
   const selCls = 'px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-400'
 
   return (
@@ -100,11 +100,11 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
 
               {mode === 'dimensions' && (
                 // W, H and the keep-ratio checkbox on one row (mobile included).
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-gray-700">
-                  <label className="flex items-center gap-1.5">W
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-2 sm:gap-x-3 text-sm text-gray-700">
+                  <label className="flex items-center gap-1">W
                     <input type="number" min={1} placeholder={t('bir_auto')} value={width} onChange={(e) => setWidth(e.target.value)} className={dimInput} />
                   </label>
-                  <label className="flex items-center gap-1.5">H
+                  <label className="flex items-center gap-1">H
                     <input type="number" min={1} placeholder={t('bir_auto')} value={height} onChange={(e) => setHeight(e.target.value)} className={dimInput} />
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
