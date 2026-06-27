@@ -3582,7 +3582,8 @@
     "batch-image-rename": [
       "Add your images.",
       "Turn on rename rules (prefix, numbering, find & replace…).",
-      "Check the live name preview, then download as a zip."
+      "Check the live name preview, then download as a zip.",
+      "Browsers can't rename your originals in place, so the renamed copies are delivered as a .zip."
     ]
   },
   "games": {

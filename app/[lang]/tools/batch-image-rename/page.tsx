@@ -46,10 +46,6 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-6">
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-800">
-          ⚠️ {t('brn_browser_notice')}
-        </div>
-
         <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3">
           <Rule on={r.affixOn} onToggle={(v) => up({ affixOn: v })} label={t('brn_affix')}>
             <span>{t('brn_prefix')}</span>
