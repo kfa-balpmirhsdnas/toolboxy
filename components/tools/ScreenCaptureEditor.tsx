@@ -256,11 +256,11 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
       {/* Toolbar */}
       <div ref={toolbarRef} className="flex flex-wrap items-center gap-2">
         {TOOLS.map(([id, label]) => (
-          <button key={id} ref={(el) => { btnRefs.current[id] = el }} onClick={() => { setEditing(null); setTool(id) }} className={tbtn(tool === id)}><span className="mr-1">{ICONS[id]}</span>{label}</button>
+          <button key={id} ref={(el) => { btnRefs.current[id] = el }} onClick={() => { setColorOpen(false); setEditing(null); setTool(id) }} className={tbtn(tool === id && !colorOpen)}><span className="mr-1">{ICONS[id]}</span>{label}</button>
         ))}
         <span className="mx-1 h-5 w-px bg-gray-200" />
         <button ref={(el) => { btnRefs.current['color'] = el }} onClick={() => setColorOpen((o) => !o)} aria-label={t('sc_ed_color')} title={t('sc_ed_color')}
-          className="flex items-center gap-1 pl-1.5 pr-1 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
+          className={'flex items-center gap-1 pl-1.5 pr-1 py-1 rounded-lg border ' + (colorOpen ? 'border-brand-400 ring-2 ring-brand-500' : 'border-gray-200 hover:bg-gray-50')}>
           <span className="w-5 h-5 rounded-full border border-gray-300" style={{ background: color }} />
           <span className="text-gray-400 text-[10px]">▾</span>
         </button>
