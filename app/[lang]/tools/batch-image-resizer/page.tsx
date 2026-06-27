@@ -11,6 +11,7 @@ import { resizeImage, type ResizeMode, type ResizeAxis } from '@/lib/batch-image
 
 const tool = getToolBySlug('batch-image-resizer')!
 const PCT_PRESETS = [10, 25, 50, 75, 100, 150, 200]
+const QUAL_PRESETS = [10, 30, 50, 75, 85, 90, 95, 100]
 
 export default function BatchImageResizerPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
@@ -25,6 +26,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
   const [keepRatio, setKeepRatio] = useState(true)
   const [percent, setPercent] = useState('50')
   const [maxSide, setMaxSide] = useState('1920')
+  const [quality, setQuality] = useState('85')
 
   // Auto-fill W/H from the first selected image (for the "해상도" / dimensions mode).
   const filledRef = useRef(false)
@@ -41,8 +43,9 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
     (file) => resizeImage(file, {
       mode, axis, width: Number(width) || undefined, height: Number(height) || undefined,
       keepRatio, percent: Number(percent) || 100, maxSide: Number(maxSide) || 0,
+      quality: Number(quality) || 85,
     }),
-    [mode, axis, width, height, keepRatio, percent, maxSide],
+    [mode, axis, width, height, keepRatio, percent, maxSide, quality],
   )
 
   const modes: { id: ResizeMode; label: string }[] = [
@@ -116,6 +119,20 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
               <p className="text-xs text-gray-400">{t('bir_desc_percent')}</p>
             </div>
           )}
+
+          {/* Quality — independent of the size mode (applies to JPEG/WebP output) */}
+          <div className="border-t border-gray-100 pt-4 space-y-2">
+            <p className="text-sm font-medium text-gray-700">{t('bir_quality')}</p>
+            <div className="flex items-center gap-3 text-sm text-gray-700">
+              <select value={QUAL_PRESETS.includes(Number(quality)) ? quality : ''} onChange={(e) => setQuality(e.target.value)} className={selCls}>
+                <option value="" disabled hidden></option>
+                {QUAL_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
+              </select>
+              <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(e.target.value)} className="flex-1 accent-brand-600" />
+              <span className="w-12 text-right text-gray-500">{quality}%</span>
+            </div>
+            <p className="text-xs text-gray-400">{t('bir_quality_desc')}</p>
+          </div>
         </div>
 
         <BatchImageProcessor slug="batch-image-resizer" processFn={processFn} zipBaseName="resized"

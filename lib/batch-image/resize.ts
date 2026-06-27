@@ -13,15 +13,15 @@ export interface ResizeOptions {
   percent: number // percent mode (e.g. 50 = 50%)
   maxSide: number // maxside mode: target px for the chosen axis (downscale only)
   axis?: ResizeAxis // maxside mode: which axis maxSide caps (default longest)
+  quality?: number // 1–100 output quality for JPEG/WebP (PNG is lossless)
 }
 
 // Keep the original format where the browser can re-encode it; otherwise fall
-// back to PNG. JPEG/WebP get a high quality so resizing isn't lossy-looking.
-function outputFor(type: string): { mime: string; quality?: number; ext: string } {
-  if (type === 'image/jpeg' || type === 'image/jpg') return { mime: 'image/jpeg', quality: 0.92, ext: 'jpg' }
-  if (type === 'image/webp') return { mime: 'image/webp', quality: 0.92, ext: 'webp' }
-  if (type === 'image/png') return { mime: 'image/png', ext: 'png' }
-  return { mime: 'image/png', ext: 'png' }
+// back to PNG. JPEG/WebP honor the quality option; PNG is lossless.
+function outputFor(type: string): { mime: string; ext: string; lossy: boolean } {
+  if (type === 'image/jpeg' || type === 'image/jpg') return { mime: 'image/jpeg', ext: 'jpg', lossy: true }
+  if (type === 'image/webp') return { mime: 'image/webp', ext: 'webp', lossy: true }
+  return { mime: 'image/png', ext: 'png', lossy: false }
 }
 
 function targetSize(ow: number, oh: number, o: ResizeOptions): { w: number; h: number } {
@@ -75,7 +75,8 @@ export async function resizeImage(
   ctx.drawImage(bitmap, 0, 0, w, h)
   bitmap.close?.()
 
-  const { mime, quality, ext } = outputFor(file.type)
+  const { mime, ext, lossy } = outputFor(file.type)
+  const quality = lossy ? Math.min(1, Math.max(0.01, (options.quality ?? 92) / 100)) : undefined
   const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, mime, quality))
   if (!blob) return null
   const base = file.name.replace(/\.[^./\\]+$/, '')
