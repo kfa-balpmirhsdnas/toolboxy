@@ -50,12 +50,17 @@ function fanfare() {
   tone(261.63, t, 0.8, 'triangle', 0.13) // C4 bass root
 }
 
-/** Scroll the game box ([data-game-stage]) to the top of the viewport. Shared so
+/** Scroll the game box ([data-game-stage]) up so its top sits just BELOW the
+ * sticky site header — never under it, or the game title gets hidden. Shared so
  * every game — GameStage-driven or not — behaves the same on Start. */
 export function scrollGameToTop() {
   if (typeof window === 'undefined') return
   const el = document.querySelector('[data-game-stage]') as HTMLElement | null
-  if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 8; window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' }) }
+  if (!el) return
+  const header = document.querySelector('header')
+  const offset = (header ? header.getBoundingClientRect().height : 0) + 12
+  const y = el.getBoundingClientRect().top + window.scrollY - offset
+  window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' })
 }
 
 export type Stage = ReturnType<typeof useGameStage>
