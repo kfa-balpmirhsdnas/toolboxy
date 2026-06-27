@@ -26,21 +26,27 @@ export default function HomePage({ params }: { params: { lang: string } }) {
 
   const [query, setQuery] = useState('')
   const [featuredSlugs, setFeaturedSlugs] = useState<string[]>([])
+  const [popularSlugs, setPopularSlugs] = useState<string[]>([])
 
-  // Featured list is admin-managed (config/featuredTools) — fetched at runtime so
-  // edits show up without a redeploy. Failure just leaves the section hidden.
+  // Featured (admin-managed) + popular (auto from click stats) are fetched at
+  // runtime so they stay fresh without a redeploy. A failure just hides the
+  // section. Featured = manual curation; popular = automatic — separate sections.
   useEffect(() => {
     let alive = true
-    fetch('/api/featured')
-      .then((r) => r.json())
-      .then((d) => { if (alive) setFeaturedSlugs(Array.isArray(d.slugs) ? d.slugs : []) })
-      .catch(() => {})
+    const load = (url: string, set: (s: string[]) => void) =>
+      fetch(url).then((r) => r.json()).then((d) => { if (alive) set(Array.isArray(d.slugs) ? d.slugs : []) }).catch(() => {})
+    load('/api/featured', setFeaturedSlugs)
+    load('/api/popular', setPopularSlugs)
     return () => { alive = false }
   }, [])
 
   const featured = useMemo(
     () => featuredSlugs.map((s) => TOOLS_BY_SLUG.get(s)).filter((x): x is ToolMeta => !!x),
     [featuredSlugs],
+  )
+  const popular = useMemo(
+    () => popularSlugs.map((s) => TOOLS_BY_SLUG.get(s)).filter((x): x is ToolMeta => !!x),
+    [popularSlugs],
   )
 
   const q = query.trim().toLowerCase()
@@ -139,6 +145,21 @@ export default function HomePage({ params }: { params: { lang: string } }) {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">💼 {t('featured_tools')}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {featured.map((tool) => <ToolCard key={tool.slug} tool={tool} lang={params.lang} />)}
+              </div>
+            </section>
+          )}
+
+          {/* 🔥 인기 도구 (auto from click stats — separate from 추천) */}
+          {popular.length > 0 && (
+            <section className="max-w-6xl mx-auto px-4 pt-12 pb-2">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">🔥 {t('popular_tools')}</h2>
+                <Link href={`/${params.lang}/tools`} className="text-brand-600 hover:text-brand-700 font-medium text-sm">
+                  {t('view_all')} →
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {popular.map((tool) => <ToolCard key={tool.slug} tool={tool} lang={params.lang} />)}
               </div>
             </section>
           )}
