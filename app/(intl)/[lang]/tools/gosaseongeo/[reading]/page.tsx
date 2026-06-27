@@ -11,7 +11,7 @@ export function generateStaticParams() {
 
 async function labels(lang: string): Promise<Record<string, string>> {
   try {
-    const j = (await import(`../../../../../locales/${lang}/common.json`)).default as any
+    const j = (await import(`../../../../../../locales/${lang}/common.json`)).default as any
     return j.toolui || {}
   } catch { return {} }
 }

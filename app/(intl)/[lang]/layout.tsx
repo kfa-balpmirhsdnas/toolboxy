@@ -1,6 +1,8 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
+import '../../globals.css'
 import { notFound } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
+import RootHtml from '@/components/layout/RootHtml'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
@@ -23,21 +25,37 @@ export async function generateMetadata({ params }: { params: { lang: string } })
   let description =
     '100+ free online tools for PDF, image, text and developer tasks. No installation, runs in your browser.'
   try {
-    const m = (await import(`../../locales/${lang}/common.json`)).default as {
+    const m = (await import(`../../../locales/${lang}/common.json`)).default as {
       site?: { description?: string }
     }
     if (m.site?.description) description = m.site.description
   } catch { /* keep default */ }
 
   const title = titles[lang] ?? titles['en']
+  // This layout is now a root layout (renders <html>), so it carries the base
+  // metadata that previously lived in app/layout.tsx: brand title template,
+  // metadataBase, default manifest, app icons and OpenGraph defaults.
   return {
     metadataBase: new URL('https://www.toolboxy.net'),
-    title,
+    title: { default: `${title} | ToolBoxy`, template: '%s | ToolBoxy' },
     description,
-    openGraph: { title, description, url: `https://www.toolboxy.net/${lang}`, siteName: 'ToolBoxy', type: 'website', locale: lang },
+    manifest: '/api/manifest?start=/en',
+    appleWebApp: { capable: true, title: 'ToolBoxy', statusBarStyle: 'default' },
+    icons: { icon: '/icon.svg', apple: '/icon.svg' },
+    openGraph: {
+      title,
+      description,
+      url: `https://www.toolboxy.net/${lang}`,
+      siteName: 'ToolBoxy',
+      type: 'website',
+      locale: lang,
+      images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    },
     twitter: { card: 'summary_large_image', title, description },
   }
 }
+
+export const viewport: Viewport = { themeColor: '#0284c7' }
 
 export function generateStaticParams() {
   return SUPPORTED_LOCALES.map((lang) => ({ lang }))
@@ -55,7 +73,7 @@ export default async function LangLayout({
 
   let messages: Record<string, unknown> = {}
   try {
-    messages = (await import(`../../locales/${lang}/common.json`)).default
+    messages = (await import(`../../../locales/${lang}/common.json`)).default
   } catch {
     messages = {}
   }
@@ -66,7 +84,7 @@ export default async function LangLayout({
   ]
 
   return (
-    <>
+    <RootHtml lang={lang}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteLd) }} />
       <GoogleAnalytics />
       <NextIntlClientProvider locale={lang} messages={messages}>
@@ -79,6 +97,6 @@ export default async function LangLayout({
           <Footer />
         </SignupGateProvider>
       </NextIntlClientProvider>
-    </>
+    </RootHtml>
   )
 }
