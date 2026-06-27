@@ -6706,7 +6706,7 @@
     "bir_mode_percent": "비율",
     "bir_longest_side": "긴 변",
     "bir_downscale_only": "(축소만)",
-    "bir_auto": "자동",
+    "bir_auto": "자동 px",
     "bir_keep_ratio": "비율 유지",
     "bir_scale": "비율",
     "bcv_output_format": "출력 포맷",

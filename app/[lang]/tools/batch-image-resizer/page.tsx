@@ -84,19 +84,21 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
 
           {mode === 'dimensions' && (
             <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-3 text-sm text-gray-700">
-                <label className="flex items-center gap-2">W
-                  <input type="number" min={1} placeholder={t('bir_auto')} value={width} onChange={(e) => setWidth(e.target.value)} className={numInput} />
+              {/* Mobile: W/H row, then checkbox below. Desktop: checkbox to the right of the inputs. */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3 text-sm text-gray-700">
+                  <label className="flex items-center gap-2">W
+                    <input type="number" min={1} placeholder={t('bir_auto')} value={width} onChange={(e) => setWidth(e.target.value)} className={numInput} />
+                  </label>
+                  <label className="flex items-center gap-2">H
+                    <input type="number" min={1} placeholder={t('bir_auto')} value={height} onChange={(e) => setHeight(e.target.value)} className={numInput} />
+                  </label>
+                </div>
+                <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                  <input type="checkbox" checked={keepRatio} onChange={(e) => setKeepRatio(e.target.checked)} className="accent-brand-600" />
+                  {t('bir_keep_ratio')}
                 </label>
-                <label className="flex items-center gap-2">H
-                  <input type="number" min={1} placeholder={t('bir_auto')} value={height} onChange={(e) => setHeight(e.target.value)} className={numInput} />
-                </label>
-                <span className="text-gray-400">px</span>
               </div>
-              <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input type="checkbox" checked={keepRatio} onChange={(e) => setKeepRatio(e.target.checked)} className="accent-brand-600" />
-                {t('bir_keep_ratio')}
-              </label>
               <p className="text-xs text-gray-400">{t('bir_desc_dimensions')}</p>
             </div>
           )}

@@ -6320,7 +6320,7 @@
     "bir_mode_percent": "Percentage",
     "bir_longest_side": "Longest side",
     "bir_downscale_only": "(downscale only)",
-    "bir_auto": "auto",
+    "bir_auto": "auto px",
     "bir_keep_ratio": "Keep aspect ratio",
     "bir_scale": "Scale",
     "bcv_output_format": "Output format",

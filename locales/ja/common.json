@@ -6673,7 +6673,7 @@
     "bir_mode_percent": "比率",
     "bir_longest_side": "長辺",
     "bir_downscale_only": "（縮小のみ）",
-    "bir_auto": "自動",
+    "bir_auto": "自動 px",
     "bir_keep_ratio": "縦横比を維持",
     "bir_scale": "倍率",
     "bcv_output_format": "出力形式",
