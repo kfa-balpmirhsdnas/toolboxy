@@ -6496,7 +6496,9 @@
     "sc_ed_clear": "Clear",
     "sc_ed_text_ph": "Type, then Enter",
     "sc_ed_crop_hint": "Drag the area to crop.",
-    "sc_ed_mosaic_hint": "Drag over info to hide (names, phone numbers, etc.)."
+    "sc_ed_mosaic_hint": "Drag over info to hide (names, phone numbers, etc.).",
+    "np_undo": "Undo",
+    "np_redo": "Redo"
   },
   "toolTags": {
     "spinner-wheel": [

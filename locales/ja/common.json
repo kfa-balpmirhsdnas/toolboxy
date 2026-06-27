@@ -6858,7 +6858,9 @@
     "sc_ed_clear": "注釈を消去",
     "sc_ed_text_ph": "入力してEnter",
     "sc_ed_crop_hint": "切り抜く範囲をドラッグしてください。",
-    "sc_ed_mosaic_hint": "隠したい範囲（名前・電話番号など）をドラッグしてください。"
+    "sc_ed_mosaic_hint": "隠したい範囲（名前・電話番号など）をドラッグしてください。",
+    "np_undo": "元に戻す",
+    "np_redo": "やり直し"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
