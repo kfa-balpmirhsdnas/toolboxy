@@ -6549,7 +6549,8 @@
     "pt_s_unknown": "Unknown",
     "pt_ancient": "Ancient",
     "pt_estimated": "est.",
-    "pt_bohr": "Bohr model"
+    "pt_bohr": "Bohr model",
+    "pt_anim": "Spin electrons"
   },
   "toolTags": {
     "spinner-wheel": [

@@ -6938,7 +6938,8 @@
     "pt_s_unknown": "불명",
     "pt_ancient": "고대부터",
     "pt_estimated": "추정",
-    "pt_bohr": "보어 모형"
+    "pt_bohr": "보어 모형",
+    "pt_anim": "전자 회전 애니메이션"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

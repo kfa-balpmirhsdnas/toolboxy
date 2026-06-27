@@ -34,6 +34,7 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
   // Bohr model is collapsible on mobile; defaults open and resets to open on every
   // fresh load (not persisted). On desktop it's always shown.
   const [bohrOpen, setBohrOpen] = useState(true)
+  const [anim, setAnim] = useState(true) // electron orbit animation (on by default)
   const cardRef = useRef<HTMLDivElement>(null)
   // On desktop the card is sticky (always visible), so only scroll-to-card on mobile.
   const select = (e: Element) => { setSel(e); if (window.innerWidth < 640) cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
@@ -87,13 +88,17 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
          </div>
          {d && shellArr.length > 0 && (
            <div className="shrink-0 self-center sm:self-start mx-auto sm:mx-0">
-             <button type="button" onClick={() => setBohrOpen((o) => !o)}
-               className="flex items-center justify-center gap-1 mx-auto mb-1 text-xs font-semibold text-gray-700 sm:pointer-events-none">
-               {t('pt_bohr')}
-               <svg viewBox="0 0 24 24" className={`w-3.5 h-3.5 sm:hidden transition-transform ${bohrOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
-             </button>
+             <div className="flex items-center justify-center gap-1.5 mb-1">
+               <button type="button" onClick={() => setBohrOpen((o) => !o)}
+                 className="flex items-center gap-1 text-xs font-semibold text-gray-700 sm:pointer-events-none">
+                 {t('pt_bohr')}
+                 <svg viewBox="0 0 24 24" className={`w-3.5 h-3.5 sm:hidden transition-transform ${bohrOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+               </button>
+               <button type="button" onClick={() => setAnim((a) => !a)} aria-pressed={anim} aria-label={t('pt_anim')} title={t('pt_anim')}
+                 className={`leading-none text-[13px] w-5 h-5 rounded-full border transition-colors ${anim ? 'border-brand-300 text-brand-600 bg-brand-50' : 'border-gray-200 text-gray-400'}`}>⟳</button>
+             </div>
              <div className={`rounded-xl bg-white/55 px-2 py-2 ${bohrOpen ? '' : 'hidden'} sm:block`}>
-               <BohrModel shells={shellArr} color={COLORS[sel.cat]} symbol={sel.sym} number={sel.n} />
+               <BohrModel shells={shellArr} color={COLORS[sel.cat]} symbol={sel.sym} number={sel.n} animate={anim} />
              </div>
            </div>
          )}

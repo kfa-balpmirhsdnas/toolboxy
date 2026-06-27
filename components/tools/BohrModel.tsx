@@ -5,8 +5,8 @@
 // overlap; the per-shell counts are also printed below as numbers.
 
 export default function BohrModel({
-  shells, color, symbol, number, size = 200,
-}: { shells: number[]; color: string; symbol: string; number: number; size?: number }) {
+  shells, color, symbol, number, size = 200, animate = false,
+}: { shells: number[]; color: string; symbol: string; number: number; size?: number; animate?: boolean }) {
   const c = size / 2
   const nucleusR = Math.max(15, size * 0.085)
   const n = shells.length || 1
@@ -25,6 +25,13 @@ export default function BohrModel({
           return (
             <g key={i}>
               <circle cx={c} cy={c} r={r} fill="none" stroke={color} strokeOpacity={0.55} strokeWidth={1} />
+              {/* electrons rotate as a group around the nucleus; orbit circle is centred so it's unaffected.
+                  Alternating direction + slower outer shells gives a calm orbit. */}
+              {animate && (
+                <animateTransform attributeName="transform" attributeType="XML" type="rotate"
+                  from={`0 ${c} ${c}`} to={`${i % 2 === 0 ? 360 : -360} ${c} ${c}`}
+                  dur={`${18 + i * 6}s`} repeatCount="indefinite" />
+              )}
               {Array.from({ length: count }).map((_, j) => {
                 const a = (-90 + (360 / count) * j) * (Math.PI / 180)
                 return <circle key={j} cx={c + r * Math.cos(a)} cy={c + r * Math.sin(a)} r={dotR} fill="#1f2937" />
