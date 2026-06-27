@@ -6548,7 +6548,8 @@
     "pt_s_gas": "Gas",
     "pt_s_unknown": "Unknown",
     "pt_ancient": "Ancient",
-    "pt_estimated": "est."
+    "pt_estimated": "est.",
+    "pt_bohr": "Bohr model"
   },
   "toolTags": {
     "spinner-wheel": [

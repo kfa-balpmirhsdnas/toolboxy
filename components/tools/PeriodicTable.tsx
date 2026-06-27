@@ -6,6 +6,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { ELEMENTS, type Element } from '@/lib/elements'
 import { ELEMENT_DETAIL } from '@/lib/elements-detail'
+import BohrModel from '@/components/tools/BohrModel'
 
 const tool = getToolBySlug('periodic-table')!
 
@@ -37,6 +38,7 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
   const d = ELEMENT_DETAIL[sel.n]
   const temp = (v: number | null) => (v == null ? '—' : `${v.toLocaleString()}°C`)
   const useText = d ? (lang === 'ko' ? d.useKo : lang === 'ja' ? d.useJa : d.useEn) : ''
+  const shellArr = d?.shells ? d.shells.split(',').map((s) => Number(s.trim())).filter((x) => x > 0) : []
 
   return (
     <ToolLayout tool={tool} lang={lang}>
@@ -47,7 +49,8 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
         </div>
 
         {/* detail card */}
-        <div ref={cardRef} className="scroll-mt-20 rounded-2xl border-2 p-4" style={{ borderColor: COLORS[sel.cat], background: COLORS[sel.cat] + '22' }}>
+        <div ref={cardRef} className="scroll-mt-20 rounded-2xl border-2 p-4 flex flex-col sm:flex-row gap-4" style={{ borderColor: COLORS[sel.cat], background: COLORS[sel.cat] + '22' }}>
+         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-4">
             <div className="shrink-0 w-20 h-20 rounded-xl flex flex-col items-center justify-center" style={{ background: COLORS[sel.cat] }}>
               <span className="text-[11px] text-gray-700 leading-none">{sel.n}</span>
@@ -77,6 +80,13 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
               {useText && <span className="col-span-2 sm:col-span-3">{t('pt_use')}: <b>{useText}</b></span>}
             </div>
           )}
+         </div>
+         {d && shellArr.length > 0 && (
+           <div className="shrink-0 self-center sm:self-start mx-auto sm:mx-0">
+             <div className="text-xs font-semibold text-gray-700 text-center mb-1">{t('pt_bohr')}</div>
+             <BohrModel shells={shellArr} color={COLORS[sel.cat]} symbol={sel.sym} number={sel.n} />
+           </div>
+         )}
         </div>
 
         {/* table */}

@@ -6910,7 +6910,8 @@
     "pt_s_gas": "気体",
     "pt_s_unknown": "不明",
     "pt_ancient": "古代から",
-    "pt_estimated": "推定"
+    "pt_estimated": "推定",
+    "pt_bohr": "ボーア模型"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
