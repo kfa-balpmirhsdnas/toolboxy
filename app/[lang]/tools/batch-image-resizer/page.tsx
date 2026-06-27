@@ -10,6 +10,7 @@ import { peekBatch, clearBatch } from '@/lib/batch-image/handoff'
 import { resizeImage, type ResizeMode, type ResizeAxis } from '@/lib/batch-image/resize'
 
 const tool = getToolBySlug('batch-image-resizer')!
+const PCT_PRESETS = [10, 25, 50, 75, 100, 150, 200]
 
 export default function BatchImageResizerPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
@@ -66,16 +67,19 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
           </div>
 
           {mode === 'maxside' && (
-            <label className="flex flex-wrap items-center gap-2 text-sm text-gray-700">
-              <select value={axis} onChange={(e) => setAxis(e.target.value as ResizeAxis)} className={selCls}>
-                <option value="longest">{t('bir_axis_longest')}</option>
-                <option value="shortest">{t('bir_axis_shortest')}</option>
-                <option value="width">{t('bir_axis_width')}</option>
-                <option value="height">{t('bir_axis_height')}</option>
-              </select>
-              <input type="number" min={1} value={maxSide} onChange={(e) => setMaxSide(e.target.value)} className={numInput} />
-              px <span className="text-xs text-gray-400">{t('bir_downscale_only')}</span>
-            </label>
+            <div className="space-y-2">
+              <label className="flex flex-wrap items-center gap-2 text-sm text-gray-700">
+                <select value={axis} onChange={(e) => setAxis(e.target.value as ResizeAxis)} className={selCls}>
+                  <option value="longest">{t('bir_axis_longest')}</option>
+                  <option value="shortest">{t('bir_axis_shortest')}</option>
+                  <option value="width">{t('bir_axis_width')}</option>
+                  <option value="height">{t('bir_axis_height')}</option>
+                </select>
+                <input type="number" min={1} value={maxSide} onChange={(e) => setMaxSide(e.target.value)} className={numInput} />
+                px
+              </label>
+              <p className="text-xs text-gray-400">{t('bir_desc_maxside')}</p>
+            </div>
           )}
 
           {mode === 'dimensions' && (
@@ -93,16 +97,21 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
                 <input type="checkbox" checked={keepRatio} onChange={(e) => setKeepRatio(e.target.checked)} className="accent-brand-600" />
                 {t('bir_keep_ratio')}
               </label>
+              <p className="text-xs text-gray-400">{t('bir_desc_dimensions')}</p>
             </div>
           )}
 
           {mode === 'percent' && (
-            <div className="flex items-center gap-3 text-sm text-gray-700">
-              <select value={percent} onChange={(e) => setPercent(e.target.value)} className={selCls}>
-                {[10, 25, 50, 75, 100, 150, 200].map((v) => <option key={v} value={v}>{v}%</option>)}
-              </select>
-              <input type="range" min={1} max={200} value={percent} onChange={(e) => setPercent(e.target.value)} className="flex-1 accent-brand-600" />
-              <span className="w-12 text-right text-gray-500">{percent}%</span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 text-sm text-gray-700">
+                <select value={PCT_PRESETS.includes(Number(percent)) ? percent : ''} onChange={(e) => setPercent(e.target.value)} className={selCls}>
+                  <option value="" disabled hidden></option>
+                  {PCT_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
+                </select>
+                <input type="range" min={1} max={200} value={percent} onChange={(e) => setPercent(e.target.value)} className="flex-1 accent-brand-600" />
+                <span className="w-12 text-right text-gray-500">{percent}%</span>
+              </div>
+              <p className="text-xs text-gray-400">{t('bir_desc_percent')}</p>
             </div>
           )}
         </div>
