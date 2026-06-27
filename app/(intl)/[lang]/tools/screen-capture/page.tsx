@@ -58,17 +58,24 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
   }
 
   function toBlob(type: string, quality?: number): Promise<Blob | null> {
-    return new Promise((res) => canvasRef.current?.toBlob(res, type, quality) ?? res(null))
+    return new Promise((res) => {
+      const c = canvasRef.current
+      if (!c) { res(null); return }
+      c.toBlob((b) => res(b), type, quality) // resolve only from the async callback
+    })
   }
 
   async function download(fmt: 'png' | 'jpg') {
     const blob = await toBlob(fmt === 'jpg' ? 'image/jpeg' : 'image/png', fmt === 'jpg' ? 0.92 : undefined)
-    if (!blob) return
+    if (!blob) { setError(t('sc_failed')); return }
+    const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
+    a.href = url
     a.download = `screenshot-${Date.now()}.${fmt}`
+    document.body.appendChild(a) // Firefox needs the anchor in the DOM
     a.click()
-    URL.revokeObjectURL(a.href)
+    a.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 1000) // revoke late so the download can start
     trackToolDownload('screen-capture', fmt)
   }
 
