@@ -6773,7 +6773,8 @@
     "bir_desc_percent": "비율을 기준으로 크기를 조절합니다.",
     "bir_quality": "품질",
     "bir_quality_desc": "품질이 높을수록 화질이 좋고 용량이 큽니다. (JPEG·WebP에 적용)",
-    "bir_size": "크기"
+    "bir_size": "크기",
+    "bir_png_disabled": "PNG는 무손실이라 품질을 조절할 수 없습니다."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

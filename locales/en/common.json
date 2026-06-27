@@ -6387,7 +6387,8 @@
     "bir_desc_percent": "Resizes the image by the percentage.",
     "bir_quality": "Quality",
     "bir_quality_desc": "Higher quality looks better but makes larger files. (JPEG/WebP)",
-    "bir_size": "Size"
+    "bir_size": "Size",
+    "bir_png_disabled": "PNG is lossless — quality cannot be adjusted."
   },
   "toolTags": {
     "spinner-wheel": [

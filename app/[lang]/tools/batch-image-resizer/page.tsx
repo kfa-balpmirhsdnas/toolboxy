@@ -7,7 +7,7 @@ import BatchImageProcessor, { type ProcessFn } from '@/components/tools/BatchIma
 import BatchToolNav from '@/components/tools/BatchToolNav'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { peekBatch, clearBatch } from '@/lib/batch-image/handoff'
-import { resizeImage, type ResizeMode, type ResizeAxis } from '@/lib/batch-image/resize'
+import { resizeImage, type ResizeMode, type ResizeAxis, type ResizeFormat } from '@/lib/batch-image/resize'
 
 const tool = getToolBySlug('batch-image-resizer')!
 const PCT_PRESETS = [10, 25, 50, 75, 100, 150, 200]
@@ -27,6 +27,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
   const [percent, setPercent] = useState('50')
   const [maxSide, setMaxSide] = useState('1920')
   const [quality, setQuality] = useState('85')
+  const [format, setFormat] = useState<ResizeFormat>('jpeg')
 
   // Auto-fill W/H from the first selected image (for the "해상도" / dimensions mode).
   const filledRef = useRef(false)
@@ -43,9 +44,9 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
     (file) => resizeImage(file, {
       mode, axis, width: Number(width) || undefined, height: Number(height) || undefined,
       keepRatio, percent: Number(percent) || 100, maxSide: Number(maxSide) || 0,
-      quality: Number(quality) || 85,
+      quality: Number(quality) || 85, format,
     }),
-    [mode, axis, width, height, keepRatio, percent, maxSide, quality],
+    [mode, axis, width, height, keepRatio, percent, maxSide, quality, format],
   )
 
   const modes: { id: ResizeMode; label: string }[] = [
@@ -125,8 +126,23 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
           </div>
 
           {/* Quality box (applies to JPEG/WebP output) — gauge runs 100 → 10 */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-2 sm:flex-1">
+          <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
             <p className="text-sm font-medium text-gray-700">{t('bir_quality')}</p>
+
+            {/* Output format — PNG is lossless so its button is disabled */}
+            <div className="flex flex-wrap gap-1.5">
+              {(['jpeg', 'webp'] as ResizeFormat[]).map((f) => (
+                <button key={f} onClick={() => setFormat(f)}
+                  className={'px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (format === f ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
+                  {f === 'jpeg' ? 'JPEG' : 'WebP'}
+                </button>
+              ))}
+              <button disabled title={t('bir_png_disabled')}
+                className="px-4 py-1.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-300 cursor-not-allowed">
+                PNG
+              </button>
+            </div>
+
             <div className="flex items-center gap-3 text-sm text-gray-700">
               <select value={QUAL_PRESETS.includes(Number(quality)) ? quality : ''} onChange={(e) => setQuality(e.target.value)} className={selCls}>
                 <option value="" disabled hidden></option>
