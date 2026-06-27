@@ -10,6 +10,7 @@ import { peekBatch, clearBatch } from '@/lib/batch-image/handoff'
 import { compressImage } from '@/lib/batch-image/compress'
 
 const tool = getToolBySlug('batch-image-compressor')!
+const QUAL_PRESETS = [10, 30, 50, 75, 85, 90, 95, 100]
 
 export default function BatchImageCompressorPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
@@ -17,44 +18,54 @@ export default function BatchImageCompressorPage({ params }: { params: { lang: s
   const [results, setResults] = useState<File[] | null>(null)
   useEffect(() => { clearBatch() }, [])
 
-  const [quality, setQuality] = useState('70')
+  const [quality, setQuality] = useState('75')
   const [useTarget, setUseTarget] = useState(false)
   const [targetKB, setTargetKB] = useState('300')
 
   const processFn = useCallback<ProcessFn>(
     (file) => compressImage(file, {
-      quality: Number(quality) || 70,
+      quality: Number(quality) || 75,
       targetKB: useTarget ? Number(targetKB) || undefined : undefined,
     }),
     [quality, useTarget, targetKB],
   )
 
+  const selCls = 'px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-400'
+
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-6">
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4">
-          <div className={useTarget ? 'opacity-40 pointer-events-none' : ''}>
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-sm font-medium text-gray-700">{t('bcp_quality')}</p>
-              <span className="text-sm text-gray-500">{quality}%</span>
+        {/* PC: quality left, target size right (equal height). Mobile: stacked. */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Quality box (disabled when target size is on) */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <p className="text-sm font-medium text-gray-700 shrink-0">{t('bcp_quality')}</p>
+              <p className="text-xs text-gray-400">{t('bir_quality_desc')}</p>
             </div>
-            <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(e.target.value)} disabled={useTarget} className="w-full accent-brand-600" />
-            <p className="text-xs text-gray-400 mt-1">{t('bcp_quality_hint')}</p>
+            <div className={'flex items-center gap-3 text-sm text-gray-700' + (useTarget ? ' opacity-40 pointer-events-none' : '')}>
+              <select value={QUAL_PRESETS.includes(Number(quality)) ? quality : ''} onChange={(e) => setQuality(e.target.value)} disabled={useTarget} className={selCls}>
+                <option value="" disabled hidden></option>
+                {QUAL_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
+              </select>
+              <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(e.target.value)} disabled={useTarget} className="flex-1 accent-brand-600" />
+              <span className="w-12 text-right text-gray-500">{quality}%</span>
+            </div>
           </div>
 
-          <div className="border-t border-gray-100 pt-4">
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+          {/* Target size box — toggle compresses to a size instead of a quality */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
+            <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={useTarget} onChange={(e) => setUseTarget(e.target.checked)} className="accent-brand-600" />
-              {t('bcp_target_size')}
+              <span className="text-sm font-medium text-gray-700">{t('bcp_target_size')}</span>
             </label>
-            {useTarget && (
-              <div className="mt-2 flex items-center gap-2 text-sm text-gray-700">
-                {t('bcp_aim_under')}
-                <input type="number" min={1} value={targetKB} onChange={(e) => setTargetKB(e.target.value)}
-                  className="w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-                {t('bcp_kb_each')} <span className="text-xs text-gray-400">(JPEG/WebP)</span>
-              </div>
-            )}
+            <p className="text-xs text-gray-400">{t('bcp_target_desc')}</p>
+            <div className={'flex items-center gap-2 text-sm text-gray-700' + (useTarget ? '' : ' opacity-40 pointer-events-none')}>
+              {t('bcp_aim_under')}
+              <input type="number" min={1} value={targetKB} onChange={(e) => setTargetKB(e.target.value)} disabled={!useTarget}
+                className="w-24 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+              {t('bcp_kb_each')}
+            </div>
           </div>
         </div>
 
