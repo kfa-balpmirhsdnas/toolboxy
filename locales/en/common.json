@@ -156,7 +156,7 @@
     "plug-type": "Free tool showing a destination country's power outlet shape, voltage, and frequency — and whether you need an adapter.",
     "youtube-thumbnail": "Free downloader that grabs a YouTube video's thumbnail in several resolutions from its link.",
     "savings-calculator": "Free savings calculator for the after-tax maturity amount from monthly deposits and an interest rate.",
-    "social-character-counter": "Free character counter for social media with per-platform limits for X, Instagram, and more.",
+    "social-character-counter": "Free real-time character counter for social media. Check per-platform limits for Instagram, X (Twitter), YouTube, TikTok, Threads and more.",
     "instagram-line-break": "Free tool that converts blank lines so Instagram keeps your line breaks instead of stripping them.",
     "hashtag-generator": "Free hashtag generator that turns your keywords into hashtags.",
     "spinner-wheel": "Free spinner wheel — add options, spin, and pick one at random. Great for lunch, chores, and raffles, with an option to remove the winner. Runs right in your browser, no install.",
@@ -6676,5 +6676,8 @@
         "Dedicated support"
       ]
     }
+  },
+  "toolTitles": {
+    "social-character-counter": "Instagram, X & YouTube Character Limit Checker"
   }
 }

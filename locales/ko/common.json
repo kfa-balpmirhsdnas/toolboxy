@@ -156,7 +156,7 @@
     "plug-type": "여행지 나라의 콘센트 모양·전압·주파수를 알려주는 무료 도구. 어댑터 필요 여부까지.",
     "youtube-thumbnail": "유튜브 영상 주소로 썸네일을 화질별로 받는 무료 다운로드 도구.",
     "savings-calculator": "월 납입액·이율로 적금 만기 수령액(세후)을 계산하는 무료 적금 계산기.",
-    "social-character-counter": "트위터·인스타 등 SNS 글자수와 플랫폼별 제한을 확인하는 무료 글자수 세기.",
+    "social-character-counter": "인스타·트위터(X)·유튜브 등 SNS 글자수와 플랫폼별 글자수 제한을 실시간으로 확인하는 무료 도구. 캡션·게시글·영상 제목 길이를 바로 체크하세요.",
     "instagram-line-break": "인스타그램에서 사라지는 줄바꿈·빈 줄을 유지되게 변환하는 무료 도구.",
     "hashtag-generator": "키워드를 해시태그로 만들어 주는 무료 해시태그 생성기.",
     "spinner-wheel": "항목을 입력하고 돌려서 무작위로 하나를 뽑는 무료 돌림판(룰렛). 점심 메뉴·청소 당번·경품 추첨에 좋고, 당첨 자동 제거 옵션도 있어요. 설치 없이 브라우저에서 바로.",
@@ -1745,7 +1745,7 @@
     "plug-type": "나라별 콘센트·플러그 타입",
     "youtube-thumbnail": "유튜브 썸네일 다운로드",
     "savings-calculator": "적금 계산기",
-    "social-character-counter": "SNS 글자수 세기",
+    "social-character-counter": "SNS 글자수 카운터",
     "instagram-line-break": "인스타그램 줄바꿈",
     "hashtag-generator": "해시태그 생성기",
     "spinner-wheel": "돌림판 (룰렛)",
@@ -6886,5 +6886,8 @@
         "전담 지원"
       ]
     }
+  },
+  "toolTitles": {
+    "social-character-counter": "인스타·트위터·유튜브 글자수 제한 확인"
   }
 }

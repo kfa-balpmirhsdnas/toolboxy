@@ -156,7 +156,7 @@
     "plug-type": "旅行先のコンセント形状・電圧・周波数が分かる無料ツール。アダプターの要否まで。",
     "youtube-thumbnail": "YouTubeのURLからサムネイルを画質別に取得する無料ダウンロードツール。",
     "savings-calculator": "毎月の積立額・利率から積立の満期受取額（税引後）を計算する無料ツール。",
-    "social-character-counter": "X・Instagramなどの文字数とプラットフォーム別制限を確認する無料の文字数カウント。",
+    "social-character-counter": "インスタ・X(Twitter)・YouTubeなどSNSの文字数と各プラットフォームの文字数制限をリアルタイムで確認できる無料ツール。キャプションや動画タイトルの長さをすぐにチェック。",
     "instagram-line-break": "Instagramで消える改行・空行を保持されるように変換する無料ツール。",
     "hashtag-generator": "キーワードをハッシュタグにする無料のハッシュタグ生成ツール。",
     "spinner-wheel": "項目を入れて回し、ランダムに1つ選ぶ無料ルーレット。ランチ・当番・抽選に便利で、当たりの自動削除オプションも。インストール不要でブラウザだけで動作します。",
@@ -6853,5 +6853,8 @@
         "専用サポート"
       ]
     }
+  },
+  "toolTitles": {
+    "social-character-counter": "インスタ・X・YouTube 文字数制限チェッカー"
   }
 }

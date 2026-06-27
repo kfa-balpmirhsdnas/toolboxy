@@ -167,7 +167,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'plug-type',category:'world',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['나라별 콘센트','플러그 타입','power plug type','콘센트 모양','travel adapter'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'youtube-thumbnail',category:'image',also:['social'],added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['유튜브 썸네일','썸네일 다운로드','youtube thumbnail','thumbnail downloader','유튜브 이미지'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'savings-calculator',category:'finance',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['적금 계산기','적금 이자','savings calculator','만기 수령액','적금 만기'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'social-character-counter',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['글자수 세기','sns 글자수','character counter','instagram caption length','트위터 글자수'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'social-character-counter',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['글자수 세기','sns 글자수','인스타 글자수','트위터 글자수','유튜브 글자수','글자수 제한','character counter','instagram caption length'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'instagram-line-break',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['인스타 줄바꿈','인스타그램 줄바꿈','instagram line break','캡션 줄바꿈','띄어쓰기'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'hashtag-generator',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['해시태그 생성','해시태그 만들기','hashtag generator','인스타 해시태그','#태그'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'voice-recorder',category:'audio',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['voice recorder','audio','microphone','record','ボイスレコーダー','음성 녹음'],maxFileSizeMB:{free:0,pro:0} },

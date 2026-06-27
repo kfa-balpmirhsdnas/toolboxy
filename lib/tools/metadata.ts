@@ -37,6 +37,7 @@ async function loadMessages(lang: string) {
     return (await import(`../../locales/${lang}/common.json`)).default as {
       toolDescriptions?: Record<string, string | { description?: string }>
       toolNames?: Record<string, string>
+      toolTitles?: Record<string, string>
     }
   } catch {
     return undefined
@@ -71,7 +72,13 @@ export async function buildToolMetadata(slug: string, lang: string): Promise<Met
   const description = descFrom(messages?.toolDescriptions?.[slug]) ?? FALLBACK[safeLang](name)
   // Use an absolute title so the brand appears exactly once (the root template
   // only reaches the [lang] layout, not deeper tool/category segments).
-  const title = `${name} – ${SUFFIX[safeLang]} | ToolBoxy`
+  // A tool may opt into a keyword-rich SEO <title> (toolTitles) that differs from
+  // its on-page display name (toolNames). When set, use it verbatim + brand and
+  // skip the "– {SUFFIX}" part so the SERP title stays short.
+  const seoTitle = messages?.toolTitles?.[slug]
+  const title = seoTitle
+    ? `${seoTitle} | ToolBoxy`
+    : `${name} – ${SUFFIX[safeLang]} | ToolBoxy`
   const url = `${BASE}/${safeLang}/tools/${slug}`
 
   const languages: Record<string, string> = {}
