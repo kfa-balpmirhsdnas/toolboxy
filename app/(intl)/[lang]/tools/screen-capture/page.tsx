@@ -207,7 +207,13 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
                 <button onClick={() => download('jpg')} className="px-5 py-2 bg-gray-700 text-white text-sm font-semibold rounded-xl hover:bg-gray-600 transition-colors">⬇ {t('sc_download_jpg')}</button>
                 <button onClick={copy} className="px-5 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">{copied ? '✓ ' + t('sc_copied') : '📋 ' + t('sc_copy')}</button>
                 <button onClick={capture} disabled={busy} className="px-5 py-2 bg-brand-50 text-brand-700 text-sm font-semibold rounded-xl hover:bg-brand-100 disabled:opacity-50 transition-colors">↻ {t('sc_recapture')}</button>
+                {/* Same timing toggle next to 다시 캡처 */}
+                <div className="inline-flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">
+                  <button onClick={() => setDelayMode(false)} disabled={busy} className={seg(!delayMode)}>{t('sc_mode_now')}</button>
+                  <button onClick={() => setDelayMode(true)} disabled={busy} className={seg(delayMode)}>{t('sc_mode_delay')}</button>
+                </div>
               </div>
+              {delayMode && <p className="text-xs text-gray-500">⏱ {t('sc_delay_hint')}</p>}
             </div>
           )}
 
