@@ -158,18 +158,20 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
           {live && (
             <div className="space-y-3">
               <div className="rounded-xl border border-brand-100 bg-brand-50 p-3.5 text-sm text-brand-800">💡 {t('sc_live_guide')}</div>
-              <div className="relative">
-                <video ref={videoRef} autoPlay muted playsInline className="block w-full max-h-[60vh] rounded-xl border border-gray-200 bg-black" />
+              {/* Controls go ABOVE the preview so they stay visible even when a
+                  full-screen source makes the preview tall. */}
+              <div className="flex flex-wrap gap-2">
+                <button onClick={grab} disabled={countdown !== null} className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 transition-colors">📸 {t('sc_grab')}</button>
+                <button onClick={() => grabAfter(3)} disabled={countdown !== null} className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 disabled:opacity-50 transition-colors">⏱ {t('sc_grab_3s')}</button>
+                <button onClick={cancelShare} className="px-5 py-2.5 bg-white border border-gray-300 text-gray-500 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">{t('sc_cancel')}</button>
+              </div>
+              <div className="relative w-fit mx-auto">
+                <video ref={videoRef} autoPlay muted playsInline className="block max-w-full max-h-[40vh] w-auto rounded-xl border border-gray-200 bg-black" />
                 {countdown !== null && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl">
                     <span className="text-7xl font-black text-white drop-shadow-lg">{countdown}</span>
                   </div>
                 )}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button onClick={grab} disabled={countdown !== null} className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 transition-colors">📸 {t('sc_grab')}</button>
-                <button onClick={() => grabAfter(3)} disabled={countdown !== null} className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 disabled:opacity-50 transition-colors">⏱ {t('sc_grab_3s')}</button>
-                <button onClick={cancelShare} className="px-5 py-2.5 bg-white border border-gray-300 text-gray-500 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors">{t('sc_cancel')}</button>
               </div>
             </div>
           )}
