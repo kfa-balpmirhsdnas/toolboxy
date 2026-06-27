@@ -6466,7 +6466,7 @@
     "bie_m_longest": "Longest side",
     "bie_m_dim": "Width / Height",
     "bie_m_ratio": "Percentage",
-    "sc_guide": "When you click Capture, your browser opens a picker to choose the screen, window, or tab to share. Pick one and it is captured as a single image.",
+    "sc_guide": "When you click Capture, your browser opens a picker to choose the screen, window, or tab to share. You then get a live preview and capture the exact moment with \"Capture now\".",
     "sc_capture": "Capture screen",
     "sc_capturing": "Capturing…",
     "sc_recapture": "Capture again",
@@ -6482,7 +6482,11 @@
     "sc_failed": "Couldn't capture the screen. Please try again.",
     "sc_desktoponly": "Screen capture works on desktop only",
     "sc_desktopdesc": "Your browser can't capture the screen. Open this page in Chrome, Edge, or Firefox on a desktop computer — phones and most in-app browsers aren't supported.",
-    "sc_fullres": "saved at full resolution"
+    "sc_fullres": "saved at full resolution",
+    "sc_live_guide": "Sharing started. When the screen or tab you want appears in the preview below, click \"Capture now\". To capture with a menu open, \"Capture in 3s\" is handy.",
+    "sc_grab": "Capture now",
+    "sc_grab_3s": "Capture in 3s",
+    "sc_cancel": "Cancel"
   },
   "toolTags": {
     "spinner-wheel": [
