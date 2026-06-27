@@ -82,7 +82,7 @@ export default function BatchImageWatermarkPage({ params }: { params: { lang: st
                   </label>
                   <label className="flex items-center gap-2">
                     {t('bwm_size')}
-                    <input type="range" min={1} max={20} value={fontPct} onChange={(e) => setFontPct(e.target.value)} className="w-16 sm:w-24 accent-brand-600" />
+                    <input type="range" min={1} max={20} value={fontPct} onChange={(e) => setFontPct(e.target.value)} className="w-20 sm:w-28 accent-brand-600" />
                     <span className="text-gray-500 w-9 text-right">{fontPct}%</span>
                   </label>
                 </div>
@@ -117,12 +117,12 @@ export default function BatchImageWatermarkPage({ params }: { params: { lang: st
                 <option value="" disabled hidden></option>
                 {OPACITY_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
               </select>
-              <input type="range" min={1} max={100} value={opacity} onChange={(e) => setOpacity(e.target.value)} className="flex-1 accent-brand-600" />
+              <input type="range" min={1} max={100} value={opacity} onChange={(e) => setOpacity(e.target.value)} className="w-14 sm:flex-1 accent-brand-600" />
               <span className="w-10 text-right text-gray-500 shrink-0">{opacity}%</span>
             </div>
 
-            <div className="flex items-center gap-3">
-              <p className="text-sm text-gray-600 shrink-0">{t('bwm_position')}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-gray-600 shrink-0 w-[39px]">{t('bwm_position')}</p>
               <div className="inline-grid grid-cols-3 gap-1 p-1 bg-gray-100 rounded-lg">
                 {POSITIONS.map((p) => (
                   <button key={p} onClick={() => setPosition(p)} aria-label={p}
