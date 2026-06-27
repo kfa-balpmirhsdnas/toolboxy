@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { useTranslations, useMessages } from 'next-intl'
 import { TOOLS, CATEGORY_META, type ToolCategory, type ToolMeta } from '@/lib/tools/registry'
@@ -49,6 +49,13 @@ export default function HomePage({ params }: { params: { lang: string } }) {
     [popularSlugs],
   )
 
+  // Results render below the hero/pills/CTA, so Enter scrolls down to them — the
+  // typed filter is live, but pressing Enter confirms it and reveals the results.
+  const resultsRef = useRef<HTMLElement>(null)
+  const scrollToResults = () => {
+    if (query.trim()) requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }
+
   const q = query.trim().toLowerCase()
   const results = useMemo(() => {
     if (!q) return []
@@ -87,6 +94,7 @@ export default function HomePage({ params }: { params: { lang: string } }) {
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') scrollToResults() }}
                 placeholder={t('search_placeholder')}
                 aria-label={t('search_placeholder')}
                 className="w-full pl-12 pr-5 py-3.5 rounded-xl text-gray-800 text-base shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-300/50 placeholder:text-gray-400"
@@ -127,7 +135,7 @@ export default function HomePage({ params }: { params: { lang: string } }) {
 
       {q ? (
         /* Search results */
-        <section className="max-w-6xl mx-auto px-4 py-12">
+        <section ref={resultsRef} className="max-w-6xl mx-auto px-4 py-12 scroll-mt-16">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('search_results')} · {results.length}</h2>
           {results.length === 0 ? (
             <p className="text-gray-500 py-12 text-center">{t('search_no_results')}</p>
