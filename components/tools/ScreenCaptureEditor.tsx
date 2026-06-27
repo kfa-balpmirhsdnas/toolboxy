@@ -268,45 +268,45 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
         <button onClick={undo} disabled={shapesRef.current.length === 0} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-40">↶ {t('sc_ed_undo')}</button>
         <button onClick={clearAll} disabled={shapesRef.current.length === 0} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-40"><span className="mr-1">🗑</span>{t('sc_ed_clear')}</button>
       </div>
-      {/* Colour palette — revealed by the single swatch button */}
-      {colorOpen && (
-        <div className="flex flex-wrap items-center gap-2" style={{ marginLeft: colorOffset }}>
-          <span className="text-xs text-gray-400 mr-1">🎨 {t('sc_ed_color')}</span>
-          {COLORS.map((c) => (
-            <button key={c} onClick={() => { setColor(c); setColorOpen(false) }} aria-label={c}
-              className={'w-6 h-6 rounded-full border transition-transform ' + (color === c ? 'ring-2 ring-offset-1 ring-brand-500 scale-110' : 'border-gray-300')}
-              style={{ background: c }} />
-          ))}
-        </div>
-      )}
-
-      {tool === 'crop' && <p className="text-xs text-gray-500" style={{ marginLeft: toolOffset }}>✂ {t('sc_ed_crop_hint')}</p>}
-      {tool === 'mosaic' && <p className="text-xs text-gray-500" style={{ marginLeft: toolOffset }}>🔲 {t('sc_ed_mosaic_hint')}</p>}
-
-      {/* Per-tool options */}
-      {tool === 'arrow' && (
-        <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>
-          <span className="text-xs text-gray-400 mr-1">↗ {t('sc_ed_thickness')}</span>
-          {[t('sc_ed_stroke_thin'), t('sc_ed_stroke_normal'), t('sc_ed_stroke_thick')].map((lbl, i) => (
-            <button key={i} onClick={() => setStrokeLevel(i)} className={optBtn(strokeLevel === i)}>{lbl}</button>
-          ))}
-        </div>
-      )}
-      {tool === 'rect' && (
-        <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>
-          <span className="text-xs text-gray-400 mr-1">▭ {t('sc_ed_shape')}</span>
-          <button onClick={() => setShapeKind('rect')} className={optBtn(shapeKind === 'rect')}>▭ {t('sc_ed_shape_rect')}</button>
-          <button onClick={() => setShapeKind('ellipse')} className={optBtn(shapeKind === 'ellipse')}>◯ {t('sc_ed_shape_circle')}</button>
-        </div>
-      )}
-      {tool === 'text' && (
-        <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>
-          <span className="text-xs text-gray-400 mr-1">T {t('sc_ed_fontsize')}</span>
-          {[t('sc_ed_font_small'), t('sc_ed_font_medium'), t('sc_ed_font_large')].map((lbl, i) => (
-            <button key={i} onClick={() => setFontLevel(i)} className={optBtn(fontLevel === i)}>{lbl}</button>
-          ))}
-        </div>
-      )}
+      {/* Contextual options — one fixed-height row (reserved space) so switching
+          tools or opening the palette never shifts the canvas below. Content is
+          aligned to start under whichever button is active. */}
+      <div className="min-h-[2rem] flex items-start">
+        {colorOpen ? (
+          <div className="flex flex-wrap items-center gap-2" style={{ marginLeft: colorOffset }}>
+            <span className="text-xs text-gray-400 mr-1">🎨 {t('sc_ed_color')}</span>
+            {COLORS.map((c) => (
+              <button key={c} onClick={() => { setColor(c); setColorOpen(false) }} aria-label={c}
+                className={'w-6 h-6 rounded-full border transition-transform ' + (color === c ? 'ring-2 ring-offset-1 ring-brand-500 scale-110' : 'border-gray-300')}
+                style={{ background: c }} />
+            ))}
+          </div>
+        ) : tool === 'crop' ? (
+          <p className="text-xs text-gray-500" style={{ marginLeft: toolOffset }}>✂ {t('sc_ed_crop_hint')}</p>
+        ) : tool === 'mosaic' ? (
+          <p className="text-xs text-gray-500" style={{ marginLeft: toolOffset }}>🔲 {t('sc_ed_mosaic_hint')}</p>
+        ) : tool === 'arrow' ? (
+          <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>
+            <span className="text-xs text-gray-400 mr-1">↗ {t('sc_ed_thickness')}</span>
+            {[t('sc_ed_stroke_thin'), t('sc_ed_stroke_normal'), t('sc_ed_stroke_thick')].map((lbl, i) => (
+              <button key={i} onClick={() => setStrokeLevel(i)} className={optBtn(strokeLevel === i)}>{lbl}</button>
+            ))}
+          </div>
+        ) : tool === 'rect' ? (
+          <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>
+            <span className="text-xs text-gray-400 mr-1">▭ {t('sc_ed_shape')}</span>
+            <button onClick={() => setShapeKind('rect')} className={optBtn(shapeKind === 'rect')}>▭ {t('sc_ed_shape_rect')}</button>
+            <button onClick={() => setShapeKind('ellipse')} className={optBtn(shapeKind === 'ellipse')}>◯ {t('sc_ed_shape_circle')}</button>
+          </div>
+        ) : tool === 'text' ? (
+          <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>
+            <span className="text-xs text-gray-400 mr-1">T {t('sc_ed_fontsize')}</span>
+            {[t('sc_ed_font_small'), t('sc_ed_font_medium'), t('sc_ed_font_large')].map((lbl, i) => (
+              <button key={i} onClick={() => setFontLevel(i)} className={optBtn(fontLevel === i)}>{lbl}</button>
+            ))}
+          </div>
+        ) : null}
+      </div>
 
       {/* Canvas */}
       <div className="text-center">
