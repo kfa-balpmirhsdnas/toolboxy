@@ -54,6 +54,8 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
     { id: 'percent', label: t('bir_mode_percent') },
   ]
   const numInput = 'w-24 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
+  // Narrower input for W/H so they + the keep-ratio checkbox fit one row, even on mobile.
+  const dimInput = 'w-14 px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
   const selCls = 'px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-400'
 
   return (
@@ -74,7 +76,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
             </div>
 
             {/* Description + controls in one fixed-min-height block so switching modes doesn't shift the layout */}
-            <div className="min-h-[6.5rem] sm:min-h-[6rem] space-y-3">
+            <div className="min-h-[5.25rem] sm:min-h-[4.5rem] space-y-3">
               <p className="text-xs text-gray-400">
                 {mode === 'maxside' ? t('bir_desc_maxside') : mode === 'dimensions' ? t('bir_desc_dimensions') : t('bir_desc_percent')}
               </p>
@@ -93,17 +95,15 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
               )}
 
               {mode === 'dimensions' && (
-                // Mobile: W/H row, then checkbox below. Desktop: checkbox to the right of the inputs.
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-700">
-                    <label className="flex items-center gap-2">W
-                      <input type="number" min={1} placeholder={t('bir_auto')} value={width} onChange={(e) => setWidth(e.target.value)} className={numInput} />
-                    </label>
-                    <label className="flex items-center gap-2">H
-                      <input type="number" min={1} placeholder={t('bir_auto')} value={height} onChange={(e) => setHeight(e.target.value)} className={numInput} />
-                    </label>
-                  </div>
-                  <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                // W, H and the keep-ratio checkbox on one row (mobile included).
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-gray-700">
+                  <label className="flex items-center gap-1.5">W
+                    <input type="number" min={1} placeholder={t('bir_auto')} value={width} onChange={(e) => setWidth(e.target.value)} className={dimInput} />
+                  </label>
+                  <label className="flex items-center gap-1.5">H
+                    <input type="number" min={1} placeholder={t('bir_auto')} value={height} onChange={(e) => setHeight(e.target.value)} className={dimInput} />
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={keepRatio} onChange={(e) => setKeepRatio(e.target.checked)} className="accent-brand-600" />
                     {t('bir_keep_ratio')}
                   </label>
