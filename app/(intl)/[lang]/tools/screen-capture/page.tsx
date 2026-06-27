@@ -21,6 +21,7 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
   const [error, setError] = useState('')
   const [supported, setSupported] = useState<boolean | null>(null)
   const [dim, setDim] = useState<{ w: number; h: number } | null>(null)
+  const [autoSaved, setAutoSaved] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
@@ -28,13 +29,16 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
   }, [])
 
   async function capture() {
-    setError(''); setCopied(false); setBusy(true)
+    setError(''); setCopied(false); setAutoSaved(false); setBusy(true)
     if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getDisplayMedia) {
       setError(t('sc_unsupported')); setBusy(false); return
     }
     let stream: MediaStream | null = null
     try {
       stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false })
+      const track = stream.getVideoTracks()[0]
+      // What did the user share? 'window' | 'browser' (tab) | 'monitor' (full screen) | undefined
+      const surface = track.getSettings().displaySurface
       const video = document.createElement('video')
       video.srcObject = stream
       video.muted = true
@@ -51,6 +55,13 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
       setDim({ w: canvas.width, h: canvas.height })
       setImgUrl(canvas.toDataURL('image/png'))
       trackToolUsed('screen-capture')
+      // Tab / full screen hide this page behind the captured content, so the user
+      // can't reach the download button — auto-save the PNG. Only 'window' keeps
+      // the page visible; an unknown surface falls back to auto-saving too.
+      if (surface !== 'window') {
+        setAutoSaved(true)
+        download('png')
+      }
     } catch (e) {
       setError(e instanceof Error && e.name === 'NotAllowedError' ? t('sc_cancelled') : t('sc_failed'))
     } finally {
@@ -117,6 +128,9 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
             </button>
           ) : (
             <div className="space-y-3">
+              {autoSaved && (
+                <p className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl p-3">✅ {t('sc_autosaved')}</p>
+              )}
               {/* Preview fits a box (max height); the saved/copied image stays full 1:1 resolution */}
               <img src={imgUrl} alt={t('sc_preview_alt')} className="block mx-auto max-w-full max-h-[60vh] w-auto rounded-xl border border-gray-200 bg-[repeating-conic-gradient(#f3f4f6_0_25%,#fff_0_50%)] bg-[length:20px_20px]" />
               {dim && <p className="text-center text-xs text-gray-400">📐 {dim.w} × {dim.h} px · {t('sc_fullres')}</p>}
