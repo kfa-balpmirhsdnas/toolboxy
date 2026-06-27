@@ -2,7 +2,7 @@
   "site": {
     "name": "ToolBoxy",
     "tagline": "誰でも使える無料オンラインツール",
-    "description": "PDF・画像・動画・テキスト・開発者向けツールなど100以上の無料ツール。インストール不要。"
+    "description": "PDF・画像・動画・テキスト・開発者向けツールなど300以上の無料ツール。インストール不要。"
   },
   "nav": {
     "tools": "ツール",
@@ -43,7 +43,7 @@
   "home": {
     "hero_title": "無料オンラインツール",
     "hero_subtitle": "誰でも、どこでも",
-    "hero_description": "PDF・画像・動画・テキストなど100以上の無料ツール。登録不要。ブラウザですぐ使える。",
+    "hero_description": "PDF・画像・動画・テキストなど300以上の無料ツール。登録不要。ブラウザですぐ使える。",
     "search_placeholder": "ツールを検索...",
     "popular_tools": "人気ツール",
     "all_tools": "すべてのツール",

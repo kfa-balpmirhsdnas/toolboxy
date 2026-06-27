@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: { lang: string } })
   const lang = SUPPORTED_LOCALES.includes(params.lang) ? params.lang : 'en'
 
   let description =
-    '100+ free online tools for PDF, image, text and developer tasks. No installation, runs in your browser.'
+    '300+ free online tools for PDF, image, text and developer tasks. No installation, runs in your browser.'
   try {
     const m = (await import(`../../../locales/${lang}/common.json`)).default as {
       site?: { description?: string }

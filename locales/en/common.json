@@ -2,7 +2,7 @@
   "site": {
     "name": "ToolBoxy",
     "tagline": "Free Online Tools for Everyone",
-    "description": "100+ free online tools for PDF, image, video, text, and developer tasks. No installation required."
+    "description": "300+ free online tools for PDF, image, video, text, and developer tasks. No installation required."
   },
   "nav": {
     "tools": "Tools",
@@ -43,7 +43,7 @@
   "home": {
     "hero_title": "Free Online Tools",
     "hero_subtitle": "for Everyone",
-    "hero_description": "100+ free utilities for PDF, image, video, text and more. No sign-up required. Works in your browser.",
+    "hero_description": "300+ free utilities for PDF, image, video, text and more. No sign-up required. Works in your browser.",
     "search_placeholder": "Search tools...",
     "popular_tools": "Popular Tools",
     "all_tools": "All Tools",

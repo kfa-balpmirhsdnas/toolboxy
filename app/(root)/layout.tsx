@@ -7,7 +7,7 @@ import RootHtml from '@/components/layout/RootHtml'
 // active locale. Two root layouts → there is intentionally no app/layout.tsx.
 export const metadata: Metadata = {
   title: { template: '%s | ToolBoxy', default: 'ToolBoxy – Free Online Tools' },
-  description: 'ToolBoxy: 100+ free online tools for developers, designers, and everyday users.',
+  description: 'ToolBoxy: 300+ free online tools for developers, designers, and everyday users.',
   metadataBase: new URL('https://www.toolboxy.net'),
   manifest: '/api/manifest?start=/en',
   appleWebApp: { capable: true, title: 'ToolBoxy', statusBarStyle: 'default' },

@@ -2,7 +2,7 @@
   "site": {
     "name": "ToolBoxy",
     "tagline": "누구나 쓰는 무료 온라인 도구",
-    "description": "PDF, 이미지, 영상, 텍스트, 개발자 도구까지. 100개 이상의 무료 온라인 도구. 설치 불필요."
+    "description": "PDF, 이미지, 영상, 텍스트, 개발자 도구까지. 300개 이상의 무료 온라인 도구. 설치 불필요."
   },
   "nav": {
     "tools": "도구",
@@ -43,7 +43,7 @@
   "home": {
     "hero_title": "무료 온라인 도구",
     "hero_subtitle": "누구나, 어디서나",
-    "hero_description": "PDF, 이미지, 영상, 텍스트 등 100개 이상의 무료 도구. 회원가입 불필요. 브라우저에서 바로 사용.",
+    "hero_description": "PDF, 이미지, 영상, 텍스트 등 300개 이상의 무료 도구. 회원가입 불필요. 브라우저에서 바로 사용.",
     "search_placeholder": "도구 검색...",
     "popular_tools": "인기 도구",
     "all_tools": "모든 도구",
