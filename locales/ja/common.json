@@ -6885,7 +6885,12 @@
     "np_lineheight": "行間",
     "np_sm": "小",
     "np_md": "標準",
-    "np_lg": "大"
+    "np_lg": "大",
+    "np_font_malgun": "Malgun Gothic",
+    "np_font_dotum": "Dotum",
+    "np_font_gulim": "Gulim",
+    "np_font_batang": "Batang",
+    "np_font_gungsuh": "Gungsuh"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

@@ -6912,7 +6912,12 @@
     "np_lineheight": "줄간격",
     "np_sm": "작음",
     "np_md": "보통",
-    "np_lg": "큼"
+    "np_lg": "큼",
+    "np_font_malgun": "맑은 고딕",
+    "np_font_dotum": "돋움",
+    "np_font_gulim": "굴림",
+    "np_font_batang": "바탕",
+    "np_font_gungsuh": "궁서"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

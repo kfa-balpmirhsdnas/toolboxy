@@ -6523,7 +6523,12 @@
     "np_lineheight": "Spacing",
     "np_sm": "Small",
     "np_md": "Normal",
-    "np_lg": "Large"
+    "np_lg": "Large",
+    "np_font_malgun": "Malgun Gothic",
+    "np_font_dotum": "Dotum",
+    "np_font_gulim": "Gulim",
+    "np_font_batang": "Batang",
+    "np_font_gungsuh": "Gungsuh"
   },
   "toolTags": {
     "spinner-wheel": [

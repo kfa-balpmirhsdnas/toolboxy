@@ -8,11 +8,11 @@ import { trackToolUsed } from '@/lib/gtag'
 
 const tool = getToolBySlug('online-notepad')!
 const STORAGE_KEY = 'toolboxy-notepad-v2'      // { docs, activeId }
-const PREFS_KEY = 'toolboxy-notepad-prefs'     // { fontSize, fontFam, lineH }
 const OLD_KEY = 'toolboxy-notepad'             // legacy single-note string
-type Doc = { id: string; name: string; text: string }
 type Lvl = 'sm' | 'md' | 'lg'
-type Fam = 'mono' | 'sans' | 'serif'
+type Fam = 'sans' | 'malgun' | 'dotum' | 'gulim' | 'batang' | 'gungsuh' | 'serif' | 'mono'
+// Per-document settings live on the doc itself so each tab keeps its own look.
+type Doc = { id: string; name: string; text: string; fam: Fam; size: Lvl; lh: Lvl }
 const uid = () => Math.random().toString(36).slice(2, 9)
 // Tab title = today's date as YYMMDD (e.g. 260628).
 const dateTag = () => {
@@ -21,23 +21,33 @@ const dateTag = () => {
 }
 
 const SIZE_CLS: Record<Lvl, string> = { sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[18px]' }
-const FAM_CLS: Record<Fam, string> = { mono: 'font-mono', sans: 'font-sans', serif: 'font-serif' }
 const LH_CLS: Record<Lvl, string> = { sm: 'leading-snug', md: 'leading-relaxed', lg: 'leading-loose' }
+// System-font stacks (Korean web-safe families fall back gracefully off-Windows).
+const FONTS: { v: Fam; css: string }[] = [
+  { v: 'sans', css: 'system-ui,-apple-system,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif' },
+  { v: 'malgun', css: '"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo",sans-serif' },
+  { v: 'dotum', css: '"Dotum","돋움",sans-serif' },
+  { v: 'gulim', css: '"Gulim","굴림",sans-serif' },
+  { v: 'batang', css: '"Batang","바탕",serif' },
+  { v: 'gungsuh', css: '"Gungsuh","궁서",serif' },
+  { v: 'serif', css: 'Georgia,"Times New Roman",serif' },
+  { v: 'mono', css: 'Consolas,"D2Coding",ui-monospace,monospace' },
+]
+const FAM_CSS = (f: Fam) => (FONTS.find((x) => x.v === f) ?? FONTS[FONTS.length - 1]).css
+const DEFAULTS = { fam: 'mono' as Fam, size: 'md' as Lvl, lh: 'md' as Lvl }
 
 export default function OnlineNotepadPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
-  const first = useRef<Doc>({ id: uid(), name: dateTag(), text: '' }).current
+  const first = useRef<Doc>({ id: uid(), name: dateTag(), text: '', ...DEFAULTS }).current
 
   const [docs, setDocs] = useState<Doc[]>([first])
   const [activeId, setActiveId] = useState(first.id)
   const [savedAt, setSavedAt] = useState('')
   const [copied, setCopied] = useState(false)
   const [renaming, setRenaming] = useState<string | null>(null)
-  const [fontSize, setFontSize] = useState<Lvl>('md')
-  const [fontFam, setFontFam] = useState<Fam>('mono')
-  const [lineH, setLineH] = useState<Lvl>('md')
   const tracked = useRef(false)
   const taRef = useRef<HTMLTextAreaElement>(null)
+  const wrapRef = useRef<HTMLDivElement>(null)
   const histories = useRef<Record<string, { hist: string[]; idx: number }>>({ [first.id]: { hist: [''], idx: 0 } })
   const commitTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const ready = useRef(false)
@@ -45,6 +55,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
 
   const active = docs.find((d) => d.id === activeId) ?? docs[0]
   const text = active?.text ?? ''
+  const fam = active?.fam ?? DEFAULTS.fam
+  const size = active?.size ?? DEFAULTS.size
+  const lh = active?.lh ?? DEFAULTS.lh
 
   // Unique auto name: 260628, then 260628_2, 260628_3 …
   function uniqueName(existing: Doc[]) {
@@ -54,17 +67,18 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     let i = 2; while (used.has(`${base}_${i}`)) i++; return `${base}_${i}`
   }
 
-  // Restore on mount (+ prefs), migrating the legacy single note if present.
+  // Restore on mount, migrating the legacy single note if present.
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) {
-        const data = JSON.parse(raw) as { docs?: Doc[]; activeId?: string }
+        const data = JSON.parse(raw) as { docs?: Partial<Doc>[]; activeId?: string }
         if (data.docs?.length) {
-          setDocs(data.docs)
-          setActiveId(data.docs.some((d) => d.id === data.activeId) ? data.activeId! : data.docs[0].id)
+          const restored = data.docs.map((d) => ({ ...DEFAULTS, ...d } as Doc))
+          setDocs(restored)
+          setActiveId(restored.some((d) => d.id === data.activeId) ? data.activeId! : restored[0].id)
           const h: Record<string, { hist: string[]; idx: number }> = {}
-          for (const d of data.docs) h[d.id] = { hist: [d.text], idx: 0 }
+          for (const d of restored) h[d.id] = { hist: [d.text], idx: 0 }
           histories.current = h
         }
       } else {
@@ -74,8 +88,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           histories.current[first.id] = { hist: [old], idx: 0 }
         }
       }
-      const p = localStorage.getItem(PREFS_KEY)
-      if (p) { const pr = JSON.parse(p); if (pr.fontSize) setFontSize(pr.fontSize); if (pr.fontFam) setFontFam(pr.fontFam); if (pr.lineH) setLineH(pr.lineH) }
     } catch { /* ignore */ }
     ready.current = true
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,13 +105,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     return () => clearTimeout(id)
   }, [docs, activeId, params.lang])
 
-  // Persist display preferences.
-  useEffect(() => {
-    if (!ready.current) return
-    try { localStorage.setItem(PREFS_KEY, JSON.stringify({ fontSize, fontFam, lineH })) } catch { /* ignore */ }
-  }, [fontSize, fontFam, lineH])
-
-  function setDocText(id: string, v: string) { setSavedAt(''); setDocs((ds) => ds.map((d) => (d.id === id ? { ...d, text: v } : d))) }
+  function patchDoc(id: string, p: Partial<Doc>) { setDocs((ds) => ds.map((d) => (d.id === id ? { ...d, ...p } : d))) }
+  function setDocText(id: string, v: string) { setSavedAt(''); patchDoc(id, { text: v }) }
 
   function commit(v: string) {
     const h = histories.current[activeId]; if (!h) return
@@ -130,7 +137,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
 
   // Tabs
   function addDoc() {
-    const d: Doc = { id: uid(), name: uniqueName(docs), text: '' }
+    const src = docs.find((d) => d.id === activeId) ?? docs[0]
+    // A new tab inherits the current tab's font / size / line-spacing.
+    const d: Doc = { id: uid(), name: uniqueName(docs), text: '', fam: src?.fam ?? DEFAULTS.fam, size: src?.size ?? DEFAULTS.size, lh: src?.lh ?? DEFAULTS.lh }
     histories.current[d.id] = { hist: [''], idx: 0 }
     setDocs((ds) => [...ds, d]); setActiveId(d.id)
   }
@@ -139,7 +148,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     delete histories.current[id]
     const rest = docs.filter((x) => x.id !== id)
     if (rest.length === 0) {
-      const nd: Doc = { id: uid(), name: uniqueName([]), text: '' }
+      const nd: Doc = { id: uid(), name: uniqueName([]), text: '', ...DEFAULTS }
       histories.current[nd.id] = { hist: [''], idx: 0 }
       setDocs([nd]); setActiveId(nd.id); return
     }
@@ -149,7 +158,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     }
     setDocs(rest)
   }
-  function renameDoc(id: string, name: string) { setDocs((ds) => ds.map((d) => (d.id === id ? { ...d, name: name || d.name } : d))) }
+  function renameDoc(id: string, name: string) { patchDoc(id, { name: name || docs.find((d) => d.id === id)?.name || dateTag() }) }
 
   function download() {
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
@@ -179,13 +188,18 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
 
   const iconBtn = 'p-1.5 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors'
   const selCls = 'rounded-md border border-gray-200 bg-white px-1.5 py-0.5 text-xs text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-brand-400'
-  const bullet = <span className="text-brand-500 text-[9px] leading-none">●</span>
+  // Icon hints matching each setting's nature: a sample glyph (typeface),
+  // ↕ (size), ≡ (line spacing).
+  const fontIcon = ({ ko: '가', ja: 'あ', en: 'A' } as Record<string, string>)[params.lang] || 'A'
+  const ico = (g: string) => <span className="inline-flex w-4 justify-center text-gray-400 text-[11px] font-bold leading-none">{g}</span>
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-3">
-        {/* Tabs — one document per tab (auto-named by date) */}
-        <div className="flex items-stretch gap-1 overflow-x-auto border-b border-gray-200">
+      <div ref={wrapRef} className="space-y-3 scroll-mt-20">
+        {/* Tabs — one document per tab (auto-named by date).
+            overflow-y-hidden stops the phantom 1px vertical scrollbar that
+            overflow-x-auto otherwise spawns (its up/down arrows). */}
+        <div className="flex items-stretch gap-1 overflow-x-auto overflow-y-hidden border-b border-gray-200">
           {docs.map((d) => {
             const on = d.id === activeId
             return (
@@ -221,24 +235,22 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               </button>
             </div>
             <span className="w-px h-5 bg-gray-200" />
-            {/* Display settings — selects with a bulleted title */}
+            {/* Per-tab display settings — selects with a nature-matching icon */}
             <div className="flex items-center gap-x-3 gap-y-1.5 flex-wrap text-xs text-gray-500">
-              <label className="flex items-center gap-1">{bullet}{t('np_font')}
-                <select value={fontFam} onChange={(e) => setFontFam(e.target.value as Fam)} className={selCls}>
-                  <option value="mono">{t('np_font_mono')}</option>
-                  <option value="sans">{t('np_font_sans')}</option>
-                  <option value="serif">{t('np_font_serif')}</option>
+              <label className="flex items-center gap-1">{ico(fontIcon)}{t('np_font')}
+                <select value={fam} onChange={(e) => patchDoc(activeId, { fam: e.target.value as Fam })} className={selCls}>
+                  {FONTS.map((f) => <option key={f.v} value={f.v}>{t('np_font_' + f.v)}</option>)}
                 </select>
               </label>
-              <label className="flex items-center gap-1">{bullet}{t('np_size')}
-                <select value={fontSize} onChange={(e) => setFontSize(e.target.value as Lvl)} className={selCls}>
+              <label className="flex items-center gap-1">{ico('↕')}{t('np_size')}
+                <select value={size} onChange={(e) => patchDoc(activeId, { size: e.target.value as Lvl })} className={selCls}>
                   <option value="sm">{t('np_sm')}</option>
                   <option value="md">{t('np_md')}</option>
                   <option value="lg">{t('np_lg')}</option>
                 </select>
               </label>
-              <label className="flex items-center gap-1">{bullet}{t('np_lineheight')}
-                <select value={lineH} onChange={(e) => setLineH(e.target.value as Lvl)} className={selCls}>
+              <label className="flex items-center gap-1">{ico('≡')}{t('np_lineheight')}
+                <select value={lh} onChange={(e) => patchDoc(activeId, { lh: e.target.value as Lvl })} className={selCls}>
                   <option value="sm">{t('np_sm')}</option>
                   <option value="md">{t('np_md')}</option>
                   <option value="lg">{t('np_lg')}</option>
@@ -262,10 +274,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           value={text}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
-          onFocus={() => taRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          onFocus={() => wrapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
           placeholder={t('np_placeholder')}
           spellCheck={false}
-          className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 resize-y scroll-mt-20 focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[fontSize]} ${FAM_CLS[fontFam]} ${LH_CLS[lineH]}`}
+          style={{ fontFamily: FAM_CSS(fam) }}
+          className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
         />
 
         <div className="flex gap-2 flex-wrap">
