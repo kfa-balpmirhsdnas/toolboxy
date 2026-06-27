@@ -6514,7 +6514,16 @@
     "np_default_name": "Note",
     "np_newtab": "New note",
     "np_closetab": "Close",
-    "np_close_confirm": "Close this note? Its saved content will be lost."
+    "np_close_confirm": "Close this note? Its saved content will be lost.",
+    "np_font": "Font",
+    "np_font_mono": "Mono",
+    "np_font_sans": "Sans",
+    "np_font_serif": "Serif",
+    "np_size": "Size",
+    "np_lineheight": "Spacing",
+    "np_sm": "Small",
+    "np_md": "Normal",
+    "np_lg": "Large"
   },
   "toolTags": {
     "spinner-wheel": [

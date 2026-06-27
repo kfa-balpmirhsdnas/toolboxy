@@ -6903,7 +6903,16 @@
     "np_default_name": "메모",
     "np_newtab": "새 메모",
     "np_closetab": "닫기",
-    "np_close_confirm": "이 메모를 닫을까요? 저장된 내용이 사라집니다."
+    "np_close_confirm": "이 메모를 닫을까요? 저장된 내용이 사라집니다.",
+    "np_font": "글꼴",
+    "np_font_mono": "고정폭",
+    "np_font_sans": "기본",
+    "np_font_serif": "세리프",
+    "np_size": "크기",
+    "np_lineheight": "줄간격",
+    "np_sm": "작음",
+    "np_md": "보통",
+    "np_lg": "큼"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

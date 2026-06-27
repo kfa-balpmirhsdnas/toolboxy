@@ -6876,7 +6876,16 @@
     "np_default_name": "メモ",
     "np_newtab": "新規メモ",
     "np_closetab": "閉じる",
-    "np_close_confirm": "このメモを閉じますか？保存された内容は失われます。"
+    "np_close_confirm": "このメモを閉じますか？保存された内容は失われます。",
+    "np_font": "フォント",
+    "np_font_mono": "等幅",
+    "np_font_sans": "ゴシック",
+    "np_font_serif": "明朝",
+    "np_size": "サイズ",
+    "np_lineheight": "行間",
+    "np_sm": "小",
+    "np_md": "標準",
+    "np_lg": "大"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
