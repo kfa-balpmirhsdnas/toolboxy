@@ -41,6 +41,8 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
   // Localized name (opt-in via the `toolNames` namespace), else the English name.
   const messages = useMessages() as { toolNames?: Record<string, string>; categories?: Record<string, string>; toolTags?: Record<string, string[]> }
   const name = messages?.toolNames?.[tool.slug] ?? slugToName(tool.slug)
+  // Compact name for the breadcrumb — drops any descriptive "(...)" suffix.
+  const shortName = name.split('(')[0].trim() || name
   const catLabel = messages?.categories?.[tool.category] ?? catMeta.label
   const tags = messages?.toolTags?.[tool.slug] ?? tool.tags ?? []
 
@@ -70,7 +72,7 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
           {catLabel}
         </Link>
         <span>/</span>
-        <span className="text-gray-900 font-medium">{name}</span>
+        <span className="text-gray-900 font-medium">{shortName}</span>
       </nav>
 
       {/* Title */}
