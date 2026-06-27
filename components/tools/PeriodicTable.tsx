@@ -32,7 +32,8 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
   const lang = params.lang
   const [sel, setSel] = useState<Element>(ELEMENTS[0])
   const cardRef = useRef<HTMLDivElement>(null)
-  const select = (e: Element) => { setSel(e); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+  // On desktop the card is sticky (always visible), so only scroll-to-card on mobile.
+  const select = (e: Element) => { setSel(e); if (window.innerWidth < 640) cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
   const name = (e: Element) => (lang === 'ko' ? e.ko : lang === 'ja' ? e.ja : e.en)
   const catName = (c: string) => t(`pt_c_${c.replace('-', '_')}`)
   const d = ELEMENT_DETAIL[sel.n]
@@ -49,7 +50,7 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
         </div>
 
         {/* detail card */}
-        <div ref={cardRef} className="scroll-mt-20 rounded-2xl border-2 p-4 flex flex-col sm:flex-row gap-4" style={{ borderColor: COLORS[sel.cat], background: COLORS[sel.cat] + '22' }}>
+        <div ref={cardRef} className="scroll-mt-20 sm:sticky sm:top-16 sm:z-10 rounded-2xl border-2 p-4 flex flex-col sm:flex-row gap-4 shadow-sm" style={{ borderColor: COLORS[sel.cat], background: `linear-gradient(${COLORS[sel.cat]}22, ${COLORS[sel.cat]}22), #fff` }}>
          <div className="flex-1 min-w-0">
           <div className="flex items-center gap-4">
             <div className="shrink-0 w-20 h-20 rounded-xl flex flex-col items-center justify-center" style={{ background: COLORS[sel.cat] }}>
@@ -84,7 +85,9 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
          {d && shellArr.length > 0 && (
            <div className="shrink-0 self-center sm:self-start mx-auto sm:mx-0">
              <div className="text-xs font-semibold text-gray-700 text-center mb-1">{t('pt_bohr')}</div>
-             <BohrModel shells={shellArr} color={COLORS[sel.cat]} symbol={sel.sym} number={sel.n} />
+             <div className="rounded-xl bg-white/55 px-2 py-2">
+               <BohrModel shells={shellArr} color={COLORS[sel.cat]} symbol={sel.sym} number={sel.n} />
+             </div>
            </div>
          )}
         </div>
