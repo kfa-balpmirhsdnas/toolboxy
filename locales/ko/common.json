@@ -6767,7 +6767,10 @@
     "bir_axis_longest": "긴축",
     "bir_axis_shortest": "짧은축",
     "bir_axis_width": "가로축",
-    "bir_axis_height": "세로축"
+    "bir_axis_height": "세로축",
+    "bir_desc_maxside": "특정축 길이를 기준으로 크기를 축소합니다. (축소만 가능)",
+    "bir_desc_dimensions": "해상도(가로·세로)를 기준으로 크기를 조절합니다.",
+    "bir_desc_percent": "비율을 기준으로 크기를 조절합니다."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

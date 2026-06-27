@@ -6381,7 +6381,10 @@
     "bir_axis_longest": "Longest axis",
     "bir_axis_shortest": "Shortest axis",
     "bir_axis_width": "Width",
-    "bir_axis_height": "Height"
+    "bir_axis_height": "Height",
+    "bir_desc_maxside": "Shrinks the image based on the chosen axis length. (downscale only)",
+    "bir_desc_dimensions": "Resizes the image to the target resolution.",
+    "bir_desc_percent": "Resizes the image by the percentage."
   },
   "toolTags": {
     "spinner-wheel": [
