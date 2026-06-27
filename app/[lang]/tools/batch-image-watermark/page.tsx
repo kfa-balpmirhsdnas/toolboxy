@@ -11,6 +11,12 @@ import { watermarkImage, type WatermarkType, type Position } from '@/lib/batch-i
 
 const tool = getToolBySlug('batch-image-watermark')!
 const POSITIONS: Position[] = ['tl', 'tc', 'tr', 'ml', 'mc', 'mr', 'bl', 'bc', 'br']
+const OPACITY_PRESETS = [20, 40, 60, 80, 100]
+const ARROWS: Record<Position, string> = {
+  tl: '↖', tc: '↑', tr: '↗',
+  ml: '←', mc: '●', mr: '→',
+  bl: '↙', bc: '↓', br: '↘',
+}
 
 export default function BatchImageWatermarkPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
@@ -45,6 +51,7 @@ export default function BatchImageWatermarkPage({ params }: { params: { lang: st
   )
 
   const inp = 'px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
+  const selCls = 'px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-400'
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -66,15 +73,15 @@ export default function BatchImageWatermarkPage({ params }: { params: { lang: st
             {type === 'text' && (
               <div className="space-y-3">
                 <input value={text} onChange={(e) => setText(e.target.value)} placeholder={t('bwm_text_ph')} className={inp + ' w-full'} />
-                <div className="flex flex-wrap items-center gap-4">
-                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <label className="flex items-center gap-2 shrink-0">
                     {t('bwm_color')}
                     <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-9 h-9 rounded border border-gray-200 cursor-pointer" />
                   </label>
-                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <label className="flex items-center gap-2 flex-1 min-w-0">
                     {t('bwm_size')}
-                    <input type="range" min={1} max={20} value={fontPct} onChange={(e) => setFontPct(e.target.value)} className="accent-brand-600" />
-                    <span className="text-gray-500 w-9">{fontPct}%</span>
+                    <input type="range" min={1} max={20} value={fontPct} onChange={(e) => setFontPct(e.target.value)} className="flex-1 accent-brand-600" />
+                    <span className="text-gray-500 w-9 shrink-0 text-right">{fontPct}%</span>
                   </label>
                 </div>
               </div>
@@ -101,19 +108,25 @@ export default function BatchImageWatermarkPage({ params }: { params: { lang: st
           {/* Style box: opacity + position */}
           <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
             <p className="text-sm font-medium text-gray-700">{t('bwm_box_style')}</p>
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              {t('bwm_opacity')}
-              <input type="range" min={1} max={100} value={opacity} onChange={(e) => setOpacity(e.target.value)} className="flex-1 accent-brand-600" />
-              <span className="text-gray-500 w-9">{opacity}%</span>
-            </label>
-
             <div>
-              <p className="text-sm text-gray-600 mb-1.5">{t('bwm_position')}</p>
+              <p className="text-sm text-gray-600 mb-1.5">{t('bwm_opacity')}</p>
+              <div className="flex items-center gap-3 text-sm text-gray-700">
+                <select value={OPACITY_PRESETS.includes(Number(opacity)) ? opacity : ''} onChange={(e) => setOpacity(e.target.value)} className={selCls}>
+                  <option value="" disabled hidden></option>
+                  {OPACITY_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
+                </select>
+                <input type="range" min={1} max={100} value={opacity} onChange={(e) => setOpacity(e.target.value)} className="flex-1 accent-brand-600" />
+                <span className="w-12 text-right text-gray-500">{opacity}%</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-gray-600 shrink-0">{t('bwm_position')}</p>
               <div className="inline-grid grid-cols-3 gap-1 p-1 bg-gray-100 rounded-lg">
                 {POSITIONS.map((p) => (
                   <button key={p} onClick={() => setPosition(p)} aria-label={p}
-                    className={'w-8 h-8 rounded transition-colors ' + (position === p ? 'bg-brand-600' : 'bg-white hover:bg-brand-100')}>
-                    <span className={'block w-1.5 h-1.5 rounded-full mx-auto ' + (position === p ? 'bg-white' : 'bg-gray-400')} />
+                    className={'w-8 h-8 rounded text-sm leading-none flex items-center justify-center transition-colors ' + (position === p ? 'bg-brand-600 text-white' : 'bg-white text-gray-400 hover:bg-brand-100')}>
+                    {ARROWS[p]}
                   </button>
                 ))}
               </div>
