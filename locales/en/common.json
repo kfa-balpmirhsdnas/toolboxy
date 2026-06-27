@@ -798,7 +798,8 @@
     "batch-image-compressor": "Batch compress images — shrink many photos at once with a quality slider or a target file size, and see how much each one saved. Free and private, all in your browser.",
     "batch-image-watermark": "Batch watermark images — add a text or logo watermark to many images at once, with position, size, and opacity control. Free and private, all in your browser, no uploads.",
     "batch-image-rename": "Batch rename images — rename many image files by rule (prefix, numbering, find & replace, case, date…) with a live preview, then download them as a zip. Free and private, in your browser.",
-    "batch-image-editor": "Batch Image Editor (All-in-One) — resize, convert, compress, watermark, and rename many images in one pass. Free and private: everything runs in your browser, nothing is uploaded."
+    "batch-image-editor": "Batch Image Editor (All-in-One) — resize, convert, compress, watermark, and rename many images in one pass. Free and private: everything runs in your browser, nothing is uploaded.",
+    "screen-capture": "Free online screen capture — grab any screen, window, or tab as an image and download it as PNG/JPG or copy it to the clipboard. Everything runs in your browser; nothing is uploaded."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1585,6 +1586,19 @@
         {
           "q": "Is the original quality kept?",
           "a": "Resize/convert/compress re-encode at the quality you choose (PNG is lossless). Each enabled task re-encodes once, so chaining many lossy steps can add up — use only what you need."
+        }
+      ]
+    },
+    "screen-capture": {
+      "intro": "Pick a screen to share, capture it as one image, then save or copy it.",
+      "faq": [
+        {
+          "q": "What happens when I click Capture?",
+          "a": "Your browser opens a picker to choose the screen, window, or tab to share. The selected screen is captured as a single image and sharing ends immediately."
+        },
+        {
+          "q": "Does it work on a phone?",
+          "a": "No. Screen capture (getDisplayMedia) only works in Chrome, Edge, or Firefox on desktop. Mobile browsers are not supported."
         }
       ]
     }
@@ -3612,6 +3626,11 @@
       "Upload your images once (drag & drop or select).",
       "Turn on the tasks you want (resize, convert, compress, watermark, rename) and set their options.",
       "Apply — the enabled tasks run in order and the results download as a zip."
+    ],
+    "screen-capture": [
+      "Click \"Capture screen\" and choose the screen, window, or tab in the picker.",
+      "The captured image appears as a preview.",
+      "Download it as PNG/JPG or copy it to the clipboard to paste anywhere."
     ]
   },
   "games": {
@@ -6446,7 +6465,23 @@
     "bie_always_last": "always last",
     "bie_m_longest": "Longest side",
     "bie_m_dim": "Width / Height",
-    "bie_m_ratio": "Percentage"
+    "bie_m_ratio": "Percentage",
+    "sc_guide": "When you click Capture, your browser opens a picker to choose the screen, window, or tab to share. Pick one and it is captured as a single image.",
+    "sc_capture": "Capture screen",
+    "sc_capturing": "Capturing…",
+    "sc_recapture": "Capture again",
+    "sc_download_png": "Download PNG",
+    "sc_download_jpg": "Download JPG",
+    "sc_copy": "Copy to clipboard",
+    "sc_copied": "Copied!",
+    "sc_copyfail": "Couldn't copy to the clipboard — your browser may not support copying images.",
+    "sc_privacy": "Everything runs in your browser; no image is ever uploaded to a server.",
+    "sc_preview_alt": "Captured screen",
+    "sc_unsupported": "This browser doesn't support screen capture. Use Chrome or Edge on desktop.",
+    "sc_cancelled": "Screen sharing was cancelled or blocked.",
+    "sc_failed": "Couldn't capture the screen. Please try again.",
+    "sc_desktoponly": "Screen capture works on desktop only",
+    "sc_desktopdesc": "Your browser can't capture the screen. Open this page in Chrome, Edge, or Firefox on a desktop computer — phones and most in-app browsers aren't supported."
   },
   "toolTags": {
     "spinner-wheel": [
@@ -6630,7 +6665,8 @@
     "batch-image-compressor": "Batch Image Compressor (reduce file size)",
     "batch-image-watermark": "Batch Image Watermark (add logo & text)",
     "batch-image-rename": "Batch Image Rename (numbering & rules)",
-    "batch-image-editor": "Batch Image Editor (All-in-One)"
+    "batch-image-editor": "Batch Image Editor (All-in-One)",
+    "screen-capture": "Online Screen Capture"
   },
   "howtoNote": {
     "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",
