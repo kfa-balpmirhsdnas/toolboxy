@@ -6388,7 +6388,8 @@
     "bir_quality": "Quality",
     "bir_quality_desc": "Higher quality looks better but makes larger files. (JPEG/WebP)",
     "bir_size": "Size",
-    "bir_png_disabled": "PNG is lossless — quality cannot be adjusted."
+    "bir_png_disabled": "PNG is lossless — quality cannot be adjusted.",
+    "bir_fmt_keep": "Original"
   },
   "toolTags": {
     "spinner-wheel": [

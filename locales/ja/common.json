@@ -6741,7 +6741,8 @@
     "bir_quality": "画質",
     "bir_quality_desc": "画質が高いほどきれいですがファイルは大きくなります。（JPEG・WebP）",
     "bir_size": "サイズ",
-    "bir_png_disabled": "PNGは可逆のため、画質は調整できません。"
+    "bir_png_disabled": "PNGは可逆のため、画質は調整できません。",
+    "bir_fmt_keep": "元のまま"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

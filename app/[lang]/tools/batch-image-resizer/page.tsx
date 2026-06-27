@@ -27,7 +27,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
   const [percent, setPercent] = useState('50')
   const [maxSide, setMaxSide] = useState('1920')
   const [quality, setQuality] = useState('85')
-  const [format, setFormat] = useState<ResizeFormat>('jpeg')
+  const [format, setFormat] = useState<'keep' | ResizeFormat>('keep')
 
   // Auto-fill W/H from the first selected image (for the "해상도" / dimensions mode).
   const filledRef = useRef(false)
@@ -44,7 +44,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
     (file) => resizeImage(file, {
       mode, axis, width: Number(width) || undefined, height: Number(height) || undefined,
       keepRatio, percent: Number(percent) || 100, maxSide: Number(maxSide) || 0,
-      quality: Number(quality) || 85, format,
+      quality: Number(quality) || 85, format: format === 'keep' ? undefined : format,
     }),
     [mode, axis, width, height, keepRatio, percent, maxSide, quality, format],
   )
@@ -131,10 +131,10 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
 
             {/* Output format — PNG is lossless so its button is disabled */}
             <div className="flex flex-wrap gap-1.5">
-              {(['jpeg', 'webp'] as ResizeFormat[]).map((f) => (
+              {(['keep', 'jpeg', 'webp'] as const).map((f) => (
                 <button key={f} onClick={() => setFormat(f)}
                   className={'px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (format === f ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                  {f === 'jpeg' ? 'JPEG' : 'WebP'}
+                  {f === 'keep' ? t('bir_fmt_keep') : f === 'jpeg' ? 'JPEG' : 'WebP'}
                 </button>
               ))}
               <button disabled title={t('bir_png_disabled')}
