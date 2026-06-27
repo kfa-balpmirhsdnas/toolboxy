@@ -6568,11 +6568,11 @@
     "encoding-converter": "Text Encoding Converter",
     "csv-to-excel": "CSV ↔ Excel Converter",
     "online-notepad": "Online Notepad",
-    "batch-image-resizer": "Batch Image Resizer",
-    "batch-image-converter": "Bulk Image Converter",
-    "batch-image-compressor": "Batch Image Compressor",
-    "batch-image-watermark": "Batch Image Watermark",
-    "batch-image-rename": "Batch Image Rename"
+    "batch-image-resizer": "Batch Image Resizer (resize by resolution)",
+    "batch-image-converter": "Bulk Image Converter (PNG / JPG / WebP)",
+    "batch-image-compressor": "Batch Image Compressor (reduce file size)",
+    "batch-image-watermark": "Batch Image Watermark (add logo & text)",
+    "batch-image-rename": "Batch Image Rename (numbering & rules)"
   },
   "howtoNote": {
     "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",

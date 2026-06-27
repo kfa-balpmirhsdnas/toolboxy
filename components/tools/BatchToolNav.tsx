@@ -20,6 +20,8 @@ export default function BatchToolNav({ current, lang, results }: Props) {
   const names = useTranslations('toolNames')
   const t = useTranslations('toolui')
   const others = BATCH_TOOLS.filter((b) => b.slug !== current)
+  // Drop the descriptive "(...)" suffix from tool names for the compact nav.
+  const shortName = (slug: string) => names(slug).split('(')[0].trim()
 
   function continueWith(slug: string) {
     if (results?.length) stashBatch(results)
@@ -41,7 +43,7 @@ export default function BatchToolNav({ current, lang, results }: Props) {
                 onClick={() => continueWith(b.slug)}
                 className="px-3 py-1.5 rounded-xl bg-white border border-brand-200 text-sm text-brand-700 hover:bg-brand-100 transition-colors"
               >
-                {b.emoji} {names(b.slug)}
+                {b.emoji} {shortName(b.slug)}
               </button>
             ))}
           </div>
@@ -59,7 +61,7 @@ export default function BatchToolNav({ current, lang, results }: Props) {
               className="flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 text-sm text-gray-700 hover:border-brand-400 hover:bg-brand-50 transition-colors"
             >
               <span>{b.emoji}</span>
-              <span className="truncate">{names(b.slug)}</span>
+              <span className="truncate">{shortName(b.slug)}</span>
             </Link>
           ))}
         </div>

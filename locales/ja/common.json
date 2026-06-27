@@ -1921,11 +1921,11 @@
     "encoding-converter": "文字コード変換",
     "csv-to-excel": "CSV ↔ Excel 変換",
     "online-notepad": "オンラインメモ帳",
-    "batch-image-resizer": "画像一括リサイズ",
-    "batch-image-converter": "画像一括変換",
-    "batch-image-compressor": "画像一括圧縮",
-    "batch-image-watermark": "画像一括透かし",
-    "batch-image-rename": "画像一括リネーム"
+    "batch-image-resizer": "画像一括リサイズ (解像度を調整)",
+    "batch-image-converter": "画像一括変換 (PNG・JPG・WebPなど)",
+    "batch-image-compressor": "画像一括圧縮 (容量を削減)",
+    "batch-image-watermark": "画像一括透かし (ロゴ・テキストを追加)",
+    "batch-image-rename": "画像一括リネーム (連番・ルール)"
   },
   "toolAbout": {
     "resistor-color-code": "抵抗のカラーバンドから抵抗値を読み取るツールです。4本または5本を選び、各バンドの色を選択すると、抵抗値（Ω・kΩ・MΩ・GΩ）と許容差（±%）を計算し、抵抗の図にバンドをプレビュー表示します。電子部品を扱うときにカラーコードをすばやく確認できます。すべてブラウザ内で処理され、インストール不要で無料です。",
