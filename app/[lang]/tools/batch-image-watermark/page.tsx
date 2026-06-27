@@ -82,7 +82,7 @@ export default function BatchImageWatermarkPage({ params }: { params: { lang: st
                   </label>
                   <label className="flex items-center gap-2">
                     {t('bwm_size')}
-                    <input type="range" min={1} max={20} value={fontPct} onChange={(e) => setFontPct(e.target.value)} className="w-20 sm:w-28 accent-brand-600" />
+                    <input type="range" min={1} max={20} value={fontPct} onChange={(e) => setFontPct(e.target.value)} className="w-24 sm:w-[134px] accent-brand-600" />
                     <span className="text-gray-500 w-9 text-right">{fontPct}%</span>
                   </label>
                 </div>
@@ -117,7 +117,7 @@ export default function BatchImageWatermarkPage({ params }: { params: { lang: st
                 <option value="" disabled hidden></option>
                 {OPACITY_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
               </select>
-              <input type="range" min={1} max={100} value={opacity} onChange={(e) => setOpacity(e.target.value)} className="w-14 sm:flex-1 accent-brand-600" />
+              <input type="range" min={1} max={100} value={opacity} onChange={(e) => setOpacity(e.target.value)} className="w-28 sm:flex-1 accent-brand-600" />
               <span className="w-10 text-right text-gray-500 shrink-0">{opacity}%</span>
             </div>
 
