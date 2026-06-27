@@ -6896,7 +6896,21 @@
     "np_font_ja_yusei": "手書き",
     "np_dl_login": "ログインして保存",
     "np_xs": "極小",
-    "np_xl": "特大"
+    "np_xl": "特大",
+    "pt_config": "電子配置",
+    "pt_shells": "電子殻",
+    "pt_state": "常温の状態",
+    "pt_melt": "融点",
+    "pt_boil": "沸点",
+    "pt_eneg": "電気陰性度",
+    "pt_discovered": "発見年",
+    "pt_use": "主な用途",
+    "pt_s_solid": "固体",
+    "pt_s_liquid": "液体",
+    "pt_s_gas": "気体",
+    "pt_s_unknown": "不明",
+    "pt_ancient": "古代から",
+    "pt_estimated": "推定"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

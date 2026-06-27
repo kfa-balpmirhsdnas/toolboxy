@@ -6923,7 +6923,21 @@
     "np_font_ko_pen": "나눔손글씨",
     "np_dl_login": "로그인 후 다운로드",
     "np_xs": "아주작음",
-    "np_xl": "매우큼"
+    "np_xl": "매우큼",
+    "pt_config": "전자 배치",
+    "pt_shells": "전자 껍질",
+    "pt_state": "상온 상태",
+    "pt_melt": "녹는점",
+    "pt_boil": "끓는점",
+    "pt_eneg": "전기음성도",
+    "pt_discovered": "발견 연도",
+    "pt_use": "주요 용도",
+    "pt_s_solid": "고체",
+    "pt_s_liquid": "액체",
+    "pt_s_gas": "기체",
+    "pt_s_unknown": "불명",
+    "pt_ancient": "고대부터",
+    "pt_estimated": "추정"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

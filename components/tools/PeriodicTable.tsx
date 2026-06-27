@@ -1,12 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { ELEMENTS, type Element } from '@/lib/elements'
+import { ELEMENT_DETAIL } from '@/lib/elements-detail'
 
 const tool = getToolBySlug('periodic-table')!
+
+// Render orbital occupancy digits as superscripts: "[Ar] 3d6 4s2" -> "[Ar] 3d⁶ 4s²".
+const SUP: Record<string, string> = { 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' }
+const prettyConfig = (c: string) => c.replace(/([spdf])(\d+)/g, (_, l, d) => l + d.split('').map((x: string) => SUP[x]).join(''))
 
 const COLORS: Record<string, string> = {
   nonmetal: '#86efac', noble: '#c4b5fd', alkali: '#fca5a5', alkaline: '#fdba74',
@@ -25,8 +30,13 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
   const t = useTranslations('toolui')
   const lang = params.lang
   const [sel, setSel] = useState<Element>(ELEMENTS[0])
+  const cardRef = useRef<HTMLDivElement>(null)
+  const select = (e: Element) => { setSel(e); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
   const name = (e: Element) => (lang === 'ko' ? e.ko : lang === 'ja' ? e.ja : e.en)
   const catName = (c: string) => t(`pt_c_${c.replace('-', '_')}`)
+  const d = ELEMENT_DETAIL[sel.n]
+  const temp = (v: number | null) => (v == null ? '—' : `${v.toLocaleString()}°C`)
+  const useText = d ? (lang === 'ko' ? d.useKo : lang === 'ja' ? d.useJa : d.useEn) : ''
 
   return (
     <ToolLayout tool={tool} lang={lang}>
@@ -37,22 +47,36 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
         </div>
 
         {/* detail card */}
-        <div className="flex items-center gap-4 rounded-2xl border-2 p-4" style={{ borderColor: COLORS[sel.cat], background: COLORS[sel.cat] + '22' }}>
-          <div className="shrink-0 w-20 h-20 rounded-xl flex flex-col items-center justify-center" style={{ background: COLORS[sel.cat] }}>
-            <span className="text-[11px] text-gray-700 leading-none">{sel.n}</span>
-            <span className="text-3xl font-bold text-gray-900 leading-tight">{sel.sym}</span>
-          </div>
-          <div className="min-w-0">
-            <div className="text-xl font-bold text-gray-900">{name(sel)}</div>
-            <div className="text-xs text-gray-600 mt-0.5">{sel.en} · {sel.ko} · {sel.ja}</div>
-            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-700">
-              <span>{t('pt_number')}: <b>{sel.n}</b></span>
-              <span>{t('pt_mass')}: <b>{sel.mass}</b></span>
-              <span>{t('pt_group')}: <b>{sel.cat === 'lanthanide' || sel.cat === 'actinide' ? '—' : sel.group}</b></span>
-              <span>{t('pt_period')}: <b>{sel.period}</b></span>
-              <span>{t('pt_category')}: <b>{catName(sel.cat)}</b></span>
+        <div ref={cardRef} className="scroll-mt-20 rounded-2xl border-2 p-4" style={{ borderColor: COLORS[sel.cat], background: COLORS[sel.cat] + '22' }}>
+          <div className="flex items-center gap-4">
+            <div className="shrink-0 w-20 h-20 rounded-xl flex flex-col items-center justify-center" style={{ background: COLORS[sel.cat] }}>
+              <span className="text-[11px] text-gray-700 leading-none">{sel.n}</span>
+              <span className="text-3xl font-bold text-gray-900 leading-tight">{sel.sym}</span>
+            </div>
+            <div className="min-w-0">
+              <div className="text-xl font-bold text-gray-900">{name(sel)}</div>
+              <div className="text-xs text-gray-600 mt-0.5">{sel.en} · {sel.ko} · {sel.ja}</div>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-700">
+                <span>{t('pt_number')}: <b>{sel.n}</b></span>
+                <span>{t('pt_mass')}: <b>{sel.mass}</b></span>
+                <span>{t('pt_group')}: <b>{sel.cat === 'lanthanide' || sel.cat === 'actinide' ? '—' : sel.group}</b></span>
+                <span>{t('pt_period')}: <b>{sel.period}</b></span>
+                <span>{t('pt_category')}: <b>{catName(sel.cat)}</b></span>
+              </div>
             </div>
           </div>
+          {d && (
+            <div className="mt-3 pt-3 border-t border-black/10 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5 text-sm text-gray-700">
+              <span className="col-span-2 sm:col-span-3">{t('pt_config')}: <b>{prettyConfig(d.config)}</b>{d.configEstimated && <span className="text-gray-500"> ({t('pt_estimated')})</span>}</span>
+              <span>{t('pt_shells')}: <b>{d.shells ? d.shells.split(',').length : '—'}</b></span>
+              <span>{t('pt_state')}: <b>{t(`pt_s_${d.state}`)}</b>{d.stateEstimated && <span className="text-gray-500"> ({t('pt_estimated')})</span>}</span>
+              <span>{t('pt_eneg')}: <b>{d.eneg ?? '—'}</b></span>
+              <span>{t('pt_melt')}: <b>{temp(d.melt)}</b></span>
+              <span>{t('pt_boil')}: <b>{temp(d.boil)}</b></span>
+              <span>{t('pt_discovered')}: <b>{d.year ?? t('pt_ancient')}</b></span>
+              {useText && <span className="col-span-2 sm:col-span-3">{t('pt_use')}: <b>{useText}</b></span>}
+            </div>
+          )}
         </div>
 
         {/* table */}
@@ -65,7 +89,7 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
             {ELEMENTS.map((e) => {
               const p = pos(e)
               return (
-                <button key={e.n} onClick={() => setSel(e)} style={{ gridColumn: p.col, gridRow: p.row, background: COLORS[e.cat] }}
+                <button key={e.n} onClick={() => select(e)} style={{ gridColumn: p.col, gridRow: p.row, background: COLORS[e.cat] }}
                   aria-label={name(e)}
                   className={`aspect-square rounded-[3px] p-0.5 text-center transition hover:ring-2 hover:ring-gray-800 hover:z-10 ${sel.n === e.n ? 'ring-2 ring-gray-900 z-10' : ''}`}>
                   <div className="text-[7px] text-gray-700 leading-none">{e.n}</div>

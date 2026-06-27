@@ -6534,7 +6534,21 @@
     "np_font_en_mono": "Mono",
     "np_dl_login": "Sign in to download",
     "np_xs": "X-Small",
-    "np_xl": "X-Large"
+    "np_xl": "X-Large",
+    "pt_config": "Electron config",
+    "pt_shells": "Shells",
+    "pt_state": "State (RT)",
+    "pt_melt": "Melting pt",
+    "pt_boil": "Boiling pt",
+    "pt_eneg": "Electronegativity",
+    "pt_discovered": "Discovered",
+    "pt_use": "Main uses",
+    "pt_s_solid": "Solid",
+    "pt_s_liquid": "Liquid",
+    "pt_s_gas": "Gas",
+    "pt_s_unknown": "Unknown",
+    "pt_ancient": "Ancient",
+    "pt_estimated": "est."
   },
   "toolTags": {
     "spinner-wheel": [
