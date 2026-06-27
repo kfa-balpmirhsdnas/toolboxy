@@ -28,17 +28,27 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
   const [maxSide, setMaxSide] = useState('1920')
   const [quality, setQuality] = useState('85')
   const [adjustQuality, setAdjustQuality] = useState(true) // false = keep original (no recompression)
+  const [imgDims, setImgDims] = useState<{ w: number; h: number } | null>(null) // first selected image's size
 
-  // Auto-fill W/H from the first selected image (for the "해상도" / dimensions mode).
+  // Capture the first selected image's size, and prefill W/H (해상도 mode).
   const filledRef = useRef(false)
   const onFilesChange = useCallback((files: File[]) => {
-    if (!files.length) { filledRef.current = false; return }
+    if (!files.length) { filledRef.current = false; setImgDims(null); return }
     if (filledRef.current) return
     filledRef.current = true
     createImageBitmap(files[0])
-      .then((bmp) => { setWidth(String(bmp.width)); setHeight(String(bmp.height)); bmp.close?.() })
+      .then((bmp) => { setWidth(String(bmp.width)); setHeight(String(bmp.height)); setImgDims({ w: bmp.width, h: bmp.height }); bmp.close?.() })
       .catch(() => { /* undecodable — leave inputs empty */ })
   }, [])
+
+  // Default the "특정 축" value to the first image's dimension for the chosen axis.
+  useEffect(() => {
+    if (!imgDims) return
+    const v = axis === 'longest' ? Math.max(imgDims.w, imgDims.h)
+      : axis === 'shortest' ? Math.min(imgDims.w, imgDims.h)
+      : axis === 'width' ? imgDims.w : imgDims.h
+    setMaxSide(String(v))
+  }, [imgDims, axis])
 
   const processFn = useCallback<ProcessFn>(
     (file) => resizeImage(file, {
