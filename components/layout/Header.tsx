@@ -67,7 +67,13 @@ export default function Header() {
 
   const currentLangLabel = LANGS.find((l) => l.code === lang)?.label ?? 'English'
 
-  const handleSignOut = async () => { await signOut(auth); setMenuOpen(false); router.push(`/${lang}`) }
+  // Stay on the current page after logout (it just re-renders signed-out), unless
+  // we're on a login-gated page a guest can't use — then fall back to home.
+  const handleSignOut = async () => {
+    await signOut(auth)
+    setMenuOpen(false)
+    if (/\/(dashboard|admin)(\/|$)/.test(pathname)) router.push(`/${lang}`)
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
