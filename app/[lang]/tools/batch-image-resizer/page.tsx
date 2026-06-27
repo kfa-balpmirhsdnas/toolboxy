@@ -53,7 +53,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
     { id: 'dimensions', label: t('bir_mode_dimensions') },
     { id: 'percent', label: t('bir_mode_percent') },
   ]
-  const numInput = 'w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
+  const numInput = 'w-24 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
   const selCls = 'px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-400'
 
   return (
@@ -69,8 +69,13 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
             ))}
           </div>
 
-          {mode === 'maxside' && (
-            <div className="space-y-2">
+          {/* Description + controls in one fixed-min-height block so switching modes doesn't shift the layout */}
+          <div className="min-h-[6.5rem] sm:min-h-[4.25rem] space-y-3">
+            <p className="text-xs text-gray-400">
+              {mode === 'maxside' ? t('bir_desc_maxside') : mode === 'dimensions' ? t('bir_desc_dimensions') : t('bir_desc_percent')}
+            </p>
+            <div>
+            {mode === 'maxside' && (
               <label className="flex flex-wrap items-center gap-2 text-sm text-gray-700">
                 <select value={axis} onChange={(e) => setAxis(e.target.value as ResizeAxis)} className={selCls}>
                   <option value="longest">{t('bir_axis_longest')}</option>
@@ -81,13 +86,10 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
                 <input type="number" min={1} value={maxSide} onChange={(e) => setMaxSide(e.target.value)} className={numInput} />
                 px
               </label>
-              <p className="text-xs text-gray-400">{t('bir_desc_maxside')}</p>
-            </div>
-          )}
+            )}
 
-          {mode === 'dimensions' && (
-            <div className="space-y-3">
-              {/* Mobile: W/H row, then checkbox below. Desktop: checkbox to the right of the inputs. */}
+            {mode === 'dimensions' && (
+              // Mobile: W/H row, then checkbox below. Desktop: checkbox to the right of the inputs.
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <div className="flex flex-wrap items-center gap-3 text-sm text-gray-700">
                   <label className="flex items-center gap-2">W
@@ -102,12 +104,9 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
                   {t('bir_keep_ratio')}
                 </label>
               </div>
-              <p className="text-xs text-gray-400">{t('bir_desc_dimensions')}</p>
-            </div>
-          )}
+            )}
 
-          {mode === 'percent' && (
-            <div className="space-y-2">
+            {mode === 'percent' && (
               <div className="flex items-center gap-3 text-sm text-gray-700">
                 <select value={PCT_PRESETS.includes(Number(percent)) ? percent : ''} onChange={(e) => setPercent(e.target.value)} className={selCls}>
                   <option value="" disabled hidden></option>
@@ -116,9 +115,9 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
                 <input type="range" min={1} max={200} value={percent} onChange={(e) => setPercent(e.target.value)} className="flex-1 accent-brand-600" />
                 <span className="w-12 text-right text-gray-500">{percent}%</span>
               </div>
-              <p className="text-xs text-gray-400">{t('bir_desc_percent')}</p>
+            )}
             </div>
-          )}
+          </div>
 
           {/* Quality — independent of the size mode (applies to JPEG/WebP output) */}
           <div className="border-t border-gray-100 pt-4 space-y-2">
