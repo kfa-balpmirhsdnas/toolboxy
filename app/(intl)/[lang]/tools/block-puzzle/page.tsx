@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('block-puzzle')!
@@ -52,7 +53,11 @@ export default function BlockPuzzlePage({ params }: { params: { lang: string } }
   const [, force] = useState(0)
   const [score, setScore] = useState(0)
   const [over, setOver] = useState(false)
+  const [best, setBest] = useState(0)
   const playing = stage.playing && !over
+
+  useEffect(() => { try { setBest(Number(localStorage.getItem('bp-best') || 0)) } catch { /* */ } }, [])
+  useEffect(() => { if (over) setBest((b) => { const n = Math.max(b, score); try { localStorage.setItem('bp-best', String(n)) } catch { /* */ } return n }) }, [over]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const reset = useCallback(() => { setBoard(emptyBoard()); pieceRef.current = spawn(); setScore(0); setOver(false); force((n) => n + 1) }, [])
   useEffect(() => { if (stage.phase === 'playing') reset() }, [stage.phase]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -124,6 +129,7 @@ export default function BlockPuzzlePage({ params }: { params: { lang: string } }
         </div>
         <p className="text-xs text-gray-400">{t('bp_help')}</p>
       </div>
+      <Leaderboard game="block-puzzle" score={best || null} better="higher" />
     </ToolLayout>
   )
 }

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('whack-a-mole')!
@@ -16,8 +17,12 @@ export default function WhackAMolePage({ params }: { params: { lang: string } })
   const [bonk, setBonk] = useState(-1)
   const [score, setScore] = useState(0)
   const [time, setTime] = useState(DURATION)
+  const [best, setBest] = useState(0)
   const timers = useRef<ReturnType<typeof setTimeout>[]>([])
   const playing = stage.playing && time > 0
+
+  useEffect(() => { try { setBest(Number(localStorage.getItem('wm-best') || 0)) } catch { /* */ } }, [])
+  useEffect(() => { if (stage.phase === 'finished') setBest((b) => { const n = Math.max(b, score); try { localStorage.setItem('wm-best', String(n)) } catch { /* */ } return n }) }, [stage.phase]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const reset = useCallback(() => { setScore(0); setTime(DURATION); setMole(-1); setBonk(-1) }, [])
   useEffect(() => { if (stage.phase === 'playing') reset() }, [stage.phase]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -79,6 +84,7 @@ export default function WhackAMolePage({ params }: { params: { lang: string } })
         </div>
         <p className="text-xs text-gray-400">{t('wm_help')}</p>
       </div>
+      <Leaderboard game="whack-a-mole" score={best || null} better="higher" />
     </ToolLayout>
   )
 }

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('snake')!
@@ -26,7 +27,11 @@ export default function SnakePage({ params }: { params: { lang: string } }) {
   const [, force] = useState(0)
   const [score, setScore] = useState(0)
   const [over, setOver] = useState(false)
+  const [best, setBest] = useState(0)
   const playing = stage.playing && !over
+
+  useEffect(() => { try { setBest(Number(localStorage.getItem('snake-best') || 0)) } catch { /* */ } }, [])
+  useEffect(() => { if (over) setBest((b) => { const n = Math.max(b, score); try { localStorage.setItem('snake-best', String(n)) } catch { /* */ } return n }) }, [over]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const reset = useCallback(() => {
     snakeRef.current = [{ x: 8, y: 8 }]; dirRef.current = { x: 1, y: 0 }; nextDir.current = { x: 1, y: 0 }
@@ -100,6 +105,7 @@ export default function SnakePage({ params }: { params: { lang: string } }) {
         </div>
         <p className="text-xs text-gray-400">{t('sn_help')}</p>
       </div>
+      <Leaderboard game="snake" score={best || null} better="higher" />
     </ToolLayout>
   )
 }

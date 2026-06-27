@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('simon')!
@@ -91,6 +92,7 @@ export default function SimonPage({ params }: { params: { lang: string } }) {
         )}
         <p className="text-xs text-gray-400">{t('si_help')}</p>
       </div>
+      <Leaderboard game="simon" score={best || null} better="higher" />
     </ToolLayout>
   )
 }
