@@ -6481,7 +6481,8 @@
     "sc_cancelled": "Screen sharing was cancelled or blocked.",
     "sc_failed": "Couldn't capture the screen. Please try again.",
     "sc_desktoponly": "Screen capture works on desktop only",
-    "sc_desktopdesc": "Your browser can't capture the screen. Open this page in Chrome, Edge, or Firefox on a desktop computer — phones and most in-app browsers aren't supported."
+    "sc_desktopdesc": "Your browser can't capture the screen. Open this page in Chrome, Edge, or Firefox on a desktop computer — phones and most in-app browsers aren't supported.",
+    "sc_fullres": "saved at full resolution"
   },
   "toolTags": {
     "spinner-wheel": [

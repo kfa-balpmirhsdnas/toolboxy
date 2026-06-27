@@ -20,6 +20,7 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState('')
   const [supported, setSupported] = useState<boolean | null>(null)
+  const [dim, setDim] = useState<{ w: number; h: number } | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
@@ -47,6 +48,7 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
       canvas.height = video.videoHeight
       canvas.getContext('2d')!.drawImage(video, 0, 0, canvas.width, canvas.height)
       canvasRef.current = canvas
+      setDim({ w: canvas.width, h: canvas.height })
       setImgUrl(canvas.toDataURL('image/png'))
       trackToolUsed('screen-capture')
     } catch (e) {
@@ -115,7 +117,9 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
             </button>
           ) : (
             <div className="space-y-3">
-              <img src={imgUrl} alt={t('sc_preview_alt')} className="w-full rounded-xl border border-gray-200 bg-[repeating-conic-gradient(#f3f4f6_0_25%,#fff_0_50%)] bg-[length:20px_20px]" />
+              {/* Preview fits a box (max height); the saved/copied image stays full 1:1 resolution */}
+              <img src={imgUrl} alt={t('sc_preview_alt')} className="block mx-auto max-w-full max-h-[60vh] w-auto rounded-xl border border-gray-200 bg-[repeating-conic-gradient(#f3f4f6_0_25%,#fff_0_50%)] bg-[length:20px_20px]" />
+              {dim && <p className="text-center text-xs text-gray-400">📐 {dim.w} × {dim.h} px · {t('sc_fullres')}</p>}
               <div className="flex flex-wrap gap-2">
                 <button onClick={() => download('png')} className="px-5 py-2 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors">⬇ {t('sc_download_png')}</button>
                 <button onClick={() => download('jpg')} className="px-5 py-2 bg-gray-700 text-white text-sm font-semibold rounded-xl hover:bg-gray-600 transition-colors">⬇ {t('sc_download_jpg')}</button>
