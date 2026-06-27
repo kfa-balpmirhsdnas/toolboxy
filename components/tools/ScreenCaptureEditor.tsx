@@ -13,11 +13,14 @@ type Tool = 'crop' | 'arrow' | 'rect' | 'text' | 'mosaic'
 type Rect = { x: number; y: number; w: number; h: number }
 type Shape =
   | ({ type: 'rect'; color: string; lw: number } & Rect)
+  | ({ type: 'ellipse'; color: string; lw: number } & Rect)
   | { type: 'arrow'; x1: number; y1: number; x2: number; y2: number; color: string; lw: number }
   | { type: 'text'; x: number; y: number; text: string; color: string; size: number }
   | ({ type: 'mosaic' } & Rect)
 
 const COLORS = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#111827', '#ffffff']
+const STROKE_MUL = [0.6, 1, 1.8] // 가늘게 / 보통 / 두껍게
+const FONT_MUL = [0.7, 1, 1.5]   // 작게 / 중간 / 크게
 
 function normRect(x1: number, y1: number, x2: number, y2: number): Rect {
   return { x: Math.min(x1, x2), y: Math.min(y1, y2), w: Math.abs(x2 - x1), h: Math.abs(y2 - y1) }
@@ -36,6 +39,9 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
 
   const [tool, setTool] = useState<Tool>('arrow')
   const [color, setColor] = useState(COLORS[0])
+  const [strokeLevel, setStrokeLevel] = useState(1)        // 0 가늘게 / 1 보통 / 2 두껍게
+  const [fontLevel, setFontLevel] = useState(1)            // 0 작게 / 1 중간 / 2 크게
+  const [shapeKind, setShapeKind] = useState<'rect' | 'ellipse'>('rect')
   const [dims, setDims] = useState({ w: 0, h: 0 })
   const [editing, setEditing] = useState<{ x: number; y: number; value: string } | null>(null)
   const [count, setCount] = useState(0) // bump to refresh toolbar (undo enabled etc.)
@@ -90,6 +96,10 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
 
   function drawShape(ctx: CanvasRenderingContext2D, base: HTMLCanvasElement, s: Shape) {
     if (s.type === 'rect') { ctx.strokeStyle = s.color; ctx.lineWidth = s.lw; ctx.strokeRect(s.x, s.y, s.w, s.h) }
+    else if (s.type === 'ellipse') {
+      ctx.strokeStyle = s.color; ctx.lineWidth = s.lw
+      ctx.beginPath(); ctx.ellipse(s.x + s.w / 2, s.y + s.h / 2, Math.abs(s.w) / 2, Math.abs(s.h) / 2, 0, 0, 2 * Math.PI); ctx.stroke()
+    }
     else if (s.type === 'arrow') drawArrow(ctx, s.x1, s.y1, s.x2, s.y2, s.color, s.lw)
     else if (s.type === 'text') { ctx.fillStyle = s.color; ctx.font = `bold ${s.size}px sans-serif`; ctx.textBaseline = 'top'; ctx.fillText(s.text, s.x, s.y) }
     else if (s.type === 'mosaic') drawMosaic(ctx, base, s)
@@ -123,12 +133,12 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   }
 
   function buildDraft(s: { x: number; y: number }, p: { x: number; y: number }): Shape | null {
-    const lw = lwRef.current
+    const lw = Math.max(2, Math.round(lwRef.current * STROKE_MUL[strokeLevel]))
     if (tool === 'arrow') return { type: 'arrow', x1: s.x, y1: s.y, x2: p.x, y2: p.y, color, lw }
     const r = normRect(s.x, s.y, p.x, p.y)
-    if (tool === 'rect') return { type: 'rect', ...r, color, lw }
+    if (tool === 'rect') return { type: shapeKind === 'ellipse' ? 'ellipse' : 'rect', ...r, color, lw }
     if (tool === 'mosaic') return { type: 'mosaic', ...r }
-    if (tool === 'crop') return { type: 'rect', ...r, color: '#3b82f6', lw: Math.max(2, lw - 1) } // visual only
+    if (tool === 'crop') return { type: 'rect', ...r, color: '#3b82f6', lw: Math.max(2, lwRef.current - 1) } // visual only
     return null
   }
 
@@ -180,7 +190,7 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
 
   function commitText() {
     if (editing && editing.value.trim()) {
-      shapesRef.current = [...shapesRef.current, { type: 'text', x: editing.x, y: editing.y, text: editing.value, color, size: fontRef.current }]
+      shapesRef.current = [...shapesRef.current, { type: 'text', x: editing.x, y: editing.y, text: editing.value, color, size: Math.round(fontRef.current * FONT_MUL[fontLevel]) }]
       bump()
     }
     setEditing(null); paint()
@@ -220,6 +230,9 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   const tbtn = (active: boolean) =>
     'px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ' +
     (active ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')
+  const optBtn = (active: boolean) =>
+    'px-3 py-1 rounded-md text-xs font-medium transition-colors ' +
+    (active ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50')
 
   return (
     <div className="space-y-3">
@@ -240,6 +253,31 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
       </div>
       {tool === 'crop' && <p className="text-xs text-gray-500">✂ {t('sc_ed_crop_hint')}</p>}
       {tool === 'mosaic' && <p className="text-xs text-gray-500">🔲 {t('sc_ed_mosaic_hint')}</p>}
+
+      {/* Per-tool options */}
+      {tool === 'arrow' && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-gray-400 mr-1">↗ {t('sc_ed_thickness')}</span>
+          {[t('sc_ed_stroke_thin'), t('sc_ed_stroke_normal'), t('sc_ed_stroke_thick')].map((lbl, i) => (
+            <button key={i} onClick={() => setStrokeLevel(i)} className={optBtn(strokeLevel === i)}>{lbl}</button>
+          ))}
+        </div>
+      )}
+      {tool === 'rect' && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-gray-400 mr-1">▭ {t('sc_ed_shape')}</span>
+          <button onClick={() => setShapeKind('rect')} className={optBtn(shapeKind === 'rect')}>▭ {t('sc_ed_shape_rect')}</button>
+          <button onClick={() => setShapeKind('ellipse')} className={optBtn(shapeKind === 'ellipse')}>◯ {t('sc_ed_shape_circle')}</button>
+        </div>
+      )}
+      {tool === 'text' && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-gray-400 mr-1">T {t('sc_ed_fontsize')}</span>
+          {[t('sc_ed_font_small'), t('sc_ed_font_medium'), t('sc_ed_font_large')].map((lbl, i) => (
+            <button key={i} onClick={() => setFontLevel(i)} className={optBtn(fontLevel === i)}>{lbl}</button>
+          ))}
+        </div>
+      )}
 
       {/* Canvas */}
       <div className="text-center">
