@@ -13,6 +13,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/admin') ||
     pathname.startsWith('/api') ||
+    pathname.startsWith('/__/') || // Firebase Auth helper paths (/__/auth/*) — must not get a locale prefix
     pathname.startsWith('/_next') ||
     pathname.includes('.')
   ) {
@@ -22,5 +23,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|_vercel|.*\..*).*)'],
+  matcher: ['/((?!_next|_vercel|__|.*\..*).*)'],
 }
