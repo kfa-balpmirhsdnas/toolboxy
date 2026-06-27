@@ -8,7 +8,7 @@ import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('block-puzzle')!
-const COLS = 10, ROWS = 20, CELL = 20
+const COLS = 10, ROWS = 20, CELL = 30
 const COLORS = ['', '#22d3ee', '#a78bfa', '#fb923c', '#facc15', '#4ade80', '#f472b6', '#60a5fa']
 // 7 generic tetromino shapes (colour index in the matrix).
 const SHAPES: number[][][] = [
@@ -109,7 +109,7 @@ export default function BlockPuzzlePage({ params }: { params: { lang: string } }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="max-w-xs mx-auto space-y-3 text-center select-none">
+      <div data-game-stage className="max-w-sm mx-auto space-y-3 text-center select-none">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('bp_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('bp_subtitle')}</p>
