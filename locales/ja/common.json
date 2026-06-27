@@ -6676,7 +6676,7 @@
     "bir_auto": "自動 px",
     "bir_keep_ratio": "縦横比を維持",
     "bir_scale": "倍率",
-    "bcv_output_format": "出力形式",
+    "bcv_output_format": "変換後の形式",
     "bcv_quality": "画質",
     "bcv_lossless": "可逆（PNG）",
     "bcp_quality": "画質",

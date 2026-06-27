@@ -6323,7 +6323,7 @@
     "bir_auto": "auto px",
     "bir_keep_ratio": "Keep aspect ratio",
     "bir_scale": "Scale",
-    "bcv_output_format": "Output format",
+    "bcv_output_format": "Convert to",
     "bcv_quality": "Quality",
     "bcv_lossless": "lossless (PNG)",
     "bcp_quality": "Quality",

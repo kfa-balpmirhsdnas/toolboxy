@@ -1955,7 +1955,7 @@
     "csv-to-excel": "CSV ↔ Excel 변환기",
     "online-notepad": "온라인 메모장",
     "batch-image-resizer": "이미지 일괄 크기변경",
-    "batch-image-converter": "이미지 일괄 변환",
+    "batch-image-converter": "이미지 일괄 포맷 변환",
     "batch-image-compressor": "이미지 일괄 압축",
     "batch-image-watermark": "이미지 일괄 워터마크",
     "batch-image-rename": "이미지 일괄 이름변경"
@@ -6709,7 +6709,7 @@
     "bir_auto": "자동 px",
     "bir_keep_ratio": "비율 유지",
     "bir_scale": "비율",
-    "bcv_output_format": "출력 포맷",
+    "bcv_output_format": "변경할 파일 포맷",
     "bcv_quality": "품질",
     "bcv_lossless": "무손실(PNG)",
     "bcp_quality": "품질",

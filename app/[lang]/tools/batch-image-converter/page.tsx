@@ -10,6 +10,7 @@ import { peekBatch, clearBatch } from '@/lib/batch-image/handoff'
 import { convertImage, type OutFormat } from '@/lib/batch-image/convert'
 
 const tool = getToolBySlug('batch-image-converter')!
+const QUAL_PRESETS = [10, 30, 50, 75, 85, 90, 95, 100]
 
 export default function BatchImageConverterPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
@@ -29,13 +30,16 @@ export default function BatchImageConverterPage({ params }: { params: { lang: st
     { id: 'jpeg', label: 'JPG' }, { id: 'png', label: 'PNG' }, { id: 'webp', label: 'WebP' },
   ]
   const lossy = format === 'jpeg' || format === 'webp'
+  const selCls = 'px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-400'
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-6">
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4">
-          <div>
-            <p className="text-sm font-medium text-gray-700 mb-1.5">{t('bcv_output_format')}</p>
+        {/* PC: format left, quality right (equal height). Mobile: stacked. */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Output format box */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
+            <p className="text-sm font-medium text-gray-700">{t('bcv_output_format')}</p>
             <div className="flex flex-wrap gap-1.5">
               {formats.map((f) => (
                 <button key={f.id} onClick={() => setFormat(f.id)}
@@ -46,12 +50,20 @@ export default function BatchImageConverterPage({ params }: { params: { lang: st
             </div>
           </div>
 
-          <div className={lossy ? '' : 'opacity-40 pointer-events-none'}>
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-sm font-medium text-gray-700">{t('bcv_quality')}</p>
-              <span className="text-sm text-gray-500">{lossy ? `${quality}%` : t('bcv_lossless')}</span>
+          {/* Quality box */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <p className="text-sm font-medium text-gray-700 shrink-0">{t('bcv_quality')}</p>
+              {!lossy && <p className="text-xs text-gray-400">{t('bcv_lossless')}</p>}
             </div>
-            <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(e.target.value)} disabled={!lossy} className="w-full accent-brand-600" />
+            <div className={'flex items-center gap-3 text-sm text-gray-700' + (lossy ? '' : ' opacity-40 pointer-events-none')}>
+              <select value={QUAL_PRESETS.includes(Number(quality)) ? quality : ''} onChange={(e) => setQuality(e.target.value)} disabled={!lossy} className={selCls}>
+                <option value="" disabled hidden></option>
+                {QUAL_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
+              </select>
+              <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(e.target.value)} disabled={!lossy} className="flex-1 accent-brand-600" />
+              <span className="w-12 text-right text-gray-500">{quality}%</span>
+            </div>
           </div>
         </div>
 
