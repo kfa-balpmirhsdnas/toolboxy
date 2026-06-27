@@ -1,7 +1,7 @@
 // Generates every installable-app icon in public/icons with the unified look:
 // a vertical brand gradient (lighter top -> darker bottom) and white content sized
 // to ~54% width (smaller than the old flat icons). Run: node scripts/gen-icons.mjs
-import { createCanvas, loadImage } from '@napi-rs/canvas'
+import { createCanvas, loadImage, Path2D } from '@napi-rs/canvas'
 import { writeFileSync } from 'fs'
 import path from 'path'
 
@@ -70,6 +70,35 @@ async function shapeIcon(src, file, rounded, scale = 0.66) {
   writeFileSync(path.join(OUT, file), c.toBuffer('image/png'))
 }
 
+function roundedRectPath(x, rx0, ry0, w, h, r) {
+  x.beginPath()
+  x.moveTo(rx0 + r, ry0)
+  x.arcTo(rx0 + w, ry0, rx0 + w, ry0 + h, r)
+  x.arcTo(rx0 + w, ry0 + h, rx0, ry0 + h, r)
+  x.arcTo(rx0, ry0 + h, rx0, ry0, r)
+  x.arcTo(rx0, ry0, rx0 + w, ry0, r)
+  x.closePath()
+}
+
+// Draw a lucide-style icon (24x24 viewBox, stroked) as a single white pictogram
+// on the gradient — the unified look for object-type tools (no text).
+function vectorIcon(nodes, file, rounded, scale = 0.56) {
+  const c = createCanvas(SIZE, SIZE); const x = c.getContext('2d')
+  bg(x, rounded)
+  const S = SIZE * scale, off = (SIZE - S) / 2, k = S / 24
+  x.save()
+  x.translate(off, off); x.scale(k, k)
+  x.strokeStyle = '#fff'; x.lineWidth = 1.9; x.lineCap = 'round'; x.lineJoin = 'round'
+  for (const [tag, a] of nodes) {
+    if (tag === 'path') x.stroke(new Path2D(a.d))
+    else if (tag === 'rect') { roundedRectPath(x, +a.x, +a.y, +a.width, +a.height, +(a.rx || 0)); x.stroke() }
+    else if (tag === 'line') { x.beginPath(); x.moveTo(+a.x1, +a.y1); x.lineTo(+a.x2, +a.y2); x.stroke() }
+    else if (tag === 'circle') { x.beginPath(); x.arc(+a.cx, +a.cy, +a.r, 0, 2 * Math.PI); x.stroke() }
+  }
+  x.restore()
+  writeFileSync(path.join(OUT, file), c.toBuffer('image/png'))
+}
+
 // slug -> { ko, ja, en } label (matches the originals; just smaller + gradient)
 const DICT = {
   'korean-to-japanese': ['한일', '韓日', 'KJ'],
@@ -86,10 +115,30 @@ const LOCS = ['ko', 'ja', 'en']
 const SINGLE = {
   'elementary-english-words': 'ABC',
   'elementary-japanese-words': 'あ',
-  'zip-files': 'ZIP',
-  'unzip': '압축\n풀기',
-  'screen-capture': '화면\n캡처',
-  'online-notepad': '메모장',
+}
+// Object-type tools: a unified white lucide pictogram (lucide-react v0.408 paths).
+const VECTOR = {
+  'online-notepad': [ // notepad-text
+    ['path', { d: 'M8 2v4' }], ['path', { d: 'M12 2v4' }], ['path', { d: 'M16 2v4' }],
+    ['rect', { x: '4', y: '4', width: '16', height: '18', rx: '2' }],
+    ['path', { d: 'M8 10h6' }], ['path', { d: 'M8 14h8' }], ['path', { d: 'M8 18h5' }],
+  ],
+  'screen-capture': [ // crop
+    ['path', { d: 'M6 2v14a2 2 0 0 0 2 2h14' }],
+    ['path', { d: 'M18 22V8a2 2 0 0 0-2-2H2' }],
+  ],
+  'zip-files': [ // package (closed box)
+    ['path', { d: 'm7.5 4.27 9 5.15' }],
+    ['path', { d: 'M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z' }],
+    ['path', { d: 'm3.3 7 8.7 5 8.7-5' }],
+    ['path', { d: 'M12 22V12' }],
+  ],
+  'unzip': [ // package-open
+    ['path', { d: 'M12 22v-9' }],
+    ['path', { d: 'M15.17 2.21a1.67 1.67 0 0 1 1.63 0L21 4.57a1.93 1.93 0 0 1 0 3.36L8.82 14.79a1.655 1.655 0 0 1-1.64 0L3 12.43a1.93 1.93 0 0 1 0-3.36z' }],
+    ['path', { d: 'M20 13v3.87a2.06 2.06 0 0 1-1.11 1.83l-6 3.08a1.93 1.93 0 0 1-1.78 0l-6-3.08A2.06 2.06 0 0 1 4 16.87V13' }],
+    ['path', { d: 'M21 12.43a1.93 1.93 0 0 0 0-3.36L8.83 2.2a1.64 1.64 0 0 0-1.63 0L3 4.57a1.93 1.93 0 0 0 0 3.36l12.18 6.86a1.636 1.636 0 0 0 1.63 0z' }],
+  ],
 }
 
 // Emit both the rounded desktop icon and the full-bleed maskable icon for mobile.
@@ -99,6 +148,7 @@ async function shapeBoth(src, slug) { await shapeIcon(src, `${slug}.png`, true);
 let n = 0
 for (const [slug, labels] of Object.entries(DICT)) LOCS.forEach((loc, i) => { textBoth(labels[i], `${slug}-${loc}`); n += 2 })
 for (const [slug, label] of Object.entries(SINGLE)) { textBoth(label, slug); n += 2 }
+for (const [slug, nodes] of Object.entries(VECTOR)) { vectorIcon(nodes, `${slug}.png`, true); vectorIcon(nodes, `${slug}-maskable.png`, false); n += 2 }
 await shapeBoth('white-noise-machine.png', 'white-noise-machine'); n += 2
 await shapeBoth('cheonsugyeong.png', 'cheonsugyeong'); n += 2
 console.log(`generated ${n} icons`)
