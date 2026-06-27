@@ -73,11 +73,12 @@ export default function Header() {
         <nav className="flex items-center gap-5 text-sm font-medium text-gray-400 flex-1">
           <span className="hidden sm:inline">{th('hero_title')}</span>
         </nav>
-        {/* Desktop: segmented control with native names (even spacing) */}
-        <div className="hidden sm:flex items-center bg-gray-200 rounded-lg p-0.5 shrink-0">
+        {/* Desktop: segmented control with native names. Equal-width columns
+            (grid) so spacing stays uniform regardless of which item is active. */}
+        <div className="hidden sm:grid grid-cols-3 items-center bg-gray-200 rounded-lg p-0.5 shrink-0">
           {LANGS.map((l) => (
             <Link key={l.code} href={switchLang(pathname, l.code)}
-              className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${lang === l.code ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
+              className={`px-2.5 py-1 rounded-md text-xs font-semibold text-center transition-colors ${lang === l.code ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
               {l.label}
             </Link>
           ))}
