@@ -6781,7 +6781,8 @@
     "bip_view_thumb": "썸네일",
     "bip_col_name": "파일명",
     "bip_col_orig": "원본 사이즈",
-    "bip_col_new": "변경 사이즈"
+    "bip_col_new": "변경 사이즈",
+    "bcv_format_desc": "해당 확장자로 파일포맷이 변경됩니다."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

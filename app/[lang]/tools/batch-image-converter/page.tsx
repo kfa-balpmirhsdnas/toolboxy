@@ -39,7 +39,10 @@ export default function BatchImageConverterPage({ params }: { params: { lang: st
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Output format box */}
           <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
-            <p className="text-sm font-medium text-gray-700">{t('bcv_output_format')}</p>
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <p className="text-sm font-medium text-gray-700 shrink-0">{t('bcv_output_format')}</p>
+              <p className="text-xs text-gray-400">{t('bcv_format_desc')}</p>
+            </div>
             <div className="flex flex-wrap gap-1.5">
               {formats.map((f) => (
                 <button key={f.id} onClick={() => setFormat(f.id)}
@@ -54,7 +57,7 @@ export default function BatchImageConverterPage({ params }: { params: { lang: st
           <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
             <div className="flex items-baseline gap-2 flex-wrap">
               <p className="text-sm font-medium text-gray-700 shrink-0">{t('bcv_quality')}</p>
-              {!lossy && <p className="text-xs text-gray-400">{t('bcv_lossless')}</p>}
+              <p className="text-xs text-gray-400">{lossy ? t('bir_quality_desc') : t('bcv_lossless')}</p>
             </div>
             <div className={'flex items-center gap-3 text-sm text-gray-700' + (lossy ? '' : ' opacity-40 pointer-events-none')}>
               <select value={QUAL_PRESETS.includes(Number(quality)) ? quality : ''} onChange={(e) => setQuality(e.target.value)} disabled={!lossy} className={selCls}>
