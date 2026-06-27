@@ -65,15 +65,27 @@ export default function HomePage({ params }: { params: { lang: string } }) {
             <span className="block text-brand-200 text-3xl font-normal mt-2">{t('hero_subtitle')}</span>
           </h1>
           <p className="text-xl text-brand-100 mb-8 max-w-2xl mx-auto">{t('hero_description')}</p>
-          <div className="max-w-xl mx-auto">
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t('search_placeholder')}
-              aria-label={t('search_placeholder')}
-              className="w-full px-5 py-3.5 rounded-xl text-gray-800 text-base shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-300/50 placeholder:text-gray-400"
-            />
+          {/* Search — full width on PC, ~10% narrower on mobile; leading 🔍 icon */}
+          <div className="w-[90%] sm:w-full max-w-xl mx-auto">
+            <div className="relative">
+              <svg
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                aria-hidden="true"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t('search_placeholder')}
+                aria-label={t('search_placeholder')}
+                className="w-full pl-12 pr-5 py-3.5 rounded-xl text-gray-800 text-base shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-300/50 placeholder:text-gray-400"
+              />
+            </div>
           </div>
         </div>
       </section>
