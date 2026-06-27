@@ -370,6 +370,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={it.url} alt={it.file.name} className="w-full h-full object-cover"
+                    onLoad={(e) => { const im = e.currentTarget; setItems((prev) => prev.map((x) => (x.id === it.id && !x.dims ? { ...x, dims: { w: im.naturalWidth, h: im.naturalHeight } } : x))) }}
                     onError={() => setThumbFailed((prev) => new Set(prev).add(it.id))} />
                 )}
                 <button
@@ -379,9 +380,11 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
                 >
                   ✕
                 </button>
-                <span className="absolute bottom-0 inset-x-0 px-1 py-0.5 bg-black/45 text-white text-[10px] truncate">
-                  {previewName ? previewName(it.file, idx) : it.file.name}
-                </span>
+                <div className="absolute bottom-0 inset-x-0 px-1 py-0.5 bg-black/55 text-white text-[9px] leading-[1.35]">
+                  <p className="truncate font-medium">{previewName ? previewName(it.file, idx) : it.file.name}</p>
+                  {it.dims && <p className="text-white/75">{it.dims.w}×{it.dims.h}</p>}
+                  <p className="text-white/75">{fmtBytes(it.file.size)}</p>
+                </div>
               </div>
             ))}
           </div>
