@@ -37,7 +37,7 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
   const [r, setR] = useState<RenameRules>(DEFAULT_RULES)
   const [showAdv, setShowAdv] = useState(false)
   const up = (patch: Partial<RenameRules>) => setR((prev) => ({ ...prev, ...patch }))
-  const advOn = [r.wsOn, r.stripOn, r.caseOn, r.extLowerOn, r.dateOn, r.truncOn].filter(Boolean).length
+  const advOn = [r.wsOn, r.stripOn, r.caseOn, r.dateOn, r.truncOn].filter(Boolean).length
 
   const processFn = useCallback<ProcessFn>(
     async (file, index) => ({ blob: file, filename: buildNewName(file.name, index, r) }),
@@ -55,42 +55,52 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
           <span className="font-mono text-amber-900 break-all">{examplePreview.join('  ·  ')}</span>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3">
-          <Rule on={r.affixOn} onToggle={(v) => up({ affixOn: v })} label={t('brn_affix')}>
-            <span>{t('brn_prefix')}</span>
-            <input value={r.prefix} onChange={(e) => up({ prefix: e.target.value })} className={inp + ' w-32'} />
-            <span>{t('brn_suffix')}</span>
-            <input value={r.suffix} onChange={(e) => up({ suffix: e.target.value })} className={inp + ' w-32'} />
-          </Rule>
-
-          <Rule on={r.seqOn} onToggle={(v) => up({ seqOn: v })} label={t('brn_sequence')}>
-            <span>{t('brn_start')}</span>
-            <input type="number" value={r.seqStart} onChange={(e) => up({ seqStart: Number(e.target.value) })} className={inp + ' w-20'} />
-            <span>{t('brn_digits')}</span>
-            <input type="number" min={1} value={r.seqDigits} onChange={(e) => up({ seqDigits: Number(e.target.value) })} className={inp + ' w-16'} />
-            <span>{t('brn_step')}</span>
-            <input type="number" min={1} value={r.seqStep} onChange={(e) => up({ seqStep: Number(e.target.value) })} className={inp + ' w-16'} />
-            <select value={r.seqPos} onChange={(e) => up({ seqPos: e.target.value as RenameRules['seqPos'] })} className={sel}>
-              <option value="front">{t('brn_at_front')}</option>
-              <option value="back">{t('brn_at_back')}</option>
-            </select>
-          </Rule>
-
-          <Rule on={r.frOn} onToggle={(v) => up({ frOn: v })} label={t('brn_find_replace')}>
-            <span>{t('brn_find')}</span>
-            <input value={r.find} onChange={(e) => up({ find: e.target.value })} className={inp + ' w-32'} />
-            <span>{t('brn_replace')}</span>
-            <input value={r.replace} onChange={(e) => up({ replace: e.target.value })} className={inp + ' w-32'} />
-          </Rule>
-
-          <button onClick={() => setShowAdv((v) => !v)}
-            className="w-full flex items-center justify-between border-t border-gray-100 pt-3 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
-            <span>{t('brn_advanced')}{advOn > 0 && <span className="ml-1.5 text-xs text-brand-600">{t('brn_n_on', { n: advOn })}</span>}</span>
-            <span className="text-gray-400">{showAdv ? '▴' : '▾'}</span>
-          </button>
-
-          {showAdv && (
+        {/* PC: 일반(좌)·고급(우) side by side. Mobile: stacked, 고급 collapsible. */}
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+          {/* General settings */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 sm:flex-1">
+            <p className="text-sm font-medium text-gray-700">{t('brn_box_general')}</p>
             <div className="space-y-3">
+              <Rule on={r.affixOn} onToggle={(v) => up({ affixOn: v })} label={t('brn_affix')}>
+                <span>{t('brn_prefix')}</span>
+                <input value={r.prefix} onChange={(e) => up({ prefix: e.target.value })} className={inp + ' w-32'} />
+                <span>{t('brn_suffix')}</span>
+                <input value={r.suffix} onChange={(e) => up({ suffix: e.target.value })} className={inp + ' w-32'} />
+              </Rule>
+
+              <Rule on={r.seqOn} onToggle={(v) => up({ seqOn: v })} label={t('brn_sequence')}>
+                <span>{t('brn_start')}</span>
+                <input type="number" value={r.seqStart} onChange={(e) => up({ seqStart: Number(e.target.value) })} className={inp + ' w-20'} />
+                <span>{t('brn_digits')}</span>
+                <input type="number" min={1} value={r.seqDigits} onChange={(e) => up({ seqDigits: Number(e.target.value) })} className={inp + ' w-16'} />
+                <span>{t('brn_step')}</span>
+                <input type="number" min={1} value={r.seqStep} onChange={(e) => up({ seqStep: Number(e.target.value) })} className={inp + ' w-16'} />
+                <select value={r.seqPos} onChange={(e) => up({ seqPos: e.target.value as RenameRules['seqPos'] })} className={sel}>
+                  <option value="front">{t('brn_at_front')}</option>
+                  <option value="back">{t('brn_at_back')}</option>
+                </select>
+              </Rule>
+
+              <Rule on={r.frOn} onToggle={(v) => up({ frOn: v })} label={t('brn_find_replace')}>
+                <span>{t('brn_find')}</span>
+                <input value={r.find} onChange={(e) => up({ find: e.target.value })} className={inp + ' w-32'} />
+                <span>{t('brn_replace')}</span>
+                <input value={r.replace} onChange={(e) => up({ replace: e.target.value })} className={inp + ' w-32'} />
+              </Rule>
+
+              <Rule on={r.extLowerOn} onToggle={(v) => up({ extLowerOn: v })} label={t('brn_ext_lower')} />
+            </div>
+          </div>
+
+          {/* Advanced settings — always shown on desktop, collapsible on mobile */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 sm:flex-1">
+            <button onClick={() => setShowAdv((v) => !v)}
+              className="w-full flex items-center justify-between text-sm font-medium text-gray-700 sm:cursor-default">
+              <span>{t('brn_box_advanced')}{advOn > 0 && <span className="ml-1.5 text-xs text-brand-600">{t('brn_n_on', { n: advOn })}</span>}</span>
+              <span className="text-gray-400 sm:hidden">{showAdv ? '▴' : '▾'}</span>
+            </button>
+
+            <div className={(showAdv ? 'block' : 'hidden') + ' sm:block space-y-3'}>
               <Rule on={r.wsOn} onToggle={(v) => up({ wsOn: v })} label={t('brn_spaces')}>
                 <select value={r.wsMode} onChange={(e) => up({ wsMode: e.target.value as RenameRules['wsMode'] })} className={sel}>
                   <option value="underscore">{t('brn_to_underscore')}</option>
@@ -111,8 +121,6 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
                 </select>
               </Rule>
 
-              <Rule on={r.extLowerOn} onToggle={(v) => up({ extLowerOn: v })} label={t('brn_ext_lower')} />
-
               <Rule on={r.dateOn} onToggle={(v) => up({ dateOn: v })} label={t('brn_date')}>
                 <input value={r.dateValue} onChange={(e) => up({ dateValue: e.target.value })} placeholder={todayYMD()} className={inp + ' w-32'} />
                 <select value={r.datePos} onChange={(e) => up({ datePos: e.target.value as RenameRules['datePos'] })} className={sel}>
@@ -131,7 +139,7 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
                 <span>{t('brn_chars')}</span>
               </Rule>
             </div>
-          )}
+          </div>
         </div>
 
         <BatchImageProcessor slug="batch-image-rename" processFn={processFn} previewName={previewName} zipBaseName="renamed" ctaLabel={t('brn_cta')} initialFiles={seed} onComplete={setRenamed} />

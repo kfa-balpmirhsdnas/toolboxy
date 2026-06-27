@@ -6787,7 +6787,9 @@
     "bcp_target_desc": "지정한 용량 이하로 압축합니다 (JPEG·WebP).",
     "bwm_box_content": "내용",
     "bwm_box_style": "스타일",
-    "brn_preview_label": "예상 결과"
+    "brn_preview_label": "예상 결과",
+    "brn_box_general": "일반 설정",
+    "brn_box_advanced": "고급 설정"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

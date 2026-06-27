@@ -6401,7 +6401,9 @@
     "bcp_target_desc": "Compress each file under the given size (JPEG/WebP).",
     "bwm_box_content": "Content",
     "bwm_box_style": "Style",
-    "brn_preview_label": "Preview"
+    "brn_preview_label": "Preview",
+    "brn_box_general": "General",
+    "brn_box_advanced": "Advanced"
   },
   "toolTags": {
     "spinner-wheel": [

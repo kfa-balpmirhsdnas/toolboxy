@@ -6754,7 +6754,9 @@
     "bcp_target_desc": "指定サイズ以下に圧縮します（JPEG・WebP）。",
     "bwm_box_content": "内容",
     "bwm_box_style": "スタイル",
-    "brn_preview_label": "プレビュー"
+    "brn_preview_label": "プレビュー",
+    "brn_box_general": "基本設定",
+    "brn_box_advanced": "詳細設定"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
