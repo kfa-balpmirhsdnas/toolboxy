@@ -10,6 +10,8 @@ import { peekBatch, clearBatch } from '@/lib/batch-image/handoff'
 import { buildNewName, todayYMD, DEFAULT_RULES, type RenameRules } from '@/lib/batch-image/rename'
 
 const tool = getToolBySlug('batch-image-rename')!
+// Sample filenames for the live preview (before any image is added).
+const SAMPLE_NAMES = ['Photo.JPG', 'my image.png', 'IMG_3.jpeg']
 
 function Rule({ on, onToggle, label, children }: { on: boolean; onToggle: (v: boolean) => void; label: string; children?: React.ReactNode }) {
   return (
@@ -42,10 +44,17 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
     [r],
   )
   const previewName = useCallback((file: File, index: number) => buildNewName(file.name, index, r), [r])
+  // Live example of the current rules applied to sample names.
+  const examplePreview = SAMPLE_NAMES.map((n, i) => buildNewName(n, i, r))
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-6">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm">
+          <span className="font-medium text-amber-800">{t('brn_preview_label')} : </span>
+          <span className="font-mono text-amber-900 break-all">{examplePreview.join('  ·  ')}</span>
+        </div>
+
         <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3">
           <Rule on={r.affixOn} onToggle={(v) => up({ affixOn: v })} label={t('brn_affix')}>
             <span>{t('brn_prefix')}</span>

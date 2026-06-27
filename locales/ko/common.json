@@ -6786,7 +6786,8 @@
     "bcv_format_desc": "해당 확장자로 파일포맷이 변경됩니다.",
     "bcp_target_desc": "지정한 용량 이하로 압축합니다 (JPEG·WebP).",
     "bwm_box_content": "내용",
-    "bwm_box_style": "스타일"
+    "bwm_box_style": "스타일",
+    "brn_preview_label": "예상 결과"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

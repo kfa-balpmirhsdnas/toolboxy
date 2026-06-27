@@ -6400,7 +6400,8 @@
     "bcv_format_desc": "Files are converted to the selected format.",
     "bcp_target_desc": "Compress each file under the given size (JPEG/WebP).",
     "bwm_box_content": "Content",
-    "bwm_box_style": "Style"
+    "bwm_box_style": "Style",
+    "brn_preview_label": "Preview"
   },
   "toolTags": {
     "spinner-wheel": [
