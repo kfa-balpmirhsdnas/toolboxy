@@ -35,8 +35,14 @@ export default async function IdiomPage({ params }: { params: { lang: string; re
   if (!i) notFound()
   const t = await labels(params.lang)
   const L = (k: string, fb: string) => t[k] || fb
-  const synLinks = i.syn.map((h) => ({ h, item: IDIOMS.find((x) => x.hanja === h) }))
-  const related = IDIOMS.filter((x) => x.id !== i.id && (x.len === i.len || x.syn.includes(i.hanja))).slice(0, 8)
+  // Reciprocal synonyms: this idiom's own syn list + any idiom that lists this
+  // one as a synonym, so the 유의어 row cross-links both directions (not just one).
+  const synHanja = i.syn.slice()
+  for (const x of IDIOMS) if (x.syn.includes(i.hanja) && !synHanja.includes(x.hanja)) synHanja.push(x.hanja)
+  const synSet = new Set(synHanja) // membership only (no iteration) — for related exclusion
+  const synLinks = synHanja.map((h) => ({ h, item: IDIOMS.find((x) => x.hanja === h) }))
+  // Related: same-length idioms not already shown above as synonyms.
+  const related = IDIOMS.filter((x) => x.id !== i.id && !synSet.has(x.hanja) && x.len === i.len).slice(0, 8)
 
   const faq = [
     { q: `${i.reading}(${i.hanja})의 뜻은?`, a: i.fig },
