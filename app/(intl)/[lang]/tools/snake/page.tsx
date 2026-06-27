@@ -8,7 +8,7 @@ import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('snake')!
-const N = 17, CELL = 16
+const N = 17, CELL = 20
 type P = { x: number; y: number }
 const eq = (a: P, b: P) => a.x === b.x && a.y === b.y
 const randFood = (snake: P[]): P => {
@@ -80,7 +80,7 @@ export default function SnakePage({ params }: { params: { lang: string } }) {
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="max-w-xs mx-auto space-y-3 text-center select-none">
+      <div data-game-stage className="max-w-sm mx-auto space-y-3 text-center select-none">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('sn_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('sn_subtitle')}</p>

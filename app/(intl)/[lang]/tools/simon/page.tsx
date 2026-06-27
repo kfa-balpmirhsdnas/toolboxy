@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
+import { scrollGameToTop } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('simon')!
@@ -50,7 +51,7 @@ export default function SimonPage({ params }: { params: { lang: string } }) {
     timers.current.push(setTimeout(() => { setPhase('input'); inputIdx.current = 0 }, 620 * s.length + 450))
   }, [])
 
-  const start = () => { tone(PADS[0].f, 0.05); const s = [Math.floor(Math.random() * 4)]; setSeq(s); playSeq(s) }
+  const start = () => { scrollGameToTop(); tone(PADS[0].f, 0.05); const s = [Math.floor(Math.random() * 4)]; setSeq(s); playSeq(s) }
 
   function press(pad: number) {
     if (phase !== 'input') return
@@ -70,7 +71,7 @@ export default function SimonPage({ params }: { params: { lang: string } }) {
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-xs mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="max-w-xs mx-auto space-y-4 text-center select-none">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('si_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('si_subtitle')}</p>

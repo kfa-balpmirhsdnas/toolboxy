@@ -8,7 +8,7 @@ import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('block-puzzle')!
-const COLS = 10, ROWS = 20, CELL = 15
+const COLS = 10, ROWS = 20, CELL = 20
 const COLORS = ['', '#22d3ee', '#a78bfa', '#fb923c', '#facc15', '#4ade80', '#f472b6', '#60a5fa']
 // 7 generic tetromino shapes (colour index in the matrix).
 const SHAPES: number[][][] = [

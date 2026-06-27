@@ -50,6 +50,14 @@ function fanfare() {
   tone(261.63, t, 0.8, 'triangle', 0.13) // C4 bass root
 }
 
+/** Scroll the game box ([data-game-stage]) to the top of the viewport. Shared so
+ * every game — GameStage-driven or not — behaves the same on Start. */
+export function scrollGameToTop() {
+  if (typeof window === 'undefined') return
+  const el = document.querySelector('[data-game-stage]') as HTMLElement | null
+  if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 8; window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' }) }
+}
+
 export type Stage = ReturnType<typeof useGameStage>
 
 export function useGameStage() {
@@ -66,11 +74,7 @@ export function useGameStage() {
 
   const begin = useCallback(() => {
     ac() // unlock/resume audio within the click gesture
-    // On mobile, pull the game to the top so the board + countdown have room.
-    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-      const el = document.querySelector('[data-game-stage]') as HTMLElement | null
-      if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 8; window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' }) }
-    }
+    scrollGameToTop() // pull the game box to the top so the board + countdown have room (all viewports)
     clear(); setPhase('count'); setLabel('3'); countdownBeeps()
     ;([[600, '2'], [1200, '1'], [1800, 'START!']] as [number, string][]).forEach(([ms, txt]) => timers.current.push(window.setTimeout(() => setLabel(txt), ms)))
     timers.current.push(window.setTimeout(() => setPhase('playing'), 2400))
