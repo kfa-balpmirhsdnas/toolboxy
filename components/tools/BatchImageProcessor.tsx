@@ -31,10 +31,13 @@ export interface BatchResult {
 /** The only thing each batch tool differs by. Return null to skip a file gracefully. */
 export type ProcessFn = (file: File, index: number) => Promise<BatchResult | null>
 
+interface Dims { w: number; h: number }
+
 interface InputItem {
   id: string
   file: File
   url: string // object URL for the thumbnail
+  dims?: Dims // pixel size, decoded lazily when sizeUnit === 'pixels'
 }
 
 interface OutItem {
@@ -45,6 +48,7 @@ interface OutItem {
   url: string
   inSize: number
   outSize: number
+  dims?: Dims // output pixel size, decoded when sizeUnit === 'pixels'
 }
 
 interface SkipItem {
@@ -78,6 +82,8 @@ interface Props {
   onComplete?: (files: File[]) => void
   /** Called whenever the input queue changes (add/remove/seed). */
   onFilesChange?: (files: File[]) => void
+  /** List-view size columns: 'bytes' (file size, default) or 'pixels' (W×H). */
+  sizeUnit?: 'bytes' | 'pixels'
 }
 
 let _seq = 0
@@ -85,6 +91,8 @@ const uid = () => `${Date.now()}-${_seq++}`
 
 const fmtBytes = (b: number) =>
   b < 1024 ? `${b} B` : b < 1024 * 1024 ? `${(b / 1024).toFixed(0)} KB` : `${(b / 1024 / 1024).toFixed(2)} MB`
+
+const fmtPx = (d?: { w: number; h: number }) => (d ? `${d.w}×${d.h}` : '…')
 
 /** Size delta as a percent badge: green "−NN%" when smaller, gray "+NN%" when larger. */
 function SavingsBadge({ inB, outB }: { inB: number; outB: number }) {
@@ -109,7 +117,7 @@ function dedupeName(name: string, used: Set<string>): string {
   return candidate
 }
 
-export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange }: Props) {
+export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange, sizeUnit = 'bytes' }: Props) {
   const t = useTranslations('toolui')
   const [items, setItems] = useState<InputItem[]>([])
   const [results, setResults] = useState<OutItem[]>([])
@@ -149,6 +157,41 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
   const filesChangeRef = useRef(onFilesChange)
   useEffect(() => { filesChangeRef.current = onFilesChange }, [onFilesChange])
   useEffect(() => { filesChangeRef.current?.(items.map((it) => it.file)) }, [items])
+
+  // Lazily decode pixel sizes for the list view when sizeUnit === 'pixels'.
+  useEffect(() => {
+    if (sizeUnit !== 'pixels') return
+    let cancelled = false
+    ;(async () => {
+      for (const it of items) {
+        if (it.dims) continue
+        try {
+          const b = await createImageBitmap(it.file)
+          const d = { w: b.width, h: b.height }; b.close?.()
+          if (cancelled) return
+          setItems((prev) => prev.map((x) => (x.id === it.id ? { ...x, dims: d } : x)))
+        } catch { /* undecodable — leave blank */ }
+      }
+    })()
+    return () => { cancelled = true }
+  }, [items, sizeUnit])
+
+  useEffect(() => {
+    if (sizeUnit !== 'pixels') return
+    let cancelled = false
+    ;(async () => {
+      for (const r of results) {
+        if (r.dims) continue
+        try {
+          const b = await createImageBitmap(r.blob)
+          const d = { w: b.width, h: b.height }; b.close?.()
+          if (cancelled) return
+          setResults((prev) => prev.map((x) => (x.id === r.id ? { ...x, dims: d } : x)))
+        } catch { /* ignore */ }
+      }
+    })()
+    return () => { cancelled = true }
+  }, [results, sizeUnit])
 
   const acceptsFile = useCallback((f: File) => f.type.startsWith('image/') || f.type === '', [])
 
@@ -267,6 +310,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
 
   const totalIn = results.reduce((s, r) => s + r.inSize, 0)
   const totalOut = results.reduce((s, r) => s + r.outSize, 0)
+  const sizeColW = sizeUnit === 'pixels' ? 'w-[5.5rem]' : 'w-16'
 
   return (
     <div className="space-y-4">
@@ -345,18 +389,20 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
           <div className="border border-gray-200 rounded-xl overflow-hidden text-sm">
             <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 text-xs font-medium text-gray-500">
               <span className="flex-1 min-w-0">{t('bip_col_name')}</span>
-              <span className="w-16 text-right shrink-0">{t('bip_col_orig')}</span>
-              <span className="w-16 text-right shrink-0">{t('bip_col_new')}</span>
+              <span className={`${sizeColW} text-right shrink-0`}>{t('bip_col_orig')}</span>
+              <span className={`${sizeColW} text-right shrink-0`}>{t('bip_col_new')}</span>
               <span className="w-4 shrink-0" />
             </div>
             <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
               {items.map((it, idx) => {
-                const out = results.find((r) => r.srcId === it.id)?.outSize
+                const res = results.find((r) => r.srcId === it.id)
+                const origCell = sizeUnit === 'pixels' ? fmtPx(it.dims) : fmtBytes(it.file.size)
+                const newCell = !res ? '—' : sizeUnit === 'pixels' ? fmtPx(res.dims) : fmtBytes(res.outSize)
                 return (
                   <div key={it.id} className="flex items-center gap-2 px-3 py-2">
                     <span className="flex-1 min-w-0 truncate text-gray-800" title={it.file.name}>{previewName ? previewName(it.file, idx) : it.file.name}</span>
-                    <span className="w-16 text-right shrink-0 text-gray-500">{fmtBytes(it.file.size)}</span>
-                    <span className="w-16 text-right shrink-0 text-gray-700">{out != null ? fmtBytes(out) : '—'}</span>
+                    <span className={`${sizeColW} text-right shrink-0 text-gray-500`}>{origCell}</span>
+                    <span className={`${sizeColW} text-right shrink-0 text-gray-700`}>{newCell}</span>
                     <button onClick={() => removeItem(it.id)} aria-label={t('bip_remove')} className="w-4 shrink-0 text-gray-300 hover:text-red-500 transition-colors">✕</button>
                   </div>
                 )
