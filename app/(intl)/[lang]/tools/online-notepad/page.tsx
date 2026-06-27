@@ -7,113 +7,178 @@ import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
 const tool = getToolBySlug('online-notepad')!
-const STORAGE_KEY = 'toolboxy-notepad'
+const STORAGE_KEY = 'toolboxy-notepad-v2' // { docs, activeId }
+const OLD_KEY = 'toolboxy-notepad'          // legacy single-note string
+type Doc = { id: string; name: string; text: string }
+const uid = () => Math.random().toString(36).slice(2, 9)
 
 export default function OnlineNotepadPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
-  const [text, setText] = useState('')
+  const baseName = t('np_default_name')
+  const first = useRef<Doc>({ id: uid(), name: `${baseName} 1`, text: '' }).current
+
+  const [docs, setDocs] = useState<Doc[]>([first])
+  const [activeId, setActiveId] = useState(first.id)
   const [saved, setSaved] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [renaming, setRenaming] = useState<string | null>(null)
   const tracked = useRef(false)
-
-  // Undo/redo history. The textarea is React-controlled, which breaks the
-  // browser's native Ctrl+Z, so we keep our own snapshot stack. Typing is
-  // coalesced into a snapshot ~500ms after it stops, so undo reverts in chunks.
-  const histRef = useRef<string[]>([''])
-  const idxRef = useRef(0)
+  // Per-document undo/redo history (the controlled textarea breaks native Ctrl+Z).
+  const histories = useRef<Record<string, { hist: string[]; idx: number }>>({ [first.id]: { hist: [''], idx: 0 } })
   const commitTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const ready = useRef(false)
   const [, force] = useState(0)
 
-  function commit(v: string) {
-    if (histRef.current[idxRef.current] === v) return
-    histRef.current = histRef.current.slice(0, idxRef.current + 1)
-    histRef.current.push(v)
-    if (histRef.current.length > 200) histRef.current.shift() // cap memory
-    idxRef.current = histRef.current.length - 1
-    force((n) => n + 1)
-  }
+  const active = docs.find((d) => d.id === activeId) ?? docs[0]
+  const text = active?.text ?? ''
 
-  // Restore on mount
+  // Restore on mount, migrating the legacy single note if present.
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored) { setText(stored); histRef.current = [stored]; idxRef.current = 0 }
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (raw) {
+        const data = JSON.parse(raw) as { docs?: Doc[]; activeId?: string }
+        if (data.docs?.length) {
+          setDocs(data.docs)
+          setActiveId(data.docs.some((d) => d.id === data.activeId) ? data.activeId! : data.docs[0].id)
+          const h: Record<string, { hist: string[]; idx: number }> = {}
+          for (const d of data.docs) h[d.id] = { hist: [d.text], idx: 0 }
+          histories.current = h
+        }
+      } else {
+        const old = localStorage.getItem(OLD_KEY)
+        if (old) {
+          setDocs((ds) => ds.map((d) => (d.id === first.id ? { ...d, text: old } : d)))
+          histories.current[first.id] = { hist: [old], idx: 0 }
+        }
+      }
     } catch { /* ignore */ }
+    ready.current = true
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Autosave (debounced) whenever text changes
+  // Autosave all documents (debounced).
   useEffect(() => {
+    if (!ready.current) return
     const id = setTimeout(() => {
-      try {
-        localStorage.setItem(STORAGE_KEY, text)
-        setSaved(true)
-      } catch { /* ignore */ }
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ docs, activeId })); setSaved(true) } catch { /* ignore */ }
     }, 400)
     return () => clearTimeout(id)
-  }, [text])
+  }, [docs, activeId])
 
+  function setDocText(id: string, v: string) { setDocs((ds) => ds.map((d) => (d.id === id ? { ...d, text: v } : d))) }
+
+  function commit(v: string) {
+    const h = histories.current[activeId]; if (!h) return
+    if (h.hist[h.idx] === v) return
+    h.hist = h.hist.slice(0, h.idx + 1); h.hist.push(v); if (h.hist.length > 200) h.hist.shift()
+    h.idx = h.hist.length - 1; force((n) => n + 1)
+  }
   function onChange(v: string) {
-    setText(v)
-    setSaved(false)
+    setDocText(activeId, v); setSaved(false)
     if (commitTimer.current) clearTimeout(commitTimer.current)
     commitTimer.current = setTimeout(() => commit(v), 500)
     if (!tracked.current) { trackToolUsed('online-notepad'); tracked.current = true }
   }
-
   function undo() {
     if (commitTimer.current) { clearTimeout(commitTimer.current); commit(text) }
-    if (idxRef.current <= 0) return
-    idxRef.current -= 1
-    setText(histRef.current[idxRef.current]); setSaved(false); force((n) => n + 1)
+    const h = histories.current[activeId]; if (!h || h.idx <= 0) return
+    h.idx -= 1; setDocText(activeId, h.hist[h.idx]); setSaved(false); force((n) => n + 1)
   }
   function redo() {
-    if (idxRef.current >= histRef.current.length - 1) return
-    idxRef.current += 1
-    setText(histRef.current[idxRef.current]); setSaved(false); force((n) => n + 1)
+    const h = histories.current[activeId]; if (!h || h.idx >= h.hist.length - 1) return
+    h.idx += 1; setDocText(activeId, h.hist[h.idx]); setSaved(false); force((n) => n + 1)
   }
   function onKeyDown(e: React.KeyboardEvent) {
-    const mod = e.ctrlKey || e.metaKey
-    const k = e.key.toLowerCase()
+    const mod = e.ctrlKey || e.metaKey; const k = e.key.toLowerCase()
     if (mod && k === 'z' && !e.shiftKey) { e.preventDefault(); undo() }
     else if (mod && (k === 'y' || (k === 'z' && e.shiftKey))) { e.preventDefault(); redo() }
   }
+
+  // Tabs
+  function addDoc() {
+    const used = new Set(docs.map((d) => d.name))
+    let n = docs.length + 1; while (used.has(`${baseName} ${n}`)) n++
+    const d: Doc = { id: uid(), name: `${baseName} ${n}`, text: '' }
+    histories.current[d.id] = { hist: [''], idx: 0 }
+    setDocs((ds) => [...ds, d]); setActiveId(d.id)
+  }
+  function closeDoc(id: string) {
+    const d = docs.find((x) => x.id === id)
+    if (d && d.text.trim() && !window.confirm(t('np_close_confirm'))) return
+    delete histories.current[id]
+    const rest = docs.filter((x) => x.id !== id)
+    if (rest.length === 0) {
+      const nd: Doc = { id: uid(), name: `${baseName} 1`, text: '' }
+      histories.current[nd.id] = { hist: [''], idx: 0 }
+      setDocs([nd]); setActiveId(nd.id); return
+    }
+    if (id === activeId) {
+      const i = docs.findIndex((x) => x.id === id)
+      setActiveId((rest[i] ?? rest[rest.length - 1]).id)
+    }
+    setDocs(rest)
+  }
+  function renameDoc(id: string, name: string) { setDocs((ds) => ds.map((d) => (d.id === id ? { ...d, name: name || d.name } : d))) }
 
   function download() {
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'notes.txt'
+    a.download = `${(active?.name || 'notes').replace(/[\\/:*?"<>|]/g, '_').slice(0, 50)}.txt`
     a.click()
     URL.revokeObjectURL(url)
   }
-
   function copy() {
     if (!text) return
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
+    navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500)
   }
-
   function clear() {
     if (!text) return
     if (!window.confirm(t('np_clearconfirm'))) return
-    setText(''); commit('')
-    try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
+    setDocText(activeId, ''); commit('')
   }
 
   const chars = text.length
   const words = text.trim() ? text.trim().split(/\s+/).length : 0
   const lines = text ? text.split(/\n/).length : 0
-  const dirty = text !== histRef.current[idxRef.current]
-  const canUndo = idxRef.current > 0 || dirty
-  const canRedo = idxRef.current < histRef.current.length - 1
+  const h = histories.current[activeId]
+  const dirty = h ? text !== h.hist[h.idx] : false
+  const canUndo = h ? h.idx > 0 || dirty : false
+  const canRedo = h ? h.idx < h.hist.length - 1 : false
 
   const iconBtn = 'p-1.5 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors'
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-3">
+        {/* Tabs — one document per tab */}
+        <div className="flex items-stretch gap-1 overflow-x-auto border-b border-gray-200">
+          {docs.map((d) => {
+            const on = d.id === activeId
+            return (
+              <div key={d.id} onClick={() => setActiveId(d.id)} onDoubleClick={() => setRenaming(d.id)}
+                className={'group flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-sm cursor-pointer border border-b-0 -mb-px whitespace-nowrap ' +
+                  (on ? 'bg-white border-gray-200 text-brand-700 font-semibold' : 'bg-gray-50 border-transparent text-gray-500 hover:bg-gray-100')}>
+                {renaming === d.id ? (
+                  <input autoFocus defaultValue={d.name}
+                    onClick={(e) => e.stopPropagation()}
+                    onBlur={(e) => { renameDoc(d.id, e.target.value.trim()); setRenaming(null) }}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { renameDoc(d.id, (e.target as HTMLInputElement).value.trim()); setRenaming(null) } if (e.key === 'Escape') setRenaming(null) }}
+                    className="w-24 px-1 text-sm border border-brand-300 rounded outline-none" />
+                ) : (
+                  <span className="max-w-[10rem] truncate">{d.name}</span>
+                )}
+                <button onClick={(e) => { e.stopPropagation(); closeDoc(d.id) }} aria-label={t('np_closetab')}
+                  className="text-gray-400 hover:text-red-500 text-base leading-none">×</button>
+              </div>
+            )
+          })}
+          <button onClick={addDoc} title={t('np_newtab')} aria-label={t('np_newtab')}
+            className="shrink-0 px-2.5 py-1.5 text-gray-400 hover:text-brand-600 text-lg leading-none">+</button>
+        </div>
+
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-0.5">
@@ -126,9 +191,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             </div>
             <span className="w-px h-5 bg-gray-200" />
             <div className="flex gap-2 text-xs">
-            <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_words', { n: words })}</span>
-            <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_chars', { n: chars })}</span>
-            <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_lines', { n: lines })}</span>
+              <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_words', { n: words })}</span>
+              <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_chars', { n: chars })}</span>
+              <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_lines', { n: lines })}</span>
             </div>
           </div>
           <span className={'text-xs font-medium transition-colors ' + (saved ? 'text-green-600' : 'text-gray-400')}>
@@ -142,7 +207,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           onKeyDown={onKeyDown}
           placeholder={t('np_placeholder')}
           spellCheck={false}
-          className="w-full h-[60vh] min-h-72 p-4 border border-gray-200 rounded-xl text-sm text-gray-800 leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 font-mono"
+          className="w-full h-[58vh] min-h-72 p-4 border border-gray-200 rounded-xl text-sm text-gray-800 leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 font-mono"
         />
 
         <div className="flex gap-2 flex-wrap">

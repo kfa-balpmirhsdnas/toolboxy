@@ -6510,7 +6510,11 @@
     "sc_ed_font_small": "Small",
     "sc_ed_font_medium": "Medium",
     "sc_ed_font_large": "Large",
-    "sc_ed_color": "Color"
+    "sc_ed_color": "Color",
+    "np_default_name": "Note",
+    "np_newtab": "New note",
+    "np_closetab": "Close",
+    "np_close_confirm": "Close this note? Its saved content will be lost."
   },
   "toolTags": {
     "spinner-wheel": [

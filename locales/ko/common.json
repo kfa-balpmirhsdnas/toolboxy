@@ -6899,7 +6899,11 @@
     "sc_ed_font_small": "작게",
     "sc_ed_font_medium": "중간",
     "sc_ed_font_large": "크게",
-    "sc_ed_color": "색상"
+    "sc_ed_color": "색상",
+    "np_default_name": "메모",
+    "np_newtab": "새 메모",
+    "np_closetab": "닫기",
+    "np_close_confirm": "이 메모를 닫을까요? 저장된 내용이 사라집니다."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

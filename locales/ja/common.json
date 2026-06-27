@@ -6872,7 +6872,11 @@
     "sc_ed_font_small": "小",
     "sc_ed_font_medium": "中",
     "sc_ed_font_large": "大",
-    "sc_ed_color": "色"
+    "sc_ed_color": "色",
+    "np_default_name": "メモ",
+    "np_newtab": "新規メモ",
+    "np_closetab": "閉じる",
+    "np_close_confirm": "このメモを閉じますか？保存された内容は失われます。"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
