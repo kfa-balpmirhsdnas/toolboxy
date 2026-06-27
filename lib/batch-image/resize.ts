@@ -3,6 +3,7 @@
 // (e.g. a format the browser can't decode, like most HEIC).
 
 export type ResizeMode = 'dimensions' | 'percent' | 'maxside'
+export type ResizeAxis = 'longest' | 'shortest' | 'width' | 'height'
 
 export interface ResizeOptions {
   mode: ResizeMode
@@ -10,7 +11,8 @@ export interface ResizeOptions {
   height?: number // px, dimensions mode
   keepRatio: boolean // dimensions mode
   percent: number // percent mode (e.g. 50 = 50%)
-  maxSide: number // maxside mode: cap on the longest edge (downscale only)
+  maxSide: number // maxside mode: target px for the chosen axis (downscale only)
+  axis?: ResizeAxis // maxside mode: which axis maxSide caps (default longest)
 }
 
 // Keep the original format where the browser can re-encode it; otherwise fall
@@ -30,8 +32,12 @@ function targetSize(ow: number, oh: number, o: ResizeOptions): { w: number; h: n
     w = ow * p
     h = oh * p
   } else if (o.mode === 'maxside') {
-    const cap = o.maxSide || Math.max(ow, oh)
-    const s = Math.min(1, cap / Math.max(ow, oh)) // downscale only
+    const axis = o.axis || 'longest'
+    const axisVal = axis === 'longest' ? Math.max(ow, oh)
+      : axis === 'shortest' ? Math.min(ow, oh)
+      : axis === 'width' ? ow : oh
+    const cap = o.maxSide || axisVal
+    const s = Math.min(1, cap / axisVal) // downscale only, keeps aspect ratio
     w = ow * s
     h = oh * s
   } else {

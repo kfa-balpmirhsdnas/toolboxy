@@ -6763,7 +6763,11 @@
     "brn_cta": "이름변경 & zip",
     "bnav_continue": "이 결과 {n}개로 이어서 작업:",
     "bnav_related": "관련 일괄 도구",
-    "bir_cta": "{n}장 변환하기"
+    "bir_cta": "{n}장 변환하기",
+    "bir_axis_longest": "긴축",
+    "bir_axis_shortest": "짧은축",
+    "bir_axis_width": "가로축",
+    "bir_axis_height": "세로축"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

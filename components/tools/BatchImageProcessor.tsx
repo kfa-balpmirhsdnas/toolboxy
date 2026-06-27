@@ -75,6 +75,8 @@ interface Props {
   initialFiles?: File[] | null
   /** Called with the produced files when a run finishes (used for handoff). */
   onComplete?: (files: File[]) => void
+  /** Called whenever the input queue changes (add/remove/seed). */
+  onFilesChange?: (files: File[]) => void
 }
 
 let _seq = 0
@@ -106,7 +108,7 @@ function dedupeName(name: string, used: Set<string>): string {
   return candidate
 }
 
-export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete }: Props) {
+export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange }: Props) {
   const t = useTranslations('toolui')
   const [items, setItems] = useState<InputItem[]>([])
   const [results, setResults] = useState<OutItem[]>([])
@@ -140,6 +142,11 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
     seeded.current = true
     setItems(initialFiles.map((file) => ({ id: uid(), file, url: URL.createObjectURL(file) })))
   }, [initialFiles])
+
+  // Notify the parent whenever the input queue changes (for e.g. auto-fill).
+  const filesChangeRef = useRef(onFilesChange)
+  useEffect(() => { filesChangeRef.current = onFilesChange }, [onFilesChange])
+  useEffect(() => { filesChangeRef.current?.(items.map((it) => it.file)) }, [items])
 
   const acceptsFile = useCallback((f: File) => f.type.startsWith('image/') || f.type === '', [])
 

@@ -6377,7 +6377,11 @@
     "brn_cta": "Rename & zip",
     "bnav_continue": "Continue with these {n} results in:",
     "bnav_related": "Related batch tools",
-    "bir_cta": "Process {n} images"
+    "bir_cta": "Process {n} images",
+    "bir_axis_longest": "Longest axis",
+    "bir_axis_shortest": "Shortest axis",
+    "bir_axis_width": "Width",
+    "bir_axis_height": "Height"
   },
   "toolTags": {
     "spinner-wheel": [

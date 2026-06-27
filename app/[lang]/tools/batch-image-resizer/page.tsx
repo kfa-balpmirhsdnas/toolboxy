@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import BatchImageProcessor, { type ProcessFn } from '@/components/tools/BatchImageProcessor'
 import BatchToolNav from '@/components/tools/BatchToolNav'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { peekBatch, clearBatch } from '@/lib/batch-image/handoff'
-import { resizeImage, type ResizeMode } from '@/lib/batch-image/resize'
+import { resizeImage, type ResizeMode, type ResizeAxis } from '@/lib/batch-image/resize'
 
 const tool = getToolBySlug('batch-image-resizer')!
 
@@ -18,18 +18,30 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
   useEffect(() => { clearBatch() }, [])
 
   const [mode, setMode] = useState<ResizeMode>('maxside')
+  const [axis, setAxis] = useState<ResizeAxis>('longest')
   const [width, setWidth] = useState('')
   const [height, setHeight] = useState('')
   const [keepRatio, setKeepRatio] = useState(true)
   const [percent, setPercent] = useState('50')
   const [maxSide, setMaxSide] = useState('1920')
 
+  // Auto-fill W/H from the first selected image (for the "해상도" / dimensions mode).
+  const filledRef = useRef(false)
+  const onFilesChange = useCallback((files: File[]) => {
+    if (!files.length) { filledRef.current = false; return }
+    if (filledRef.current) return
+    filledRef.current = true
+    createImageBitmap(files[0])
+      .then((bmp) => { setWidth(String(bmp.width)); setHeight(String(bmp.height)); bmp.close?.() })
+      .catch(() => { /* undecodable — leave inputs empty */ })
+  }, [])
+
   const processFn = useCallback<ProcessFn>(
     (file) => resizeImage(file, {
-      mode, width: Number(width) || undefined, height: Number(height) || undefined,
+      mode, axis, width: Number(width) || undefined, height: Number(height) || undefined,
       keepRatio, percent: Number(percent) || 100, maxSide: Number(maxSide) || 0,
     }),
-    [mode, width, height, keepRatio, percent, maxSide],
+    [mode, axis, width, height, keepRatio, percent, maxSide],
   )
 
   const modes: { id: ResizeMode; label: string }[] = [
@@ -38,6 +50,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
     { id: 'percent', label: t('bir_mode_percent') },
   ]
   const numInput = 'w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
+  const selCls = 'px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-400'
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -54,7 +67,12 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
 
           {mode === 'maxside' && (
             <label className="flex flex-wrap items-center gap-2 text-sm text-gray-700">
-              {t('bir_longest_side')}
+              <select value={axis} onChange={(e) => setAxis(e.target.value as ResizeAxis)} className={selCls}>
+                <option value="longest">{t('bir_axis_longest')}</option>
+                <option value="shortest">{t('bir_axis_shortest')}</option>
+                <option value="width">{t('bir_axis_width')}</option>
+                <option value="height">{t('bir_axis_height')}</option>
+              </select>
               <input type="number" min={1} value={maxSide} onChange={(e) => setMaxSide(e.target.value)} className={numInput} />
               px <span className="text-xs text-gray-400">{t('bir_downscale_only')}</span>
             </label>
@@ -79,16 +97,18 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
           )}
 
           {mode === 'percent' && (
-            <label className="flex items-center gap-3 text-sm text-gray-700">
-              {t('bir_scale')}
+            <div className="flex items-center gap-3 text-sm text-gray-700">
+              <select value={percent} onChange={(e) => setPercent(e.target.value)} className={selCls}>
+                {[10, 25, 50, 75, 100, 150, 200].map((v) => <option key={v} value={v}>{v}%</option>)}
+              </select>
               <input type="range" min={1} max={200} value={percent} onChange={(e) => setPercent(e.target.value)} className="flex-1 accent-brand-600" />
-              <input type="number" min={1} max={400} value={percent} onChange={(e) => setPercent(e.target.value)} className="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-sm" />
-              %
-            </label>
+              <span className="w-12 text-right text-gray-500">{percent}%</span>
+            </div>
           )}
         </div>
 
-        <BatchImageProcessor slug="batch-image-resizer" processFn={processFn} zipBaseName="resized" ctaLabel={(n) => t('bir_cta', { n })} initialFiles={seed} onComplete={setResults} />
+        <BatchImageProcessor slug="batch-image-resizer" processFn={processFn} zipBaseName="resized"
+          ctaLabel={(n) => t('bir_cta', { n })} initialFiles={seed} onComplete={setResults} onFilesChange={onFilesChange} />
         <BatchToolNav current="batch-image-resizer" lang={params.lang} results={results} />
       </div>
     </ToolLayout>

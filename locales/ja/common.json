@@ -6730,7 +6730,11 @@
     "brn_cta": "リネームしてzip",
     "bnav_continue": "この{n}件の結果を使って次へ:",
     "bnav_related": "関連の一括ツール",
-    "bir_cta": "{n}枚を処理"
+    "bir_cta": "{n}枚を処理",
+    "bir_axis_longest": "長辺",
+    "bir_axis_shortest": "短辺",
+    "bir_axis_width": "幅",
+    "bir_axis_height": "高さ"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",
