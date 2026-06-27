@@ -6404,7 +6404,8 @@
     "brn_preview_label": "Preview",
     "brn_box_general": "General",
     "brn_box_advanced": "Advanced",
-    "brn_ext_desc": "Makes only the file extension lowercase."
+    "brn_ext_desc": "Makes only the file extension lowercase.",
+    "brn_pos_label": "Position"
   },
   "toolTags": {
     "spinner-wheel": [

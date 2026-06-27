@@ -6757,7 +6757,8 @@
     "brn_preview_label": "プレビュー",
     "brn_box_general": "基本設定",
     "brn_box_advanced": "詳細設定",
-    "brn_ext_desc": "拡張子だけを小文字に統一します。"
+    "brn_ext_desc": "拡張子だけを小文字に統一します。",
+    "brn_pos_label": "位置"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

@@ -6790,7 +6790,8 @@
     "brn_preview_label": "예상 결과",
     "brn_box_general": "일반 설정",
     "brn_box_advanced": "고급 설정",
-    "brn_ext_desc": "확장자만 소문자로 통일합니다."
+    "brn_ext_desc": "확장자만 소문자로 통일합니다.",
+    "brn_pos_label": "위치"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

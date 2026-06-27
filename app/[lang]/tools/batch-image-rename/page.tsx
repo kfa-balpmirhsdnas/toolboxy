@@ -39,6 +39,7 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
   const [r, setR] = useState<RenameRules>(DEFAULT_RULES)
   const [showAdv, setShowAdv] = useState(false)
   const up = (patch: Partial<RenameRules>) => setR((prev) => ({ ...prev, ...patch }))
+  const genOn = [r.affixOn, r.seqOn, r.frOn, r.extLowerOn].filter(Boolean).length
   const advOn = [r.wsOn, r.stripOn, r.caseOn, r.dateOn, r.truncOn].filter(Boolean).length
 
   const processFn = useCallback<ProcessFn>(
@@ -61,7 +62,7 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
         <div className="flex flex-col sm:flex-row sm:items-start gap-4">
           {/* General settings */}
           <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 sm:flex-1">
-            <p className="text-sm font-medium text-gray-700">{t('brn_box_general')}</p>
+            <p className="text-sm font-medium text-gray-700">{t('brn_box_general')}{genOn > 0 && <span className="ml-1.5 text-xs text-brand-600">{t('brn_n_on', { n: genOn })}</span>}</p>
             <div className="space-y-3">
               <Rule on={r.affixOn} onToggle={(v) => up({ affixOn: v })} label={t('brn_affix')}>
                 <span>{t('brn_prefix')}</span>
@@ -79,6 +80,7 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
                 <div className="w-full h-0" />
                 <span>{t('brn_step')}</span>
                 <input type="number" min={1} value={r.seqStep} onChange={(e) => up({ seqStep: Number(e.target.value) })} className={inp + ' w-16'} />
+                <span>{t('brn_pos_label')}</span>
                 <select value={r.seqPos} onChange={(e) => up({ seqPos: e.target.value as RenameRules['seqPos'] })} className={sel}>
                   <option value="front">{t('brn_at_front')}</option>
                   <option value="back">{t('brn_at_back')}</option>
@@ -87,9 +89,9 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
 
               <Rule on={r.frOn} onToggle={(v) => up({ frOn: v })} label={t('brn_find_replace')}>
                 <span>{t('brn_find')}</span>
-                <input value={r.find} onChange={(e) => up({ find: e.target.value })} className={inp + ' w-32'} />
+                <input value={r.find} onChange={(e) => up({ find: e.target.value })} className={inp + ' w-14 sm:w-28'} />
                 <span>{t('brn_replace')}</span>
-                <input value={r.replace} onChange={(e) => up({ replace: e.target.value })} className={inp + ' w-32'} />
+                <input value={r.replace} onChange={(e) => up({ replace: e.target.value })} className={inp + ' w-14 sm:w-28'} />
               </Rule>
 
               <Rule on={r.extLowerOn} onToggle={(v) => up({ extLowerOn: v })} label={t('brn_ext_lower')}>
