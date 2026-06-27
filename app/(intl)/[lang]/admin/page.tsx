@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/lib/firebase/client'
+import { TOOLS, CATEGORY_META, type ToolCategory } from '@/lib/tools/registry'
 
 const ADMIN_EMAILS = ['sandshrimp.lab@gmail.com']
 
@@ -75,6 +76,14 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
   const [statsLoading, setStatsLoading] = useState(false)
   const [statsError, setStatsError] = useState('')
 
+  // 추천 도구 관리 — admin-selected, ordered list saved to config/featuredTools.
+  const [featured, setFeatured] = useState<string[]>([])
+  const [savedFeatured, setSavedFeatured] = useState<string[]>([])
+  const [featLoaded, setFeatLoaded] = useState(false)
+  const [featSaving, setFeatSaving] = useState(false)
+  const [featMsg, setFeatMsg] = useState('')
+  const [featSearch, setFeatSearch] = useState('')
+
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       if (!user) { setAuthed('denied'); return }
@@ -95,8 +104,53 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
       } finally {
         setStatsLoading(false)
       }
+
+      // Load the saved featured-tools list.
+      try {
+        const token = await user.getIdToken()
+        const res = await fetch('/api/admin/featured', {
+          headers: { Authorization: 'Bearer ' + token }
+        })
+        const data = await res.json()
+        if (res.ok) { setFeatured(data.slugs ?? []); setSavedFeatured(data.slugs ?? []) }
+      } catch { /* leave empty */ } finally {
+        setFeatLoaded(true)
+      }
     })
   }, [])
+
+  const featDirty = JSON.stringify(featured) !== JSON.stringify(savedFeatured)
+  const moveFeatured = (i: number, dir: -1 | 1) => setFeatured((prev) => {
+    const j = i + dir
+    if (j < 0 || j >= prev.length) return prev
+    const a = [...prev];[a[i], a[j]] = [a[j], a[i]]; return a
+  })
+  const addFeatured = (slug: string) => setFeatured((p) => (p.includes(slug) ? p : [...p, slug]))
+  const removeFeatured = (slug: string) => setFeatured((p) => p.filter((s) => s !== slug))
+  async function saveFeatured() {
+    setFeatSaving(true); setFeatMsg('')
+    try {
+      const token = await auth.currentUser?.getIdToken()
+      const res = await fetch('/api/admin/featured', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slugs: featured }),
+      })
+      const data = await res.json()
+      if (res.ok) { setFeatured(data.slugs); setSavedFeatured(data.slugs); setFeatMsg('저장됨 ' + new Date().toLocaleTimeString('ko-KR')) }
+      else setFeatMsg('오류: ' + (data.error ?? '저장 실패'))
+    } catch { setFeatMsg('오류: 저장 실패') } finally { setFeatSaving(false) }
+  }
+
+  // Tools available to add (not already featured), filtered by the search box.
+  const featuredSet = useMemo(() => new Set(featured), [featured])
+  const addCandidates = useMemo(() => {
+    const q = featSearch.trim().toLowerCase()
+    return TOOLS
+      .filter((t) => !featuredSet.has(t.slug))
+      .filter((t) => !q || t.slug.toLowerCase().includes(q) || t.category.toLowerCase().includes(q) || t.tags.some((tag) => tag.toLowerCase().includes(q)))
+  }, [featSearch, featuredSet])
+  const catLabel = (c: ToolCategory) => CATEGORY_META[c]?.label ?? c
 
   if (authed === 'loading') {
     return <div className="flex items-center justify-center min-h-screen text-gray-400">Loading…</div>
@@ -144,6 +198,89 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
       )}
       {statsLoading && <p className="text-sm text-gray-400">Loading stats…</p>}
       {statsError && <p className="text-sm text-red-500">{statsError}</p>}
+
+      {/* 추천 도구 관리 */}
+      <div>
+        <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
+          <h2 className="text-lg font-semibold text-gray-800">💼 추천 도구 관리</h2>
+          <div className="flex items-center gap-3">
+            {featMsg && <span className="text-xs text-gray-500">{featMsg}</span>}
+            {featDirty && <span className="text-xs text-amber-600">● 저장 안 됨</span>}
+            <button
+              onClick={saveFeatured}
+              disabled={featSaving || !featDirty}
+              className={'px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors ' + (featSaving || !featDirty ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-brand-600 text-white hover:bg-brand-700')}>
+              {featSaving ? '저장 중…' : '저장'}
+            </button>
+          </div>
+        </div>
+        <p className="text-xs text-gray-400 mb-4">메인 페이지 추천 도구 섹션에 노출됩니다. 저장 위치: Firestore <code className="font-mono">config/featuredTools</code></p>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* 선택된 추천 도구 (순서 조정) */}
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
+              선택된 추천 도구 <span className="text-brand-600">{featured.length}</span>
+            </div>
+            {!featLoaded ? (
+              <p className="px-4 py-8 text-center text-gray-400 text-sm">불러오는 중…</p>
+            ) : featured.length === 0 ? (
+              <p className="px-4 py-8 text-center text-gray-400 text-sm">오른쪽 목록에서 추천할 도구를 추가하세요.</p>
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {featured.map((slug, i) => {
+                  const t = TOOLS.find((x) => x.slug === slug)
+                  return (
+                    <li key={slug} className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50">
+                      <span className="w-6 text-center text-xs font-bold text-gray-400">{i + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-mono text-sm text-gray-700 truncate">{slug}</p>
+                        <p className="text-xs text-gray-400">{t ? catLabel(t.category) : '— 없는 도구'}</p>
+                      </div>
+                      <button onClick={() => moveFeatured(i, -1)} disabled={i === 0}
+                        className="w-7 h-7 rounded-md text-gray-500 hover:bg-gray-200 disabled:opacity-30 disabled:hover:bg-transparent" aria-label="위로">▲</button>
+                      <button onClick={() => moveFeatured(i, 1)} disabled={i === featured.length - 1}
+                        className="w-7 h-7 rounded-md text-gray-500 hover:bg-gray-200 disabled:opacity-30 disabled:hover:bg-transparent" aria-label="아래로">▼</button>
+                      <button onClick={() => removeFeatured(slug)}
+                        className="w-7 h-7 rounded-md text-red-400 hover:bg-red-50" aria-label="제거">✕</button>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </div>
+
+          {/* 전체 도구에서 추가 */}
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <input
+                value={featSearch}
+                onChange={(e) => setFeatSearch(e.target.value)}
+                placeholder="도구 검색 (slug · 카테고리 · 태그)"
+                className="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
+              />
+            </div>
+            <ul className="divide-y divide-gray-100 max-h-[28rem] overflow-y-auto">
+              {addCandidates.slice(0, 100).map((t) => (
+                <li key={t.slug} className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-mono text-sm text-gray-700 truncate">{t.slug}</p>
+                    <p className="text-xs text-gray-400">{catLabel(t.category)}{t.isNew && <span className="ml-1 text-emerald-500">NEW</span>}</p>
+                  </div>
+                  <button onClick={() => addFeatured(t.slug)}
+                    className="px-2.5 py-1 rounded-md bg-brand-50 text-brand-600 text-xs font-semibold hover:bg-brand-100">+ 추가</button>
+                </li>
+              ))}
+              {addCandidates.length === 0 && (
+                <li className="px-4 py-8 text-center text-gray-400 text-sm">일치하는 도구가 없습니다.</li>
+              )}
+              {addCandidates.length > 100 && (
+                <li className="px-4 py-3 text-center text-gray-400 text-xs">상위 100개만 표시 — 검색으로 좁혀보세요 (전체 {addCandidates.length}개)</li>
+              )}
+            </ul>
+          </div>
+        </div>
+      </div>
 
       <div>
         <h2 className="text-lg font-semibold text-gray-800 mb-4">빠른 링크</h2>
