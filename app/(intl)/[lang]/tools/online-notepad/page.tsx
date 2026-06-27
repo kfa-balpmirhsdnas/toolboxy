@@ -12,10 +12,11 @@ import { trackToolUsed } from '@/lib/gtag'
 const tool = getToolBySlug('online-notepad')!
 const STORAGE_KEY = 'toolboxy-notepad-v2'      // { docs, activeId }
 const OLD_KEY = 'toolboxy-notepad'             // legacy single-note string
-type Lvl = 'sm' | 'md' | 'lg'
+type Lvl = 'sm' | 'md' | 'lg'              // line spacing
+type SizeLvl = 'xs' | 'sm' | 'md' | 'lg' | 'xl' // font size (wider range)
 type Fam = string
 // Per-document settings live on the doc itself so each tab keeps its own look.
-type Doc = { id: string; name: string; text: string; fam: Fam; size: Lvl; lh: Lvl }
+type Doc = { id: string; name: string; text: string; fam: Fam; size: SizeLvl; lh: Lvl }
 const uid = () => Math.random().toString(36).slice(2, 9)
 // Tab title = today's date as YYMMDD (e.g. 260628).
 const dateTag = () => {
@@ -23,7 +24,7 @@ const dateTag = () => {
   return `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`
 }
 
-const SIZE_CLS: Record<Lvl, string> = { sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[18px]' }
+const SIZE_CLS: Record<SizeLvl, string> = { xs: 'text-[11px]', sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[18px]', xl: 'text-[22px]' }
 const LH_CLS: Record<Lvl, string> = { sm: 'leading-snug', md: 'leading-relaxed', lg: 'leading-loose' }
 // A system default plus per-language webfonts (Google Fonts). System fonts only
 // render on Windows, so webfonts make the picker work on Mac/mobile too — they
@@ -46,7 +47,7 @@ const LOCALE_FONTS: Record<string, string[]> = {
   en: ['sans', 'en_inter', 'en_lora', 'en_mono'],
 }
 const FAM_CSS = (f: Fam) => (ALLFONTS[f] ?? ALLFONTS.sans).css
-const DEFAULTS = { fam: 'sans' as Fam, size: 'md' as Lvl, lh: 'md' as Lvl }
+const DEFAULTS = { fam: 'sans' as Fam, size: 'md' as SizeLvl, lh: 'md' as Lvl }
 
 export default function OnlineNotepadPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
@@ -281,10 +282,12 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                 </select>
               </label>
               <label className="flex items-center gap-1" title={t('np_size')}>{ico('↕')}
-                <select aria-label={t('np_size')} title={t('np_size')} value={size} onChange={(e) => patchDoc(activeId, { size: e.target.value as Lvl })} className={selCls}>
+                <select aria-label={t('np_size')} title={t('np_size')} value={size} onChange={(e) => patchDoc(activeId, { size: e.target.value as SizeLvl })} className={selCls}>
+                  <option value="xs">{t('np_xs')}</option>
                   <option value="sm">{t('np_sm')}</option>
                   <option value="md">{t('np_md')}</option>
                   <option value="lg">{t('np_lg')}</option>
+                  <option value="xl">{t('np_xl')}</option>
                 </select>
               </label>
               <label className="flex items-center gap-1" title={t('np_lineheight')}>{ico('≡')}

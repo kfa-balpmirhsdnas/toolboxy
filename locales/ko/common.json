@@ -6921,7 +6921,9 @@
     "np_font_ko_noto": "본고딕",
     "np_font_ko_myeongjo": "나눔명조",
     "np_font_ko_pen": "나눔손글씨",
-    "np_dl_login": "로그인 후 다운로드"
+    "np_dl_login": "로그인 후 다운로드",
+    "np_xs": "아주작음",
+    "np_xl": "매우큼"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

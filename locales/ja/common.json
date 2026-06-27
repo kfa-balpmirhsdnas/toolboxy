@@ -6894,7 +6894,9 @@
     "np_font_ja_noto": "ゴシック",
     "np_font_ja_mincho": "明朝",
     "np_font_ja_yusei": "手書き",
-    "np_dl_login": "ログインして保存"
+    "np_dl_login": "ログインして保存",
+    "np_xs": "極小",
+    "np_xl": "特大"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

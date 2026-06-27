@@ -6532,7 +6532,9 @@
     "np_font_en_inter": "Inter",
     "np_font_en_lora": "Lora",
     "np_font_en_mono": "Mono",
-    "np_dl_login": "Sign in to download"
+    "np_dl_login": "Sign in to download",
+    "np_xs": "X-Small",
+    "np_xl": "X-Large"
   },
   "toolTags": {
     "spinner-wheel": [
