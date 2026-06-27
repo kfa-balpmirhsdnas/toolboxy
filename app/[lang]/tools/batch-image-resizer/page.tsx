@@ -60,6 +60,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-6">
         <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4">
+          <p className="text-sm font-medium text-gray-700">{t('bir_size')}</p>
           <div className="flex flex-wrap gap-1.5">
             {modes.map((m) => (
               <button key={m.id} onClick={() => setMode(m.id)}
@@ -112,7 +113,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
                   <option value="" disabled hidden></option>
                   {PCT_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
                 </select>
-                <input type="range" min={1} max={200} value={percent} onChange={(e) => setPercent(e.target.value)} className="flex-1 accent-brand-600" />
+                <input type="range" min={1} max={200} value={percent} onChange={(e) => setPercent(e.target.value)} className="flex-1 sm:flex-none sm:w-72 accent-brand-600" />
                 <span className="w-12 text-right text-gray-500">{percent}%</span>
               </div>
             )}
@@ -127,7 +128,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
                 <option value="" disabled hidden></option>
                 {QUAL_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
               </select>
-              <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(e.target.value)} className="flex-1 accent-brand-600" />
+              <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(e.target.value)} className="flex-1 sm:flex-none sm:w-72 accent-brand-600" />
               <span className="w-12 text-right text-gray-500">{quality}%</span>
             </div>
             <p className="text-xs text-gray-400">{t('bir_quality_desc')}</p>

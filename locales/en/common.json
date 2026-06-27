@@ -6386,7 +6386,8 @@
     "bir_desc_dimensions": "Resizes the image to the target resolution.",
     "bir_desc_percent": "Resizes the image by the percentage.",
     "bir_quality": "Quality",
-    "bir_quality_desc": "Higher quality looks better but makes larger files. (JPEG/WebP)"
+    "bir_quality_desc": "Higher quality looks better but makes larger files. (JPEG/WebP)",
+    "bir_size": "Size"
   },
   "toolTags": {
     "spinner-wheel": [
