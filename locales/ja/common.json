@@ -6735,14 +6735,15 @@
     "bir_axis_shortest": "短辺",
     "bir_axis_width": "幅",
     "bir_axis_height": "高さ",
-    "bir_desc_maxside": "選んだ軸の長さを基準に縮小します。（縮小のみ）",
+    "bir_desc_maxside": "選んだ軸の長さを基準に縮小します。",
     "bir_desc_dimensions": "解像度を基準にサイズを変更します。",
     "bir_desc_percent": "比率を基準にサイズを変更します。",
     "bir_quality": "画質",
-    "bir_quality_desc": "画質が高いほどきれいですがファイルは大きくなります。（JPEG・WebP）",
+    "bir_quality_desc": "画質が高いほどファイルが大きくなります。",
     "bir_size": "サイズ",
     "bir_png_disabled": "PNGは可逆のため、画質は調整できません。",
-    "bir_fmt_keep": "元のまま"
+    "bir_fmt_keep": "元のまま",
+    "bir_q_adjust": "画質を調整"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

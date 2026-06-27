@@ -7,7 +7,7 @@ import BatchImageProcessor, { type ProcessFn } from '@/components/tools/BatchIma
 import BatchToolNav from '@/components/tools/BatchToolNav'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { peekBatch, clearBatch } from '@/lib/batch-image/handoff'
-import { resizeImage, type ResizeMode, type ResizeAxis, type ResizeFormat } from '@/lib/batch-image/resize'
+import { resizeImage, type ResizeMode, type ResizeAxis } from '@/lib/batch-image/resize'
 
 const tool = getToolBySlug('batch-image-resizer')!
 const PCT_PRESETS = [10, 25, 50, 75, 100, 150, 200]
@@ -27,7 +27,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
   const [percent, setPercent] = useState('50')
   const [maxSide, setMaxSide] = useState('1920')
   const [quality, setQuality] = useState('85')
-  const [format, setFormat] = useState<'keep' | ResizeFormat>('keep')
+  const [adjustQuality, setAdjustQuality] = useState(true) // false = keep original (no recompression)
 
   // Auto-fill W/H from the first selected image (for the "해상도" / dimensions mode).
   const filledRef = useRef(false)
@@ -44,9 +44,10 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
     (file) => resizeImage(file, {
       mode, axis, width: Number(width) || undefined, height: Number(height) || undefined,
       keepRatio, percent: Number(percent) || 100, maxSide: Number(maxSide) || 0,
-      quality: Number(quality) || 85, format: format === 'keep' ? undefined : format,
+      // Keep original format; only re-compress when "adjust quality" is on.
+      quality: adjustQuality ? Number(quality) || 85 : undefined,
     }),
-    [mode, axis, width, height, keepRatio, percent, maxSide, quality, format],
+    [mode, axis, width, height, keepRatio, percent, maxSide, quality, adjustQuality],
   )
 
   const modes: { id: ResizeMode; label: string }[] = [
@@ -56,7 +57,7 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
   ]
   const numInput = 'w-24 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
   // Narrower input for W/H so they + the keep-ratio checkbox fit one row, even on mobile.
-  const dimInput = 'w-14 px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
+  const dimInput = 'w-14 sm:w-28 px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
   const selCls = 'px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-400'
 
   return (
@@ -66,7 +67,12 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
         <div className="flex flex-col sm:flex-row sm:items-start gap-4">
           {/* Size box */}
           <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
-            <p className="text-sm font-medium text-gray-700">{t('bir_size')}</p>
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <p className="text-sm font-medium text-gray-700 shrink-0">{t('bir_size')}</p>
+              <p className="text-xs text-gray-400">
+                {mode === 'maxside' ? t('bir_desc_maxside') : mode === 'dimensions' ? t('bir_desc_dimensions') : t('bir_desc_percent')}
+              </p>
+            </div>
             <div className="flex flex-wrap gap-1.5">
               {modes.map((m) => (
                 <button key={m.id} onClick={() => setMode(m.id)}
@@ -76,12 +82,9 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
               ))}
             </div>
 
-            {/* Description + controls in one fixed-min-height block so switching modes doesn't shift the layout */}
-            <div className="min-h-[5.25rem] sm:min-h-[4.5rem] space-y-3">
-              <p className="text-xs text-gray-400">
-                {mode === 'maxside' ? t('bir_desc_maxside') : mode === 'dimensions' ? t('bir_desc_dimensions') : t('bir_desc_percent')}
-              </p>
-              <div>
+            {/* Controls — fixed min-height keeps the box height steady between modes
+                (desktop reserves 2 rows since the wider W/H inputs wrap the ratio checkbox). */}
+            <div className="min-h-[2.75rem] sm:min-h-[4.25rem]">
               {mode === 'maxside' && (
                 <label className="flex flex-wrap items-center gap-2 text-sm text-gray-700">
                   <select value={axis} onChange={(e) => setAxis(e.target.value as ResizeAxis)} className={selCls}>
@@ -121,37 +124,34 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
                   <span className="w-12 text-right text-gray-500">{percent}%</span>
                 </div>
               )}
-              </div>
             </div>
           </div>
 
           {/* Quality box (applies to JPEG/WebP output) — gauge runs 100 → 10 */}
           <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
-            <p className="text-sm font-medium text-gray-700">{t('bir_quality')}</p>
-
-            {/* Output format — PNG is lossless so its button is disabled */}
-            <div className="flex flex-wrap gap-1.5">
-              {(['keep', 'jpeg', 'webp'] as const).map((f) => (
-                <button key={f} onClick={() => setFormat(f)}
-                  className={'px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ' + (format === f ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
-                  {f === 'keep' ? t('bir_fmt_keep') : f === 'jpeg' ? 'JPEG' : 'WebP'}
-                </button>
-              ))}
-              <button disabled title={t('bir_png_disabled')}
-                className="px-4 py-1.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-300 cursor-not-allowed">
-                PNG
-              </button>
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <p className="text-sm font-medium text-gray-700 shrink-0">{t('bir_quality')}</p>
+              <p className="text-xs text-gray-400">{t('bir_quality_desc')}</p>
             </div>
 
-            <div className="flex items-center gap-3 text-sm text-gray-700">
-              <select value={QUAL_PRESETS.includes(Number(quality)) ? quality : ''} onChange={(e) => setQuality(e.target.value)} className={selCls}>
+            {/* Adjust quality (re-compress) vs keep original. Keeps the input format either way. */}
+            <div className="flex flex-wrap gap-1.5">
+              {([['adjust', t('bir_q_adjust')], ['keep', t('bir_fmt_keep')]] as const).map(([id, label]) => (
+                <button key={id} onClick={() => setAdjustQuality(id === 'adjust')}
+                  className={'px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ' + ((adjustQuality === (id === 'adjust')) ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className={'flex items-center gap-3 text-sm text-gray-700' + (adjustQuality ? '' : ' opacity-40 pointer-events-none')}>
+              <select value={QUAL_PRESETS.includes(Number(quality)) ? quality : ''} onChange={(e) => setQuality(e.target.value)} disabled={!adjustQuality} className={selCls}>
                 <option value="" disabled hidden></option>
                 {QUAL_PRESETS.map((v) => <option key={v} value={v}>{v}%</option>)}
               </select>
-              <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(e.target.value)} style={{ direction: 'rtl' }} className="flex-1 accent-brand-600" />
+              <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(e.target.value)} disabled={!adjustQuality} style={{ direction: 'rtl' }} className="flex-1 accent-brand-600" />
               <span className="w-12 text-right text-gray-500">{quality}%</span>
             </div>
-            <p className="text-xs text-gray-400">{t('bir_quality_desc')}</p>
           </div>
         </div>
 

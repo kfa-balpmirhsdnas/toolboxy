@@ -6382,14 +6382,15 @@
     "bir_axis_shortest": "Shortest axis",
     "bir_axis_width": "Width",
     "bir_axis_height": "Height",
-    "bir_desc_maxside": "Shrinks the image based on the chosen axis length. (downscale only)",
-    "bir_desc_dimensions": "Resizes the image to the target resolution.",
+    "bir_desc_maxside": "Shrinks the image based on the chosen axis length.",
+    "bir_desc_dimensions": "Resizes to the target resolution.",
     "bir_desc_percent": "Resizes the image by the percentage.",
     "bir_quality": "Quality",
-    "bir_quality_desc": "Higher quality looks better but makes larger files. (JPEG/WebP)",
+    "bir_quality_desc": "Higher quality means a larger file.",
     "bir_size": "Size",
     "bir_png_disabled": "PNG is lossless — quality cannot be adjusted.",
-    "bir_fmt_keep": "Original"
+    "bir_fmt_keep": "Original",
+    "bir_q_adjust": "Adjust quality"
   },
   "toolTags": {
     "spinner-wheel": [
