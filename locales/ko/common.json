@@ -53,7 +53,12 @@
     "stats_install": "설치 불필요",
     "stats_languages": "지원 언어",
     "save_cta": "즐겨찾기와 사용 기록 저장",
-    "save_cta_sub": "무료 계정 — 가입 1분이면 끝."
+    "save_cta_sub": "무료 계정 — 가입 1분이면 끝.",
+    "featured_tools": "추천 도구",
+    "new_tools": "신규 도구",
+    "browse_by_category": "카테고리별 둘러보기",
+    "search_results": "검색 결과",
+    "search_no_results": "일치하는 도구가 없습니다."
   },
   "tool": {
     "free_badge": "무료",

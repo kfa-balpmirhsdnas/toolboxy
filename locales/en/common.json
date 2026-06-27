@@ -53,7 +53,12 @@
     "stats_install": "Installation Required",
     "stats_languages": "Languages",
     "save_cta": "Save your favorites & history",
-    "save_cta_sub": "Free account — sign up in a minute."
+    "save_cta_sub": "Free account — sign up in a minute.",
+    "featured_tools": "Featured Tools",
+    "new_tools": "New Tools",
+    "browse_by_category": "Browse by Category",
+    "search_results": "Search Results",
+    "search_no_results": "No matching tools."
   },
   "tool": {
     "free_badge": "Free",
