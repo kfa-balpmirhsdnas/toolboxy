@@ -6486,7 +6486,17 @@
     "sc_autosaved": "Captured — saved as PNG automatically. You can re-download as JPG or copy to the clipboard below.",
     "sc_mode_now": "Capture now",
     "sc_mode_delay": "Capture in 5s",
-    "sc_delay_hint": "Click Capture, pick a screen, then hit 'Hide' on the share bar within 5s to capture without it."
+    "sc_delay_hint": "Click Capture, pick a screen, then hit 'Hide' on the share bar within 5s to capture without it.",
+    "sc_ed_crop": "Crop",
+    "sc_ed_arrow": "Arrow",
+    "sc_ed_rect": "Rectangle",
+    "sc_ed_text": "Text",
+    "sc_ed_mosaic": "Mosaic",
+    "sc_ed_undo": "Undo",
+    "sc_ed_clear": "Clear",
+    "sc_ed_text_ph": "Type, then Enter",
+    "sc_ed_crop_hint": "Drag the area to crop.",
+    "sc_ed_mosaic_hint": "Drag over info to hide (names, phone numbers, etc.)."
   },
   "toolTags": {
     "spinner-wheel": [

@@ -6875,7 +6875,17 @@
     "sc_autosaved": "캡처 완료 — PNG로 자동 저장했어요. 아래에서 JPG로 다시 받거나 클립보드로 복사할 수 있어요.",
     "sc_mode_now": "즉시 캡처",
     "sc_mode_delay": "5초 후 캡처",
-    "sc_delay_hint": "캡처 버튼을 누르고 화면을 고른 뒤, 5초 안에 화면 하단의 '숨기기'를 누르면 공유 표시줄 없이 깨끗하게 찍혀요."
+    "sc_delay_hint": "캡처 버튼을 누르고 화면을 고른 뒤, 5초 안에 화면 하단의 '숨기기'를 누르면 공유 표시줄 없이 깨끗하게 찍혀요.",
+    "sc_ed_crop": "자르기",
+    "sc_ed_arrow": "화살표",
+    "sc_ed_rect": "사각형",
+    "sc_ed_text": "텍스트",
+    "sc_ed_mosaic": "모자이크",
+    "sc_ed_undo": "실행취소",
+    "sc_ed_clear": "주석 지우기",
+    "sc_ed_text_ph": "텍스트 입력 후 Enter",
+    "sc_ed_crop_hint": "잘라낼 영역을 드래그하세요.",
+    "sc_ed_mosaic_hint": "가릴 영역(이름·전화번호 등)을 드래그하세요."
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",
