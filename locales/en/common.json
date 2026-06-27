@@ -6483,7 +6483,10 @@
     "sc_desktoponly": "Screen capture works on desktop only",
     "sc_desktopdesc": "Your browser can't capture the screen. Open this page in Chrome, Edge, or Firefox on a desktop computer — phones and most in-app browsers aren't supported.",
     "sc_fullres": "saved at full resolution",
-    "sc_autosaved": "Captured — saved as PNG automatically. You can re-download as JPG or copy to the clipboard below."
+    "sc_autosaved": "Captured — saved as PNG automatically. You can re-download as JPG or copy to the clipboard below.",
+    "sc_mode_now": "Capture now",
+    "sc_mode_delay": "Capture in 5s",
+    "sc_delay_hint": "Click Capture, pick a screen, then hit 'Hide' on the share bar within 5s to capture without it."
   },
   "toolTags": {
     "spinner-wheel": [

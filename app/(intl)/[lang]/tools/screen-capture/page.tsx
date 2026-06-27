@@ -2,8 +2,9 @@
 
 // Online Screen Capture — grabs a single frame from getDisplayMedia (same screen
 // access as screen-recorder) and turns it into a downloadable / copyable image.
-// This first pass: capture + preview + PNG/JPG download + clipboard copy + guide.
-// (Crop / annotate / blur / timer come later.)
+// Capture (now or after a 5s countdown) + preview + PNG/JPG download + clipboard
+// copy + guide. The 5s mode gives time to hide the browser's screen-share bar so
+// it isn't captured. (Crop / annotate / blur come later.)
 
 import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
@@ -12,21 +13,41 @@ import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload, trackToolCopy } from '@/lib/gtag'
 
 const tool = getToolBySlug('screen-capture')!
+const DELAY_SEC = 5
 
 export default function ScreenCapturePage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const [imgUrl, setImgUrl] = useState('')
   const [busy, setBusy] = useState(false)
+  const [delayMode, setDelayMode] = useState(false)
+  const [countdown, setCountdown] = useState<number | null>(null)
   const [copied, setCopied] = useState(false)
+  const [autoSaved, setAutoSaved] = useState(false)
   const [error, setError] = useState('')
   const [supported, setSupported] = useState<boolean | null>(null)
   const [dim, setDim] = useState<{ w: number; h: number } | null>(null)
-  const [autoSaved, setAutoSaved] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     setSupported(typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getDisplayMedia)
+    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
   }, [])
+
+  // Visible countdown. setTimeout (unlike rAF) keeps firing in a background tab,
+  // so this resolves even when sharing a tab pushed this page to the background.
+  function runCountdown(sec: number): Promise<void> {
+    return new Promise((resolve) => {
+      let n = sec
+      setCountdown(n)
+      const tick = () => {
+        n -= 1
+        if (n <= 0) { setCountdown(null); resolve() }
+        else { setCountdown(n); timerRef.current = setTimeout(tick, 1000) }
+      }
+      timerRef.current = setTimeout(tick, 1000)
+    })
+  }
 
   async function capture() {
     setError(''); setCopied(false); setAutoSaved(false); setBusy(true)
@@ -36,9 +57,15 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
     let stream: MediaStream | null = null
     try {
       stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false })
-      const track = stream.getVideoTracks()[0]
       // What did the user share? 'window' | 'browser' (tab) | 'monitor' (full screen) | undefined
-      const surface = track.getSettings().displaySurface
+      const surface = stream.getVideoTracks()[0].getSettings().displaySurface
+
+      if (delayMode) {
+        await runCountdown(DELAY_SEC)
+        // Let the countdown overlay clear from the screen before grabbing.
+        await new Promise((r) => setTimeout(r, 250))
+      }
+
       const video = document.createElement('video')
       video.srcObject = stream
       video.muted = true
@@ -65,8 +92,8 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
     } catch (e) {
       setError(e instanceof Error && e.name === 'NotAllowedError' ? t('sc_cancelled') : t('sc_failed'))
     } finally {
-      stream?.getTracks().forEach((tk) => tk.stop()) // release the share immediately
-      setBusy(false)
+      stream?.getTracks().forEach((tk) => tk.stop()) // release the share
+      setBusy(false); setCountdown(null)
     }
   }
 
@@ -106,8 +133,19 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
     }
   }
 
+  const seg = (active: boolean) =>
+    'px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ' +
+    (active ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')
+
   return (
     <ToolLayout tool={tool} lang={params.lang}>
+      {/* Countdown overlay (visible on the page; cleared 250ms before the grab) */}
+      {countdown !== null && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/30 pointer-events-none">
+          <span className="text-[9rem] leading-none font-black text-white drop-shadow-2xl tabular-nums">{countdown}</span>
+        </div>
+      )}
+
       {supported === false ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-center">
           <div className="text-3xl mb-2">🖥️</div>
@@ -122,10 +160,20 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
           </div>
 
           {!imgUrl ? (
-            <button onClick={capture} disabled={supported === null || busy}
-              className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 transition-colors">
-              {busy ? t('sc_capturing') : '📸 ' + t('sc_capture')}
-            </button>
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-3">
+                <button onClick={capture} disabled={supported === null || busy}
+                  className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 transition-colors">
+                  {busy ? t('sc_capturing') : '📸 ' + t('sc_capture')}
+                </button>
+                {/* Timing toggle: immediate (default) or 5s countdown */}
+                <div className="inline-flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">
+                  <button onClick={() => setDelayMode(false)} disabled={busy} className={seg(!delayMode)}>{t('sc_mode_now')}</button>
+                  <button onClick={() => setDelayMode(true)} disabled={busy} className={seg(delayMode)}>{t('sc_mode_delay')}</button>
+                </div>
+              </div>
+              {delayMode && <p className="text-xs text-gray-500">⏱ {t('sc_delay_hint')}</p>}
+            </div>
           ) : (
             <div className="space-y-3">
               {autoSaved && (
