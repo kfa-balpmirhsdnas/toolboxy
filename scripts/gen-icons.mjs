@@ -89,6 +89,7 @@ const SINGLE = {
   'zip-files': 'ZIP',
   'unzip': '압축\n풀기',
   'screen-capture': '화면\n캡처',
+  'online-notepad': '메모장',
 }
 
 // Emit both the rounded desktop icon and the full-bleed maskable icon for mobile.

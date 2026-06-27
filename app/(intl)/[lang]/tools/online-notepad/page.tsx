@@ -301,8 +301,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex gap-2 text-xs">
-              <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_chars', { n: chars })}</span>
-              <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_lines', { n: lines })}</span>
+              <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_chars', { n: chars.toLocaleString() })}</span>
+              <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_lines', { n: lines.toLocaleString() })}</span>
             </div>
             <span className={'text-xs font-medium transition-colors ' + (savedAt ? 'text-green-600' : 'text-gray-400')}>
               {savedAt ? `✓ ${t('np_autosaved')} ${savedAt}` : t('np_saving')}

@@ -49,7 +49,7 @@ export const DICT_APP_TOOLS = new Set([
 ])
 export const SINGLE_APP_TOOLS = new Set([
   'elementary-japanese-words', 'elementary-english-words', 'white-noise-machine', 'cheonsugyeong',
-  'zip-files', 'unzip', 'screen-capture',
+  'zip-files', 'unzip', 'screen-capture', 'online-notepad',
 ])
 export const APP_TOOLS = new Set([...DICT_APP_TOOLS, ...SINGLE_APP_TOOLS])
 // Tools whose installable-app experience is only ready in some locales (others
