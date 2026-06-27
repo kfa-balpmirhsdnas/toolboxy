@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, sfx } from '@/components/tools/GameStage'
 import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -54,13 +54,14 @@ export default function WhackAMolePage({ params }: { params: { lang: string } })
 
   function whack(i: number) {
     if (!playing || i !== mole) return
-    setScore((s) => s + 1); setMole(-1); setBonk(i)
+    setScore((s) => s + 1); setMole(-1); setBonk(i); sfx('hit')
     setTimeout(() => setBonk((b) => (b === i ? -1 : b)), 200)
   }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="max-w-xs mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="relative max-w-xs mx-auto space-y-4 text-center select-none">
+        <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('wm_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('wm_subtitle')}</p>

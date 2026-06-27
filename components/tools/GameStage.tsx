@@ -50,6 +50,39 @@ function fanfare() {
   tone(261.63, t, 0.8, 'triangle', 0.13) // C4 bass root
 }
 
+export const isGameMuted = () => isMuted()
+// Tiny per-action sound effects — every game calls these for feedback; the same
+// 'game-muted' flag (toggled by SoundToggle) turns ALL game audio off.
+export type Sfx = 'move' | 'rotate' | 'lock' | 'clear' | 'drop' | 'eat' | 'point' | 'hit' | 'lose'
+export function sfx(kind: Sfx) {
+  if (isMuted()) return
+  switch (kind) {
+    case 'move': tone(330, 0, 0.04, 'square', 0.07); break
+    case 'rotate': tone(523, 0, 0.05, 'square', 0.1); break
+    case 'lock': tone(196, 0, 0.07, 'square', 0.12); break
+    case 'clear': tone(659, 0, 0.08, 'square', 0.15); tone(880, 0.09, 0.12, 'square', 0.15); break
+    case 'drop': tone(392, 0, 0.06, 'square', 0.12); tone(262, 0.05, 0.07, 'square', 0.1); break
+    case 'eat': case 'point': tone(880, 0, 0.05, 'square', 0.14); tone(1318, 0.05, 0.07, 'square', 0.1); break
+    case 'hit': tone(1200, 0, 0.04, 'square', 0.16); tone(500, 0.03, 0.07, 'square', 0.12); break
+    case 'lose': tone(196, 0, 0.25, 'sawtooth', 0.16); tone(155, 0.12, 0.35, 'sawtooth', 0.14); break
+  }
+}
+
+/** Standalone sound on/off — reads/writes the shared 'game-muted' flag, no Stage needed. */
+export function useMute() {
+  const [muted, setMuted] = useState(false)
+  useEffect(() => { setMuted(isMuted()) }, [])
+  const toggle = useCallback(() => setMuted((m) => { const n = !m; try { localStorage.setItem('game-muted', n ? '1' : '0') } catch { /* */ } return n }), [])
+  return { muted, toggle }
+}
+export function SoundToggle({ className = '' }: { className?: string }) {
+  const { muted, toggle } = useMute()
+  return (
+    <button type="button" onClick={toggle} aria-label="toggle sound" aria-pressed={!muted} title="sound on/off"
+      className={`text-lg leading-none text-gray-400 hover:text-gray-700 transition-colors ${className}`}>{muted ? '🔇' : '🔊'}</button>
+  )
+}
+
 /** Scroll the game box ([data-game-stage]) up so its top sits just BELOW the
  * sticky site header — never under it, or the game title gets hidden. Shared so
  * every game — GameStage-driven or not — behaves the same on Start. */
@@ -103,19 +136,20 @@ const GS_KEYFRAMES =
 const GS_COLORS: Record<string, string> = { '3': '#38bdf8', '2': '#fb7185', '1': '#facc15', 'START!': '#4ade80' }
 
 /** Countdown + FINISH overlay (+ optional idle Start button). Covers the nearest positioned ancestor. */
-export function GameStageOverlay({ stage, showStart = true, startLabel = '▶ START', finishLabel = 'FINISH!!' }: { stage: Stage; showStart?: boolean; startLabel?: string; finishLabel?: string }) {
+export function GameStageOverlay({ stage, showStart = true, startLabel = '▶ START', finishLabel = 'FINISH!!', replayLabel = '↻ REPLAY' }: { stage: Stage; showStart?: boolean; startLabel?: string; finishLabel?: string; replayLabel?: string }) {
   const [showFinish, setShowFinish] = useState(false)
   useEffect(() => {
     if (stage.phase === 'finished') { setShowFinish(true); const id = setTimeout(() => setShowFinish(false), 2200); return () => clearTimeout(id) }
     setShowFinish(false)
   }, [stage.phase])
 
-  if (stage.phase === 'idle') {
-    if (!showStart) return null
+  // Button overlay: idle → START, finished (after the flourish) → REPLAY. Both restart via begin().
+  const replaying = stage.phase === 'finished' && !showFinish
+  if ((stage.phase === 'idle' && showStart) || replaying) {
     return (
       <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl" style={{ background: 'rgba(0,0,0,0.32)' }}>
         <button type="button" onClick={stage.begin}
-          className="px-8 py-3 rounded-full bg-brand-600 text-white text-lg font-bold shadow-lg hover:bg-brand-700 active:scale-95 transition">{startLabel}</button>
+          className="px-8 py-3 rounded-full bg-brand-600 text-white text-lg font-bold shadow-lg hover:bg-brand-700 active:scale-95 transition">{replaying ? replayLabel : startLabel}</button>
         <button type="button" onClick={stage.toggleMute} aria-label="toggle sound"
           className="absolute top-2 right-2 text-lg leading-none opacity-80 hover:opacity-100">{stage.muteOn ? '🔇' : '🔊'}</button>
       </div>

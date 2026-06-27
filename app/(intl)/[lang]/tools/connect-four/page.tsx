@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('connect-four')!
@@ -54,13 +54,13 @@ export default function ConnectFourPage({ params }: { params: { lang: string } }
   function drop(c: number) {
     if (!stage.playing || result || (vsAI && turn !== 1)) return
     const r = dropRow(board, c); if (r < 0) return
-    const nb = board.map((x) => [...x]); nb[r][c] = turn; setBoard(nb)
+    const nb = board.map((x) => [...x]); nb[r][c] = turn; setBoard(nb); sfx('drop')
     if (settle(nb, turn)) return
     if (vsAI) {
       setTurn(2)
       setTimeout(() => {
         const ac = aiMove(nb); const ar = dropRow(nb, ac); if (ar < 0) return
-        const ab = nb.map((x) => [...x]); ab[ar][ac] = 2; setBoard(ab)
+        const ab = nb.map((x) => [...x]); ab[ar][ac] = 2; setBoard(ab); sfx('drop')
         if (!settle(ab, 2)) setTurn(1)
       }, 350)
     } else setTurn(turn === 1 ? 2 : 1)
@@ -73,7 +73,8 @@ export default function ConnectFourPage({ params }: { params: { lang: string } }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="max-w-sm mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="relative max-w-sm mx-auto space-y-4 text-center select-none">
+        <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('c4_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('c4_subtitle')}</p>

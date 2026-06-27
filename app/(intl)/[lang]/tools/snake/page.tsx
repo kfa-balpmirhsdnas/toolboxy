@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, sfx } from '@/components/tools/GameStage'
 import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -53,7 +53,7 @@ export default function SnakePage({ params }: { params: { lang: string } }) {
       }
       const ate = eq(head, foodRef.current)
       const ns = [head, ...snake]
-      if (ate) { setScore((s) => s + 1); foodRef.current = randFood(ns) } else ns.pop()
+      if (ate) { setScore((s) => s + 1); foodRef.current = randFood(ns); sfx('eat') } else ns.pop()
       snakeRef.current = ns; force((n) => n + 1)
     }, speed)
     return () => clearInterval(id)
@@ -80,7 +80,8 @@ export default function SnakePage({ params }: { params: { lang: string } }) {
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="max-w-sm mx-auto space-y-3 text-center select-none">
+      <div data-game-stage className="relative max-w-sm mx-auto space-y-3 text-center select-none">
+        <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('sn_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('sn_subtitle')}</p>
