@@ -1,7 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { onAuthStateChanged, type User } from 'firebase/auth'
+import { auth } from '@/lib/firebase/client'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
@@ -54,6 +57,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [savedAt, setSavedAt] = useState('')
   const [copied, setCopied] = useState(false)
   const [renaming, setRenaming] = useState<string | null>(null)
+  const router = useRouter()
+  const [user, setUser] = useState<User | null | 'loading'>('loading')
   const tracked = useRef(false)
   const taRef = useRef<HTMLTextAreaElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -92,6 +97,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     if (!used.has(base)) return base
     let i = 2; while (used.has(`${base}_${i}`)) i++; return `${base}_${i}`
   }
+
+  // Track auth — TXT download is for signed-in users only.
+  useEffect(() => onAuthStateChanged(auth, (u) => setUser(u)), [])
+  const guest = user === null
 
   // Restore on mount, migrating the legacy single note if present.
   useEffect(() => {
@@ -187,6 +196,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   function renameDoc(id: string, name: string) { patchDoc(id, { name: name || docs.find((d) => d.id === id)?.name || dateTag() }) }
 
   function download() {
+    if (user === 'loading') return // still resolving — ignore the click
+    if (!user) { router.push(`/${params.lang}/login`); return } // guests must sign in
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -309,8 +320,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
 
         <div className="flex gap-2 flex-wrap">
           <button onClick={download} disabled={!text}
+            title={guest ? t('np_dl_login') : undefined}
             className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            ⬇ {t('np_download')}
+            {guest ? `🔒 ${t('np_dl_login')}` : `⬇ ${t('np_download')}`}
           </button>
           <button onClick={copy} disabled={!text}
             className="px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">

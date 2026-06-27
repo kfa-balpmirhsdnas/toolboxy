@@ -6531,7 +6531,8 @@
     "np_font_gungsuh": "Gungsuh",
     "np_font_en_inter": "Inter",
     "np_font_en_lora": "Lora",
-    "np_font_en_mono": "Mono"
+    "np_font_en_mono": "Mono",
+    "np_dl_login": "Sign in to download"
   },
   "toolTags": {
     "spinner-wheel": [
