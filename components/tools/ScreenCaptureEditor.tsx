@@ -5,7 +5,7 @@
 // (PNG/JPG download or clipboard copy). All client-side. Drawing is imperative
 // on a canvas; React state is only used for the toolbar.
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { trackToolDownload, trackToolCopy } from '@/lib/gtag'
 
@@ -43,6 +43,22 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   const [fontLevel, setFontLevel] = useState(1)            // 0 작게 / 1 중간 / 2 크게
   const [shapeKind, setShapeKind] = useState<'rect' | 'ellipse'>('rect')
   const [colorOpen, setColorOpen] = useState(false)        // collapse the colour palette behind one swatch
+  // Align the contextual options/hint to start under the button that was clicked.
+  const toolbarRef = useRef<HTMLDivElement>(null)
+  const btnRefs = useRef<Record<string, HTMLButtonElement | null>>({})
+  const [toolOffset, setToolOffset] = useState(0)
+  const [colorOffset, setColorOffset] = useState(0)
+  useLayoutEffect(() => {
+    const measure = (key: string) => {
+      const b = btnRefs.current[key], tb = toolbarRef.current
+      if (!b || !tb) return 0
+      return Math.max(0, b.getBoundingClientRect().left - tb.getBoundingClientRect().left)
+    }
+    const recalc = () => { setToolOffset(measure(tool)); setColorOffset(measure('color')) }
+    recalc()
+    window.addEventListener('resize', recalc)
+    return () => window.removeEventListener('resize', recalc)
+  }, [tool, colorOpen])
   const [dims, setDims] = useState({ w: 0, h: 0 })
   const [editing, setEditing] = useState<{ x: number; y: number; value: string } | null>(null)
   const [count, setCount] = useState(0) // bump to refresh toolbar (undo enabled etc.)
@@ -238,12 +254,12 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   return (
     <div className="space-y-3">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div ref={toolbarRef} className="flex flex-wrap items-center gap-2">
         {TOOLS.map(([id, label]) => (
-          <button key={id} onClick={() => { setEditing(null); setTool(id) }} className={tbtn(tool === id)}><span className="mr-1">{ICONS[id]}</span>{label}</button>
+          <button key={id} ref={(el) => { btnRefs.current[id] = el }} onClick={() => { setEditing(null); setTool(id) }} className={tbtn(tool === id)}><span className="mr-1">{ICONS[id]}</span>{label}</button>
         ))}
         <span className="mx-1 h-5 w-px bg-gray-200" />
-        <button onClick={() => setColorOpen((o) => !o)} aria-label={t('sc_ed_color')} title={t('sc_ed_color')}
+        <button ref={(el) => { btnRefs.current['color'] = el }} onClick={() => setColorOpen((o) => !o)} aria-label={t('sc_ed_color')} title={t('sc_ed_color')}
           className="flex items-center gap-1 pl-1.5 pr-1 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
           <span className="w-5 h-5 rounded-full border border-gray-300" style={{ background: color }} />
           <span className="text-gray-400 text-[10px]">▾</span>
@@ -254,7 +270,7 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
       </div>
       {/* Colour palette — revealed by the single swatch button */}
       {colorOpen && (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2" style={{ marginLeft: colorOffset }}>
           <span className="text-xs text-gray-400 mr-1">🎨 {t('sc_ed_color')}</span>
           {COLORS.map((c) => (
             <button key={c} onClick={() => { setColor(c); setColorOpen(false) }} aria-label={c}
@@ -264,12 +280,12 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
         </div>
       )}
 
-      {tool === 'crop' && <p className="text-xs text-gray-500">✂ {t('sc_ed_crop_hint')}</p>}
-      {tool === 'mosaic' && <p className="text-xs text-gray-500">🔲 {t('sc_ed_mosaic_hint')}</p>}
+      {tool === 'crop' && <p className="text-xs text-gray-500" style={{ marginLeft: toolOffset }}>✂ {t('sc_ed_crop_hint')}</p>}
+      {tool === 'mosaic' && <p className="text-xs text-gray-500" style={{ marginLeft: toolOffset }}>🔲 {t('sc_ed_mosaic_hint')}</p>}
 
       {/* Per-tool options */}
       {tool === 'arrow' && (
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>
           <span className="text-xs text-gray-400 mr-1">↗ {t('sc_ed_thickness')}</span>
           {[t('sc_ed_stroke_thin'), t('sc_ed_stroke_normal'), t('sc_ed_stroke_thick')].map((lbl, i) => (
             <button key={i} onClick={() => setStrokeLevel(i)} className={optBtn(strokeLevel === i)}>{lbl}</button>
@@ -277,14 +293,14 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
         </div>
       )}
       {tool === 'rect' && (
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>
           <span className="text-xs text-gray-400 mr-1">▭ {t('sc_ed_shape')}</span>
           <button onClick={() => setShapeKind('rect')} className={optBtn(shapeKind === 'rect')}>▭ {t('sc_ed_shape_rect')}</button>
           <button onClick={() => setShapeKind('ellipse')} className={optBtn(shapeKind === 'ellipse')}>◯ {t('sc_ed_shape_circle')}</button>
         </div>
       )}
       {tool === 'text' && (
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>
           <span className="text-xs text-gray-400 mr-1">T {t('sc_ed_fontsize')}</span>
           {[t('sc_ed_font_small'), t('sc_ed_font_medium'), t('sc_ed_font_large')].map((lbl, i) => (
             <button key={i} onClick={() => setFontLevel(i)} className={optBtn(fontLevel === i)}>{lbl}</button>
