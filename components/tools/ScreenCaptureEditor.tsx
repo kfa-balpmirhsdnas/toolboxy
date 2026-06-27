@@ -19,7 +19,7 @@ type Shape =
   | ({ type: 'mosaic' } & Rect)
 
 const COLORS = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#111827', '#ffffff']
-const STROKE_MUL = [0.6, 1, 1.8] // 가늘게 / 보통 / 두껍게
+const STROKE_MUL = [0.6, 1.3, 2.5] // 가늘게 / 보통(머리+선 ↑) / 두껍게(선 ↑) — head scales with lw
 const FONT_MUL = [0.7, 1, 1.5]   // 작게 / 중간 / 크게
 
 function normRect(x1: number, y1: number, x2: number, y2: number): Rect {
