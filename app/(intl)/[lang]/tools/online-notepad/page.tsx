@@ -228,7 +228,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   // Icon hints matching each setting's nature: a sample glyph (typeface),
   // ↕ (size), ≡ (line spacing).
   const fontIcon = ({ ko: '가', ja: 'あ', en: 'A' } as Record<string, string>)[params.lang] || 'A'
-  const ico = (g: string) => <span className="inline-flex w-4 justify-center text-gray-400 text-[11px] font-bold leading-none">{g}</span>
+  const ico = (g: string) => <span className="inline-flex w-4 justify-center text-gray-500 text-[13px] font-bold leading-none">{g}</span>
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -272,22 +272,23 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               </button>
             </div>
             <span className="w-px h-5 bg-gray-200" />
-            {/* Per-tab display settings — selects with a nature-matching icon */}
-            <div className="flex items-center gap-x-3 gap-y-1.5 flex-wrap text-xs text-gray-500">
-              <label className="flex items-center gap-1">{ico(fontIcon)}{t('np_font')}
-                <select value={fontList.includes(fam) ? fam : 'sans'} onChange={(e) => patchDoc(activeId, { fam: e.target.value })} className={selCls}>
+            {/* Per-tab display settings — icon-only (label text dropped to keep the
+                row compact across locales); hover/AT meaning via title + aria-label. */}
+            <div className="flex items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500">
+              <label className="flex items-center gap-1" title={t('np_font')}>{ico(fontIcon)}
+                <select aria-label={t('np_font')} title={t('np_font')} value={fontList.includes(fam) ? fam : 'sans'} onChange={(e) => patchDoc(activeId, { fam: e.target.value })} className={selCls}>
                   {fontList.map((v) => <option key={v} value={v}>{t('np_font_' + v)}</option>)}
                 </select>
               </label>
-              <label className="flex items-center gap-1">{ico('↕')}{t('np_size')}
-                <select value={size} onChange={(e) => patchDoc(activeId, { size: e.target.value as Lvl })} className={selCls}>
+              <label className="flex items-center gap-1" title={t('np_size')}>{ico('↕')}
+                <select aria-label={t('np_size')} title={t('np_size')} value={size} onChange={(e) => patchDoc(activeId, { size: e.target.value as Lvl })} className={selCls}>
                   <option value="sm">{t('np_sm')}</option>
                   <option value="md">{t('np_md')}</option>
                   <option value="lg">{t('np_lg')}</option>
                 </select>
               </label>
-              <label className="flex items-center gap-1">{ico('≡')}{t('np_lineheight')}
-                <select value={lh} onChange={(e) => patchDoc(activeId, { lh: e.target.value as Lvl })} className={selCls}>
+              <label className="flex items-center gap-1" title={t('np_lineheight')}>{ico('≡')}
+                <select aria-label={t('np_lineheight')} title={t('np_lineheight')} value={lh} onChange={(e) => patchDoc(activeId, { lh: e.target.value as Lvl })} className={selCls}>
                   <option value="sm">{t('np_sm')}</option>
                   <option value="md">{t('np_md')}</option>
                   <option value="lg">{t('np_lg')}</option>
