@@ -6397,7 +6397,9 @@
     "bip_col_orig": "Original",
     "bip_col_new": "New size",
     "bcv_format_desc": "Files are converted to the selected format.",
-    "bcp_target_desc": "Compress each file under the given size (JPEG/WebP)."
+    "bcp_target_desc": "Compress each file under the given size (JPEG/WebP).",
+    "bwm_box_content": "Content",
+    "bwm_box_style": "Style"
   },
   "toolTags": {
     "spinner-wheel": [
