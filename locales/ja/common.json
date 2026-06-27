@@ -6857,7 +6857,7 @@
     "sc_ed_undo": "元に戻す",
     "sc_ed_clear": "リセット",
     "sc_ed_text_ph": "入力してEnter",
-    "sc_ed_crop_hint": "切り抜く範囲をドラッグしてください。",
+    "sc_ed_crop_hint": "切り抜く範囲をドラッグしてください。切り抜きは元に戻せません。",
     "sc_ed_mosaic_hint": "隠したい範囲（名前・電話番号など）をドラッグしてください。",
     "np_undo": "元に戻す",
     "np_redo": "やり直し",

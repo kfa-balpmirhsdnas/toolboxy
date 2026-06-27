@@ -256,8 +256,12 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
     'px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ' +
     (active ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')
   const optBtn = (active: boolean) =>
-    'px-3 py-1 rounded-md text-xs font-medium transition-colors ' +
+    'px-3 py-1 rounded-md text-xs font-medium transition-colors inline-flex items-center gap-1 ' +
     (active ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50')
+  // Uniform-size shape bullets (square/circle, outline/filled) via CSS, not glyphs.
+  const shapeBullet = (round: boolean, filled: boolean) => (
+    <span className={'inline-block w-3 h-3 shrink-0 ' + (round ? 'rounded-full' : 'rounded-[2px]') + (filled ? ' bg-current' : ' border-2 border-current')} />
+  )
 
   return (
     <div className="space-y-3">
@@ -303,10 +307,10 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
         ) : tool === 'rect' ? (
           <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>
             <span className="text-xs text-gray-400 mr-1">▭ {t('sc_ed_shape')}</span>
-            <button onClick={() => setShapeKind('rect')} className={optBtn(shapeKind === 'rect')}>▭ {t('sc_ed_shape_rect')}</button>
-            <button onClick={() => setShapeKind('ellipse')} className={optBtn(shapeKind === 'ellipse')}>◯ {t('sc_ed_shape_circle')}</button>
-            <button onClick={() => setShapeKind('rectFill')} className={optBtn(shapeKind === 'rectFill')}>▬ {t('sc_ed_shape_rect')}</button>
-            <button onClick={() => setShapeKind('ellipseFill')} className={optBtn(shapeKind === 'ellipseFill')}>● {t('sc_ed_shape_circle')}</button>
+            <button onClick={() => setShapeKind('rect')} className={optBtn(shapeKind === 'rect')}>{shapeBullet(false, false)}{t('sc_ed_shape_rect')}</button>
+            <button onClick={() => setShapeKind('ellipse')} className={optBtn(shapeKind === 'ellipse')}>{shapeBullet(true, false)}{t('sc_ed_shape_circle')}</button>
+            <button onClick={() => setShapeKind('rectFill')} className={optBtn(shapeKind === 'rectFill')}>{shapeBullet(false, true)}{t('sc_ed_shape_rect')}</button>
+            <button onClick={() => setShapeKind('ellipseFill')} className={optBtn(shapeKind === 'ellipseFill')}>{shapeBullet(true, true)}{t('sc_ed_shape_circle')}</button>
           </div>
         ) : tool === 'text' ? (
           <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>

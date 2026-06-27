@@ -6884,7 +6884,7 @@
     "sc_ed_undo": "실행취소",
     "sc_ed_clear": "초기화",
     "sc_ed_text_ph": "텍스트 입력 후 Enter",
-    "sc_ed_crop_hint": "잘라낼 영역을 드래그하세요.",
+    "sc_ed_crop_hint": "잘라낼 영역을 드래그하세요. 자르기는 실행취소가 불가합니다.",
     "sc_ed_mosaic_hint": "가릴 영역(이름·전화번호 등)을 드래그하세요.",
     "np_undo": "되돌리기",
     "np_redo": "다시 실행",

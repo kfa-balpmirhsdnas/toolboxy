@@ -6495,7 +6495,7 @@
     "sc_ed_undo": "Undo",
     "sc_ed_clear": "Reset",
     "sc_ed_text_ph": "Type, then Enter",
-    "sc_ed_crop_hint": "Drag the area to crop.",
+    "sc_ed_crop_hint": "Drag the area to crop. Cropping can't be undone.",
     "sc_ed_mosaic_hint": "Drag over info to hide (names, phone numbers, etc.).",
     "np_undo": "Undo",
     "np_redo": "Redo",
