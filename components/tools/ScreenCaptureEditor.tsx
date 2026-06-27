@@ -12,8 +12,8 @@ import { trackToolDownload, trackToolCopy } from '@/lib/gtag'
 type Tool = 'crop' | 'arrow' | 'rect' | 'text' | 'mosaic'
 type Rect = { x: number; y: number; w: number; h: number }
 type Shape =
-  | ({ type: 'rect'; color: string; lw: number } & Rect)
-  | ({ type: 'ellipse'; color: string; lw: number } & Rect)
+  | ({ type: 'rect'; color: string; lw: number; fill?: boolean } & Rect)
+  | ({ type: 'ellipse'; color: string; lw: number; fill?: boolean } & Rect)
   | { type: 'arrow'; x1: number; y1: number; x2: number; y2: number; color: string; lw: number }
   | { type: 'text'; x: number; y: number; text: string; color: string; size: number }
   | ({ type: 'mosaic' } & Rect)
@@ -41,7 +41,7 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   const [color, setColor] = useState(COLORS[0])
   const [strokeLevel, setStrokeLevel] = useState(1)        // 0 가늘게 / 1 보통 / 2 두껍게
   const [fontLevel, setFontLevel] = useState(1)            // 0 작게 / 1 중간 / 2 크게
-  const [shapeKind, setShapeKind] = useState<'rect' | 'ellipse'>('rect')
+  const [shapeKind, setShapeKind] = useState<'rect' | 'ellipse' | 'rectFill' | 'ellipseFill'>('rect')
   const [colorOpen, setColorOpen] = useState(false)        // collapse the colour palette behind one swatch
   // Align the contextual options/hint to start under the button that was clicked.
   const toolbarRef = useRef<HTMLDivElement>(null)
@@ -112,10 +112,14 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   }
 
   function drawShape(ctx: CanvasRenderingContext2D, base: HTMLCanvasElement, s: Shape) {
-    if (s.type === 'rect') { ctx.strokeStyle = s.color; ctx.lineWidth = s.lw; ctx.strokeRect(s.x, s.y, s.w, s.h) }
+    if (s.type === 'rect') {
+      if (s.fill) { ctx.fillStyle = s.color; ctx.fillRect(s.x, s.y, s.w, s.h) }
+      else { ctx.strokeStyle = s.color; ctx.lineWidth = s.lw; ctx.strokeRect(s.x, s.y, s.w, s.h) }
+    }
     else if (s.type === 'ellipse') {
-      ctx.strokeStyle = s.color; ctx.lineWidth = s.lw
-      ctx.beginPath(); ctx.ellipse(s.x + s.w / 2, s.y + s.h / 2, Math.abs(s.w) / 2, Math.abs(s.h) / 2, 0, 0, 2 * Math.PI); ctx.stroke()
+      ctx.beginPath(); ctx.ellipse(s.x + s.w / 2, s.y + s.h / 2, Math.abs(s.w) / 2, Math.abs(s.h) / 2, 0, 0, 2 * Math.PI)
+      if (s.fill) { ctx.fillStyle = s.color; ctx.fill() }
+      else { ctx.strokeStyle = s.color; ctx.lineWidth = s.lw; ctx.stroke() }
     }
     else if (s.type === 'arrow') drawArrow(ctx, s.x1, s.y1, s.x2, s.y2, s.color, s.lw)
     else if (s.type === 'text') { ctx.fillStyle = s.color; ctx.font = `bold ${s.size}px sans-serif`; ctx.textBaseline = 'top'; ctx.fillText(s.text, s.x, s.y) }
@@ -153,7 +157,11 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
     const lw = Math.max(2, Math.round(lwRef.current * STROKE_MUL[strokeLevel]))
     if (tool === 'arrow') return { type: 'arrow', x1: s.x, y1: s.y, x2: p.x, y2: p.y, color, lw }
     const r = normRect(s.x, s.y, p.x, p.y)
-    if (tool === 'rect') return { type: shapeKind === 'ellipse' ? 'ellipse' : 'rect', ...r, color, lw }
+    if (tool === 'rect') {
+      const ell = shapeKind === 'ellipse' || shapeKind === 'ellipseFill'
+      const fill = shapeKind === 'rectFill' || shapeKind === 'ellipseFill'
+      return { type: ell ? 'ellipse' : 'rect', ...r, color, lw, fill }
+    }
     if (tool === 'mosaic') return { type: 'mosaic', ...r }
     if (tool === 'crop') return { type: 'rect', ...r, color: '#3b82f6', lw: Math.max(2, lwRef.current - 1) } // visual only
     return null
@@ -297,6 +305,8 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
             <span className="text-xs text-gray-400 mr-1">▭ {t('sc_ed_shape')}</span>
             <button onClick={() => setShapeKind('rect')} className={optBtn(shapeKind === 'rect')}>▭ {t('sc_ed_shape_rect')}</button>
             <button onClick={() => setShapeKind('ellipse')} className={optBtn(shapeKind === 'ellipse')}>◯ {t('sc_ed_shape_circle')}</button>
+            <button onClick={() => setShapeKind('rectFill')} className={optBtn(shapeKind === 'rectFill')}>▬ {t('sc_ed_shape_rect')}</button>
+            <button onClick={() => setShapeKind('ellipseFill')} className={optBtn(shapeKind === 'ellipseFill')}>● {t('sc_ed_shape_circle')}</button>
           </div>
         ) : tool === 'text' ? (
           <div className="flex flex-wrap items-center gap-1.5" style={{ marginLeft: toolOffset }}>
