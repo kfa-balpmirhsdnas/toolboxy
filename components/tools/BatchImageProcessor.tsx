@@ -39,6 +39,7 @@ interface InputItem {
 
 interface OutItem {
   id: string
+  srcId: string // id of the input item this result came from (for the list view)
   name: string
   blob: Blob
   url: string
@@ -118,6 +119,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
   const [dragging, setDragging] = useState(false)
   // Ids of thumbnails the browser couldn't render (e.g. HEIC) — shown as a fallback.
   const [thumbFailed, setThumbFailed] = useState<Set<string>>(() => new Set())
+  const [view, setView] = useState<'list' | 'thumbnails'>('list')
   const [zipping, setZipping] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -208,7 +210,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
           skip.push({ name: file.name, reason: t('bip_skip_unsupported') })
         } else {
           const name = dedupeName(r.filename, usedNames)
-          out.push({ id: uid(), name, blob: r.blob, url: URL.createObjectURL(r.blob), inSize: file.size, outSize: r.blob.size })
+          out.push({ id: uid(), srcId: items[i].id, name, blob: r.blob, url: URL.createObjectURL(r.blob), inSize: file.size, outSize: r.blob.size })
         }
       } catch {
         skip.push({ name: file.name, reason: t('bip_skip_failed') })
@@ -293,12 +295,25 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
       {/* Input list */}
       {items.length > 0 && (
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <p className="text-sm font-semibold text-gray-700">{t('bip_files_n', { n: items.length })}</p>
-            <button onClick={clearAll} className="text-xs text-gray-400 hover:text-red-500 transition-colors">
-              {t('ui_clear')}
-            </button>
+            <div className="flex items-center gap-2">
+              {/* View toggle: list (default) / thumbnails */}
+              <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
+                {(['list', 'thumbnails'] as const).map((v) => (
+                  <button key={v} onClick={() => setView(v)}
+                    className={'px-2.5 py-1 rounded-md font-medium transition-colors ' + (view === v ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>
+                    {v === 'list' ? t('bip_view_list') : t('bip_view_thumb')}
+                  </button>
+                ))}
+              </div>
+              <button onClick={clearAll} className="text-xs text-gray-400 hover:text-red-500 transition-colors">
+                {t('ui_clear')}
+              </button>
+            </div>
           </div>
+
+          {view === 'thumbnails' ? (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
             {items.map((it, idx) => (
               <div key={it.id} title={previewName ? `${it.file.name} → ${previewName(it.file, idx)}` : it.file.name}
@@ -326,6 +341,29 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
               </div>
             ))}
           </div>
+          ) : (
+          <div className="border border-gray-200 rounded-xl overflow-hidden text-sm">
+            <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 text-xs font-medium text-gray-500">
+              <span className="flex-1 min-w-0">{t('bip_col_name')}</span>
+              <span className="w-16 text-right shrink-0">{t('bip_col_orig')}</span>
+              <span className="w-16 text-right shrink-0">{t('bip_col_new')}</span>
+              <span className="w-4 shrink-0" />
+            </div>
+            <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+              {items.map((it, idx) => {
+                const out = results.find((r) => r.srcId === it.id)?.outSize
+                return (
+                  <div key={it.id} className="flex items-center gap-2 px-3 py-2">
+                    <span className="flex-1 min-w-0 truncate text-gray-800" title={it.file.name}>{previewName ? previewName(it.file, idx) : it.file.name}</span>
+                    <span className="w-16 text-right shrink-0 text-gray-500">{fmtBytes(it.file.size)}</span>
+                    <span className="w-16 text-right shrink-0 text-gray-700">{out != null ? fmtBytes(out) : '—'}</span>
+                    <button onClick={() => removeItem(it.id)} aria-label={t('bip_remove')} className="w-4 shrink-0 text-gray-300 hover:text-red-500 transition-colors">✕</button>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+          )}
 
           {/* Process button + progress */}
           {status === 'processing' ? (

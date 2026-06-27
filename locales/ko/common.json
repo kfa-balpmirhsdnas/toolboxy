@@ -6776,7 +6776,12 @@
     "bir_size": "크기",
     "bir_png_disabled": "PNG는 무손실이라 품질을 조절할 수 없습니다.",
     "bir_fmt_keep": "원본 유지",
-    "bir_q_adjust": "품질 조정"
+    "bir_q_adjust": "품질 조정",
+    "bip_view_list": "목록",
+    "bip_view_thumb": "썸네일",
+    "bip_col_name": "파일명",
+    "bip_col_orig": "원본 사이즈",
+    "bip_col_new": "변경 사이즈"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

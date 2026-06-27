@@ -6743,7 +6743,12 @@
     "bir_size": "サイズ",
     "bir_png_disabled": "PNGは可逆のため、画質は調整できません。",
     "bir_fmt_keep": "元のまま",
-    "bir_q_adjust": "画質を調整"
+    "bir_q_adjust": "画質を調整",
+    "bip_view_list": "リスト",
+    "bip_view_thumb": "サムネイル",
+    "bip_col_name": "ファイル名",
+    "bip_col_orig": "元のサイズ",
+    "bip_col_new": "変更後"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

@@ -6390,7 +6390,12 @@
     "bir_size": "Size",
     "bir_png_disabled": "PNG is lossless — quality cannot be adjusted.",
     "bir_fmt_keep": "Original",
-    "bir_q_adjust": "Adjust quality"
+    "bir_q_adjust": "Adjust quality",
+    "bip_view_list": "List",
+    "bip_view_thumb": "Thumbnails",
+    "bip_col_name": "Filename",
+    "bip_col_orig": "Original",
+    "bip_col_new": "New size"
   },
   "toolTags": {
     "spinner-wheel": [
