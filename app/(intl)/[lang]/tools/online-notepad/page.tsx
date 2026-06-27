@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { onAuthStateChanged, type User } from 'firebase/auth'
 import { auth } from '@/lib/firebase/client'
+import { loginHref } from '@/lib/auth/redirect'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
@@ -266,7 +267,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
 
   function download() {
     if (user === 'loading') return // still resolving — ignore the click
-    if (!user) { router.push(`/${params.lang}/login`); return } // guests must sign in
+    if (!user) { router.push(loginHref(params.lang, `/${params.lang}/tools/online-notepad`)); return } // guests must sign in
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')

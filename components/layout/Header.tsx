@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth'
 import { useTranslations } from 'next-intl'
 import { auth } from '@/lib/firebase/client'
+import { loginHref, signupHref } from '@/lib/auth/redirect'
 
 // Native language names (endonyms) — each shown in its own language so any
 // speaker recognizes it. Avoid flags: they represent countries, not languages.
@@ -42,6 +43,8 @@ export default function Header() {
   const pathname = usePathname()
   const router = useRouter()
   const lang = getCurrentLang(pathname)
+  // Return here after auth — unless we're already on an auth page (avoids loops).
+  const authBack = /\/(login|signup)(\/|$)/.test(pathname) ? undefined : pathname
   const t = useTranslations('nav')
   const th = useTranslations('home')
   const [user, setUser] = useState<User | null | 'loading'>('loading')
@@ -131,8 +134,8 @@ export default function Header() {
           </div>
         ) : (
           <div className="flex items-center gap-2 shrink-0">
-            <Link href={`/${lang}/login`} className="hidden sm:inline text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors whitespace-nowrap">{t('login')}</Link>
-            <Link href={`/${lang}/signup`} className="btn-primary text-sm py-1.5 px-3 sm:px-4 whitespace-nowrap">{t('signup')}</Link>
+            <Link href={loginHref(lang, authBack)} className="hidden sm:inline text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors whitespace-nowrap">{t('login')}</Link>
+            <Link href={signupHref(lang, authBack)} className="btn-primary text-sm py-1.5 px-3 sm:px-4 whitespace-nowrap">{t('signup')}</Link>
           </div>
         )}
         </div>

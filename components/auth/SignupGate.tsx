@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { onAuthStateChanged, type User } from 'firebase/auth'
 import { useTranslations } from 'next-intl'
 import { auth } from '@/lib/firebase/client'
+import { loginHref, signupHref } from '@/lib/auth/redirect'
 
 /**
  * Sign-up gate for guest users who reach an individual tool via internal
@@ -82,14 +83,14 @@ export default function SignupGateProvider({ children }: { children: React.React
             <h3 className="text-xl font-bold text-gray-900 mb-2">{t('title')}</h3>
             <p className="text-sm text-gray-500 mb-6 leading-relaxed">{t('desc')}</p>
             <Link
-              href={`/${lang}/signup`}
+              href={signupHref(lang, pendingHref)}
               onClick={close}
               className="block w-full bg-brand-600 text-white text-center font-semibold py-3 rounded-xl hover:bg-brand-700 transition-colors mb-3"
             >
               {t('create')}
             </Link>
             <Link
-              href={`/${lang}/login`}
+              href={loginHref(lang, pendingHref)}
               onClick={close}
               className="block w-full text-center text-sm text-brand-600 hover:text-brand-700 py-1 mb-2"
             >

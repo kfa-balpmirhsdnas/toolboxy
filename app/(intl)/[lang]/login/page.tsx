@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { auth } from '@/lib/firebase/client'
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+import { safeRedirect, signupHref } from '@/lib/auth/redirect'
 
 function errorKey(code: string): string {
   if (code === 'auth/user-not-found' || code === 'auth/invalid-credential') return 'err_credential'
@@ -19,7 +20,22 @@ export default function LoginPage({ params }: { params: { lang: string } }) {
   const router = useRouter()
   const t = useTranslations('auth')
   const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect') || `/${params.lang}`
+  // Return target after login: an explicit (validated) ?redirect=, else fall back
+  // to the same-origin page that linked here, else the locale home.
+  const redirect = useMemo(() => {
+    const home = `/${params.lang}`
+    const r = searchParams.get('redirect')
+    if (r) return safeRedirect(r, home)
+    if (typeof document !== 'undefined' && document.referrer) {
+      try {
+        const u = new URL(document.referrer)
+        if (u.origin === window.location.origin && !/\/(login|signup)(\/|$)/.test(u.pathname)) {
+          return safeRedirect(u.pathname + u.search, home)
+        }
+      } catch { /* ignore */ }
+    }
+    return home
+  }, [searchParams, params.lang])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -89,7 +105,7 @@ export default function LoginPage({ params }: { params: { lang: string } }) {
           )}
         </div>
         <p className="text-center text-sm text-gray-500 mt-6">{t('no_account')}{' '}
-          <Link href={`/${params.lang}/signup`} className="text-brand-600 font-medium hover:underline">{t('signup_link')}</Link></p>
+          <Link href={signupHref(params.lang, searchParams.get('redirect'))} className="text-brand-600 font-medium hover:underline">{t('signup_link')}</Link></p>
       </div>
     </div>
   )

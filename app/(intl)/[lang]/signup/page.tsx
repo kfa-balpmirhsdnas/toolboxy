@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { auth } from '@/lib/firebase/client'
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from 'firebase/auth'
+import { safeRedirect, loginHref } from '@/lib/auth/redirect'
 
 function errorKey(code: string): string {
   if (code === 'auth/email-already-in-use') return 'err_email_in_use'
@@ -17,6 +18,9 @@ function errorKey(code: string): string {
 export default function SignupPage({ params }: { params: { lang: string } }) {
   const router = useRouter()
   const t = useTranslations('auth')
+  const searchParams = useSearchParams()
+  // After signup, return to where the user came from (validated), else dashboard.
+  const redirect = safeRedirect(searchParams.get('redirect'), `/${params.lang}/dashboard`)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -30,14 +34,14 @@ export default function SignupPage({ params }: { params: { lang: string } }) {
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password)
       if (name.trim()) await updateProfile(cred.user, { displayName: name.trim() })
-      router.replace(`/${params.lang}/dashboard`)
+      router.replace(redirect)
     } catch (err: unknown) { setError(errorKey((err as { code?: string }).code ?? '')) }
     finally { setLoading(false) }
   }
 
   async function handleGoogle() {
     setError(''); setGoogleLoading(true)
-    try { await signInWithPopup(auth, new GoogleAuthProvider()); router.replace(`/${params.lang}/dashboard`) }
+    try { await signInWithPopup(auth, new GoogleAuthProvider()); router.replace(redirect) }
     catch (err: unknown) { const c = (err as { code?: string }).code ?? ''; if (c !== 'auth/popup-closed-by-user') setError(errorKey(c)) }
     finally { setGoogleLoading(false) }
   }
@@ -95,7 +99,7 @@ export default function SignupPage({ params }: { params: { lang: string } }) {
             <Link href={`/${params.lang}/privacy`} className="hover:underline">{t('privacy')}</Link></p>
         </div>
         <p className="text-center text-sm text-gray-500 mt-6">{t('have_account')}{' '}
-          <Link href={`/${params.lang}/login`} className="text-brand-600 font-medium hover:underline">{t('login_link')}</Link></p>
+          <Link href={loginHref(params.lang, searchParams.get('redirect'))} className="text-brand-600 font-medium hover:underline">{t('login_link')}</Link></p>
       </div>
     </div>
   )
