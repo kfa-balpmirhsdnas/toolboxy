@@ -6917,7 +6917,10 @@
     "np_font_dotum": "돋움",
     "np_font_gulim": "굴림",
     "np_font_batang": "바탕",
-    "np_font_gungsuh": "궁서"
+    "np_font_gungsuh": "궁서",
+    "np_font_ko_noto": "본고딕",
+    "np_font_ko_myeongjo": "나눔명조",
+    "np_font_ko_pen": "나눔손글씨"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

@@ -6879,7 +6879,7 @@
     "np_close_confirm": "このメモを閉じますか？保存された内容は失われます。",
     "np_font": "フォント",
     "np_font_mono": "等幅",
-    "np_font_sans": "ゴシック",
+    "np_font_sans": "標準",
     "np_font_serif": "明朝",
     "np_size": "サイズ",
     "np_lineheight": "行間",
@@ -6890,7 +6890,10 @@
     "np_font_dotum": "Dotum",
     "np_font_gulim": "Gulim",
     "np_font_batang": "Batang",
-    "np_font_gungsuh": "Gungsuh"
+    "np_font_gungsuh": "Gungsuh",
+    "np_font_ja_noto": "ゴシック",
+    "np_font_ja_mincho": "明朝",
+    "np_font_ja_yusei": "手書き"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

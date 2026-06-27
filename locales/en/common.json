@@ -6517,7 +6517,7 @@
     "np_close_confirm": "Close this note? Its saved content will be lost.",
     "np_font": "Font",
     "np_font_mono": "Mono",
-    "np_font_sans": "Sans",
+    "np_font_sans": "Default",
     "np_font_serif": "Serif",
     "np_size": "Size",
     "np_lineheight": "Spacing",
@@ -6528,7 +6528,10 @@
     "np_font_dotum": "Dotum",
     "np_font_gulim": "Gulim",
     "np_font_batang": "Batang",
-    "np_font_gungsuh": "Gungsuh"
+    "np_font_gungsuh": "Gungsuh",
+    "np_font_en_inter": "Inter",
+    "np_font_en_lora": "Lora",
+    "np_font_en_mono": "Mono"
   },
   "toolTags": {
     "spinner-wheel": [

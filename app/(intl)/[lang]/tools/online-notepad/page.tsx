@@ -10,7 +10,7 @@ const tool = getToolBySlug('online-notepad')!
 const STORAGE_KEY = 'toolboxy-notepad-v2'      // { docs, activeId }
 const OLD_KEY = 'toolboxy-notepad'             // legacy single-note string
 type Lvl = 'sm' | 'md' | 'lg'
-type Fam = 'sans' | 'malgun' | 'dotum' | 'gulim' | 'batang' | 'gungsuh' | 'serif' | 'mono'
+type Fam = string
 // Per-document settings live on the doc itself so each tab keeps its own look.
 type Doc = { id: string; name: string; text: string; fam: Fam; size: Lvl; lh: Lvl }
 const uid = () => Math.random().toString(36).slice(2, 9)
@@ -22,19 +22,28 @@ const dateTag = () => {
 
 const SIZE_CLS: Record<Lvl, string> = { sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[18px]' }
 const LH_CLS: Record<Lvl, string> = { sm: 'leading-snug', md: 'leading-relaxed', lg: 'leading-loose' }
-// System-font stacks (Korean web-safe families fall back gracefully off-Windows).
-const FONTS: { v: Fam; css: string }[] = [
-  { v: 'sans', css: 'system-ui,-apple-system,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif' },
-  { v: 'malgun', css: '"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo",sans-serif' },
-  { v: 'dotum', css: '"Dotum","돋움",sans-serif' },
-  { v: 'gulim', css: '"Gulim","굴림",sans-serif' },
-  { v: 'batang', css: '"Batang","바탕",serif' },
-  { v: 'gungsuh', css: '"Gungsuh","궁서",serif' },
-  { v: 'serif', css: 'Georgia,"Times New Roman",serif' },
-  { v: 'mono', css: 'Consolas,"D2Coding",ui-monospace,monospace' },
-]
-const FAM_CSS = (f: Fam) => (FONTS.find((x) => x.v === f) ?? FONTS[FONTS.length - 1]).css
-const DEFAULTS = { fam: 'mono' as Fam, size: 'md' as Lvl, lh: 'md' as Lvl }
+// A system default plus per-language webfonts (Google Fonts). System fonts only
+// render on Windows, so webfonts make the picker work on Mac/mobile too — they
+// download on any device. Each font carries its Google Fonts spec for lazy load.
+const ALLFONTS: Record<string, { css: string; google?: string }> = {
+  sans: { css: 'system-ui,-apple-system,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic","Hiragino Sans",sans-serif' },
+  ko_noto: { css: "'Noto Sans KR',sans-serif", google: 'Noto+Sans+KR:wght@400;700' },
+  ko_myeongjo: { css: "'Nanum Myeongjo',serif", google: 'Nanum+Myeongjo:wght@400;700;800' },
+  ko_pen: { css: "'Nanum Pen Script',cursive", google: 'Nanum+Pen+Script' },
+  ja_noto: { css: "'Noto Sans JP',sans-serif", google: 'Noto+Sans+JP:wght@400;700' },
+  ja_mincho: { css: "'Shippori Mincho',serif", google: 'Shippori+Mincho:wght@400;700' },
+  ja_yusei: { css: "'Yusei Magic',sans-serif", google: 'Yusei+Magic' },
+  en_inter: { css: "'Inter',sans-serif", google: 'Inter:wght@400;700' },
+  en_lora: { css: "'Lora',serif", google: 'Lora:wght@400;700' },
+  en_mono: { css: "'Roboto Mono',monospace", google: 'Roboto+Mono:wght@400;700' },
+}
+const LOCALE_FONTS: Record<string, string[]> = {
+  ko: ['sans', 'ko_noto', 'ko_myeongjo', 'ko_pen'],
+  ja: ['sans', 'ja_noto', 'ja_mincho', 'ja_yusei'],
+  en: ['sans', 'en_inter', 'en_lora', 'en_mono'],
+}
+const FAM_CSS = (f: Fam) => (ALLFONTS[f] ?? ALLFONTS.sans).css
+const DEFAULTS = { fam: 'sans' as Fam, size: 'md' as Lvl, lh: 'md' as Lvl }
 
 export default function OnlineNotepadPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
@@ -58,6 +67,23 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const fam = active?.fam ?? DEFAULTS.fam
   const size = active?.size ?? DEFAULTS.size
   const lh = active?.lh ?? DEFAULTS.lh
+  const fontList = LOCALE_FONTS[params.lang] ?? LOCALE_FONTS.en
+
+  // Lazily load this locale's webfonts from Google Fonts (one combined request;
+  // the @font-face CSS is tiny and the font binaries stream per used glyph-range).
+  useEffect(() => {
+    if (document.getElementById('np-webfonts')) return
+    const fams = fontList.map((v) => ALLFONTS[v]?.google).filter(Boolean)
+    if (!fams.length) return
+    const pre = document.createElement('link')
+    pre.rel = 'preconnect'; pre.href = 'https://fonts.gstatic.com'; pre.crossOrigin = 'anonymous'
+    document.head.appendChild(pre)
+    const link = document.createElement('link')
+    link.id = 'np-webfonts'; link.rel = 'stylesheet'
+    link.href = 'https://fonts.googleapis.com/css2?' + fams.map((f) => 'family=' + f).join('&') + '&display=swap'
+    document.head.appendChild(link)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.lang])
 
   // Unique auto name: 260628, then 260628_2, 260628_3 …
   function uniqueName(existing: Doc[]) {
@@ -238,8 +264,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             {/* Per-tab display settings — selects with a nature-matching icon */}
             <div className="flex items-center gap-x-3 gap-y-1.5 flex-wrap text-xs text-gray-500">
               <label className="flex items-center gap-1">{ico(fontIcon)}{t('np_font')}
-                <select value={fam} onChange={(e) => patchDoc(activeId, { fam: e.target.value as Fam })} className={selCls}>
-                  {FONTS.map((f) => <option key={f.v} value={f.v}>{t('np_font_' + f.v)}</option>)}
+                <select value={fontList.includes(fam) ? fam : 'sans'} onChange={(e) => patchDoc(activeId, { fam: e.target.value })} className={selCls}>
+                  {fontList.map((v) => <option key={v} value={v}>{t('np_font_' + v)}</option>)}
                 </select>
               </label>
               <label className="flex items-center gap-1">{ico('↕')}{t('np_size')}
