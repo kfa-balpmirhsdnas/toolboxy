@@ -15,6 +15,37 @@ import { trackToolUsed, trackToolDownload, trackToolCopy } from '@/lib/gtag'
 const tool = getToolBySlug('screen-capture')!
 const DELAY_SEC = 5
 
+// Grab one frame from a display stream. ImageCapture.grabFrame() pulls the frame
+// straight from the track regardless of tab visibility (no requestAnimationFrame),
+// so it doesn't stall when sharing a tab pushes this page to the background.
+// Falls back to a <video> element where ImageCapture isn't available (e.g. Firefox).
+async function grabCanvas(stream: MediaStream): Promise<HTMLCanvasElement> {
+  const track = stream.getVideoTracks()[0]
+  const IC = (typeof window !== 'undefined' && (window as unknown as { ImageCapture?: any }).ImageCapture) || null
+  if (IC) {
+    try {
+      const bitmap: ImageBitmap = await new IC(track).grabFrame()
+      const canvas = document.createElement('canvas')
+      canvas.width = bitmap.width
+      canvas.height = bitmap.height
+      canvas.getContext('2d')!.drawImage(bitmap, 0, 0)
+      bitmap.close?.()
+      return canvas
+    } catch { /* fall through to the <video> path */ }
+  }
+  const video = document.createElement('video')
+  video.srcObject = stream
+  video.muted = true
+  await video.play()
+  if (!video.videoWidth) await new Promise<void>((r) => { video.onloadedmetadata = () => r() })
+  await new Promise<void>((r) => requestAnimationFrame(() => r()))
+  const canvas = document.createElement('canvas')
+  canvas.width = video.videoWidth
+  canvas.height = video.videoHeight
+  canvas.getContext('2d')!.drawImage(video, 0, 0, canvas.width, canvas.height)
+  return canvas
+}
+
 export default function ScreenCapturePage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const [imgUrl, setImgUrl] = useState('')
@@ -60,24 +91,13 @@ export default function ScreenCapturePage({ params }: { params: { lang: string }
       // What did the user share? 'window' | 'browser' (tab) | 'monitor' (full screen) | undefined
       const surface = stream.getVideoTracks()[0].getSettings().displaySurface
 
-      if (delayMode) {
-        await runCountdown(DELAY_SEC)
-        // Let the countdown overlay clear from the screen before grabbing.
-        await new Promise((r) => setTimeout(r, 250))
-      }
+      if (delayMode) await runCountdown(DELAY_SEC)
+      // Settle: clears the countdown overlay from the frame and lets the first
+      // frame arrive before grabbing. setTimeout fires even in a background tab
+      // (unlike rAF), so tab sharing no longer adds an extra delay.
+      await new Promise((r) => setTimeout(r, 250))
 
-      const video = document.createElement('video')
-      video.srcObject = stream
-      video.muted = true
-      await video.play()
-      // Wait for real dimensions, then one paint so the frame isn't blank.
-      if (!video.videoWidth) await new Promise((r) => { video.onloadedmetadata = () => r(null) })
-      await new Promise((r) => requestAnimationFrame(() => r(null)))
-
-      const canvas = document.createElement('canvas')
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
-      canvas.getContext('2d')!.drawImage(video, 0, 0, canvas.width, canvas.height)
+      const canvas = await grabCanvas(stream)
       canvasRef.current = canvas
       setDim({ w: canvas.width, h: canvas.height })
       setImgUrl(canvas.toDataURL('image/png'))
