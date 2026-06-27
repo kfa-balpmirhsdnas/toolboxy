@@ -37,6 +37,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [fontFam, setFontFam] = useState<Fam>('mono')
   const [lineH, setLineH] = useState<Lvl>('md')
   const tracked = useRef(false)
+  const taRef = useRef<HTMLTextAreaElement>(null)
   const histories = useRef<Record<string, { hist: string[]; idx: number }>>({ [first.id]: { hist: [''], idx: 0 } })
   const commitTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const ready = useRef(false)
@@ -134,8 +135,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     setDocs((ds) => [...ds, d]); setActiveId(d.id)
   }
   function closeDoc(id: string) {
-    const d = docs.find((x) => x.id === id)
-    if (d && d.text.trim() && !window.confirm(t('np_close_confirm'))) return
+    if (!window.confirm(t('np_close_confirm'))) return
     delete histories.current[id]
     const rest = docs.filter((x) => x.id !== id)
     if (rest.length === 0) {
@@ -178,7 +178,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const canRedo = h ? h.idx < h.hist.length - 1 : false
 
   const iconBtn = 'p-1.5 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors'
-  const seg = (on: boolean) => 'px-2 py-0.5 rounded text-xs transition-colors ' + (on ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')
+  const selCls = 'rounded-md border border-gray-200 bg-white px-1.5 py-0.5 text-xs text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-brand-400'
+  const bullet = <span className="text-brand-500 text-[9px] leading-none">●</span>
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -209,8 +210,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             className="shrink-0 px-2.5 py-1.5 text-gray-400 hover:text-brand-600 text-lg leading-none">+</button>
         </div>
 
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center justify-between flex-wrap gap-x-3 gap-y-2">
+          <div className="flex items-center gap-x-3 gap-y-2 flex-wrap">
             <div className="flex items-center gap-0.5">
               <button onClick={undo} disabled={!canUndo} title={t('np_undo')} aria-label={t('np_undo')} className={iconBtn}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 14 4 9l5-5" /><path d="M4 9h11a5 5 0 0 1 0 10h-1" /></svg>
@@ -220,41 +221,51 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               </button>
             </div>
             <span className="w-px h-5 bg-gray-200" />
+            {/* Display settings — selects with a bulleted title */}
+            <div className="flex items-center gap-x-3 gap-y-1.5 flex-wrap text-xs text-gray-500">
+              <label className="flex items-center gap-1">{bullet}{t('np_font')}
+                <select value={fontFam} onChange={(e) => setFontFam(e.target.value as Fam)} className={selCls}>
+                  <option value="mono">{t('np_font_mono')}</option>
+                  <option value="sans">{t('np_font_sans')}</option>
+                  <option value="serif">{t('np_font_serif')}</option>
+                </select>
+              </label>
+              <label className="flex items-center gap-1">{bullet}{t('np_size')}
+                <select value={fontSize} onChange={(e) => setFontSize(e.target.value as Lvl)} className={selCls}>
+                  <option value="sm">{t('np_sm')}</option>
+                  <option value="md">{t('np_md')}</option>
+                  <option value="lg">{t('np_lg')}</option>
+                </select>
+              </label>
+              <label className="flex items-center gap-1">{bullet}{t('np_lineheight')}
+                <select value={lineH} onChange={(e) => setLineH(e.target.value as Lvl)} className={selCls}>
+                  <option value="sm">{t('np_sm')}</option>
+                  <option value="md">{t('np_md')}</option>
+                  <option value="lg">{t('np_lg')}</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
             <div className="flex gap-2 text-xs">
               <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_chars', { n: chars })}</span>
               <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_lines', { n: lines })}</span>
             </div>
-          </div>
-          <span className={'text-xs font-medium transition-colors ' + (savedAt ? 'text-green-600' : 'text-gray-400')}>
-            {savedAt ? `✓ ${t('np_autosaved')} ${savedAt}` : t('np_saving')}
-          </span>
-        </div>
-
-        {/* Display settings */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-400">
-          <div className="flex items-center gap-1">
-            <span className="mr-0.5">{t('np_font')}</span>
-            <button onClick={() => setFontFam('mono')} className={seg(fontFam === 'mono')}>{t('np_font_mono')}</button>
-            <button onClick={() => setFontFam('sans')} className={seg(fontFam === 'sans')}>{t('np_font_sans')}</button>
-            <button onClick={() => setFontFam('serif')} className={seg(fontFam === 'serif')}>{t('np_font_serif')}</button>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="mr-0.5">{t('np_size')}</span>
-            {(['sm', 'md', 'lg'] as Lvl[]).map((s) => <button key={s} onClick={() => setFontSize(s)} className={seg(fontSize === s)}>{t('np_' + s)}</button>)}
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="mr-0.5">{t('np_lineheight')}</span>
-            {(['sm', 'md', 'lg'] as Lvl[]).map((s) => <button key={s} onClick={() => setLineH(s)} className={seg(lineH === s)}>{t('np_' + s)}</button>)}
+            <span className={'text-xs font-medium transition-colors ' + (savedAt ? 'text-green-600' : 'text-gray-400')}>
+              {savedAt ? `✓ ${t('np_autosaved')} ${savedAt}` : t('np_saving')}
+            </span>
           </div>
         </div>
 
         <textarea
+          ref={taRef}
           value={text}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
+          onFocus={() => taRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
           placeholder={t('np_placeholder')}
           spellCheck={false}
-          className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[fontSize]} ${FAM_CLS[fontFam]} ${LH_CLS[lineH]}`}
+          className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 resize-y scroll-mt-20 focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[fontSize]} ${FAM_CLS[fontFam]} ${LH_CLS[lineH]}`}
         />
 
         <div className="flex gap-2 flex-wrap">
