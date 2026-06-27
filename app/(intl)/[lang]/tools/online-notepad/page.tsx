@@ -102,6 +102,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [, force] = useState(0)
   const docsRef = useRef(docs)
   docsRef.current = docs
+  const activeIdRef = useRef(activeId)
+  activeIdRef.current = activeId
 
   const active = docs.find((d) => d.id === activeId) ?? docs[0]
   const text = active?.text ?? ''
@@ -208,6 +210,48 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     return () => window.removeEventListener('storage', onStorage)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Flush the live text to disk the moment the user leaves this instance. We read
+  // the DOM value directly — a still-composing IME character (e.g. the last Korean
+  // glyph) lives in textarea.value before React state commits it, so this captures
+  // it for any other open instance. Goes through the same merge, so it's safe and
+  // a no-op when nothing changed.
+  function flushNow() {
+    try {
+      const el = taRef.current
+      const aid = activeIdRef.current
+      let docs = docsRef.current
+      if (el) {
+        const live = el.value
+        const cur = docs.find((d) => d.id === aid)
+        if (cur && cur.text !== live) {
+          docs = docs.map((d) => (d.id === aid ? { ...d, text: live, updatedAt: Date.now() } : d))
+          docsRef.current = docs
+          setDocs(docs)
+        }
+      }
+      const remote = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+      const merged = mergeState({ docs, deleted: deletedRef.current }, remote)
+      deletedRef.current = merged.deleted
+      const payload = JSON.stringify({ docs: merged.docs, activeId: aid, deleted: merged.deleted })
+      if (payload !== localStorage.getItem(STORAGE_KEY)) {
+        localStorage.setItem(STORAGE_KEY, payload)
+        setSavedAt(new Date().toLocaleTimeString(params.lang, { hour: '2-digit', minute: '2-digit', hour12: false }))
+      }
+    } catch { /* ignore */ }
+  }
+  useEffect(() => {
+    const onHide = () => { if (document.visibilityState === 'hidden') flushNow() }
+    window.addEventListener('blur', flushNow)
+    window.addEventListener('pagehide', flushNow)
+    document.addEventListener('visibilitychange', onHide)
+    return () => {
+      window.removeEventListener('blur', flushNow)
+      window.removeEventListener('pagehide', flushNow)
+      document.removeEventListener('visibilitychange', onHide)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.lang])
 
   function patchDoc(id: string, p: Partial<Doc>) { setDocs((ds) => ds.map((d) => (d.id === id ? { ...d, ...p, updatedAt: Date.now() } : d))) }
   function setDocText(id: string, v: string) { setSavedAt(''); patchDoc(id, { text: v }) }
@@ -384,6 +428,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           value={text}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
+          onCompositionEnd={flushNow}
           onFocus={() => wrapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
           placeholder={t('np_placeholder')}
           spellCheck={false}
