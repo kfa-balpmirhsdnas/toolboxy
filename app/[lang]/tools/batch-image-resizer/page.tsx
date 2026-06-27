@@ -57,14 +57,14 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
   ]
   const numInput = 'w-24 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
   // Narrower input for W/H so they + the keep-ratio checkbox fit one row, even on mobile.
-  const dimInput = 'w-[62px] sm:w-28 px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
+  const dimInput = 'w-[62px] sm:w-24 px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
   const selCls = 'px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-400'
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-6">
-        {/* PC: 크기 left, 품질 right. Mobile: stacked. */}
-        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+        {/* PC: 크기 left, 품질 right (equal height). Mobile: stacked. */}
+        <div className="flex flex-col sm:flex-row gap-4">
           {/* Size box */}
           <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
             <div className="flex items-baseline gap-2 flex-wrap">
@@ -82,9 +82,8 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
               ))}
             </div>
 
-            {/* Controls — fixed min-height keeps the box height steady between modes
-                (desktop reserves 2 rows since the wider W/H inputs wrap the ratio checkbox). */}
-            <div className="min-h-[2.75rem] sm:min-h-[4.25rem]">
+            {/* Controls — all one row (same natural height across modes & the quality box). */}
+            <div className="min-h-[2.3125rem]">
               {mode === 'maxside' && (
                 <label className="flex flex-wrap items-center gap-2 text-sm text-gray-700">
                   <select value={axis} onChange={(e) => setAxis(e.target.value as ResizeAxis)} className={selCls}>
