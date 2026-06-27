@@ -11,7 +11,9 @@ import { buildNewName, todayYMD, DEFAULT_RULES, type RenameRules } from '@/lib/b
 
 const tool = getToolBySlug('batch-image-rename')!
 // Sample filenames for the live preview (before any image is added).
-const SAMPLE_NAMES = ['Photo.JPG', 'my image.png', 'IMG_3.jpeg']
+// Varied so every rule visibly changes the preview: Korean (strip), a long name
+// (truncate), a space, and an uppercase extension.
+const SAMPLE_NAMES = ['Seoul여행.JPG', 'MyHolidayPhotos.png', 'vacation pic.jpeg']
 
 function Rule({ on, onToggle, label, children }: { on: boolean; onToggle: (v: boolean) => void; label: string; children?: React.ReactNode }) {
   return (
@@ -63,9 +65,9 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
             <div className="space-y-3">
               <Rule on={r.affixOn} onToggle={(v) => up({ affixOn: v })} label={t('brn_affix')}>
                 <span>{t('brn_prefix')}</span>
-                <input value={r.prefix} onChange={(e) => up({ prefix: e.target.value })} className={inp + ' w-32'} />
+                <input value={r.prefix} onChange={(e) => up({ prefix: e.target.value })} className={inp + ' w-14 sm:w-28'} />
                 <span>{t('brn_suffix')}</span>
-                <input value={r.suffix} onChange={(e) => up({ suffix: e.target.value })} className={inp + ' w-32'} />
+                <input value={r.suffix} onChange={(e) => up({ suffix: e.target.value })} className={inp + ' w-14 sm:w-28'} />
               </Rule>
 
               <Rule on={r.seqOn} onToggle={(v) => up({ seqOn: v })} label={t('brn_sequence')}>
@@ -73,6 +75,8 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
                 <input type="number" value={r.seqStart} onChange={(e) => up({ seqStart: Number(e.target.value) })} className={inp + ' w-20'} />
                 <span>{t('brn_digits')}</span>
                 <input type="number" min={1} value={r.seqDigits} onChange={(e) => up({ seqDigits: Number(e.target.value) })} className={inp + ' w-16'} />
+                {/* Break to a second row (간격 / 앞뒤) on all sizes */}
+                <div className="w-full h-0" />
                 <span>{t('brn_step')}</span>
                 <input type="number" min={1} value={r.seqStep} onChange={(e) => up({ seqStep: Number(e.target.value) })} className={inp + ' w-16'} />
                 <select value={r.seqPos} onChange={(e) => up({ seqPos: e.target.value as RenameRules['seqPos'] })} className={sel}>
@@ -88,7 +92,9 @@ export default function BatchImageRenamePage({ params }: { params: { lang: strin
                 <input value={r.replace} onChange={(e) => up({ replace: e.target.value })} className={inp + ' w-32'} />
               </Rule>
 
-              <Rule on={r.extLowerOn} onToggle={(v) => up({ extLowerOn: v })} label={t('brn_ext_lower')} />
+              <Rule on={r.extLowerOn} onToggle={(v) => up({ extLowerOn: v })} label={t('brn_ext_lower')}>
+                <span className="text-xs text-gray-400">{t('brn_ext_desc')}</span>
+              </Rule>
             </div>
           </div>
 

@@ -6403,7 +6403,8 @@
     "bwm_box_style": "Style",
     "brn_preview_label": "Preview",
     "brn_box_general": "General",
-    "brn_box_advanced": "Advanced"
+    "brn_box_advanced": "Advanced",
+    "brn_ext_desc": "Makes only the file extension lowercase."
   },
   "toolTags": {
     "spinner-wheel": [
