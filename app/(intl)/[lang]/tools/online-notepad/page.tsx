@@ -16,7 +16,8 @@ type Lvl = 'sm' | 'md' | 'lg'              // line spacing
 type SizeLvl = 'xs' | 'sm' | 'md' | 'lg' | 'xl' // font size (wider range)
 type Fam = string
 // Per-document settings live on the doc itself so each tab keeps its own look.
-type Doc = { id: string; name: string; text: string; fam: Fam; size: SizeLvl; lh: Lvl }
+// `updatedAt` drives multi-tab conflict resolution (newest write wins per doc).
+type Doc = { id: string; name: string; text: string; fam: Fam; size: SizeLvl; lh: Lvl; updatedAt: number }
 const uid = () => Math.random().toString(36).slice(2, 9)
 // Tab title = today's date as YYMMDD (e.g. 260628).
 const dateTag = () => {
@@ -49,9 +50,39 @@ const LOCALE_FONTS: Record<string, string[]> = {
 const FAM_CSS = (f: Fam) => (ALLFONTS[f] ?? ALLFONTS.sans).css
 const DEFAULTS = { fam: 'sans' as Fam, size: 'md' as SizeLvl, lh: 'md' as Lvl }
 
+// --- Multi-tab safety -------------------------------------------------------
+// Every tab / installed-app window of this origin shares ONE localStorage key and
+// each autosaves its own in-memory snapshot — so a stale instance can overwrite
+// another's notes. Before each write we merge with what's on disk: per-doc
+// `updatedAt` decides which version wins, and a deletion tombstone (id -> time)
+// stops a deleted note from being resurrected by another tab still holding it.
+type Tomb = Record<string, number>
+const TOMB_TTL = 7 * 24 * 3600 * 1000 // forget tombstones after a week
+function mergeState(local: { docs: Doc[]; deleted: Tomb }, remote: { docs?: Doc[]; deleted?: Tomb } | null) {
+  const deleted: Tomb = { ...(remote?.deleted || {}) }
+  for (const [id, ts] of Object.entries(local.deleted || {})) deleted[id] = Math.max(deleted[id] || 0, ts)
+  const cutoff = Date.now() - TOMB_TTL
+  for (const id of Object.keys(deleted)) if (deleted[id] < cutoff) delete deleted[id]
+  const best = new Map<string, Doc>() // newest version of each doc id wins
+  for (const d of [...(remote?.docs || []), ...local.docs]) {
+    const cur = best.get(d.id)
+    if (!cur || (d.updatedAt || 0) >= (cur.updatedAt || 0)) best.set(d.id, d)
+  }
+  const seen = new Set<string>()
+  const docs: Doc[] = []
+  for (const d of [...local.docs, ...(remote?.docs || [])]) { // keep this tab's order, append the rest
+    if (seen.has(d.id)) continue
+    seen.add(d.id)
+    const b = best.get(d.id)!
+    if (deleted[b.id] && deleted[b.id] > (b.updatedAt || 0)) continue // deleted after its last edit
+    docs.push(b)
+  }
+  return { docs, deleted }
+}
+
 export default function OnlineNotepadPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
-  const first = useRef<Doc>({ id: uid(), name: dateTag(), text: '', ...DEFAULTS }).current
+  const first = useRef<Doc>({ id: uid(), name: dateTag(), text: '', ...DEFAULTS, updatedAt: Date.now() }).current
 
   const [docs, setDocs] = useState<Doc[]>([first])
   const [activeId, setActiveId] = useState(first.id)
@@ -64,9 +95,12 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const taRef = useRef<HTMLTextAreaElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
   const histories = useRef<Record<string, { hist: string[]; idx: number }>>({ [first.id]: { hist: [''], idx: 0 } })
+  const deletedRef = useRef<Tomb>({})
   const commitTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const ready = useRef(false)
   const [, force] = useState(0)
+  const docsRef = useRef(docs)
+  docsRef.current = docs
 
   const active = docs.find((d) => d.id === activeId) ?? docs[0]
   const text = active?.text ?? ''
@@ -108,9 +142,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) {
-        const data = JSON.parse(raw) as { docs?: Partial<Doc>[]; activeId?: string }
+        const data = JSON.parse(raw) as { docs?: Partial<Doc>[]; activeId?: string; deleted?: Tomb }
+        deletedRef.current = data.deleted || {}
         if (data.docs?.length) {
-          const restored = data.docs.map((d) => ({ ...DEFAULTS, ...d } as Doc))
+          const restored = data.docs.map((d) => ({ ...DEFAULTS, updatedAt: 0, ...d } as Doc))
           setDocs(restored)
           setActiveId(restored.some((d) => d.id === data.activeId) ? data.activeId! : restored[0].id)
           const h: Record<string, { hist: string[]; idx: number }> = {}
@@ -129,19 +164,51 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Autosave (debounced) — stamp the save time for the indicator.
+  // Bring another tab's notes into this tab without disrupting active editing
+  // (the active doc keeps our newer version via updatedAt during the merge).
+  function syncDocs(next: Doc[]) {
+    for (const d of next) if (!histories.current[d.id]) histories.current[d.id] = { hist: [d.text], idx: 0 }
+    setDocs(next)
+  }
+
+  // Autosave (debounced) — merge with what's on disk before writing so we never
+  // clobber another tab's docs, then stamp the save time.
   useEffect(() => {
     if (!ready.current) return
     const id = setTimeout(() => {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ docs, activeId }))
-        setSavedAt(new Date().toLocaleTimeString(params.lang, { hour: '2-digit', minute: '2-digit', hour12: false }))
+        const remote = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+        const merged = mergeState({ docs, deleted: deletedRef.current }, remote)
+        deletedRef.current = merged.deleted
+        const payload = JSON.stringify({ docs: merged.docs, activeId, deleted: merged.deleted })
+        if (payload !== localStorage.getItem(STORAGE_KEY)) {
+          localStorage.setItem(STORAGE_KEY, payload)
+          setSavedAt(new Date().toLocaleTimeString(params.lang, { hour: '2-digit', minute: '2-digit', hour12: false }))
+        }
+        if (JSON.stringify(merged.docs) !== JSON.stringify(docs)) syncDocs(merged.docs)
       } catch { /* ignore */ }
     }, 400)
     return () => clearTimeout(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [docs, activeId, params.lang])
 
-  function patchDoc(id: string, p: Partial<Doc>) { setDocs((ds) => ds.map((d) => (d.id === id ? { ...d, ...p } : d))) }
+  // Cross-tab sync: when another tab writes, reconcile (read-only) into ours.
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== STORAGE_KEY || !e.newValue) return
+      try {
+        const remote = JSON.parse(e.newValue)
+        const merged = mergeState({ docs: docsRef.current, deleted: deletedRef.current }, remote)
+        deletedRef.current = merged.deleted
+        if (JSON.stringify(merged.docs) !== JSON.stringify(docsRef.current)) syncDocs(merged.docs)
+      } catch { /* ignore */ }
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function patchDoc(id: string, p: Partial<Doc>) { setDocs((ds) => ds.map((d) => (d.id === id ? { ...d, ...p, updatedAt: Date.now() } : d))) }
   function setDocText(id: string, v: string) { setSavedAt(''); patchDoc(id, { text: v }) }
 
   function commit(v: string) {
@@ -175,16 +242,17 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   function addDoc() {
     const src = docs.find((d) => d.id === activeId) ?? docs[0]
     // A new tab inherits the current tab's font / size / line-spacing.
-    const d: Doc = { id: uid(), name: uniqueName(docs), text: '', fam: src?.fam ?? DEFAULTS.fam, size: src?.size ?? DEFAULTS.size, lh: src?.lh ?? DEFAULTS.lh }
+    const d: Doc = { id: uid(), name: uniqueName(docs), text: '', fam: src?.fam ?? DEFAULTS.fam, size: src?.size ?? DEFAULTS.size, lh: src?.lh ?? DEFAULTS.lh, updatedAt: Date.now() }
     histories.current[d.id] = { hist: [''], idx: 0 }
     setDocs((ds) => [...ds, d]); setActiveId(d.id)
   }
   function closeDoc(id: string) {
     if (!window.confirm(t('np_close_confirm'))) return
+    deletedRef.current = { ...deletedRef.current, [id]: Date.now() } // tombstone so other tabs don't resurrect it
     delete histories.current[id]
     const rest = docs.filter((x) => x.id !== id)
     if (rest.length === 0) {
-      const nd: Doc = { id: uid(), name: uniqueName([]), text: '', ...DEFAULTS }
+      const nd: Doc = { id: uid(), name: uniqueName([]), text: '', ...DEFAULTS, updatedAt: Date.now() }
       histories.current[nd.id] = { hist: [''], idx: 0 }
       setDocs([nd]); setActiveId(nd.id); return
     }
