@@ -66,7 +66,7 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   }, [source])
 
   function drawArrow(ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, c: string, lw: number) {
-    const head = Math.max(12, lw * 4)
+    const head = Math.max(22, lw * 8) // bigger, more visible arrowhead
     const ang = Math.atan2(y2 - y1, x2 - x1)
     ctx.strokeStyle = c; ctx.fillStyle = c; ctx.lineWidth = lw; ctx.lineCap = 'round'
     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke()
@@ -216,6 +216,7 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   }
 
   const TOOLS: [Tool, string][] = [['crop', t('sc_ed_crop')], ['arrow', t('sc_ed_arrow')], ['rect', t('sc_ed_rect')], ['text', t('sc_ed_text')], ['mosaic', t('sc_ed_mosaic')]]
+  const ICONS: Record<Tool, string> = { crop: '✂', arrow: '↗', rect: '▭', text: 'T', mosaic: '▦' }
   const tbtn = (active: boolean) =>
     'px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ' +
     (active ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')
@@ -225,7 +226,7 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-2">
         {TOOLS.map(([id, label]) => (
-          <button key={id} onClick={() => { setEditing(null); setTool(id) }} className={tbtn(tool === id)}>{label}</button>
+          <button key={id} onClick={() => { setEditing(null); setTool(id) }} className={tbtn(tool === id)}><span className="mr-1">{ICONS[id]}</span>{label}</button>
         ))}
         <span className="mx-1 h-5 w-px bg-gray-200" />
         {COLORS.map((c) => (
@@ -235,7 +236,7 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
         ))}
         <span className="mx-1 h-5 w-px bg-gray-200" />
         <button onClick={undo} disabled={shapesRef.current.length === 0} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-40">↶ {t('sc_ed_undo')}</button>
-        <button onClick={clearAll} disabled={shapesRef.current.length === 0} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-40">{t('sc_ed_clear')}</button>
+        <button onClick={clearAll} disabled={shapesRef.current.length === 0} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-40"><span className="mr-1">🗑</span>{t('sc_ed_clear')}</button>
       </div>
       {tool === 'crop' && <p className="text-xs text-gray-500">✂ {t('sc_ed_crop_hint')}</p>}
       {tool === 'mosaic' && <p className="text-xs text-gray-500">🔲 {t('sc_ed_mosaic_hint')}</p>}
