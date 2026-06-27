@@ -66,6 +66,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 
 export const TOOLS: ToolMeta[] = [
   {slug:'online-notepad',category:'text',also:['utility'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['온라인 메모장','메모장','notepad','online notepad','notes','메모','text editor','자동 저장'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'batch-image-editor',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 편집기','올인원 이미지','batch image editor','all-in-one image','画像一括編集'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'batch-image-resizer',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 리사이즈','일괄 크기 변경','batch image resize','bulk resize images','画像一括リサイズ'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'batch-image-converter',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 변환','일괄 포맷 변환','bulk image converter','batch convert images','画像一括変換'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'batch-image-compressor',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 압축','일괄 용량 줄이기','batch compress images','bulk image compressor','画像一括圧縮'],maxFileSizeMB:{free:0,pro:0} },

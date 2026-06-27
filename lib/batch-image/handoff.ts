@@ -27,6 +27,7 @@ export interface BatchTool {
   emoji: string
 }
 export const BATCH_TOOLS: BatchTool[] = [
+  { slug: 'batch-image-editor', emoji: '🧰' },
   { slug: 'batch-image-resizer', emoji: '📐' },
   { slug: 'batch-image-converter', emoji: '🔄' },
   { slug: 'batch-image-compressor', emoji: '🗜️' },

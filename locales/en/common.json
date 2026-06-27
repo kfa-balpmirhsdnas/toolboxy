@@ -792,7 +792,8 @@
     "batch-image-converter": "Bulk image converter — convert many images at once between JPG, PNG, and WebP with a quality slider. Free and private: all conversion happens in your browser, no uploads.",
     "batch-image-compressor": "Batch compress images — shrink many photos at once with a quality slider or a target file size, and see how much each one saved. Free and private, all in your browser.",
     "batch-image-watermark": "Batch watermark images — add a text or logo watermark to many images at once, with position, size, and opacity control. Free and private, all in your browser, no uploads.",
-    "batch-image-rename": "Batch rename images — rename many image files by rule (prefix, numbering, find & replace, case, date…) with a live preview, then download them as a zip. Free and private, in your browser."
+    "batch-image-rename": "Batch rename images — rename many image files by rule (prefix, numbering, find & replace, case, date…) with a live preview, then download them as a zip. Free and private, in your browser.",
+    "batch-image-editor": "Batch Image Editor (All-in-One) — resize, convert, compress, watermark, and rename many images in one pass. Free and private: everything runs in your browser, nothing is uploaded."
   },
   "gate": {
     "title": "Get more from ToolBoxy",
@@ -1562,6 +1563,23 @@
         {
           "q": "Are my photos altered?",
           "a": "No — the image data is untouched. Only the filename changes, and the renamed copies are packed into a zip (browsers can't rename your originals in place)."
+        }
+      ]
+    },
+    "batch-image-editor": {
+      "intro": "Upload once, turn on the tasks you want, and apply them together.",
+      "faq": [
+        {
+          "q": "Can I run several tasks at once?",
+          "a": "Yes — turn on any combination and they apply top to bottom in one pass. Rename is always applied last (it changes the filename, the others change the image)."
+        },
+        {
+          "q": "How many images can I process at once?",
+          "a": "There's no fixed limit — it runs in your browser, so it depends on your device's memory. Dozens to a few hundred work smoothly; very large batches with many tasks may take longer."
+        },
+        {
+          "q": "Is the original quality kept?",
+          "a": "Resize/convert/compress re-encode at the quality you choose (PNG is lossless). Each enabled task re-encodes once, so chaining many lossy steps can add up — use only what you need."
         }
       ]
     }
@@ -3584,6 +3602,11 @@
       "Turn on rename rules (prefix, numbering, find & replace…).",
       "Check the live name preview, then download as a zip.",
       "Browsers can't rename your originals in place, so the renamed copies are delivered as a .zip."
+    ],
+    "batch-image-editor": [
+      "Upload your images once (drag & drop or select).",
+      "Turn on the tasks you want (resize, convert, compress, watermark, rename) and set their options.",
+      "Apply — the enabled tasks run in order and the results download as a zip."
     ]
   },
   "games": {
@@ -6405,7 +6428,20 @@
     "brn_box_general": "General",
     "brn_box_advanced": "Advanced",
     "brn_ext_desc": "Makes only the file extension lowercase.",
-    "brn_pos_label": "Position"
+    "brn_pos_label": "Position",
+    "bie_intro": "Resize, convert, compress, watermark, and rename — all in one pass.",
+    "bie_pipeline": "Tasks to apply",
+    "bie_drag_hint": "drag to reorder",
+    "bie_task_resize": "Resize",
+    "bie_task_convert": "Convert",
+    "bie_task_compress": "Compress",
+    "bie_task_watermark": "Watermark",
+    "bie_task_rename": "Rename",
+    "bie_step": "step {n}",
+    "bie_always_last": "always last",
+    "bie_m_longest": "Longest side",
+    "bie_m_dim": "Width / Height",
+    "bie_m_ratio": "Percentage"
   },
   "toolTags": {
     "spinner-wheel": [
@@ -6490,6 +6526,13 @@
       "bulk rename files",
       "sequential file names",
       "add prefix suffix",
+      "in browser"
+    ],
+    "batch-image-editor": [
+      "batch image editor",
+      "all-in-one image",
+      "bulk image processing",
+      "resize convert compress",
       "in browser"
     ]
   },
@@ -6581,7 +6624,8 @@
     "batch-image-converter": "Bulk Image Converter (PNG / JPG / WebP)",
     "batch-image-compressor": "Batch Image Compressor (reduce file size)",
     "batch-image-watermark": "Batch Image Watermark (add logo & text)",
-    "batch-image-rename": "Batch Image Rename (numbering & rules)"
+    "batch-image-rename": "Batch Image Rename (numbering & rules)",
+    "batch-image-editor": "Batch Image Editor (All-in-One)"
   },
   "howtoNote": {
     "video-trimmer": "Very large videos (several hundred MB+) may fail due to browser memory limits.",
