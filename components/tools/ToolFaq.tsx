@@ -40,27 +40,27 @@ function isFreeQuestion(q: string): boolean {
  * specific Q&As from `langTools.<slug>`. Emits FAQPage JSON-LD for rich results.
  */
 export default function ToolFaq({ slug }: { slug: string }) {
-  const lt = useTranslations('langTools')
   const c = useTranslations('faqCommon')
-  const td = useTranslations('toolDescriptions')
-  const messages = useMessages() as { toolAbout?: Record<string, string> }
+  const messages = useMessages() as {
+    toolAbout?: Record<string, string>
+    langTools?: Record<string, FaqData>
+    toolDescriptions?: Record<string, string | { description?: string }>
+  }
 
-  // Per-tool custom data (intro + extra Q&As), if any.
-  let data: FaqData | undefined
-  try {
-    const raw = lt.raw(slug) as unknown
-    if (raw && typeof raw === 'object') data = raw as FaqData
-  } catch { /* no custom entry */ }
+  // Read per-tool data straight from the messages object (not via .raw()) so a
+  // tool without a langTools/toolDescriptions entry doesn't spam the console —
+  // next-intl's .raw() logs a MISSING_MESSAGE error before throwing.
+  const data: FaqData | undefined =
+    messages.langTools?.[slug] && typeof messages.langTools[slug] === 'object' ? messages.langTools[slug] : undefined
 
   // Localized description (drives the "what is this tool?" answer).
-  let description: string | undefined
-  try {
-    const raw = td.raw(slug) as unknown
-    if (typeof raw === 'string') description = raw
-    else if (raw && typeof raw === 'object' && typeof (raw as { description?: string }).description === 'string') {
-      description = (raw as { description: string }).description
-    }
-  } catch { /* no description */ }
+  const descRaw = messages.toolDescriptions?.[slug]
+  const description: string | undefined =
+    typeof descRaw === 'string'
+      ? descRaw
+      : descRaw && typeof descRaw === 'object' && typeof descRaw.description === 'string'
+        ? descRaw.description
+        : undefined
 
   // Prefer a warm, fuller hand-written "about" blurb; otherwise fall back to the
   // SEO description softened with a friendly closing line.
