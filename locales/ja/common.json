@@ -6871,7 +6871,8 @@
     "sc_ed_fontsize": "文字サイズ",
     "sc_ed_font_small": "小",
     "sc_ed_font_medium": "中",
-    "sc_ed_font_large": "大"
+    "sc_ed_font_large": "大",
+    "sc_ed_color": "色"
   },
   "howtoNote": {
     "video-trimmer": "非常に大きな動画（数百MB以上）はブラウザのメモリ制限で失敗することがあります。",

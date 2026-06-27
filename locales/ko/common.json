@@ -6898,7 +6898,8 @@
     "sc_ed_fontsize": "글자 크기",
     "sc_ed_font_small": "작게",
     "sc_ed_font_medium": "중간",
-    "sc_ed_font_large": "크게"
+    "sc_ed_font_large": "크게",
+    "sc_ed_color": "색상"
   },
   "howtoNote": {
     "video-trimmer": "아주 큰 영상(수백 MB↑)은 브라우저 메모리 제한으로 실패할 수 있어요.",

@@ -42,6 +42,7 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
   const [strokeLevel, setStrokeLevel] = useState(1)        // 0 가늘게 / 1 보통 / 2 두껍게
   const [fontLevel, setFontLevel] = useState(1)            // 0 작게 / 1 중간 / 2 크게
   const [shapeKind, setShapeKind] = useState<'rect' | 'ellipse'>('rect')
+  const [colorOpen, setColorOpen] = useState(false)        // collapse the colour palette behind one swatch
   const [dims, setDims] = useState({ w: 0, h: 0 })
   const [editing, setEditing] = useState<{ x: number; y: number; value: string } | null>(null)
   const [count, setCount] = useState(0) // bump to refresh toolbar (undo enabled etc.)
@@ -242,15 +243,27 @@ export default function ScreenCaptureEditor({ source, onRecapture, timingToggle 
           <button key={id} onClick={() => { setEditing(null); setTool(id) }} className={tbtn(tool === id)}><span className="mr-1">{ICONS[id]}</span>{label}</button>
         ))}
         <span className="mx-1 h-5 w-px bg-gray-200" />
-        {COLORS.map((c) => (
-          <button key={c} onClick={() => setColor(c)} aria-label={c}
-            className={'w-6 h-6 rounded-full border transition-transform ' + (color === c ? 'ring-2 ring-offset-1 ring-brand-500 scale-110' : 'border-gray-300')}
-            style={{ background: c }} />
-        ))}
+        <button onClick={() => setColorOpen((o) => !o)} aria-label={t('sc_ed_color')} title={t('sc_ed_color')}
+          className="flex items-center gap-1 pl-1.5 pr-1 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
+          <span className="w-5 h-5 rounded-full border border-gray-300" style={{ background: color }} />
+          <span className="text-gray-400 text-[10px]">▾</span>
+        </button>
         <span className="mx-1 h-5 w-px bg-gray-200" />
         <button onClick={undo} disabled={shapesRef.current.length === 0} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-40">↶ {t('sc_ed_undo')}</button>
         <button onClick={clearAll} disabled={shapesRef.current.length === 0} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-40"><span className="mr-1">🗑</span>{t('sc_ed_clear')}</button>
       </div>
+      {/* Colour palette — revealed by the single swatch button */}
+      {colorOpen && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-gray-400 mr-1">🎨 {t('sc_ed_color')}</span>
+          {COLORS.map((c) => (
+            <button key={c} onClick={() => { setColor(c); setColorOpen(false) }} aria-label={c}
+              className={'w-6 h-6 rounded-full border transition-transform ' + (color === c ? 'ring-2 ring-offset-1 ring-brand-500 scale-110' : 'border-gray-300')}
+              style={{ background: c }} />
+          ))}
+        </div>
+      )}
+
       {tool === 'crop' && <p className="text-xs text-gray-500">✂ {t('sc_ed_crop_hint')}</p>}
       {tool === 'mosaic' && <p className="text-xs text-gray-500">🔲 {t('sc_ed_mosaic_hint')}</p>}
 

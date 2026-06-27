@@ -6509,7 +6509,8 @@
     "sc_ed_fontsize": "Font size",
     "sc_ed_font_small": "Small",
     "sc_ed_font_medium": "Medium",
-    "sc_ed_font_large": "Large"
+    "sc_ed_font_large": "Large",
+    "sc_ed_color": "Color"
   },
   "toolTags": {
     "spinner-wheel": [
