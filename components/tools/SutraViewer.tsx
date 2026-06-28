@@ -12,7 +12,7 @@ const FONT_SCALES = [0.8, 1, 1.2, 1.5, 2, 3]
 const SLEEPS = [0, 5, 10, 30, 60, 120]
 const TARGETS = [7, 21, 108, 0] // 0 = 무한(∞)
 type Loop = 'off' | 'section' | 'all'
-interface Section { no: number; ko: string; hanja: string; type: string; lines: SutraLine[] }
+interface Section { no: number; ko: string; en: string; hanja: string; type: string; lines: SutraLine[] }
 
 // Best-effort gender hint from known TTS voice names (device-dependent).
 function genderHint(v: SpeechSynthesisVoice): string {
@@ -30,16 +30,17 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
     const s: Section[] = []
     for (const l of LINES) {
       const cur = s[s.length - 1]
-      if (!cur || cur.no !== l.section) s.push({ no: l.section, ko: l.sectionKo, hanja: l.sectionHanja, type: l.type, lines: [l] })
+      if (!cur || cur.no !== l.section) s.push({ no: l.section, ko: l.sectionKo, en: l.sectionEn || '', hanja: l.sectionHanja, type: l.type, lines: [l] })
       else cur.lines.push(l)
     }
     return s
   }, [LINES])
   const isJa = lang === 'ja'
+  const isEn = lang === 'en'
   // Hide toggles/TOC that have no content for this scripture (e.g. the dharani has
   // no per-line 한자 and no 해석, and is a single section).
   const hasHanja = useMemo(() => LINES.some((l) => !!l.hanja), [LINES])
-  const hasTrans = useMemo(() => LINES.some((l) => !!(isJa && l.translationJa ? l.translationJa : l.translation)), [LINES, isJa])
+  const hasTrans = useMemo(() => LINES.some((l) => !!(isJa && l.translationJa ? l.translationJa : isEn && l.translationEn ? l.translationEn : l.translation)), [LINES, isJa, isEn])
   // When 독음 is the only field (e.g. the dharani), don't let it be toggled off —
   // that would leave the line empty. Hide its checkbox and always render it.
   const readingOnly = !hasHanja && !hasTrans
@@ -92,10 +93,10 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
 
   const c = (light: string, darkCls: string) => (dark ? darkCls : light)
   const favSet = new Set(favorites)
-  const trOf = (l: SutraLine) => (isJa && l.translationJa ? l.translationJa : l.translation)
-  const readingOf = (l: SutraLine) => (isJa && l.readingJa ? l.readingJa : l.reading)
-  const ttsLang = isJa ? 'ja-JP' : 'ko-KR'
-  const secName = (s: { ko: string; hanja: string }) => (isJa && s.hanja ? s.hanja : s.ko)
+  const trOf = (l: SutraLine) => (isJa && l.translationJa ? l.translationJa : isEn && l.translationEn ? l.translationEn : l.translation)
+  const readingOf = (l: SutraLine) => (isJa && l.readingJa ? l.readingJa : isEn && l.readingEn ? l.readingEn : l.reading)
+  const ttsLang = isJa ? 'ja-JP' : isEn ? 'en-US' : 'ko-KR'
+  const secName = (s: { ko: string; en: string; hanja: string }) => (isJa && s.hanja ? s.hanja : isEn && s.en ? s.en : s.ko)
 
   // Persistence: load saved settings + last position on mount.
   useEffect(() => {
@@ -137,7 +138,7 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
   useEffect(() => {
     const synth = window.speechSynthesis
     if (!synth) return
-    const re = new RegExp('^' + (isJa ? 'ja' : 'ko') + '([-_]|$)', 'i')
+    const re = new RegExp('^' + (isJa ? 'ja' : isEn ? 'en' : 'ko') + '([-_]|$)', 'i')
     const load = () => {
       const matched = synth.getVoices().filter((v) => re.test(v.lang))
       const seen = new Set<string>()
@@ -417,7 +418,7 @@ export default function SutraViewer({ lines, tool, lang, intro, reciteCounter }:
               <section key={sec.no} data-section={sec.no} className="scroll-mt-40">
                 <h2 className={`text-base font-bold mb-2 ${c('text-brand-700', 'text-brand-300')}`}>
                   {sec.no}. {secName(sec)}
-                  {!isJa && sec.hanja && <span className={`ml-2 text-sm font-normal ${c('text-gray-400', 'text-gray-500')}`}>{sec.hanja}</span>}
+                  {!isJa && !isEn && sec.hanja && <span className={`ml-2 text-sm font-normal ${c('text-gray-400', 'text-gray-500')}`}>{sec.hanja}</span>}
                 </h2>
                 <div className="space-y-3">
                   {sec.lines.map((l) => {
