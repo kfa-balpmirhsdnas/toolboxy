@@ -53,7 +53,7 @@ function fanfare() {
 export const isGameMuted = () => isMuted()
 // Tiny per-action sound effects — every game calls these for feedback; the same
 // 'game-muted' flag (toggled by SoundToggle) turns ALL game audio off.
-export type Sfx = 'move' | 'rotate' | 'lock' | 'clear' | 'drop' | 'eat' | 'point' | 'hit' | 'lose'
+export type Sfx = 'move' | 'rotate' | 'lock' | 'clear' | 'drop' | 'eat' | 'point' | 'hit' | 'lose' | 'celebrate'
 export function sfx(kind: Sfx) {
   if (isMuted()) return
   switch (kind) {
@@ -65,6 +65,7 @@ export function sfx(kind: Sfx) {
     case 'eat': case 'point': tone(880, 0, 0.05, 'square', 0.14); tone(1318, 0.05, 0.07, 'square', 0.1); break
     case 'hit': tone(1200, 0, 0.04, 'square', 0.16); tone(500, 0.03, 0.07, 'square', 0.12); break
     case 'lose': tone(196, 0, 0.25, 'sawtooth', 0.16); tone(155, 0.12, 0.35, 'sawtooth', 0.14); break
+    case 'celebrate': tone(523, 0, 0.09, 'square', 0.13); tone(659, 0.09, 0.09, 'square', 0.13); tone(784, 0.18, 0.09, 'square', 0.13); tone(1046, 0.27, 0.18, 'triangle', 0.16); break
   }
 }
 

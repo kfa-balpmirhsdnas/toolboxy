@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Modal from '@/components/Modal'
+import { sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
@@ -77,19 +78,23 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
     const v = input.trim(); if (!v) return
     const onStar = active === STARRED
     setItems((a) => [...a, { id: uid(), text: v, done: false, starred: onStar, details: '', due: '', listId: onStar ? DEFAULT : active }])
-    setInput('')
+    setInput(''); sfx('drop')
     if (!tracked.current) { trackToolUsed(tool.slug); tracked.current = true }
   }
-  const toggle = (id: string) => setItems((a) => a.map((i) => (i.id === id ? { ...i, done: !i.done } : i)))
+  const toggle = (id: string) => {
+    const it = items.find((i) => i.id === id)
+    if (it && !it.done) sfx('celebrate') // celebrate only when completing
+    setItems((a) => a.map((i) => (i.id === id ? { ...i, done: !i.done } : i)))
+  }
   const toggleStar = (id: string) => setItems((a) => a.map((i) => (i.id === id ? { ...i, starred: !i.starred } : i)))
-  const clearDone = () => setItems((a) => a.filter((i) => !i.done))
+  const clearDone = () => { sfx('lock'); setItems((a) => a.filter((i) => !i.done)) }
 
   const openEdit = (it: Todo) => { setEditing(it); setDraft({ text: it.text, details: it.details || '', due: it.due || '', listId: it.listId }) }
   const saveEdit = () => {
     if (editing) { const v = draft.text.trim(); if (v) setItems((a) => a.map((i) => (i.id === editing.id ? { ...i, text: v, details: draft.details, due: draft.due, listId: draft.listId } : i))) }
     setEditing(null)
   }
-  const deleteEditing = () => { if (editing) setItems((a) => a.filter((i) => i.id !== editing.id)); setEditing(null) }
+  const deleteEditing = () => { if (editing) { sfx('lock'); setItems((a) => a.filter((i) => i.id !== editing.id)) } setEditing(null) }
 
   const createList = () => {
     const name = newListName.trim()
@@ -212,7 +217,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
 
       {/* edit modal: title · details · due date · delete */}
       <Modal open={!!editing} onClose={() => setEditing(null)}>
-        <div onClick={(e) => e.stopPropagation()} className="w-full max-w-xs rounded-2xl bg-white p-4 shadow-xl space-y-3">
+        <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[280px] rounded-2xl bg-white p-4 shadow-xl space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-gray-900">{t('td_edit_title')}</h2>
             <button onClick={() => setEditing(null)} aria-label={t('td_close')} className="w-7 h-7 rounded-full hover:bg-gray-100 text-gray-400 text-lg leading-none">×</button>
