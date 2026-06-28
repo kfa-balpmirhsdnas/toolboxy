@@ -4121,6 +4121,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "lt_sound": "音",
     "lt_lottery": "宝くじ",
     "lt_games": "ゲーム数",
     "lt_fixed": "固定番号(任意)",
