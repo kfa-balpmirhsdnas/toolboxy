@@ -194,7 +194,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
 
                 {/* title opens the edit modal; due date sits on the far right, one line */}
                 <button type="button" onClick={() => openEdit(it)} className={`flex-1 min-w-0 text-left truncate text-[15px] leading-snug ${it.done ? 'line-through text-gray-400' : 'text-gray-800'}`}>{it.text}</button>
-                {it.due && <span className={`shrink-0 whitespace-nowrap text-[11px] ${!it.done && it.due < todayStr() ? 'text-rose-500' : 'text-gray-400'}`}>📅 {it.due}</span>}
+                {it.due && <span className={`shrink-0 whitespace-nowrap text-[11px] ${!it.done && it.due < todayStr() ? 'text-rose-500' : 'text-gray-400'}`}>📅 {it.due.slice(5)}</span>}
 
                 <button type="button" onClick={() => toggleStar(it.id)} aria-label={t('td_starred')} aria-pressed={it.starred} title={t('td_starred')} className="shrink-0 px-1 text-gray-300 hover:text-yellow-500">
                   {star(it.starred, 'w-5 h-5')}
@@ -212,40 +212,40 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
 
       {/* edit modal: title · details · due date · delete */}
       <Modal open={!!editing} onClose={() => setEditing(null)}>
-        <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl space-y-4">
+        <div onClick={(e) => e.stopPropagation()} className="w-full max-w-xs rounded-2xl bg-white p-4 shadow-xl space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-gray-900">{t('td_edit_title')}</h2>
-            <button onClick={() => setEditing(null)} aria-label={t('td_close')} className="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-400 text-xl leading-none">×</button>
+            <h2 className="text-base font-bold text-gray-900">{t('td_edit_title')}</h2>
+            <button onClick={() => setEditing(null)} aria-label={t('td_close')} className="w-7 h-7 rounded-full hover:bg-gray-100 text-gray-400 text-lg leading-none">×</button>
           </div>
           <div>
-            <span className="text-xs font-semibold text-gray-500">{t('td_field_list')}</span>
-            <div className="mt-1 flex flex-wrap gap-1.5">
+            <span className="text-[11px] font-semibold text-gray-500">{t('td_field_list')}</span>
+            <div className="mt-1 flex flex-wrap gap-1">
               {lists.map((l) => (
                 <button key={l.id} type="button" onClick={() => setDraft((d) => ({ ...d, listId: l.id }))}
-                  className={`px-3 py-1 rounded-full text-sm border transition ${draft.listId === l.id ? 'border-brand-400 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}>{listName(l)}</button>
+                  className={`px-2.5 py-0.5 rounded-full text-[13px] border transition ${draft.listId === l.id ? 'border-brand-400 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}>{listName(l)}</button>
               ))}
             </div>
           </div>
           <label className="block">
-            <span className="text-xs font-semibold text-gray-500">{t('td_field_title')}</span>
+            <span className="text-[11px] font-semibold text-gray-500">{t('td_field_title')}</span>
             <input value={draft.text} onChange={(e) => setDraft((d) => ({ ...d, text: e.target.value }))} onKeyDown={(e) => e.key === 'Enter' && saveEdit()}
-              className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-brand-400" />
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-brand-400" />
           </label>
           <label className="block">
-            <span className="text-xs font-semibold text-gray-500">{t('td_details')}</span>
-            <textarea value={draft.details} onChange={(e) => setDraft((d) => ({ ...d, details: e.target.value }))} rows={3} placeholder={t('td_details_ph')}
-              className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            <span className="text-[11px] font-semibold text-gray-500">{t('td_details')}</span>
+            <textarea value={draft.details} onChange={(e) => setDraft((d) => ({ ...d, details: e.target.value }))} rows={2} placeholder={t('td_details_ph')}
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-brand-400" />
           </label>
           <label className="block">
-            <span className="text-xs font-semibold text-gray-500">{t('td_due')}</span>
+            <span className="text-[11px] font-semibold text-gray-500">{t('td_due')}</span>
             <input type="date" value={draft.due} onChange={(e) => setDraft((d) => ({ ...d, due: e.target.value }))}
-              className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-brand-400" />
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-brand-400" />
           </label>
-          <div className="flex items-center justify-between pt-1">
-            <button onClick={deleteEditing} className="px-3 py-2 text-sm font-medium text-rose-500 rounded-xl hover:bg-rose-50">{t('td_delete')}</button>
-            <div className="flex items-center gap-2">
-              <button onClick={saveEdit} className="px-5 py-2 text-sm font-semibold text-white bg-brand-600 rounded-xl hover:bg-brand-700 active:scale-95 transition">{t('td_save')}</button>
-              <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm font-medium text-gray-500 rounded-xl border border-gray-200 hover:bg-gray-50">{t('td_cancel')}</button>
+          <div className="flex items-center justify-between pt-0.5">
+            <button onClick={deleteEditing} className="px-2.5 py-1.5 text-sm font-medium text-rose-500 rounded-lg hover:bg-rose-50">{t('td_delete')}</button>
+            <div className="flex items-center gap-1.5">
+              <button onClick={saveEdit} className="px-4 py-1.5 text-sm font-semibold text-white bg-brand-600 rounded-lg hover:bg-brand-700 active:scale-95 transition">{t('td_save')}</button>
+              <button onClick={() => setEditing(null)} className="px-3 py-1.5 text-sm font-medium text-gray-500 rounded-lg border border-gray-200 hover:bg-gray-50">{t('td_cancel')}</button>
             </div>
           </div>
         </div>
