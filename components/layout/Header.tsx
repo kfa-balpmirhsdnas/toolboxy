@@ -112,11 +112,10 @@ export default function Header() {
             </div>
           )}
         </div>
-        {/* Reserve a stable width so loading↔resolved doesn't shift the header */}
+        {/* While auth is loading, show the same signed-out buttons (the common case),
+            so resolving never widens this box and shifts the language switcher. */}
         <div className="flex items-center justify-end shrink-0 min-w-[88px]">
-        {user === 'loading' ? (
-          <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
-        ) : user ? (
+        {user && user !== 'loading' ? (
           <div className="relative" ref={menuRef}>
             <button onClick={() => setMenuOpen(o => !o)} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Avatar user={user} />

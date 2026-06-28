@@ -52,6 +52,8 @@ export async function generateMetadata({ params }: { params: { lang: string } })
       images: [{ url: '/og-image.png', width: 1200, height: 630 }],
     },
     twitter: { card: 'summary_large_image', title, description },
+    // We ship our own en/ja/ko, so tell Chrome/Google not to offer machine translation.
+    other: { google: 'notranslate' },
   }
 }
 
