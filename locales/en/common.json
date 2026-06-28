@@ -102,6 +102,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "image-mosaic": "Hide sensitive info — faces, names, phone numbers — in a photo. Drag over the areas to mask them with mosaic, blur, or a solid block, then save as PNG/JPG. Everything runs in your browser; your photo never leaves your device.",
     "todo-list": "A simple online to-do checklist: add tasks, check them off, edit, delete, and drag to reorder. Shows your completed count and saves automatically in your browser — no login, no server.",
     "periodic-table": "Interactive periodic table — tap an element for its atomic number, mass, group, period, and category. Shows all 118 elements with English/Korean/Japanese names and category colors. Free, no install.",
     "molar-mass-calculator": "Free tool that computes the molar mass (g/mol) of a chemical formula. Supports parentheses and hydrates, shows a per-element breakdown, and uses standard atomic weights.",
@@ -1618,6 +1619,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "image-mosaic": "Upload a photo and drag over the parts you want to hide to cover them with a mosaic, blur, or solid black. Great for safely removing personal details — faces, names, phone numbers, addresses — before sharing. You can mask several spots at once, adjust the strength, and undo. Everything happens inside your browser and the image is never uploaded to any server.",
     "todo-list": "A simple checklist for jotting tasks and ticking them off one by one. Edit or delete items and drag to reorder them. Your list is saved automatically in this browser only, so it stays even after you close and reopen the window.",
     "resistor-color-code": "Read a resistor's value from its color bands. Choose 4 or 5 bands, pick each band's color, and it computes the resistance (Ω/kΩ/MΩ/GΩ) and tolerance (±%) while previewing the bands on a resistor graphic — handy for quickly checking color codes when working with electronics. Everything runs in your browser, free with no install.",
     "blood-type-inheritance": "Find the blood types a child can have from the parents' blood types. Based on ABO inheritance (A and B are dominant, O recessive), pick both parents' types and it shows which child blood types are possible and which are impossible at a glance. Actual probabilities depend on the parents' genotypes (AA/AO, etc.), so this shows whether each type is possible. Everything runs in your browser, free with no install.",
@@ -1928,6 +1930,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
+    "image-mosaic": ["Upload a photo.","Drag over the parts to hide with mosaic, blur, or black.","Save the result as PNG or JPG."],
     "todo-list": ["Type a task and add it.","Check it off when done, drag to reorder.","Your list saves automatically in your browser."],
     "title": "How to use",
     "periodic-table": [
@@ -3713,6 +3716,20 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "im_privacy_title": "Your photo is never uploaded.",
+    "im_privacy": "Everything is processed only inside this browser.",
+    "im_upload": "Drag an image here, or click to upload",
+    "im_upload_hint": "Add the photo whose faces / names / numbers you want to hide",
+    "im_drag_hint": "Drag over the parts to hide, with your mouse or finger (multiple areas allowed).",
+    "im_effect_mosaic": "Mosaic",
+    "im_effect_blur": "Blur",
+    "im_effect_black": "Black out",
+    "im_intensity": "Strength",
+    "im_undo": "Undo",
+    "im_reset": "Reset",
+    "im_change": "Change image",
+    "im_download": "Download",
+    "im_note": "The photo you upload and the edited result are never stored or sent anywhere, and disappear when you close the browser.",
     "np_findreplace": "Find & replace",
     "np_find": "Find",
     "np_replace": "Replace with",
@@ -6639,6 +6656,7 @@
     "si_help": "Memorise the order the colours light up"
   },
   "toolTags": {
+    "image-mosaic": ["image mosaic","blur photo","pixelate","censor photo","redact image"],
     "todo-list": ["to-do list","checklist","task list","todo","tasks"],
     "spinner-wheel": [
       "spinner wheel",
@@ -6733,6 +6751,7 @@
     ]
   },
   "toolNames": {
+    "image-mosaic": "Image Mosaic & Blur",
     "todo-list": "To-Do List",
     "periodic-table": "Periodic Table",
     "molar-mass-calculator": "Molar Mass Calculator",
