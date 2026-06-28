@@ -138,6 +138,11 @@ const VECTOR = {
     ['path', { d: 'M6 2v14a2 2 0 0 0 2 2h14' }],
     ['path', { d: 'M18 22V8a2 2 0 0 0-2-2H2' }],
   ],
+  'fasting-timer': [ // timer (stopwatch)
+    ['line', { x1: '10', x2: '14', y1: '2', y2: '2' }],
+    ['line', { x1: '12', x2: '15', y1: '14', y2: '11' }],
+    ['circle', { cx: '12', cy: '14', r: '8' }],
+  ],
   'zip-files': [ // package (closed box)
     ['path', { d: 'm7.5 4.27 9 5.15' }],
     ['path', { d: 'M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z' }],
