@@ -1,33 +1,24 @@
 import { NextResponse } from 'next/server'
 import { adminDb } from '@/lib/firebase-admin'
-import { getToolBySlug } from '@/lib/tools/registry'
 
-// Public read of the auto-computed "popular tools" ranking, derived from the
-// per-tool click counter (toolStats/{slug}.views, written by /api/tool-stats on
-// every tool-page load). Returns the top-N slugs by all-time views. CDN-cached so
-// it stays cheap; never throws to the client (empty list on error).
+// Public read of the popular-tools ranking. The ranking is pre-computed hourly by
+// /api/cron/popular into config/popularTools, so this is a SINGLE doc read (not a
+// full toolStats collection scan). CDN-cached for an hour; never throws (empty
+// list on error / before the first cron run).
 
 export const dynamic = 'force-dynamic'
-const TOP_N = 20
 
 export async function GET() {
   let slugs: string[] = []
   try {
-    const snap = await adminDb.collection('toolStats').get()
-    slugs = snap.docs
-      .map((d) => {
-        const v = d.data() as { slug?: string; views?: number }
-        return { slug: v.slug ?? d.id, views: v.views ?? 0 }
-      })
-      .filter((r) => getToolBySlug(r.slug))
-      .sort((a, b) => b.views - a.views)
-      .slice(0, TOP_N)
-      .map((r) => r.slug)
+    const snap = await adminDb.collection('config').doc('popularTools').get()
+    const data = snap.data() as { slugs?: string[] } | undefined
+    if (Array.isArray(data?.slugs)) slugs = data!.slugs
   } catch (e) {
     console.error('[api/popular]', e)
   }
   return NextResponse.json(
     { slugs },
-    { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' } },
+    { headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
   )
 }
