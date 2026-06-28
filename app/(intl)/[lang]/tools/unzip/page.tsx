@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -36,8 +36,23 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
     } catch (e) { console.error(e); setError(t('uz_error')) }
   }
 
+  // Windows "Open with → ToolBoxy Unzip" (installed PWA + Chromium only): open the
+  // .zip the OS launched us with. All in-browser — nothing is uploaded.
+  useEffect(() => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const lq = (window as any).launchQueue
+    if (!lq?.setConsumer) return
+    lq.setConsumer(async (p: any) => {
+      const h = p?.files?.[0]
+      if (!h) return
+      try { load(await h.getFile()) } catch { /* skip unreadable */ }
+    })
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function download(e: Entry) {
-    const blob = new Blob([e.data])
+    const blob = new Blob([e.data as unknown as BlobPart])
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = e.name.split('/').pop() || e.name; a.click()
     trackToolDownload('unzip', 'file')
   }
