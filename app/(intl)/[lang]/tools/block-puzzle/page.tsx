@@ -48,7 +48,7 @@ function clearLines(b: number[][]) {
 export default function BlockPuzzlePage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const stage = useGameStage()
-  const CELL = useFitCell(COLS, ROWS, { reserve: 272, maxCell: 30 }) // fill the screen without overflowing
+  const [CELL, boxRef] = useFitCell(COLS, ROWS, { reserve: 272, maxCell: 30 }) // fill the screen without overflowing
   const [board, setBoard] = useState(emptyBoard())
   const pieceRef = useRef<Piece | null>(null)
   const [, force] = useState(0)
@@ -111,7 +111,7 @@ export default function BlockPuzzlePage({ params }: { params: { lang: string } }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="relative max-w-xs mx-auto space-y-3 text-center select-none">
+      <div ref={boxRef} data-game-stage className="relative w-full max-w-xs mx-auto space-y-3 text-center select-none">
         <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('bp_title')}</h1>

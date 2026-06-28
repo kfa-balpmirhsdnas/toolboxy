@@ -20,7 +20,7 @@ const randFood = (snake: P[]): P => {
 export default function SnakePage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const stage = useGameStage()
-  const CELL = useFitCell(N, N, { reserve: 320, maxCell: 22 }) // fill the screen without overflowing
+  const [CELL, boxRef] = useFitCell(N, N, { reserve: 320, maxCell: 22 }) // fill the screen without overflowing
   const snakeRef = useRef<P[]>([{ x: 8, y: 8 }])
   const dirRef = useRef<P>({ x: 1, y: 0 })
   const nextDir = useRef<P>({ x: 1, y: 0 })
@@ -81,7 +81,7 @@ export default function SnakePage({ params }: { params: { lang: string } }) {
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="relative max-w-sm mx-auto space-y-3 text-center select-none">
+      <div ref={boxRef} data-game-stage className="relative w-full max-w-sm mx-auto space-y-3 text-center select-none">
         <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('sn_title')}</h1>

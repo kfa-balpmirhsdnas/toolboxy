@@ -87,22 +87,26 @@ export function SoundToggle({ className = '' }: { className?: string }) {
  * the whole board inside the mobile viewport on BOTH axes — the game box never
  * overflows width or height. `reserve` = vertical space taken by the box's other
  * chrome (header, title, score, controls). Recomputes on resize/orientation. */
-export function useFitCell(cols: number, rows: number, opts?: { reserve?: number; maxCell?: number; minCell?: number; maxWidth?: number }) {
-  const { reserve = 250, maxCell = 30, minCell = 10, maxWidth = 420 } = opts || {}
+export function useFitCell(cols: number, rows: number, opts?: { reserve?: number; maxCell?: number; minCell?: number }) {
+  const { reserve = 250, maxCell = 30, minCell = 10 } = opts || {}
+  const ref = useRef<HTMLDivElement>(null)
   const [cell, setCell] = useState(minCell)
   useEffect(() => {
     const calc = () => {
-      const availW = Math.min(window.innerWidth, maxWidth) - 24
+      // Measure the ACTUAL box width (includes page px-4 + panel p-6 + max-width),
+      // so the board never overflows on any device. Height is viewport-based.
+      const availW = ref.current?.clientWidth || (window.innerWidth - 32)
       const availH = window.innerHeight - reserve
       const byW = Math.floor((availW - (cols + 1)) / cols)
       const byH = Math.floor((availH - (rows + 1)) / rows)
       setCell(Math.max(minCell, Math.min(maxCell, byW, byH)))
     }
     calc()
+    const raf = requestAnimationFrame(calc) // re-measure once layout settles
     window.addEventListener('resize', calc)
-    return () => window.removeEventListener('resize', calc)
-  }, [cols, rows, reserve, maxCell, minCell, maxWidth])
-  return cell
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', calc) }
+  }, [cols, rows, reserve, maxCell, minCell])
+  return [cell, ref] as const
 }
 
 /** Scroll the game box ([data-game-stage]) up so its top sits just BELOW the
