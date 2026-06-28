@@ -9,6 +9,7 @@ import { trackToolUsed } from '@/lib/gtag'
 const tool = getToolBySlug('todo-list')!
 const KEY = 'todo-list-v1'
 const STARRED = '__starred__'
+const COMPLETED = '__completed__'
 const DEFAULT = 'default'
 
 interface List { id: string; name: string }
@@ -49,10 +50,10 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
   // Persist on every change so the list survives a browser restart.
   useEffect(() => { if (loaded) try { localStorage.setItem(KEY, JSON.stringify({ lists, items, active })) } catch { /* */ } }, [lists, items, active, loaded])
   // Keep the active tab valid if its list was removed.
-  useEffect(() => { if (active !== STARRED && !lists.some((l) => l.id === active)) setActive(DEFAULT) }, [lists, active])
+  useEffect(() => { if (active !== STARRED && active !== COMPLETED && !lists.some((l) => l.id === active)) setActive(DEFAULT) }, [lists, active])
 
   const listName = (l: List) => (l.id === DEFAULT ? t('td_tab_general') : l.name)
-  const inView = (it: Todo) => (active === STARRED ? it.starred : it.listId === active)
+  const inView = (it: Todo) => (active === STARRED ? it.starred : active === COMPLETED ? it.done : it.listId === active)
   const shown = items.filter(inView)
   const total = shown.length
   const done = shown.filter((i) => i.done).length
@@ -132,15 +133,22 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
           ) : (
             <button onClick={() => setAddingList(true)} className="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium border border-dashed border-gray-300 text-gray-500 hover:bg-gray-50 whitespace-nowrap">+ {t('td_new_list')}</button>
           )}
+          {/* completed view — always the last tab */}
+          <button onClick={() => setActive(COMPLETED)} className={tabCls(active === COMPLETED)}>
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+            {t('td_tab_done')}
+          </button>
         </div>
 
-        {/* add a task */}
-        <div className="flex gap-2">
-          <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()}
-            placeholder={t('td_add_ph')} aria-label={t('td_add_ph')} enterKeyHint="done"
-            className="flex-1 min-w-0 rounded-xl border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-400" />
-          <button onClick={add} disabled={!input.trim()} className="shrink-0 px-5 py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 active:scale-95 disabled:opacity-40 transition">{t('td_add')}</button>
-        </div>
+        {/* add a task (not on the read-only Completed view) */}
+        {active !== COMPLETED && (
+          <div className="flex gap-2">
+            <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()}
+              placeholder={t('td_add_ph')} aria-label={t('td_add_ph')} enterKeyHint="done"
+              className="flex-1 min-w-0 rounded-xl border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            <button onClick={add} disabled={!input.trim()} className="shrink-0 px-5 py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 active:scale-95 disabled:opacity-40 transition">{t('td_add')}</button>
+          </div>
+        )}
 
         {/* counts */}
         {total > 0 && (
@@ -153,7 +161,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
 
         {/* list */}
         {total === 0 ? (
-          <p className="text-center text-gray-400 py-12">{active === STARRED ? t('td_empty_starred') : t('td_empty')}</p>
+          <p className="text-center text-gray-400 py-12">{active === STARRED ? t('td_empty_starred') : active === COMPLETED ? t('td_empty_done') : t('td_empty')}</p>
         ) : (
           <ul ref={listRef} className="space-y-1.5">
             {shown.map((it, idx) => (

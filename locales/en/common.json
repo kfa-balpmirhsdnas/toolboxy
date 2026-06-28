@@ -3713,6 +3713,8 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "td_tab_done": "Completed",
+    "td_empty_done": "No completed tasks yet.",
     "td_tab_starred": "Starred",
     "td_tab_general": "General",
     "td_new_list": "New list",

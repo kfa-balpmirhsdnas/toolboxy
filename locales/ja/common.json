@@ -4082,6 +4082,8 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "td_tab_done": "完了",
+    "td_empty_done": "完了したタスクはありません。",
     "td_tab_starred": "スター",
     "td_tab_general": "一般",
     "td_new_list": "新しいリスト",
