@@ -44,19 +44,36 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
       if (d?.fastH) setFastH(d.fastH)
       if (d?.start) setStart(d.start)
       if (d?.notify) setNotify(true)
+      if (d?.sound) setSound(true)
     } catch { /* ignore */ }
   }, [])
   useEffect(() => {
-    try { localStorage.setItem(KEY, JSON.stringify({ fastH, start, notify })) } catch { /* ignore */ }
-  }, [fastH, start, notify])
+    try { localStorage.setItem(KEY, JSON.stringify({ fastH, start, notify, sound })) } catch { /* ignore */ }
+  }, [fastH, start, notify, sound])
+  // Keep the tick alive across reloads and tab-returns: the AudioContext suspends when the
+  // page is hidden (and can't auto-start on load), so resume it on the next gesture / when
+  // the page becomes visible again whenever sound is enabled.
+  useEffect(() => {
+    if (!sound) return
+    try {
+      const AC = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+      if (AC && !audioRef.current) audioRef.current = new AC()
+    } catch { /* ignore */ }
+    const resume = () => { audioRef.current?.resume().catch(() => {}) }
+    resume()
+    const onVis = () => { if (document.visibilityState === 'visible') resume() }
+    window.addEventListener('pointerdown', resume)
+    document.addEventListener('visibilitychange', onVis)
+    return () => { window.removeEventListener('pointerdown', resume); document.removeEventListener('visibilitychange', onVis) }
+  }, [sound])
   // A short clock-tick blip on each second (Web Audio, only while a fast is running).
   function playTick() {
     const ctx = audioRef.current; if (!ctx) return
     const o = ctx.createOscillator(); const g = ctx.createGain(); const t0 = ctx.currentTime
-    o.type = 'square'; o.frequency.value = 1200
+    o.type = 'triangle'; o.frequency.value = 700 // lower, softer tick
     g.gain.setValueAtTime(0.0001, t0)
     g.gain.exponentialRampToValueAtTime(0.1, t0 + 0.001)
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.035)
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.04)
     o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0 + 0.04)
   }
   useEffect(() => {
@@ -107,14 +124,8 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
     if (perm === 'granted') setNotify(true)
     else alert(t('if_notify_denied'))
   }
-  const toggleSound = () => {
-    if (sound) { setSound(false); return }
-    try {
-      const AC = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-      if (AC) { if (!audioRef.current) audioRef.current = new AC(); audioRef.current.resume() } // user gesture unlocks audio
-    } catch { /* ignore */ }
-    setSound(true)
-  }
+  // The [sound] effect handles AudioContext creation/resume (this click is the unlocking gesture).
+  const toggleSound = () => setSound((s) => !s)
 
   const R = 112
   const C = 2 * Math.PI * R
