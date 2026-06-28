@@ -102,6 +102,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "bill-splitter": "Free bill splitter — enter the total and number of people to see who pays what. Handles uneven splits, tip (15/18/20% or custom), tax and unequal shares. Split the bill fairly in seconds.",
     "powerball-results": "See the latest Powerball winning numbers and the full history of past draws. Look up results by date, browse recent draws, and view number frequency. Built on official NY State open data, refreshed after every Mon/Wed/Sat drawing.",
     "lottery-number-generator": "A free generator for lottery numbers — Powerball, Mega Millions, EuroMillions, Japan Loto, Korea Lotto 6/45 and more. Pick a lottery and it generates numbers per its rules. Multiple lines, fixed and excluded numbers, all in your browser.",
     "background-remover": "A free tool that automatically erases a photo’s background and makes it transparent. Drop an image and the AI removes the background in your browser, saving a transparent PNG. No install, no signup, and photos never leave your device.",
@@ -826,6 +827,7 @@
     "continue": "Continue without signing up"
   },
   "langTools": {
+    "bill-splitter": {"faq":[{"q":"What happens when the bill doesn't divide evenly?","a":"It rounds each share to the smallest unit of your currency and assigns the leftover to as few people as possible, so the per-person amounts add up exactly to the bill."},{"q":"How is the tip calculated?","a":"The tip is a percentage of the subtotal (15/18/20% or your own value), added to the total before splitting, so everyone shares it."},{"q":"Can people pay different amounts?","a":"Yes — turn on 'By share' in Advanced and give each person a weight; the bill is split in proportion to those shares."}]},
     "spinner-wheel": {
       "intro": "Enter options and spin the wheel to pick one at random.",
       "faq": [
@@ -1629,6 +1631,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "bill-splitter": "Bill Splitter divides a bill among any number of people. Enter the total and headcount for an instant per-person amount; when it doesn't divide evenly it rounds to the currency and shows exactly who covers the few cents or won left over. Open the advanced options to add a tip (15/18/20% or your own), include or add tax, or split by unequal shares so people who ate more pay more. Pick ₩, $ or ¥ and copy the result — everything runs in your browser.",
     "powerball-results": "Powerball Results shows the latest U.S. Powerball winning numbers — five white balls (1–69) and the red Powerball (1–26) — plus Power Play and the full draw history since 2010. Look up the result for any date, browse recent draws, and see which numbers have appeared most often. Data comes from the official New York State open-data feed; the page fetches the newest draw live and falls back to a saved snapshot if the source is unavailable. This is an informational tool: Powerball is a game of chance, and past results never predict or influence future draws.",
     "lottery-number-generator": "The lottery number generator creates random numbers that follow each lottery’s rules (number range, count and bonus ball). It supports 16 lotteries including US Powerball and Mega Millions, EuroMillions, Japan Loto 6/7 and Korea Lotto 6/45. Main numbers are unique; the bonus ball is drawn from a separate pool. You can generate several lines at once and force or exclude specific numbers. It’s a light, for-fun tool for when you can’t be bothered to pick — it does not guarantee a win.",
     "background-remover": "The background remover automatically cuts out the background of people, products and other photos, producing a transparent PNG. The AI model runs entirely in your browser, so your photo is never uploaded to a server. The model downloads once on first use, then is cached for fast results. The transparent PNG is ready to use for compositing, product pages, profiles and more.",
@@ -1949,6 +1952,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
+    "bill-splitter": ["Enter the bill total and choose the currency.","Set the number of people.","Open Advanced for tip, tax or unequal shares.","Read each person's amount and tap Copy."],
     "powerball-results": ["Open the page to see the latest winning numbers and the next draw date.","Pick a date to look up that specific drawing.","Scroll the recent draws list or load more history.","Open Number frequency to see which numbers came up most (for reference only)."],
     "lottery-number-generator": ["Choose a lottery (a sensible default is picked for your language).","Set how many lines, and optionally enter fixed or excluded numbers.","Press 'Generate' to create numbers by the rules.","Use 'Regenerate' for new numbers and 'Copy' to take them with you."],
     "background-remover": ["Upload or drag in a photo.","Press 'Remove background' — it processes in your browser (with progress).","Preview the result on a checkerboard (transparent) background.","Download the transparent PNG."],
@@ -3744,6 +3748,26 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "bs_total": "Bill total",
+    "bs_people": "People",
+    "bs_advanced": "Advanced (tip, tax, custom split)",
+    "bs_tip": "Tip",
+    "bs_tip_custom": "Custom %",
+    "bs_tax": "Tax",
+    "bs_tax_included": "Included",
+    "bs_tax_add": "Add %",
+    "bs_split": "Split",
+    "bs_equal": "Equal",
+    "bs_shares": "By share",
+    "bs_weight": "share",
+    "bs_person_n": "Person {n}",
+    "bs_perperson": "Per person",
+    "bs_ppl": "{n} people",
+    "bs_uneven": "{n} pay {amt}",
+    "bs_grandtotal": "Total to split",
+    "bs_subtotal": "Subtotal",
+    "bs_copy": "Copy",
+    "bs_copied": "Copied",
     "pr_latest": "Latest winning numbers",
     "pr_powerplay": "Power Play",
     "pr_nextdraw": "Next draw",
@@ -6959,6 +6983,7 @@
     ]
   },
   "toolNames": {
+    "bill-splitter": "Bill Splitter",
     "powerball-results": "Powerball Results",
     "lottery-number-generator": "Lottery Number Generator",
     "background-remover": "Background Remover",
@@ -7113,6 +7138,7 @@
     }
   },
   "toolTitles": {
+    "bill-splitter": "Bill Splitter — Split the Bill & Tip Calculator",
     "powerball-results": "Powerball Results — Latest Winning Numbers & History",
     "lottery-number-generator": "Free Lottery Number Generator · Powerball, EuroMillions & More",
     "background-remover": "Free Background Remover · Make Photo Backgrounds Transparent",
