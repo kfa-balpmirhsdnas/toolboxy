@@ -87,6 +87,10 @@ export default function LotteryNumberGeneratorPage() {
       for (let i = 1; i <= total; i++) {
         timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(262, 0.12, 'sine', 0.42) }, i * step)) // identical low pop for every ball
       }
+      // ending fanfare once the last ball is out (rising C-E-G-C arpeggio)
+      const end = total * step + 500
+      const notes: [number, number][] = [[523, 0.18], [659, 0.18], [784, 0.18], [1047, 0.42]]
+      notes.forEach(([f, d], k) => timers.current.push(setTimeout(() => { if (sound) blip(f, d, 'triangle', 0.32) }, end + k * 130)))
     }, 2000))
   }, [id, count, fixedStr, excludeStr, sound])
 
