@@ -1,0 +1,17 @@
+﻿id,복권명_ko,복권명_en,복권명_ja,국가,주번호_min,주번호_max,주번호_개수,보너스명,보너스_min,보너스_max,보너스_개수,비고,검수상태
+kr_lotto645,로또 6/45,Lotto 6/45,ロト6/45,KR,1,45,6,,0,0,0,한국 기본 복권,확인
+us_powerball,파워볼,Powerball,パワーボール,US,1,69,5,파워볼,1,26,1,미국,확인
+us_megamillions,메가 밀리언,Mega Millions,メガ・ミリオンズ,US,1,70,5,메가볼,1,24,1,미국 / 2025.4 메가볼 1-24로 축소,확인
+us_lottoamerica,로또 아메리카,Lotto America,ロト・アメリカ,US,1,52,5,스타볼,1,10,1,미국,확인
+uk_national,영국 내셔널 로터리,UK National Lottery,英国ナショナルロッタリー,UK,1,59,6,,0,0,0,영국 Lotto,확인
+eu_euromillions,유로밀리언,EuroMillions,ユーロミリオンズ,EU,1,50,5,럭키스타,1,12,2,유럽 공동,확인
+eu_eurojackpot,유로잭팟,Eurojackpot,ユーロジャックポット,EU,1,50,5,유로넘버,1,12,2,유럽 공동,확인
+jp_loto6,로토6,ロト6,ロト6,JP,1,43,6,,0,0,0,일본,확인
+jp_loto7,로토7,ロト7,ロト7,JP,1,37,7,,0,0,0,일본,확인
+jp_miniloto,미니로토,Mini Loto,ミニロト,JP,1,31,5,,0,0,0,일본,확인
+au_powerball,호주 파워볼,Australia Powerball,オーストラリア・パワーボール,AU,1,35,7,파워볼,1,20,1,호주,확인
+ca_lottomax,캐나다 로또 맥스,Canada Lotto Max,カナダ・ロトマックス,CA,1,52,7,,0,0,0,캐나다 / 2026.4 풀 52로 확대,확인
+ca_lotto649,캐나다 로또 6/49,Canada Lotto 6/49,カナダ・ロト6/49,CA,1,49,6,,0,0,0,캐나다,확인
+de_lotto,독일 로또 6aus49,Germany Lotto 6aus49,ドイツ・ロト6aus49,DE,1,49,6,슈퍼넘버,0,9,1,독일(보너스=슈퍼넘버 0-9),확인
+fr_loto,프랑스 로또,France Loto,フランス・ロト,FR,1,49,5,찬스넘버,1,10,1,프랑스,확인
+es_primitiva,스페인 라 프리미티바,Spain La Primitiva,スペイン・ラ・プリミティバ,ES,1,49,6,,0,0,0,스페인,확인
