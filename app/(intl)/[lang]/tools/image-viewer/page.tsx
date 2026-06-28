@@ -10,6 +10,7 @@ const IMG_RE = /\.(jpe?g|png|gif|webp|bmp|svg|avif|ico|tiff?)$/i
 type Img = { file: File; url: string; name: string; size: number }
 
 const fmtBytes = (b: number) => (b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(0) + ' KB' : (b / 1048576).toFixed(2) + ' MB')
+const loadImg = (src: string) => new Promise<HTMLImageElement>((res, rej) => { const x = new Image(); x.onload = () => res(x); x.onerror = rej; x.src = src })
 
 // Minimal JPEG EXIF reader — DateTimeOriginal + camera Make/Model (best effort).
 async function readExif(file: File): Promise<{ date?: string; camera?: string }> {
@@ -68,6 +69,9 @@ export default function ImageViewerPage() {
   const [interval, setIntervalSec] = useState(5)
   const [fs, setFs] = useState(false)
   const [fmt, setFmt] = useState<'orig' | 'jpg' | 'png' | 'webp'>('orig')
+  const [cropMode, setCropMode] = useState(false)
+  const [crop, setCrop] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
+  const cropDrag = useRef<{ x: number; y: number } | null>(null)
 
   const fileRef = useRef<HTMLInputElement>(null)
   const dirRef = useRef<HTMLInputElement>(null)
@@ -187,6 +191,35 @@ export default function ImageViewerPage() {
     } catch { /* ignore */ }
   }
 
+  // Crop: drag a rectangle on the (un-zoomed, un-rotated) image, then save just that region.
+  function toggleCrop() { if (cropMode) { setCropMode(false); setCrop(null) } else { resetView(); setCrop(null); setCropMode(true) } }
+  const stageXY = (e: React.MouseEvent) => { const r = stageRef.current!.getBoundingClientRect(); return { x: Math.max(0, Math.min(e.clientX - r.left, r.width)), y: Math.max(0, Math.min(e.clientY - r.top, r.height)) } }
+  const cropDown = (e: React.MouseEvent) => { const p = stageXY(e); cropDrag.current = p; setCrop({ x: p.x, y: p.y, w: 0, h: 0 }) }
+  const cropMove = (e: React.MouseEvent) => { if (!cropDrag.current) return; const p = stageXY(e), s = cropDrag.current; setCrop({ x: Math.min(s.x, p.x), y: Math.min(s.y, p.y), w: Math.abs(p.x - s.x), h: Math.abs(p.y - s.y) }) }
+  const cropUp = () => { cropDrag.current = null }
+  async function cropSave() {
+    if (!cur || !crop || crop.w < 6 || crop.h < 6) return
+    const sr = stageRef.current!.getBoundingClientRect()
+    try {
+      const im = await loadImg(cur.url)
+      const ar = im.naturalWidth / im.naturalHeight, sar = sr.width / sr.height
+      let rw: number, rh: number
+      if (ar > sar) { rw = sr.width; rh = sr.width / ar } else { rh = sr.height; rw = sr.height * ar } // object-contain rendered box
+      const ox = (sr.width - rw) / 2, oy = (sr.height - rh) / 2, sc = im.naturalWidth / rw
+      let sx = (crop.x - ox) * sc, sy = (crop.y - oy) * sc, sw = crop.w * sc, sh = crop.h * sc
+      sx = Math.max(0, sx); sy = Math.max(0, sy); sw = Math.min(sw, im.naturalWidth - sx); sh = Math.min(sh, im.naturalHeight - sy)
+      if (sw < 1 || sh < 1) return
+      const cv = document.createElement('canvas'); cv.width = Math.round(sw); cv.height = Math.round(sh)
+      const ctx = cv.getContext('2d'); if (!ctx) return
+      const type = fmt === 'jpg' ? 'image/jpeg' : fmt === 'webp' ? 'image/webp' : 'image/png'
+      if (type === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height) }
+      ctx.drawImage(im, sx, sy, sw, sh, 0, 0, cv.width, cv.height)
+      const ext = fmt === 'orig' ? 'png' : fmt
+      cv.toBlob((blob) => { if (!blob) return; const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = `${cur.name.replace(/\.[^.]+$/, '') || 'image'}-crop.${ext}`; a.click(); setTimeout(() => URL.revokeObjectURL(u), 2000) }, type, 0.92)
+      setCropMode(false); setCrop(null)
+    } catch { /* ignore */ }
+  }
+
   // Wheel zoom (centered).
   const onWheel = (e: React.WheelEvent) => { e.preventDefault(); setZoom((z) => Math.min(8, Math.max(1, z + (e.deltaY < 0 ? 0.2 : -0.2)))) }
   // Drag-to-pan (only when zoomed).
@@ -240,6 +273,7 @@ export default function ImageViewerPage() {
             <button className={tBtn} title="왼쪽 90° 회전" onClick={() => setRot((r) => r - 90)}>↺</button>
             <button className={tBtn} title="오른쪽 90° 회전" onClick={() => setRot((r) => r + 90)}>↻</button>
             <button className={tBtn} title="좌우 반전" onClick={() => setFlip((f) => !f)}>🔁</button>
+            <button className={tBtn + (cropMode ? ' bg-white/15' : '')} title="자르기" onClick={toggleCrop}>✂️</button>
             <span className="w-px h-5 bg-white/15 mx-1" />
             <button className={tBtn + (playing ? ' bg-white/15' : '')} title="슬라이드쇼" onClick={() => setPlaying((p) => !p)}>{playing ? '⏸' : '▶'}</button>
             <select value={interval} onChange={(e) => setIntervalSec(Number(e.target.value))} className="bg-gray-700 text-gray-200 text-xs rounded-md px-1 py-1 border-0 focus:outline-none">
@@ -255,18 +289,25 @@ export default function ImageViewerPage() {
               <option value="png">PNG</option>
               <option value="webp">WebP</option>
             </select>
-            <button className={tBtn} title="현재 이미지 저장" onClick={save}>⬇</button>
+            <button className={tBtn} title={cropMode ? '자른 영역 저장' : '현재 이미지 저장'} onClick={() => (cropMode ? cropSave() : save())}>⬇</button>
             <span className="ml-auto text-xs text-gray-400 tabular-nums px-1">{idx + 1} / {images.length}</span>
             <button className={tBtn} title="모두 닫기" onClick={clearAll}>✕</button>
           </div>
 
           {/* Stage */}
-          <div ref={stageRef} onWheel={onWheel} onMouseDown={onDown} onMouseMove={onMove} onMouseUp={onUp} onMouseLeave={onUp}
-            onTouchStart={onTStart} onTouchEnd={onTEnd}
-            className={'relative overflow-hidden rounded-xl bg-gray-900 select-none ' + (fs ? 'flex-1' : 'h-[58vh]') + (zoom > 1 ? ' cursor-grab active:cursor-grabbing' : '')}>
+          <div ref={stageRef}
+            onWheel={cropMode ? undefined : onWheel}
+            onMouseDown={cropMode ? cropDown : onDown} onMouseMove={cropMode ? cropMove : onMove} onMouseUp={cropMode ? cropUp : onUp} onMouseLeave={cropMode ? cropUp : onUp}
+            onTouchStart={cropMode ? undefined : onTStart} onTouchEnd={cropMode ? undefined : onTEnd}
+            className={'relative overflow-hidden rounded-xl bg-gray-900 select-none ' + (fs ? 'flex-1' : 'h-[58vh]') + (cropMode ? ' cursor-crosshair' : zoom > 1 ? ' cursor-grab active:cursor-grabbing' : '')}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={cur.url} alt={cur.name} draggable={false} style={{ transform }} className="absolute inset-0 m-auto max-w-full max-h-full object-contain" />
-            {images.length > 1 && (
+            {cropMode && (
+              crop && crop.w > 4 && crop.h > 4
+                ? <div className="absolute border-2 border-white/90 pointer-events-none" style={{ left: crop.x, top: crop.y, width: crop.w, height: crop.h, boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)' }} />
+                : <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><span className="bg-black/60 text-white text-xs px-3 py-1.5 rounded-full">드래그해서 자를 영역을 지정하세요</span></div>
+            )}
+            {images.length > 1 && !cropMode && (
               <>
                 <button onClick={() => go(-1)} className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label="이전">‹</button>
                 <button onClick={() => go(1)} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label="다음">›</button>
