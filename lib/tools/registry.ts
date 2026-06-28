@@ -65,6 +65,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'video-compressor',category:'video',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['동영상 압축','비디오 압축','영상 용량 줄이기','mp4 압축','동영상 용량 줄이기','video compressor','compress video','reduce video size','mp4 compress','動画圧縮','ビデオ圧縮'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'audio-converter',category:'audio',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['오디오 변환','오디오 변환기','mp3 변환','wav 변환','m4a 변환','ogg 변환','audio converter','convert to mp3','wav to mp3','m4a converter','音声変換','mp3に変換'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'image-viewer',category:'image',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['이미지 뷰어','온라인 이미지 뷰어','사진 보기','무설치 사진 뷰어','image viewer','online image viewer','photo viewer','画像ビューア','写真ビューア'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'fasting-timer',category:'health',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['간헐적 단식 타이머','간헐적 단식','16:8','단식 타이머','공복 타이머','intermittent fasting timer','fasting tracker','16:8 fasting','断食タイマー','間欠的断食'],maxFileSizeMB:{free:0,pro:0} },
