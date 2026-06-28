@@ -1967,7 +1967,7 @@
     "fancy-text-generator": "特殊文字テキスト作成",
     "flip-text": "上下反転テキスト",
     "text-to-handwriting": "手書き風文字変換",
-    "text-to-ascii-art": "アスキーアート作成",
+    "text-to-ascii-art": "テキストをアスキーアートに変換",
     "ascii-art-generator": "アスキーアート作成",
     "pdf-to-png": "PDFをPNGに変換",
     "add-pdf-pages": "PDFページを追加",
