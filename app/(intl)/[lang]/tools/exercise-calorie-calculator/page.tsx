@@ -18,25 +18,6 @@ const ACT_EMOJI: Record<string, string> = {
   jumprope: '🤸', hike: '🥾', yoga: '🧘', weights: '🏋️', soccer: '⚽', basketball: '🏀',
   tennis: '🎾', badminton: '🏸', dance: '💃', stairs: '🪜', aerobics: '🤸', housework: '🧹',
 }
-// A small SVG icon per activity (related activities share one), shown on the presets.
-const ICON_OF: Record<string, string> = {
-  walk: 'person', briskwalk: 'person', run8: 'run', run11: 'run', cycle: 'cycle', swim: 'swim',
-  jumprope: 'run', hike: 'hike', yoga: 'person', weights: 'weights', soccer: 'ball', basketball: 'ball',
-  tennis: 'ball', badminton: 'ball', dance: 'run', stairs: 'person', aerobics: 'run', housework: 'person',
-}
-function ActIcon({ act }: { act: string }) {
-  const c = { fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
-  const ICONS: Record<string, React.ReactNode> = {
-    person: <g {...c}><circle cx="12" cy="4" r="2" fill="currentColor" stroke="none" /><path d="M12 7v6" /><path d="M8 9h8" /><path d="M12 13l-3 7" /><path d="M12 13l3 7" /></g>,
-    run: <g {...c}><circle cx="14" cy="4" r="2" fill="currentColor" stroke="none" /><path d="M14 7l-3 4 3 3 1 6" /><path d="M11 11l-4 2" /><path d="M14 10l4 1" /></g>,
-    cycle: <g {...c}><circle cx="5.5" cy="17.5" r="3.5" /><circle cx="18.5" cy="17.5" r="3.5" /><path d="M5.5 17.5l5-8h4" /><path d="M14.5 9.5l4 8" /><path d="M9 9.5h3.5" /></g>,
-    swim: <g {...c}><path d="M2 15c1.5 0 1.5 1.5 3 1.5s1.5-1.5 3-1.5 1.5 1.5 3 1.5 1.5-1.5 3-1.5 1.5 1.5 3 1.5 1.5-1.5 3-1.5" /><path d="M2 19c1.5 0 1.5 1.5 3 1.5s1.5-1.5 3-1.5 1.5 1.5 3 1.5 1.5-1.5 3-1.5 1.5 1.5 3 1.5 1.5-1.5 3-1.5" /><circle cx="16" cy="6" r="2" /></g>,
-    weights: <g {...c}><path d="M4 9v6" /><path d="M7 7v10" /><path d="M17 7v10" /><path d="M20 9v6" /><path d="M7 12h10" /></g>,
-    ball: <g {...c}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3v18" /></g>,
-    hike: <g {...c}><path d="M3 20l5-9 3 4 2-3 8 8z" /></g>,
-  }
-  return <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 shrink-0">{ICONS[ICON_OF[act] || 'person']}</svg>
-}
 // [translation key, MET] — MET values from the Compendium of Physical Activities.
 const ACTS: [string, number][] = [
   ['walk', 3.5], ['briskwalk', 5.0], ['run8', 8.3], ['run11', 11.0], ['cycle', 7.5], ['swim', 8.0],
@@ -85,7 +66,7 @@ export default function ExerciseCalorieCalculatorPage() {
           {[15, 30, 45, 60].map((m) => (
             <button key={m} onClick={() => setMin(m)}
               className={'flex-1 inline-flex items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-medium transition ' + (min === m ? 'bg-rose-100 text-rose-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
-              <ActIcon act={ACTS[actIdx][0]} />{m}{t('ex_min')}
+              <span className="text-sm">{ACT_EMOJI[ACTS[actIdx][0]]}</span> {m}{t('ex_min')}
             </button>
           ))}
         </div>
