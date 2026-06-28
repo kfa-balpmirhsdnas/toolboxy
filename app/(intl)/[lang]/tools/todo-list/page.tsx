@@ -217,7 +217,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
 
       {/* edit modal: title · details · due date · delete */}
       <Modal open={!!editing} onClose={() => setEditing(null)}>
-        <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[280px] rounded-2xl bg-white p-4 shadow-xl space-y-3">
+        <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[260px] rounded-2xl bg-white p-4 shadow-xl space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-gray-900">{t('td_edit_title')}</h2>
             <button onClick={() => setEditing(null)} aria-label={t('td_close')} className="w-7 h-7 rounded-full hover:bg-gray-100 text-gray-400 text-lg leading-none">×</button>
