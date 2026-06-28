@@ -27,6 +27,12 @@ const dateTag = () => {
 }
 const fmtDate = (ms: number) => { const d = new Date(ms); return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}` }
 
+// Auto-list (single level only): symbol shortcuts (typed char → bullet glyph) and the
+// line markers we recognise for auto-continue. Numbered lists also auto-renumber.
+const SYM_BULLET: Record<string, string> = { '*': '●', o: '○', '@': '■' }
+const NUM_MARK = /^(\d+)([.)>]) /  // "1. " / "1) " / "1> "
+const SYM_MARK = /^([●○■]) /       // "● " / "○ " / "■ "
+
 const SIZE_CLS: Record<SizeLvl, string> = { xs: 'text-[11px]', sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[18px]', xl: 'text-[22px]' }
 const LH_CLS: Record<Lvl, string> = { sm: 'leading-snug', md: 'leading-relaxed', lg: 'leading-loose' }
 // A system default plus per-language webfonts (Google Fonts). System fonts only
@@ -285,11 +291,67 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const h = histories.current[activeId]; if (!h || h.idx >= h.hist.length - 1) return
     h.idx += 1; setDocText(activeId, h.hist[h.idx]); force((n) => n + 1)
   }
+  // Replace the whole text + restore the caret (controlled textarea needs the caret
+  // re-applied after React re-renders).
+  function applyText(nt: string, caret: number) {
+    onChange(nt)
+    requestAnimationFrame(() => { const ta = taRef.current; if (ta) { ta.focus(); ta.selectionStart = ta.selectionEnd = caret } })
+  }
+  // Re-sequence the contiguous numbered block (same delimiter) around the caret to 1,2,3…
+  function renumberAt(full: string, caret: number, delim: string) {
+    const d = delim === ')' ? '\\)' : delim === '.' ? '\\.' : '>'
+    const re = new RegExp(`^(\\d+)${d} `)
+    const lines = full.split('\n')
+    let acc = 0, cl = 0, cc = 0
+    for (let i = 0; i < lines.length; i++) { const len = lines[i].length; if (caret <= acc + len) { cl = i; cc = caret - acc; break } acc += len + 1 }
+    if (!re.test(lines[cl])) return { text: full, caret }
+    let top = cl; while (top > 0 && re.test(lines[top - 1])) top--
+    let bot = cl; while (bot < lines.length - 1 && re.test(lines[bot + 1])) bot++
+    let n = parseInt(lines[top].match(re)![1], 10); let shift = 0
+    for (let i = top; i <= bot; i++) {
+      const old = lines[i].match(re)![0]; const nm = `${n}${delim} `
+      lines[i] = nm + lines[i].slice(old.length)
+      const diff = nm.length - old.length
+      if (diff && (i < cl || (i === cl && cc >= old.length))) shift += diff
+      n++
+    }
+    return { text: lines.join('\n'), caret: caret + shift }
+  }
+  // Enter inside a list: continue the marker (number +1 & renumber, or repeat the bullet);
+  // an empty item exits the list.
+  function listEnter(): boolean {
+    const ta = taRef.current; if (!ta) return false
+    const pos = ta.selectionStart; if (pos !== ta.selectionEnd) return false
+    const ls = text.lastIndexOf('\n', pos - 1) + 1
+    const nl = text.indexOf('\n', pos); const le = nl === -1 ? text.length : nl
+    const line = text.slice(ls, le)
+    const num = line.match(NUM_MARK); const sym = line.match(SYM_MARK)
+    if (!num && !sym) return false
+    const marker = (num ?? sym)![0]
+    if (line.slice(marker.length).trim() === '') { applyText(text.slice(0, ls) + text.slice(le), ls); return true }
+    if (num) {
+      const delim = num[2]; const nextM = `${parseInt(num[1], 10) + 1}${delim} `
+      let nt = text.slice(0, pos) + '\n' + nextM + text.slice(pos); let caret = pos + 1 + nextM.length
+      ;({ text: nt, caret } = renumberAt(nt, caret, delim)); applyText(nt, caret); return true
+    }
+    const nt = text.slice(0, pos) + '\n' + marker + text.slice(pos); applyText(nt, pos + 1 + marker.length); return true
+  }
+  // Space after a lone * / o / @ at line start → turn it into the bullet glyph.
+  function symSpace(): boolean {
+    const ta = taRef.current; if (!ta) return false
+    const pos = ta.selectionStart; if (pos !== ta.selectionEnd) return false
+    const ls = text.lastIndexOf('\n', pos - 1) + 1
+    const g = SYM_BULLET[text.slice(ls, pos)]; if (!g) return false
+    applyText(text.slice(0, ls) + g + ' ' + text.slice(pos), ls + g.length + 1); return true
+  }
+
   function onKeyDown(e: React.KeyboardEvent) {
     const mod = e.ctrlKey || e.metaKey; const k = e.key.toLowerCase()
     if (mod && k === 'z' && !e.shiftKey) { e.preventDefault(); undo() }
     else if (mod && (k === 'y' || (k === 'z' && e.shiftKey))) { e.preventDefault(); redo() }
     else if (mod && k === 'f') { e.preventDefault(); setShowFind(true) }
+    else if (!mod && !e.nativeEvent.isComposing && e.key === 'Enter' && !e.shiftKey) { if (listEnter()) e.preventDefault() }
+    else if (!mod && !e.nativeEvent.isComposing && e.key === ' ') { if (symSpace()) e.preventDefault() }
   }
 
   // Tabs
