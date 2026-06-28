@@ -106,16 +106,17 @@ export default function LotteryNumberGeneratorPage() {
     navigator.clipboard?.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500)
   }
 
-  const Ball = ({ n, bonus, shown }: { n: number; bonus?: boolean; shown: boolean }) => (
-    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full transition-all duration-100"
+  const Ball = ({ n, bonus, shown, size = 36 }: { n: number; bonus?: boolean; shown: boolean; size?: number }) => (
+    <span className="inline-flex items-center justify-center rounded-full transition-all duration-100"
       style={{
+        width: size, height: size,
         // glossy 3D sphere: top-left specular highlight + darkened bottom rim over the base colour
         background: `radial-gradient(circle at 30% 25%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.3) 13%, rgba(255,255,255,0) 33%), radial-gradient(circle at 50% 84%, rgba(0,0,0,.45) 0%, rgba(0,0,0,0) 60%), ${ballColor(n)}`,
         boxShadow: `0 2px 3px rgba(0,0,0,.28), inset 0 -3px 5px rgba(0,0,0,.3), inset 0 2px 3px rgba(255,255,255,.45)${bonus ? ', 0 0 0 2px #f59e0b' : ''}`,
         opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.35)',
       }}>
       <span className="inline-flex items-center justify-center rounded-full bg-white" style={{ width: '60%', height: '60%', boxShadow: 'inset 0 1px 2px rgba(0,0,0,.2)' }}>
-        <span className="text-xs font-extrabold tabular-nums text-gray-900">{n}</span>
+        <span className="font-extrabold tabular-nums text-gray-900" style={{ fontSize: size >= 36 ? 12 : 11 }}>{n}</span>
       </span>
     </span>
   )
@@ -167,14 +168,16 @@ export default function LotteryNumberGeneratorPage() {
 
         {games.length > 0 && (
           <div className="space-y-2">
-            {games.map((g, i) => (
-              <div key={i} className="flex items-center gap-1.5 flex-wrap rounded-xl border border-gray-100 bg-gray-50 px-3 py-2">
-                <span className="text-xs text-gray-400 w-5 shrink-0">{i + 1})</span>
-                {g.main.map((n) => { const idx = gi++; return <Ball key={n} n={n} shown={idx < revealed} /> })}
-                {g.bonus.length > 0 && <span className="text-gray-300 px-0.5">+</span>}
-                {g.bonus.map((n) => { const idx = gi++; return <Ball key={'b' + n} n={n} bonus shown={idx < revealed} /> })}
-              </div>
-            ))}
+            {games.map((g, i) => {
+              const sz = g.main.length + g.bonus.length >= 8 ? 30 : 36 // shrink only when a row has 8 balls
+              return (
+                <div key={i} className="flex items-center justify-center gap-1 flex-wrap rounded-xl border border-gray-100 bg-gray-50 px-2 py-2">
+                  {g.main.map((n) => { const idx = gi++; return <Ball key={n} n={n} shown={idx < revealed} size={sz} /> })}
+                  {g.bonus.length > 0 && <span className="text-gray-300 px-0.5">+</span>}
+                  {g.bonus.map((n) => { const idx = gi++; return <Ball key={'b' + n} n={n} bonus shown={idx < revealed} size={sz} /> })}
+                </div>
+              )
+            })}
             {lot.bonusCount > 0 && <p className="text-xs text-gray-400"><span className="inline-block w-2.5 h-2.5 rounded-full align-middle mr-1" style={{ boxShadow: '0 0 0 2px #f59e0b inset', background: '#fff' }} />{t('lt_bonus')}</p>}
             <button onClick={copy} className="text-sm px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50">{copied ? '✓ ' + t('lt_copied') : '📋 ' + t('lt_copy')}</button>
           </div>
