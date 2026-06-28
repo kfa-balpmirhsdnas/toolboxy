@@ -4141,7 +4141,7 @@
     "dr_amount": "용량",
     "dr_ml": "ml",
     "dr_per100": "100ml당 {n} kcal",
-    "dr_walk": "걷기 약 {n}분",
+    "dr_walk": "걷기 {n}분",
     "dr_disclaimer": "추정값입니다. 제품·도수·당분에 따라 실제 칼로리는 달라질 수 있어요.",
     "dr_soju": "소주",
     "dr_beer": "맥주",

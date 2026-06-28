@@ -3740,7 +3740,7 @@
     "dr_amount": "Amount",
     "dr_ml": "ml",
     "dr_per100": "{n} kcal per 100 ml",
-    "dr_walk": "≈ {n} min walk",
+    "dr_walk": "{n} min walk",
     "dr_disclaimer": "An estimate. Real calories vary by product, strength and sugar.",
     "dr_soju": "Soju",
     "dr_beer": "Beer",
