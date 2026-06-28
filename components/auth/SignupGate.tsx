@@ -50,12 +50,13 @@ export default function SignupGateProvider({ children }: { children: React.React
 
   const guard = useCallback(
     (href: string): boolean => {
-      // Allow while auth state is still resolving (avoid false gate / flicker)
-      // and for logged-in users. Guests are prompted on every internal tool
-      // navigation (the "continue anyway" escape is not remembered).
-      if (user === 'loading' || user) return true
-      setPendingHref(href)
-      return false
+      // TEMP: login gate disabled while sign-in is unavailable — always allow,
+      // never show the "sign up to continue" modal. Restore the block below to re-enable.
+      void href
+      return true
+      // if (user === 'loading' || user) return true
+      // setPendingHref(href)
+      // return false
     },
     [user],
   )

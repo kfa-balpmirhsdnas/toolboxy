@@ -376,8 +376,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
 
   // Download every tab as its own .txt inside a single zip (login-gated like TXT).
   async function zipDownload() {
-    if (user === 'loading') return
-    if (!user) { router.push(loginHref(params.lang, `/${params.lang}/tools/online-notepad`)); return }
+    // TEMP: login gate disabled — ZIP download allowed for everyone while sign-in is unavailable.
+    // if (user === 'loading') return
+    // if (!user) { router.push(loginHref(params.lang, `/${params.lang}/tools/online-notepad`)); return }
     const { zipSync, strToU8 } = await import('fflate')
     const data: Record<string, Uint8Array> = {}
     for (const d of docs) {
@@ -393,8 +394,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   }
 
   function download() {
-    if (user === 'loading') return // still resolving — ignore the click
-    if (!user) { router.push(loginHref(params.lang, `/${params.lang}/tools/online-notepad`)); return } // guests must sign in
+    // TEMP: login gate disabled — TXT download allowed for everyone while sign-in is unavailable.
+    // if (user === 'loading') return
+    // if (!user) { router.push(loginHref(params.lang, `/${params.lang}/tools/online-notepad`)); return }
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
