@@ -32,7 +32,7 @@ const fmtDateFile = (ms: number) => { const d = new Date(ms); return `${String(d
 // glyph itself; the shortcut is turned into the glyph only on Enter (like numbers).
 // Special-character palette — inserted at the caret. Whitespace-split + de-duped.
 const CHARS = Array.from(new Set(
-  '· … ⁝ ※ • ⸰ ™ → ↑ ↓ ← ↔ ↕ ☜ ☞ ★ ☆ ♥ ♡ ○ ● ◎ □ ■ ☑ ✓ △ ▲ ▽ ▼ ◁ ◀ ▷ ▶ ⏺ ⚫ ☉ ♧ ♣ ♨ ☏ ☎ ♩ ♪ ♬ ♫ ♭ ± × ÷ ≠ ≒ ∞ ∴ ∵ ⊂ ⊃ ∪ ∩ 【 】 「 」 º ℃ ℉ ㎟ ㎠ ㎡ ㎢ ㎣ ㎤ ㎥ ㎦ ½ ⅓ ⅔ ¼ ¾ ⅛ ⅜ ⅝ ⅞ ¹ ² ³ ⁴ ⁿ ₁ ₂ ₃ ₄ α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ Ⅶ Ⅷ Ⅸ Ⅹ ⅰ ⅱ ⅲ ⅳ ⅴ ⅵ ⅶ ⅷ ⅸ ⅹ'.split(/\s+/).filter(Boolean),
+  '· … ⁝ ※ • ⸰ ™ → ↑ ↓ ← ↔ ↕ ☜ ☞ ★ ☆ ♥ ♡ ○ ● ◎ □ ■ ☑ ✓ △ ▲ ▽ ▼ ◁ ◀ ▷ ▶ ⏺ ⚫ ☉ ♧ ♣ ♨ ☏ ☎ ♩ ♪ ♬ ♫ ♭ ± × ÷ ≠ ≒ ≈ ∞ ∴ ∵ ⊂ ⊃ ∪ ∩ 【 】 「 」 º ℃ ℉ ㎟ ㎠ ㎡ ㎢ ㎣ ㎤ ㎥ ㎦ ½ ⅓ ⅔ ¼ ¾ ⅛ ⅜ ⅝ ⅞ ¹ ² ³ ⁴ ⁿ ₁ ₂ ₃ ₄ α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ Ⅶ Ⅷ Ⅸ Ⅹ ⅰ ⅱ ⅲ ⅳ ⅴ ⅵ ⅶ ⅷ ⅸ ⅹ'.split(/\s+/).filter(Boolean),
 ))
 const SYM_TO_GLYPH: Record<string, string> = { '*': '●', o: '○', '@': '■', '-': '▶', '●': '●', '○': '○', '■': '■', '▶': '▶' }
 const NUM_MARK = /^(\d+)([.)>]) /  // "1. " / "1) " / "1> "
@@ -353,8 +353,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const ls = text.lastIndexOf('\n', pos - 1) + 1
     const nl = text.indexOf('\n', pos); const le = nl === -1 ? text.length : nl
     const line = text.slice(ls, le)
-    if (/^-{3,5}$/.test(line.trim())) { // 3–5 dashes + Enter → a full divider line (a longer line is left alone, so Enter works normally on the divider itself)
-      const divider = '-'.repeat(50)
+    const dm = line.trim().match(/^([-=])\1{2,4}$/) // 3–5 of - or = + Enter → a 50-char divider (a longer line is left alone, so Enter works normally on the divider itself)
+    if (dm) {
+      const divider = dm[1].repeat(50)
       applyText(text.slice(0, ls) + divider + '\n' + text.slice(le), ls + divider.length + 1); return true
     }
     const num = line.match(NUM_MARK); const sym = line.match(SYM_MARK)
