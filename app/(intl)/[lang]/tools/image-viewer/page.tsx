@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
@@ -56,6 +57,7 @@ async function readExif(file: File): Promise<{ date?: string; camera?: string }>
 const INTERVALS = [3, 5, 10]
 
 export default function ImageViewerPage() {
+  const t = useTranslations('toolui')
   const [images, setImages] = useState<Img[]>([])
   const [idx, setIdx] = useState(0)
   const [zoom, setZoom] = useState(1)
@@ -245,19 +247,19 @@ export default function ImageViewerPage() {
           <div onClick={() => fileRef.current?.click()} onDrop={onDrop} onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
             <p className="text-5xl mb-3">🖼️</p>
-            <p className="text-base font-medium text-gray-700">이미지를 선택하거나 끌어다 놓으세요</p>
-            <p className="text-xs text-gray-400 mt-1">여러 장·폴더 모두 가능 (폴더를 자동으로 뒤지지는 않아요)</p>
+            <p className="text-base font-medium text-gray-700">{t('iv_drop')}</p>
+            <p className="text-xs text-gray-400 mt-1">{t('iv_drop_sub')}</p>
             <div className="flex gap-2 justify-center mt-4">
-              <button onClick={(e) => { e.stopPropagation(); fileRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">파일 선택</button>
-              <button onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">폴더 선택</button>
+              <button onClick={(e) => { e.stopPropagation(); fileRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('iv_pick_files')}</button>
+              <button onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">{t('iv_pick_folder')}</button>
             </div>
           </div>
           <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <input ref={dirRef} type="file" className="hidden" {...({ webkitdirectory: '', directory: '' } as any)} onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
           <div className="flex flex-wrap justify-center gap-2">
-            {['무설치', '무료', '파일이 서버로 전송되지 않음'].map((b) => (
-              <span key={b} className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">✓ {b}</span>
+            {['iv_badge_noinstall', 'iv_badge_free', 'iv_badge_private'].map((b) => (
+              <span key={b} className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">✓ {t(b)}</span>
             ))}
           </div>
         </div>
@@ -265,33 +267,33 @@ export default function ImageViewerPage() {
         <div ref={viewerRef} className={'flex flex-col gap-2 ' + (fs ? 'fixed inset-0 z-50 bg-gray-900 p-3' : '')}>
           {/* Toolbar */}
           <div className="flex items-center gap-1 flex-wrap rounded-xl bg-gray-800 px-2 py-1.5">
-            <button className={tBtn} title="축소" onClick={() => setZoom((z) => Math.max(1, z - 0.25))}>➖</button>
+            <button className={tBtn} title={t('iv_zoom_out')} onClick={() => setZoom((z) => Math.max(1, z - 0.25))}>➖</button>
             <span className="text-xs text-gray-300 w-12 text-center tabular-nums">{Math.round(zoom * 100)}%</span>
-            <button className={tBtn} title="확대" onClick={() => setZoom((z) => Math.min(8, z + 0.25))}>➕</button>
-            <button className={tBtn} title="화면 맞춤" onClick={resetView}>⤢</button>
+            <button className={tBtn} title={t('iv_zoom_in')} onClick={() => setZoom((z) => Math.min(8, z + 0.25))}>➕</button>
+            <button className={tBtn} title={t('iv_fit')} onClick={resetView}>⤢</button>
             <span className="w-px h-5 bg-white/15 mx-1" />
-            <button className={tBtn} title="왼쪽 90° 회전" onClick={() => setRot((r) => r - 90)}>↺</button>
-            <button className={tBtn} title="오른쪽 90° 회전" onClick={() => setRot((r) => r + 90)}>↻</button>
-            <button className={tBtn} title="좌우 반전" onClick={() => setFlip((f) => !f)}>🔁</button>
-            <button className={tBtn + (cropMode ? ' bg-white/15' : '')} title="자르기" onClick={toggleCrop}>✂️</button>
+            <button className={tBtn} title={t('iv_rotate_l')} onClick={() => setRot((r) => r - 90)}>↺</button>
+            <button className={tBtn} title={t('iv_rotate_r')} onClick={() => setRot((r) => r + 90)}>↻</button>
+            <button className={tBtn} title={t('iv_flip')} onClick={() => setFlip((f) => !f)}>🔁</button>
+            <button className={tBtn + (cropMode ? ' bg-white/15' : '')} title={t('iv_crop')} onClick={toggleCrop}>✂️</button>
             <span className="w-px h-5 bg-white/15 mx-1" />
-            <button className={tBtn + (playing ? ' bg-white/15' : '')} title="슬라이드쇼" onClick={() => setPlaying((p) => !p)}>{playing ? '⏸' : '▶'}</button>
+            <button className={tBtn + (playing ? ' bg-white/15' : '')} title={t('iv_slideshow')} onClick={() => setPlaying((p) => !p)}>{playing ? '⏸' : '▶'}</button>
             <select value={interval} onChange={(e) => setIntervalSec(Number(e.target.value))} className="bg-gray-700 text-gray-200 text-xs rounded-md px-1 py-1 border-0 focus:outline-none">
-              {INTERVALS.map((s) => <option key={s} value={s}>{s}초</option>)}
+              {INTERVALS.map((s) => <option key={s} value={s}>{t('iv_sec', { n: s })}</option>)}
             </select>
             <span className="w-px h-5 bg-white/15 mx-1" />
-            <button className={tBtn + (showInfo ? ' bg-white/15' : '')} title="이미지 정보" onClick={() => setShowInfo((s) => !s)}>ℹ️</button>
-            <button className={tBtn} title="전체화면" onClick={toggleFs}>{fs ? '🗗' : '⛶'}</button>
+            <button className={tBtn + (showInfo ? ' bg-white/15' : '')} title={t('iv_info')} onClick={() => setShowInfo((s) => !s)}>ℹ️</button>
+            <button className={tBtn} title={t('iv_fullscreen')} onClick={toggleFs}>{fs ? '🗗' : '⛶'}</button>
             <span className="w-px h-5 bg-white/15 mx-1" />
-            <select value={fmt} onChange={(e) => setFmt(e.target.value as typeof fmt)} title="저장 형식" className="bg-gray-700 text-gray-200 text-xs rounded-md px-1 py-1 border-0 focus:outline-none">
-              <option value="orig">원본</option>
+            <select value={fmt} onChange={(e) => setFmt(e.target.value as typeof fmt)} title={t('iv_format')} className="bg-gray-700 text-gray-200 text-xs rounded-md px-1 py-1 border-0 focus:outline-none">
+              <option value="orig">{t('iv_orig')}</option>
               <option value="jpg">JPG</option>
               <option value="png">PNG</option>
               <option value="webp">WebP</option>
             </select>
-            <button className={tBtn} title={cropMode ? '자른 영역 저장' : '현재 이미지 저장'} onClick={() => (cropMode ? cropSave() : save())}>⬇</button>
+            <button className={tBtn} title={cropMode ? t('iv_save_crop') : t('iv_save')} onClick={() => (cropMode ? cropSave() : save())}>⬇</button>
             <span className="ml-auto text-xs text-gray-400 tabular-nums px-1">{idx + 1} / {images.length}</span>
-            <button className={tBtn} title="모두 닫기" onClick={clearAll}>✕</button>
+            <button className={tBtn} title={t('iv_close')} onClick={clearAll}>✕</button>
           </div>
 
           {/* Stage */}
@@ -305,21 +307,21 @@ export default function ImageViewerPage() {
             {cropMode && (
               crop && crop.w > 4 && crop.h > 4
                 ? <div className="absolute border-2 border-white/90 pointer-events-none" style={{ left: crop.x, top: crop.y, width: crop.w, height: crop.h, boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)' }} />
-                : <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><span className="bg-black/60 text-white text-xs px-3 py-1.5 rounded-full">드래그해서 자를 영역을 지정하세요</span></div>
+                : <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><span className="bg-black/60 text-white text-xs px-3 py-1.5 rounded-full">{t('iv_crop_hint')}</span></div>
             )}
             {images.length > 1 && !cropMode && (
               <>
-                <button onClick={() => go(-1)} className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label="이전">‹</button>
-                <button onClick={() => go(1)} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label="다음">›</button>
+                <button onClick={() => go(-1)} className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label={t('iv_prev')}>‹</button>
+                <button onClick={() => go(1)} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label={t('iv_next')}>›</button>
               </>
             )}
             {showInfo && (
               <div className="absolute top-2 left-2 max-w-[80%] rounded-xl bg-black/70 text-gray-100 text-xs p-3 space-y-1 backdrop-blur">
                 <p className="font-semibold break-all">{cur.name}</p>
-                <p>해상도: {dims.w ? `${dims.w} × ${dims.h}` : '—'}</p>
-                <p>용량: {fmtBytes(cur.size)}</p>
-                {exif.date && <p>촬영일: {exif.date}</p>}
-                {exif.camera && <p>카메라: {exif.camera}</p>}
+                <p>{t('iv_res')}: {dims.w ? `${dims.w} × ${dims.h}` : '—'}</p>
+                <p>{t('iv_size')}: {fmtBytes(cur.size)}</p>
+                {exif.date && <p>{t('iv_taken')}: {exif.date}</p>}
+                {exif.camera && <p>{t('iv_camera')}: {exif.camera}</p>}
               </div>
             )}
           </div>

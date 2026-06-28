@@ -102,6 +102,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "image-viewer": "A free online image viewer that opens right in your browser — no install, no signup. Open multiple files or folders by picker or drag-and-drop, then zoom, rotate, go fullscreen, run a slideshow, jump via thumbnails, crop, and save as JPG/PNG/WebP. Everything runs locally; your files never leave your device.",
     "drink-calorie-calculator": "A free calculator for calories in drinks — from soju, beer, makgeolli and wine to cola and lattes. Pick a drink and enter how much you had, and it shows the calories plus a walking equivalent. No install, no signup.",
     "exercise-calorie-calculator": "A free calculator for calories burned by activity — walking, running, cycling, swimming and more. Enter your weight and duration and it uses MET values to estimate the calories burned. No install, no signup.",
     "fasting-timer": "A free intermittent fasting timer for 16:8, 18:6, OMAD and more. Set your fast start time and it shows elapsed and remaining time plus your eating window in real time — and keeps counting after you close the tab. No install, no signup.",
@@ -3725,6 +3726,36 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "iv_drop": "Select images or drag and drop them here",
+    "iv_drop_sub": "Multiple files or a folder (it won't auto-scan folders)",
+    "iv_pick_files": "Choose files",
+    "iv_pick_folder": "Choose folder",
+    "iv_badge_noinstall": "No install",
+    "iv_badge_free": "Free",
+    "iv_badge_private": "Files never leave your device",
+    "iv_zoom_out": "Zoom out",
+    "iv_zoom_in": "Zoom in",
+    "iv_fit": "Fit to screen",
+    "iv_rotate_l": "Rotate 90° left",
+    "iv_rotate_r": "Rotate 90° right",
+    "iv_flip": "Flip horizontally",
+    "iv_crop": "Crop",
+    "iv_slideshow": "Slideshow",
+    "iv_info": "Image info",
+    "iv_fullscreen": "Fullscreen",
+    "iv_format": "Save format",
+    "iv_save": "Save current image",
+    "iv_save_crop": "Save cropped area",
+    "iv_close": "Close all",
+    "iv_sec": "{n}s",
+    "iv_orig": "Original",
+    "iv_crop_hint": "Drag to select the area to crop",
+    "iv_prev": "Previous",
+    "iv_next": "Next",
+    "iv_res": "Resolution",
+    "iv_size": "Size",
+    "iv_taken": "Taken",
+    "iv_camera": "Camera",
     "if_sound_on": "Tick sound on",
     "if_sound_off": "Tick sound",
     "if_reset_confirm": "Reset the current fast?",
@@ -7002,6 +7033,7 @@
     }
   },
   "toolTitles": {
+    "image-viewer": "Free Online Image Viewer · View Photos in Your Browser, No Install",
     "social-character-counter": "Instagram, X & YouTube Character Limit Checker"
   }
 }
