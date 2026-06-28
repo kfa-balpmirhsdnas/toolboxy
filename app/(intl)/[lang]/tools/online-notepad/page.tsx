@@ -30,9 +30,9 @@ const fmtDateFile = (ms: number) => { const d = new Date(ms); return `${String(d
 
 // Auto-list (single level only). A symbol line may use a shortcut (* o @) or the
 // glyph itself; the shortcut is turned into the glyph only on Enter (like numbers).
-const SYM_TO_GLYPH: Record<string, string> = { '*': '●', o: '○', '@': '■', '-': '▲', '●': '●', '○': '○', '■': '■', '▲': '▲' }
+const SYM_TO_GLYPH: Record<string, string> = { '*': '●', o: '○', '@': '■', '-': '▶', '●': '●', '○': '○', '■': '■', '▶': '▶' }
 const NUM_MARK = /^(\d+)([.)>]) /  // "1. " / "1) " / "1> "
-const SYM_MARK = /^([*o@\-▲●○■]) /  // shortcuts (* o @ -) or glyphs (● ○ ■ ▲) + space
+const SYM_MARK = /^([*o@\-▶●○■]) /  // shortcuts (* o @ -) or glyphs (● ○ ■ ▶) + space
 
 const SIZE_CLS: Record<SizeLvl, string> = { xs: 'text-[11px]', sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[18px]', xl: 'text-[22px]' }
 const LH_CLS: Record<Lvl, string> = { sm: 'leading-snug', md: 'leading-relaxed', lg: 'leading-loose' }
@@ -330,7 +330,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const ls = text.lastIndexOf('\n', pos - 1) + 1
     const nl = text.indexOf('\n', pos); const le = nl === -1 ? text.length : nl
     const line = text.slice(ls, le)
-    if (/^-{3,}$/.test(line.trim())) { // "---" + Enter → a full divider line, caret on the next line
+    if (/^-{3,10}$/.test(line.trim())) { // 3–10 dashes + Enter → a full divider line (a longer line is left alone, so Enter works normally on the divider itself)
       const divider = '-'.repeat(50)
       applyText(text.slice(0, ls) + divider + '\n' + text.slice(le), ls + divider.length + 1); return true
     }
@@ -355,7 +355,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const pos = ta.selectionStart
     const ls = text.lastIndexOf('\n', pos - 1) + 1
     const nl = text.indexOf('\n', pos); const le = nl === -1 ? text.length : nl
-    const stripped = text.slice(ls, le).replace(/^(?:[*o@\-▲●○■] |\d+[.)>] )/, '')
+    const stripped = text.slice(ls, le).replace(/^(?:[*o@\-▶●○■] |\d+[.)>] )/, '')
     const marker = kind === 'sym' ? '● ' : '1. '
     let nt = text.slice(0, ls) + marker + stripped + text.slice(le); let caret = ls + marker.length + stripped.length
     if (kind === 'num') ({ text: nt, caret } = renumberAt(nt, caret, '.'))
