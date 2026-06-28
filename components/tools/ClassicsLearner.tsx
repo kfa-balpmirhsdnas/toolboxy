@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import Modal from '@/components/Modal'
 import type { ToolMeta } from '@/lib/tools/registry'
 import type { ClassicVerse } from '@/lib/classics/cheonjamun'
 import { trackToolUsed } from '@/lib/gtag'
@@ -27,7 +28,7 @@ function TraceChar({ char, label, onClose }: { char: string; label: string; onCl
   const clear = () => { const c = ref.current!; c.getContext('2d')!.clearRect(0, 0, c.width, c.height) }
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
+    <Modal open onClose={onClose}>
       <div className="bg-white rounded-2xl p-5 max-w-xs w-full text-center space-y-3" onClick={(e) => e.stopPropagation()}>
         <div className="text-sm text-gray-500">{label}</div>
         <div className="relative mx-auto" style={{ width: 280, height: 280 }}>
@@ -43,7 +44,7 @@ function TraceChar({ char, label, onClose }: { char: string; label: string; onCl
           <button onClick={onClose} className="px-4 py-2 text-sm bg-brand-600 text-white rounded-xl hover:bg-brand-700">{t('cl_close')}</button>
         </div>
       </div>
-    </div>
+    </Modal>
   )
 }
 

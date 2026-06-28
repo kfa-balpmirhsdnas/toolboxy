@@ -7,6 +7,7 @@ import { onAuthStateChanged, type User } from 'firebase/auth'
 import { useTranslations } from 'next-intl'
 import { auth } from '@/lib/firebase/client'
 import { loginHref, signupHref } from '@/lib/auth/redirect'
+import Modal from '@/components/Modal'
 
 /**
  * Sign-up gate for guest users who reach an individual tool via internal
@@ -71,10 +72,7 @@ export default function SignupGateProvider({ children }: { children: React.React
     <Ctx.Provider value={{ guard }}>
       {children}
       {pendingHref && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4"
-          onClick={close}
-        >
+        <Modal open onClose={close}>
           <div
             className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center"
             onClick={(e) => e.stopPropagation()}
@@ -103,7 +101,7 @@ export default function SignupGateProvider({ children }: { children: React.React
               {t('continue')} →
             </button>
           </div>
-        </div>
+        </Modal>
       )}
     </Ctx.Provider>
   )
