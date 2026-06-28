@@ -45,12 +45,16 @@ export default function LotteryNumberGeneratorPage() {
   const timers = useRef<ReturnType<typeof setTimeout>[]>([])
   const lot: Lottery = LOTTERIES.find((l) => l.id === id) || LOTTERIES[0]
 
-  function blip(freq: number, dur = 0.06, type: OscillatorType = 'triangle', vol = 0.12) {
+  function blip(freq: number, dur = 0.12, type: OscillatorType = 'sine', vol = 0.4) {
     const ctx = audioRef.current; if (!ctx) return
-    const o = ctx.createOscillator(); const g = ctx.createGain(); const t = ctx.currentTime
-    o.type = type; o.frequency.value = freq
-    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + dur)
-    o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + dur + 0.02)
+    const t = ctx.currentTime + 0.01 // small lookahead: never schedule in the past (fixes 1st-sound dropouts)
+    const o = ctx.createOscillator(); const g = ctx.createGain()
+    o.type = type; o.frequency.setValueAtTime(freq, t)
+    g.gain.setValueAtTime(0, t)
+    g.gain.linearRampToValueAtTime(vol, t + 0.012)
+    g.gain.linearRampToValueAtTime(0, t + dur)
+    o.connect(g); g.connect(ctx.destination)
+    o.start(t); o.stop(t + dur + 0.03)
   }
 
   const generate = useCallback(() => {
@@ -73,7 +77,7 @@ export default function LotteryNumberGeneratorPage() {
     timers.current.push(setTimeout(() => {
       setGames(out); setDrawing(false)
       for (let i = 1; i <= total; i++) {
-        timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(280 + ((i - 1) % 5) * 14, 0.11, 'sine', 0.4) }, i * step))
+        timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(330, 0.12, 'sine', 0.42) }, i * step)) // identical pop for every ball
       }
     }, 2000))
   }, [id, count, fixedStr, excludeStr, sound])
