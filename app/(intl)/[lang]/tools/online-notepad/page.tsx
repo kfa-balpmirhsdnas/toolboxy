@@ -331,7 +331,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const nl = text.indexOf('\n', pos); const le = nl === -1 ? text.length : nl
     const line = text.slice(ls, le)
     if (/^-{3,}$/.test(line.trim())) { // "---" + Enter → a full divider line, caret on the next line
-      const divider = '-'.repeat(30)
+      const divider = '-'.repeat(50)
       applyText(text.slice(0, ls) + divider + '\n' + text.slice(le), ls + divider.length + 1); return true
     }
     const num = line.match(NUM_MARK); const sym = line.match(SYM_MARK)
@@ -561,19 +561,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               </button>
             </div>
             <span className="w-px h-5 bg-gray-200" />
-            {/* List bullet: a glyph cue + a select that applies a numbered or symbol marker. */}
-            <span className="flex items-center gap-1">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-400" aria-hidden="true">
-                <line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" />
-                <circle cx="4.5" cy="6" r="1.2" /><circle cx="4.5" cy="12" r="1.2" /><circle cx="4.5" cy="18" r="1.2" />
-              </svg>
-              <select aria-label={t('np_list')} title={t('np_list')} value="" onChange={(e) => { if (e.target.value) applyBullet(e.target.value as 'sym' | 'num'); e.currentTarget.value = '' }} className={selCls}>
-                <option value="">{t('np_list')}</option>
-                <option value="num" title="1.  1)  1>">{t('np_list_num')}</option>
-                <option value="sym" title="*  o  @  -">{t('np_list_sym')}</option>
-              </select>
-            </span>
-            <span className="w-px h-5 bg-gray-200" />
             {/* Mobile-only gear: the display settings are hidden until tapped. */}
             <button onClick={() => setShowSettings((s) => !s)} title={t('np_settings')} aria-label={t('np_settings')} aria-pressed={showSettings} className={'sm:hidden ' + iconBtn + (showSettings ? ' bg-brand-50 text-brand-600' : '')}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="4" x2="4" y1="21" y2="14" /><line x1="4" x2="4" y1="10" y2="3" /><line x1="12" x2="12" y1="21" y2="12" /><line x1="12" x2="12" y1="8" y2="3" /><line x1="20" x2="20" y1="21" y2="16" /><line x1="20" x2="20" y1="12" y2="3" /><line x1="1" x2="7" y1="14" y2="14" /><line x1="9" x2="15" y1="8" y2="8" /><line x1="17" x2="23" y1="16" y2="16" /></svg>
@@ -601,6 +588,18 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                   <option value="sm">{t('np_sm')}</option>
                   <option value="md">{t('np_md')}</option>
                   <option value="lg">{t('np_lg')}</option>
+                </select>
+              </label>
+              {/* List bullet: a glyph cue + a select that applies a numbered or symbol marker. */}
+              <label className="flex items-center gap-1" title={t('np_list')}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-400" aria-hidden="true">
+                  <line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" />
+                  <circle cx="4.5" cy="6" r="1.2" /><circle cx="4.5" cy="12" r="1.2" /><circle cx="4.5" cy="18" r="1.2" />
+                </svg>
+                <select aria-label={t('np_list')} title={t('np_list')} value="" onChange={(e) => { if (e.target.value) applyBullet(e.target.value as 'sym' | 'num'); e.currentTarget.value = '' }} className={selCls}>
+                  <option value="">{t('np_list')}</option>
+                  <option value="num" title="1.  1)  1>">{t('np_list_num')}</option>
+                  <option value="sym" title="*  o  @  -">{t('np_list_sym')}</option>
                 </select>
               </label>
             </div>
