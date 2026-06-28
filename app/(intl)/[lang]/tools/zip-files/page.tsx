@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -67,6 +67,22 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
   }
   /* eslint-enable @typescript-eslint/no-explicit-any */
   function clearAll() { setFiles([]); setZipName(''); setOut(null); setShowAll(false) }
+
+  // Windows "Open with → ToolBoxy Zip" (installed PWA + Chromium only): the OS hands
+  // us the chosen files via the File Handling API — drop them straight into the list.
+  useEffect(() => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const lq = (window as any).launchQueue
+    if (!lq?.setConsumer) return
+    lq.setConsumer(async (p: any) => {
+      if (!p?.files?.length) return
+      const got: File[] = []
+      for (const h of p.files) { try { got.push(await h.getFile()) } catch { /* skip unreadable */ } }
+      if (got.length) add(got)
+    })
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const fileName = () => `${(zipName || 'archive').replace(/[\\/:*?"<>|]+/g, '').trim() || 'archive'}.zip`
   function downloadUrl(url: string, name: string) { const a = document.createElement('a'); a.href = url; a.download = name; a.click(); trackToolDownload('zip-files', 'zip') }
