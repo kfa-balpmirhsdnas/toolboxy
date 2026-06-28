@@ -6854,6 +6854,7 @@
     ]
   },
   "toolNames": {
+    "image-viewer": "Online Image Viewer",
     "drink-calorie-calculator": "Drink Calorie Calculator",
     "exercise-calorie-calculator": "Exercise Calorie Calculator",
     "fasting-timer": "Intermittent Fasting Timer",

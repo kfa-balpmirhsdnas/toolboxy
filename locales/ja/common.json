@@ -1684,6 +1684,7 @@
     ]
   },
   "toolNames": {
+    "image-viewer": "オンライン画像ビューア",
     "drink-calorie-calculator": "お酒・飲み物カロリー計算機",
     "exercise-calorie-calculator": "運動カロリー計算機",
     "fasting-timer": "断食タイマー",

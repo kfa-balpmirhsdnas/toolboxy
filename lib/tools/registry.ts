@@ -65,6 +65,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'image-viewer',category:'image',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['이미지 뷰어','온라인 이미지 뷰어','사진 보기','무설치 사진 뷰어','image viewer','online image viewer','photo viewer','画像ビューア','写真ビューア'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'fasting-timer',category:'health',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['간헐적 단식 타이머','간헐적 단식','16:8','단식 타이머','공복 타이머','intermittent fasting timer','fasting tracker','16:8 fasting','断食タイマー','間欠的断食'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'exercise-calorie-calculator',category:'health',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['운동 칼로리 소모','운동 칼로리 계산기','칼로리 소모량','MET 계산','달리기 칼로리','exercise calorie calculator','calories burned','MET calculator','運動カロリー','消費カロリー計算'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'drink-calorie-calculator',category:'health',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['술 칼로리','소주 칼로리','맥주 칼로리','음료 칼로리','와인 칼로리','drink calorie calculator','alcohol calories','beer calories','お酒カロリー','飲み物カロリー'],maxFileSizeMB:{free:0,pro:0} },
