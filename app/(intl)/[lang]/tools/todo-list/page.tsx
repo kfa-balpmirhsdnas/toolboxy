@@ -51,12 +51,27 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
   useEffect(() => { if (loaded) try { localStorage.setItem(KEY, JSON.stringify({ lists, items, active })) } catch { /* */ } }, [lists, items, active, loaded])
   // Keep the active tab valid if its list was removed.
   useEffect(() => { if (active !== STARRED && active !== COMPLETED && !lists.some((l) => l.id === active)) setActive(DEFAULT) }, [lists, active])
+  // Scroll the active tab fully into view in the horizontally-scrolling tab bar.
+  const tabBarRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const bar = tabBarRef.current; if (!bar) return
+    const el = bar.querySelector(`[data-tab="${active}"]`) as HTMLElement | null; if (!el) return
+    const er = el.getBoundingClientRect(), br = bar.getBoundingClientRect()
+    let delta = 0
+    if (er.left < br.left + 8) delta = er.left - br.left - 8
+    else if (er.right > br.right - 8) delta = er.right - br.right + 8
+    if (delta) bar.scrollTo({ left: bar.scrollLeft + delta, behavior: 'smooth' })
+  }, [active])
 
   const listName = (l: List) => (l.id === DEFAULT ? t('td_tab_general') : l.name)
-  const inView = (it: Todo) => (active === STARRED ? it.starred : active === COMPLETED ? it.done : it.listId === active)
+  // A task belongs to a tab's scope; once completed it leaves its list/starred view
+  // and shows only in the Completed tab. Counts still reflect the whole scope.
+  const inScope = (it: Todo) => (active === STARRED ? it.starred : active === COMPLETED ? it.done : it.listId === active)
+  const inView = (it: Todo) => inScope(it) && (active === COMPLETED || !it.done)
+  const scope = items.filter(inScope)
   const shown = items.filter(inView)
-  const total = shown.length
-  const done = shown.filter((i) => i.done).length
+  const total = scope.length
+  const done = scope.filter((i) => i.done).length
 
   const add = () => {
     const v = input.trim(); if (!v) return
@@ -67,7 +82,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
   }
   const toggle = (id: string) => setItems((a) => a.map((i) => (i.id === id ? { ...i, done: !i.done } : i)))
   const toggleStar = (id: string) => setItems((a) => a.map((i) => (i.id === id ? { ...i, starred: !i.starred } : i)))
-  const clearDone = () => setItems((a) => a.filter((i) => !(inView(i) && i.done)))
+  const clearDone = () => setItems((a) => a.filter((i) => !i.done))
 
   const openEdit = (it: Todo) => { setEditing(it); setDraft({ text: it.text, details: it.details || '', due: it.due || '', listId: it.listId }) }
   const saveEdit = () => {
@@ -115,11 +130,11 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="max-w-xl mx-auto space-y-4">
         {/* tabs: starred · lists · + new list */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
-          <button onClick={() => setActive(STARRED)} className={tabCls(active === STARRED)}>{star(active === STARRED, 'w-3.5 h-3.5')}{t('td_tab_starred')}</button>
+        <div ref={tabBarRef} className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
+          <button data-tab={STARRED} onClick={() => setActive(STARRED)} className={tabCls(active === STARRED)}>{star(active === STARRED, 'w-3.5 h-3.5')}{t('td_tab_starred')}</button>
           {lists.map((l) => (
             <span key={l.id} className="relative shrink-0">
-              <button onClick={() => setActive(l.id)} className={tabCls(active === l.id) + (l.id !== DEFAULT && active === l.id ? ' pr-7' : '')}>{listName(l)}</button>
+              <button data-tab={l.id} onClick={() => setActive(l.id)} className={tabCls(active === l.id) + (l.id !== DEFAULT && active === l.id ? ' pr-7' : '')}>{listName(l)}</button>
               {l.id !== DEFAULT && active === l.id && (
                 <button onClick={() => deleteList(l.id)} aria-label={t('td_delete_list')} title={t('td_delete_list')}
                   className="absolute right-1.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full text-brand-500 hover:bg-brand-100 flex items-center justify-center text-base leading-none">×</button>
@@ -134,7 +149,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
             <button onClick={() => setAddingList(true)} className="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium border border-dashed border-gray-300 text-gray-500 hover:bg-gray-50 whitespace-nowrap">+ {t('td_new_list')}</button>
           )}
           {/* completed view — always the last tab */}
-          <button onClick={() => setActive(COMPLETED)} className={tabCls(active === COMPLETED)}>
+          <button data-tab={COMPLETED} onClick={() => setActive(COMPLETED)} className={tabCls(active === COMPLETED)}>
             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
             {t('td_tab_done')}
           </button>
@@ -154,14 +169,14 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
         {total > 0 && (
           <div className="flex items-center justify-between text-sm text-gray-600">
             <span><b className="text-brand-600">{done}</b>/{total} {t('td_completed')}</span>
-            {done > 0 && <button onClick={clearDone} className="text-gray-400 hover:text-rose-500 transition">{t('td_clear_done')}</button>}
+            {active === COMPLETED && done > 0 && <button onClick={clearDone} className="text-gray-400 hover:text-rose-500 transition">{t('td_clear_done')}</button>}
           </div>
         )}
         {total > 0 && <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden"><div className="h-full bg-brand-500 transition-all" style={{ width: `${Math.round((done / total) * 100)}%` }} /></div>}
 
         {/* list */}
-        {total === 0 ? (
-          <p className="text-center text-gray-400 py-12">{active === STARRED ? t('td_empty_starred') : active === COMPLETED ? t('td_empty_done') : t('td_empty')}</p>
+        {shown.length === 0 ? (
+          <p className="text-center text-gray-400 py-12">{active === COMPLETED ? t('td_empty_done') : scope.length > 0 ? t('td_all_done') : active === STARRED ? t('td_empty_starred') : t('td_empty')}</p>
         ) : (
           <ul ref={listRef} className="space-y-1.5">
             {shown.map((it, idx) => (

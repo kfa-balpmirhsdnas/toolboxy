@@ -3713,6 +3713,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "td_all_done": "All done! 🎉",
     "td_field_list": "List",
     "td_cancel": "Cancel",
     "td_tab_done": "Completed",
