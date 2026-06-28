@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -21,6 +21,26 @@ const COLORS: Record<string, string> = {
 }
 const CATS = ['nonmetal', 'noble', 'alkali', 'alkaline', 'metalloid', 'halogen', 'transition', 'post-transition', 'lanthanide', 'actinide']
 
+// Temperature ("state of matter") mode: colour each element by its phase at T.
+const STATE_COLORS: Record<string, string> = { solid: '#93c5fd', liquid: '#86efac', gas: '#fca5a5', unknown: '#e5e7eb' }
+const PHASES = ['solid', 'liquid', 'gas', 'unknown'] as const
+// Slider track [0,SMAX]. A piecewise scale gives the cold end (where gases liquefy
+// and water freezes/boils) 40% of the track so those transitions are easy to reach,
+// then -200..6000°C fills the rest. T(-273°C)→0, T(6000°C)→SMAX.
+const SMAX = 1000, TMIN = -273, TMAX = 6000, TBREAK = 200, SBREAK = 0.4
+const sToT = (s: number) => {
+  const f = s / SMAX
+  return Math.round(f <= SBREAK ? TMIN + (TBREAK - TMIN) * (f / SBREAK) : TBREAK + (TMAX - TBREAK) * ((f - SBREAK) / (1 - SBREAK)))
+}
+const tToPct = (T: number) => 100 * (T <= TBREAK ? SBREAK * (T - TMIN) / (TBREAK - TMIN) : SBREAK + (1 - SBREAK) * (T - TBREAK) / (TMAX - TBREAK))
+// An element's phase at temperature T — needs both melting & boiling points.
+function phaseAt(n: number, T: number): typeof PHASES[number] {
+  const e = ELEMENT_DETAIL[n]
+  if (!e || e.melt == null || e.boil == null) return 'unknown'
+  return T < e.melt ? 'solid' : T < e.boil ? 'liquid' : 'gas'
+}
+const TEMP_MARKERS = [0, 100, 1538] // water freezes, water boils, iron melts
+
 function pos(e: Element): { col: number; row: number } {
   if (e.cat === 'lanthanide') return { col: 3 + (e.n - 57), row: 9 }
   if (e.cat === 'actinide') return { col: 3 + (e.n - 89), row: 10 }
@@ -35,6 +55,16 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
   // fresh load (not persisted). On desktop it's always shown.
   const [bohrOpen, setBohrOpen] = useState(true)
   const [anim, setAnim] = useState(true) // electron orbit animation (on by default)
+  // Temperature mode: a table-wide slider recolours all 118 cells by phase at T.
+  const [tempMode, setTempMode] = useState(false)
+  const [tempS, setTempS] = useState(() => Math.round(SMAX * tToPct(25) / 100)) // start at room temp 25°C
+  const T = sToT(tempS)
+  const counts = useMemo(() => {
+    const c = { solid: 0, liquid: 0, gas: 0, unknown: 0 }
+    for (const e of ELEMENTS) c[phaseAt(e.n, T)]++
+    return c
+  }, [T])
+  const cellBg = (e: Element) => (tempMode ? STATE_COLORS[phaseAt(e.n, T)] : COLORS[e.cat])
   const cardRef = useRef<HTMLDivElement>(null)
   // On desktop the card is sticky (always visible), so only scroll-to-card on mobile.
   const select = (e: Element) => { setSel(e); if (window.innerWidth < 640) cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
@@ -104,6 +134,40 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
          )}
         </div>
 
+        {/* temperature control — sits ABOVE the table and recolours the whole grid */}
+        <div className="rounded-2xl border border-gray-200 p-3 sm:p-4 space-y-2.5">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <button type="button" onClick={() => setTempMode((m) => !m)} aria-pressed={tempMode}
+              className={`px-3 py-1.5 rounded-full text-sm font-semibold border transition-colors ${tempMode ? 'border-brand-400 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>
+              🌡 {t('pt_temp_toggle')}
+            </button>
+            <div className="text-sm text-gray-700">
+              <b className="text-base">{T.toLocaleString()}°C</b>
+              <span className="ml-2 inline-flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-gray-600">
+                {(['solid', 'liquid', 'gas'] as const).map((s) => (
+                  <span key={s} className="inline-flex items-center">
+                    <span className="w-2.5 h-2.5 rounded-[2px] inline-block mr-1" style={{ background: STATE_COLORS[s] }} />
+                    {t(`pt_s_${s}`)} {counts[s]}
+                  </span>
+                ))}
+              </span>
+            </div>
+          </div>
+          {/* slider (dragging also switches into temperature mode) */}
+          <input type="range" min={0} max={SMAX} value={tempS} aria-label={t('pt_temp')}
+            onChange={(e) => { setTempS(+e.target.value); setTempMode(true) }}
+            className="w-full h-2 cursor-pointer accent-brand-600 touch-pan-x" style={{ touchAction: 'pan-x' }} />
+          <div className="relative h-4 select-none">
+            <span className="absolute left-0 top-0 text-[10px] text-gray-400">-273°C</span>
+            <span className="absolute right-0 top-0 text-[10px] text-gray-400">{TMAX.toLocaleString()}°C</span>
+            {TEMP_MARKERS.map((m) => (
+              <span key={m} className="absolute top-0 -translate-x-1/2 text-[10px] text-gray-500 whitespace-nowrap" style={{ left: `${tToPct(m)}%` }}>
+                <span className="block w-px h-1.5 bg-gray-300 mx-auto" />{m}°
+              </span>
+            ))}
+          </div>
+        </div>
+
         {/* table */}
         <div className="overflow-x-auto pb-2">
           <div className="grid gap-[3px]" style={{ gridTemplateColumns: 'repeat(18, minmax(30px, 1fr))', minWidth: 600 }}>
@@ -114,7 +178,7 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
             {ELEMENTS.map((e) => {
               const p = pos(e)
               return (
-                <button key={e.n} onClick={() => select(e)} style={{ gridColumn: p.col, gridRow: p.row, background: COLORS[e.cat] }}
+                <button key={e.n} onClick={() => select(e)} style={{ gridColumn: p.col, gridRow: p.row, background: cellBg(e) }}
                   aria-label={name(e)}
                   className={`aspect-square rounded-[3px] p-0.5 text-center transition hover:ring-2 hover:ring-gray-800 hover:z-10 ${sel.n === e.n ? 'ring-2 ring-gray-900 z-10' : ''}`}>
                   <div className="text-[7px] text-gray-700 leading-none">{e.n}</div>
@@ -126,13 +190,20 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
           </div>
         </div>
 
-        {/* legend */}
+        {/* legend — phases in temperature mode, categories otherwise */}
         <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-xs text-gray-600">
-          {CATS.map((c) => (
-            <span key={c} className="inline-flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-[2px] inline-block" style={{ background: COLORS[c] }} />{catName(c)}
-            </span>
-          ))}
+          {tempMode
+            ? PHASES.map((s) => (
+              <span key={s} className="inline-flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-[2px] inline-block" style={{ background: STATE_COLORS[s] }} />
+                {s === 'unknown' ? t('pt_nodata') : t(`pt_s_${s}`)}
+              </span>
+            ))
+            : CATS.map((c) => (
+              <span key={c} className="inline-flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-[2px] inline-block" style={{ background: COLORS[c] }} />{catName(c)}
+              </span>
+            ))}
         </div>
 
         <p className="text-xs text-gray-400">{t('pt_note')}</p>
