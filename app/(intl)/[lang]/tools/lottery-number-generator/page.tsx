@@ -29,6 +29,7 @@ export default function LotteryNumberGeneratorPage() {
   const t = useTranslations('toolui')
   const locale = useLocale()
   const lang = (['ko', 'en', 'ja'].includes(locale) ? locale : 'en') as 'ko' | 'en' | 'ja'
+  const eg = ({ ko: '예) ', en: 'e.g. ', ja: '例) ' } as const)[lang]
 
   const [id, setId] = useState(DEFAULT_BY_LOCALE[lang] || 'us_powerball')
   const [count, setCount] = useState(5)
@@ -66,12 +67,12 @@ export default function LotteryNumberGeneratorPage() {
     }
     setGames([]); setRevealed(0); setCopied(false); setDrawing(true)
     const total = out.reduce((s, g) => s + g.main.length + g.bonus.length, 0)
-    const step = Math.max(280, Math.min(680, 8800 / Math.max(1, total))) // slow — one ball at a time
+    const step = Math.max(560, Math.min(1360, 17600 / Math.max(1, total))) // very slow — one ball at a time
     // 2s suspense after the click, then reveal one ball at a time with one sound each.
     timers.current.push(setTimeout(() => {
       setGames(out); setDrawing(false)
       for (let i = 1; i <= total; i++) {
-        timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(196 + ((i - 1) % 5) * 12, 0.09, 'sine', 0.14) }, i * step))
+        timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(280 + ((i - 1) % 5) * 14, 0.1, 'sine', 0.28) }, i * step))
       }
     }, 2000))
   }, [id, count, fixedStr, excludeStr, sound])
@@ -123,12 +124,12 @@ export default function LotteryNumberGeneratorPage() {
           </div>
           <div className="min-w-0">
             <label className="block text-xs text-gray-500 mb-1 truncate">{t('lt_fixed')}</label>
-            <input value={fixedStr} onChange={(e) => setFixedStr(e.target.value)} inputMode="numeric" placeholder="7, 14"
+            <input value={fixedStr} onChange={(e) => setFixedStr(e.target.value)} inputMode="numeric" placeholder={eg + '7, 14'}
               className="w-full rounded-lg border border-gray-300 px-2 py-2 text-sm font-mono focus:outline-none focus:border-brand-400" />
           </div>
           <div className="min-w-0">
             <label className="block text-xs text-gray-500 mb-1 truncate">{t('lt_exclude')}</label>
-            <input value={excludeStr} onChange={(e) => setExcludeStr(e.target.value)} inputMode="numeric" placeholder="4, 13"
+            <input value={excludeStr} onChange={(e) => setExcludeStr(e.target.value)} inputMode="numeric" placeholder={eg + '4, 13'}
               className="w-full rounded-lg border border-gray-300 px-2 py-2 text-sm font-mono focus:outline-none focus:border-brand-400" />
           </div>
         </div>
