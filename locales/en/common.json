@@ -102,6 +102,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "fasting-timer": "A free intermittent fasting timer for 16:8, 18:6, OMAD and more. Set your fast start time and it shows elapsed and remaining time plus your eating window in real time — and keeps counting after you close the tab. No install, no signup.",
     "image-mosaic": "Hide sensitive info — faces, names, phone numbers — in a photo. Drag over the areas to mask them with mosaic, blur, or a solid block, then save as PNG/JPG. Everything runs in your browser; your photo never leaves your device.",
     "todo-list": "A simple online to-do checklist: add tasks, check them off, edit, delete, and drag to reorder. Shows your completed count and saves automatically in your browser — no login, no server.",
     "periodic-table": "Interactive periodic table — tap an element for its atomic number, mass, group, period, and category. Shows all 118 elements with English/Korean/Japanese names and category colors. Free, no install.",
@@ -1619,6 +1620,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "fasting-timer": "An intermittent fasting timer helps you track your fasting and eating windows. Pick a protocol such as 16:8 (16 hours fasting, 8 hours eating), start your fast, and a circular ring shows elapsed time, time remaining, and when your eating window opens. Everything is stored only in your browser, so the timer keeps running even after you close and reopen the tab.",
     "image-mosaic": "Upload a photo and drag over the parts you want to hide to cover them with a mosaic, blur, or solid black. Great for safely removing personal details — faces, names, phone numbers, addresses — before sharing. You can mask several spots at once, adjust the strength, and undo. Everything happens inside your browser and the image is never uploaded to any server.",
     "todo-list": "A simple checklist for jotting tasks and ticking them off one by one. Edit or delete items and drag to reorder them. Your list is saved automatically in this browser only, so it stays even after you close and reopen the window.",
     "resistor-color-code": "Read a resistor's value from its color bands. Choose 4 or 5 bands, pick each band's color, and it computes the resistance (Ω/kΩ/MΩ/GΩ) and tolerance (±%) while previewing the bands on a resistor graphic — handy for quickly checking color codes when working with electronics. Everything runs in your browser, free with no install.",
@@ -1930,6 +1932,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
+    "fasting-timer": ["Pick your fasting protocol (e.g. 16:8, 18:6, OMAD).","Tap 'Start fasting now' to begin the timer.","If your last meal was earlier, adjust the 'Fasting started at' time.","Watch the ring for elapsed/remaining time and when you can eat.","The timer continues after you close the tab; use 'Reset' to start over."],
     "image-mosaic": ["Upload a photo.","Drag over the parts to hide with mosaic, blur, or black.","Save the result as PNG or JPG."],
     "todo-list": ["Type a task and add it.","Check it off when done, drag to reorder.","Your list saves automatically in your browser."],
     "title": "How to use",
@@ -3716,6 +3719,20 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "if_omad": "OMAD",
+    "if_status_fasting": "Fasting",
+    "if_status_eating": "Eating window",
+    "if_of": "of {h}h goal",
+    "if_eatleft": "until window ends",
+    "if_idle": "Tap the button below to start fasting",
+    "if_startnow": "Start fasting now",
+    "if_canEat": "You can eat at",
+    "if_nextFast": "Next fast starts",
+    "if_started": "Fasting started at",
+    "if_remaining": "Remaining",
+    "if_done": "Fast complete! Time to eat",
+    "if_reset": "Reset",
+    "if_disclaimer": "For reference only. Consult a professional if you have a condition, are pregnant, or take medication.",
     "np_list": "List",
     "np_list_sym": "Bullet",
     "np_list_num": "Number",
@@ -6761,6 +6778,7 @@
     ]
   },
   "toolNames": {
+    "fasting-timer": "Intermittent Fasting Timer",
     "image-mosaic": "Image Mosaic & Blur",
     "todo-list": "To-Do List",
     "periodic-table": "Periodic Table",
