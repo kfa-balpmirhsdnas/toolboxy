@@ -3741,6 +3741,8 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "lt_draw": "Draw numbers",
+    "lt_drawing": "Drawing…",
     "lt_sound": "Sound",
     "lt_lottery": "Lottery",
     "lt_games": "Games",

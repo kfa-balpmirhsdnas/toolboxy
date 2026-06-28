@@ -4121,6 +4121,8 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "lt_draw": "番号を抽選",
+    "lt_drawing": "抽選中…",
     "lt_sound": "音",
     "lt_lottery": "宝くじ",
     "lt_games": "ゲーム数",

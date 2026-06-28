@@ -36,6 +36,7 @@ export default function LotteryNumberGeneratorPage() {
   const [excludeStr, setExcludeStr] = useState('')
   const [games, setGames] = useState<Game[]>([])
   const [revealed, setRevealed] = useState(0) // how many balls are shown (one-by-one)
+  const [drawing, setDrawing] = useState(false) // 2s suspense before balls appear
   const [copied, setCopied] = useState(false)
   const [sound, setSound] = useState(true)
 
@@ -63,16 +64,20 @@ export default function LotteryNumberGeneratorPage() {
     for (let g = 0; g < count; g++) {
       out.push({ main: pickN(l.mainMin, l.mainMax, l.mainCount, exclude, fixed), bonus: l.bonusCount > 0 ? pickN(l.bonusMin, l.bonusMax, l.bonusCount, new Set(), []) : [] })
     }
-    setGames(out); setRevealed(0); setCopied(false)
+    setGames([]); setRevealed(0); setCopied(false); setDrawing(true)
     const total = out.reduce((s, g) => s + g.main.length + g.bonus.length, 0)
     const step = Math.max(280, Math.min(680, 8800 / Math.max(1, total))) // slow — one ball at a time
-    // Exactly one sound per ball: the sound fires in the same tick the ball is revealed.
-    for (let i = 1; i <= total; i++) {
-      timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(196 + ((i - 1) % 5) * 12, 0.09, 'sine', 0.14) }, i * step))
-    }
+    // 2s suspense after the click, then reveal one ball at a time with one sound each.
+    timers.current.push(setTimeout(() => {
+      setGames(out); setDrawing(false)
+      for (let i = 1; i <= total; i++) {
+        timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(196 + ((i - 1) % 5) * 12, 0.09, 'sine', 0.14) }, i * step))
+      }
+    }, 2000))
   }, [id, count, fixedStr, excludeStr, sound])
 
-  useEffect(() => { generate() /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [id])
+  // No auto-draw: balls only appear on button click. Switching lottery clears the board.
+  useEffect(() => { timers.current.forEach(clearTimeout); setGames([]); setRevealed(0); setDrawing(false) }, [id])
   useEffect(() => () => { timers.current.forEach(clearTimeout) }, [])
 
   function copy() {
@@ -88,7 +93,7 @@ export default function LotteryNumberGeneratorPage() {
         boxShadow: `0 2px 3px rgba(0,0,0,.28), inset 0 -3px 5px rgba(0,0,0,.3), inset 0 2px 3px rgba(255,255,255,.45)${bonus ? ', 0 0 0 2px #f59e0b' : ''}`,
         opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.35)',
       }}>
-      <span className="inline-flex items-center justify-center bg-white" style={{ width: '72%', height: '62%', borderRadius: '50%', boxShadow: 'inset 0 1px 2px rgba(0,0,0,.2)' }}>
+      <span className="inline-flex items-center justify-center rounded-full bg-white" style={{ width: '66%', height: '66%', boxShadow: 'inset 0 1px 2px rgba(0,0,0,.2)' }}>
         <span className="text-xs font-extrabold tabular-nums text-gray-900">{n}</span>
       </span>
     </span>
@@ -129,13 +134,15 @@ export default function LotteryNumberGeneratorPage() {
         </div>
 
         <div className="flex gap-2">
-          <button onClick={generate} className="flex-1 inline-flex items-center justify-center gap-2 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition">
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0" style={{ background: 'radial-gradient(circle at 30% 25%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.3) 13%, rgba(255,255,255,0) 33%), radial-gradient(circle at 50% 84%, rgba(0,0,0,.4), rgba(0,0,0,0) 60%), #fbc400', boxShadow: 'inset 0 -2px 3px rgba(0,0,0,.28), inset 0 1px 2px rgba(255,255,255,.5)' }}><span className="bg-white" style={{ width: '64%', height: '54%', borderRadius: '50%' }} /></span>
-            {games.length ? t('lt_regenerate') : t('lt_generate')}
+          <button onClick={generate} disabled={drawing} className="flex-1 inline-flex items-center justify-center gap-2 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition disabled:opacity-60">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0" style={{ background: 'radial-gradient(circle at 30% 25%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.3) 13%, rgba(255,255,255,0) 33%), radial-gradient(circle at 50% 84%, rgba(0,0,0,.4), rgba(0,0,0,0) 60%), #fbc400', boxShadow: 'inset 0 -2px 3px rgba(0,0,0,.28), inset 0 1px 2px rgba(255,255,255,.5)' }}><span className="rounded-full bg-white" style={{ width: '60%', height: '60%' }} /></span>
+            {t('lt_draw')}
           </button>
           <button onClick={() => setSound((s) => !s)} title={t('lt_sound')} aria-label={t('lt_sound')}
             className={'px-3 rounded-xl border transition ' + (sound ? 'border-brand-200 bg-brand-50 text-brand-600' : 'border-gray-200 text-gray-400 hover:bg-gray-50')}>{sound ? '🔊' : '🔇'}</button>
         </div>
+
+        {drawing && <div className="text-center py-8 text-gray-400 text-sm animate-pulse">🎰 {t('lt_drawing')}</div>}
 
         {games.length > 0 && (
           <div className="space-y-2">

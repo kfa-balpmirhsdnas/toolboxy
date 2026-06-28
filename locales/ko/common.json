@@ -4148,6 +4148,8 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "lt_draw": "로또 번호 추첨",
+    "lt_drawing": "추첨 중…",
     "lt_sound": "소리",
     "lt_lottery": "복권",
     "lt_games": "게임 수",
