@@ -3716,6 +3716,8 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "np_chars_label": "Characters",
+    "np_lines_label": "Lines",
     "np_created": "Created",
     "pt_bohr_zoom": "Click to zoom",
     "np_settings": "Display settings",

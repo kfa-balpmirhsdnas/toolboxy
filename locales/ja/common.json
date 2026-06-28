@@ -4087,6 +4087,8 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "np_chars_label": "文字数",
+    "np_lines_label": "行数",
     "np_created": "作成日",
     "pt_bohr_zoom": "クリックで拡大/縮小",
     "np_settings": "表示設定",

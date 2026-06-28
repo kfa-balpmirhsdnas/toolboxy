@@ -101,6 +101,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const tracked = useRef(false)
   const taRef = useRef<HTMLTextAreaElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
+  const tabBarRef = useRef<HTMLDivElement>(null)
   const histories = useRef<Record<string, { hist: string[]; idx: number }>>({ [first.id]: { hist: [''], idx: 0 } })
   const deletedRef = useRef<Tomb>({})
   const commitTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -139,7 +140,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const base = dateTag()
     const used = new Set(existing.map((d) => d.name))
     if (!used.has(base)) return base
-    let i = 2; while (used.has(`${base}_${i}`)) i++; return `${base}_${i}`
+    for (let i = 0; i < 26; i++) { const c = base + String.fromCharCode(65 + i); if (!used.has(c)) return c } // 0628A, 0628B…
+    let i = 2; while (used.has(`${base}${i}`)) i++; return `${base}${i}` // beyond Z
   }
 
   // Track auth — TXT download is for signed-in users only (the button looks the
@@ -299,7 +301,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     setDocs((ds) => [...ds, d]); setActiveId(d.id)
   }
   function closeDoc(id: string) {
-    if (!window.confirm(t('np_close_confirm'))) return
+    const doc = docs.find((x) => x.id === id)
+    if (doc && doc.text.trim() && !window.confirm(t('np_close_confirm'))) return // only ask when there's content to lose
     deletedRef.current = { ...deletedRef.current, [id]: Date.now() } // tombstone so other tabs don't resurrect it
     delete histories.current[id]
     const rest = docs.filter((x) => x.id !== id)
@@ -335,6 +338,16 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     ta.addEventListener('focus', h)
     return () => ta.removeEventListener('focus', h)
   }, [])
+  // Scroll the active tab fully into view in the horizontally-scrolling tab bar.
+  useEffect(() => {
+    const bar = tabBarRef.current; if (!bar) return
+    const el = bar.querySelector(`[data-tab="${activeId}"]`) as HTMLElement | null; if (!el) return
+    const er = el.getBoundingClientRect(), br = bar.getBoundingClientRect()
+    let delta = 0
+    if (er.left < br.left + 8) delta = er.left - br.left - 8
+    else if (er.right > br.right - 8) delta = er.right - br.right + 8
+    if (delta) bar.scrollTo({ left: bar.scrollLeft + delta, behavior: 'smooth' })
+  }, [activeId])
 
   // Find / replace within the active tab (literal, case-sensitive).
   function findNext(fromStart = false) {
@@ -420,11 +433,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
         {/* Tabs — one document per tab (auto-named by date).
             overflow-y-hidden stops the phantom 1px vertical scrollbar that
             overflow-x-auto otherwise spawns (its up/down arrows). */}
-        <div className="flex items-stretch gap-1 overflow-x-auto overflow-y-hidden border-b border-gray-200">
+        <div ref={tabBarRef} className="flex items-stretch gap-1 overflow-x-auto overflow-y-hidden border-b border-gray-200">
           {docs.map((d) => {
             const on = d.id === activeId
             return (
-              <div key={d.id} onClick={() => setActiveId(d.id)} onDoubleClick={() => setRenaming(d.id)}
+              <div key={d.id} data-tab={d.id} onClick={() => setActiveId(d.id)} onDoubleClick={() => setRenaming(d.id)}
                 className={'group flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-sm cursor-pointer border border-b-0 -mb-px whitespace-nowrap ' +
                   (on ? 'bg-white border-gray-200 text-brand-700 font-semibold' : 'bg-gray-50 border-transparent text-gray-500 hover:bg-gray-100')}>
                 {renaming === d.id ? (
@@ -536,11 +549,20 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             className="px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
             {copied ? '✓ ' + t('np_copied') : t('ui_copy')}
           </button>
-          {/* stats + document creation date, just left of Clear */}
-          <span className="ml-auto flex items-center gap-2 text-xs text-gray-500">
-            <span title={t('np_created')}>📅 {fmtDate(active.createdAt)}</span>
-            <span className="px-2 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_chars', { n: chars.toLocaleString() })}</span>
-            <span className="px-2 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_lines', { n: lines.toLocaleString() })}</span>
+          {/* creation date + char/line counts — icon + number only, just left of Clear */}
+          <span className="ml-auto flex items-center gap-x-3 gap-y-0.5 flex-wrap text-xs text-gray-400 tabular-nums">
+            <span className="inline-flex items-center gap-1" title={t('np_created')}>
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></svg>
+              {fmtDate(active.createdAt)}
+            </span>
+            <span className="inline-flex items-center gap-1" title={t('np_chars_label')}>
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7" /><line x1="9" x2="15" y1="20" y2="20" /><line x1="12" x2="12" y1="4" y2="20" /></svg>
+              {chars.toLocaleString()}
+            </span>
+            <span className="inline-flex items-center gap-1" title={t('np_lines_label')}>
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" x2="3" y1="6" y2="6" /><line x1="15" x2="3" y1="12" y2="12" /><line x1="17" x2="3" y1="18" y2="18" /></svg>
+              {lines.toLocaleString()}
+            </span>
           </span>
           <button onClick={clear} disabled={!text}
             className="px-4 py-2 text-sm text-gray-500 hover:text-red-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
