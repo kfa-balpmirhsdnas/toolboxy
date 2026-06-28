@@ -55,8 +55,8 @@ export default function MemoryGamePage({ params }: { params: { lang: string } })
     if (no.length === 2) {
       setMoves((m) => m + 1)
       const [a, b] = no
-      if (nc[a].e === nc[b].e) setTimeout(() => { setCards((cs) => cs.map((c, i) => (i === a || i === b ? { ...c, matched: true } : c))); setOpen([]) }, 350)
-      else setTimeout(() => { setCards((cs) => cs.map((c, i) => (i === a || i === b ? { ...c, flipped: false } : c))); setOpen([]) }, 800)
+      if (nc[a].e === nc[b].e) setTimeout(() => { sfx('point'); setCards((cs) => cs.map((c, i) => (i === a || i === b ? { ...c, matched: true } : c))); setOpen([]) }, 350)
+      else setTimeout(() => { sfx('lose'); setCards((cs) => cs.map((c, i) => (i === a || i === b ? { ...c, flipped: false } : c))); setOpen([]) }, 800)
     }
   }
 
@@ -87,7 +87,6 @@ export default function MemoryGamePage({ params }: { params: { lang: string } })
         </div>
 
         {won && <div className="rounded-xl bg-emerald-50 text-emerald-700 py-3 font-semibold">{t('mg2_won', { moves, time })}</div>}
-        <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('mg2_new')}</button>
       </div>
       <Leaderboard game={`memory-${pairs}`} score={best[pairs] ?? null} better="lower" />
     </ToolLayout>

@@ -101,7 +101,7 @@ export default function SudokuPage({ params }: { params: { lang: string } }) {
             {grid.map((v, i) => {
               const conf = conflict(i)
               return (
-                <button key={i} onClick={() => setSel(i)}
+                <button key={i} onClick={() => { setSel(i); sfx('move') }}
                   className={`w-9 h-9 text-lg flex items-center justify-center ${given[i] ? 'font-bold text-gray-900' : conf ? 'text-rose-600' : 'text-brand-600'} ${sel === i ? 'bg-brand-100' : (Math.floor(i / 9) % 2 === Math.floor((i % 9) / 3) % 2 ? 'bg-white' : 'bg-gray-50')}`}
                   style={{ borderRight: (i % 9) % 3 === 2 && (i % 9) !== 8 ? '2px solid #1f2937' : '1px solid #e5e7eb', borderBottom: Math.floor(i / 9) % 3 === 2 && Math.floor(i / 9) !== 8 ? '2px solid #1f2937' : '1px solid #e5e7eb' }}>
                   {v || ''}

@@ -70,7 +70,7 @@ export default function MinesweeperPage({ params }: { params: { lang: string } }
     else cs = cs.map((c) => ({ ...c }))
     if (cs[i].flag) return
     if (cs[i].mine) { cs.forEach((c) => { if (c.mine) c.rev = true }); setDead(true); setCells(cs); sfx('lose'); return }
-    reveal(cs, i, size); setCells(cs)
+    reveal(cs, i, size); setCells(cs); sfx('move')
   }
   function flag(e: React.MouseEvent, i: number) { e.preventDefault(); if (!stage.playing || dead || won || !started) return; setCells((cs) => cs.map((c, k) => (k === i && !c.rev ? { ...c, flag: !c.flag } : c))) }
 

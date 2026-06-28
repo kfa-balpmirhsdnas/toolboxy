@@ -80,8 +80,6 @@ export default function Game2048Page({ params }: { params: { lang: string } }) {
           {over && <div className="absolute inset-0 rounded-xl bg-white/70 flex flex-col items-center justify-center gap-2"><b className="text-xl text-gray-800">{t('g2_over')}</b><button onClick={stage.begin} className="px-4 py-2 bg-brand-600 text-white rounded-xl">{t('g2_retry')}</button></div>}
           <GameStageOverlay stage={stage} />
         </div>
-
-        <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('g2_new')}</button>
         <p className="text-xs text-gray-400">{t('g2_note')}</p>
       </div>
       <Leaderboard game="game-2048" score={best || null} better="higher" />

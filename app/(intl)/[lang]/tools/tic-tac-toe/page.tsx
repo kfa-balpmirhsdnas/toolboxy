@@ -77,8 +77,6 @@ export default function TicTacToePage({ params }: { params: { lang: string } }) 
           </div>
           <GameStageOverlay stage={stage} />
         </div>
-
-        <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('ttt_new')}</button>
       </div>
     </ToolLayout>
   )

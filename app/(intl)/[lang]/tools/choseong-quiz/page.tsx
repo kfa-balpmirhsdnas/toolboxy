@@ -90,7 +90,7 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
               <div className="text-5xl font-bold text-gray-900 tracking-[0.2em] mt-2">{choseong(quiz[idx][0])}</div>
             </div>
 
-            <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} type="search" autoFocus
+            <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} type="search" autoFocus={typeof window !== 'undefined' && window.innerWidth >= 640}
               autoComplete="off" data-1p-ignore data-lpignore="true" placeholder={t('cq_ph')} disabled={!!result}
               className="w-full text-center rounded-xl border border-gray-200 px-4 py-2.5 text-lg focus:outline-none focus:ring-2 focus:ring-brand-400" />
 

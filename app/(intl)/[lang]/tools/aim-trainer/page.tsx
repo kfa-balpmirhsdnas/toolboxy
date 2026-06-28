@@ -48,12 +48,10 @@ export default function AimTrainerPage({ params }: { params: { lang: string } })
         </div>
 
         <div ref={boxRef} className="relative rounded-xl bg-gray-100 mx-auto overflow-hidden" style={{ width: 300, height: 300 }}>
-          {stage.playing ? (
+          {stage.playing && (
             <button onClick={hit} className="absolute w-10 h-10 rounded-full bg-rose-500 hover:bg-rose-600 -translate-x-1/2 -translate-y-1/2 ring-4 ring-rose-200" style={{ left: `${pos.x}%`, top: `${pos.y}%` }} />
-          ) : (
-            <button onClick={stage.begin} className="absolute inset-0 flex items-center justify-center text-brand-600 font-semibold">{stage.phase === 'finished' ? t('at_result', { hits, n: (hits / DURATION).toFixed(1) }) : t('at_start')}</button>
           )}
-          <GameStageOverlay stage={stage} showStart={false} />
+          <GameStageOverlay stage={stage} />
         </div>
         <p className="text-xs text-gray-400">{t('at_note')}</p>
       </div>

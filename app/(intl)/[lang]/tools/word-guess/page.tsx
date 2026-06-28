@@ -50,7 +50,7 @@ export default function WordGuessPage({ params }: { params: { lang: string } }) 
     if (lang === 'EN') { if (!/^[a-z]{5}$/.test(g)) { setMsg(t('wg_len5')); return } }
     else { if (!/^[가-힣]{2}$/.test(input.trim())) { setMsg(t('wg_len2')); return } }
     const word = lang === 'EN' ? g : input.trim()
-    const ng = [...guesses, word]; setGuesses(ng); setInput(''); setMsg('')
+    const ng = [...guesses, word]; setGuesses(ng); setInput(''); setMsg(''); sfx('move')
     if (word === answer) { setMsg(t('wg_win', { n: ng.length })); sfx('point') }
     else if (ng.length >= 6) setMsg(t('wg_lose', { a: answer }))
   }
@@ -89,9 +89,9 @@ export default function WordGuessPage({ params }: { params: { lang: string } }) 
 
         {!done && (
           <div className="flex gap-2">
-            <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} type="search" autoFocus
+            <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} type="search" autoFocus={typeof window !== 'undefined' && window.innerWidth >= 640}
               autoComplete="off" data-1p-ignore data-lpignore="true" maxLength={lang === 'EN' ? 5 : 2} placeholder={lang === 'EN' ? t('wg_ph_en') : t('wg_ph_ko')}
-              className="flex-1 text-center rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400" />
+              className="w-32 mx-auto text-center rounded-xl border border-gray-200 px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-400" />
             <button onClick={submit} className="px-4 py-2 bg-brand-600 text-white rounded-xl font-medium">{t('wg_go')}</button>
           </div>
         )}

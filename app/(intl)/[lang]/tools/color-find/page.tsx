@@ -61,7 +61,6 @@ export default function ColorFindPage({ params }: { params: { lang: string } }) 
         </div>
 
         {over && <div className="rounded-xl bg-rose-50 text-rose-700 py-3 font-semibold">{t('cf2_over', { level })}</div>}
-        <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{over ? t('cf2_retry') : t('cf2_new')}</button>
         <p className="text-xs text-gray-400">{t('cf2_note')}</p>
       </div>
       <Leaderboard game="color-find" score={best || null} better="higher" />

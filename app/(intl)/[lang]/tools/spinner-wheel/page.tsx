@@ -3,6 +3,7 @@
 import { useState, useRef, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import { sfx, SoundToggle } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
@@ -32,6 +33,7 @@ export default function SpinnerWheelPage({ params }: { params: { lang: string } 
   const spin = () => {
     if (spinning || n < 2) return
     setWinner(null)
+    sfx('drop')
     trackToolUsed(tool.slug)
     const target = Math.floor(Math.random() * n)
     // rotate so the target wedge centre lands under the top pointer, + 6 full turns
@@ -42,6 +44,7 @@ export default function SpinnerWheelPage({ params }: { params: { lang: string } 
     window.setTimeout(() => {
       setSpinning(false)
       setWinner(entries[target])
+      sfx('point')
       if (removeWinner) setRaw(entries.filter((_, i) => i !== target).join('\n'))
     }, 4200)
   }
@@ -59,7 +62,7 @@ export default function SpinnerWheelPage({ params }: { params: { lang: string } 
               {/* pointer */}
               <div className="absolute left-1/2 -translate-x-1/2 -top-1 z-10"
                 style={{ width: 0, height: 0, borderLeft: '12px solid transparent', borderRight: '12px solid transparent', borderTop: '20px solid #111827' }} />
-              <svg viewBox="0 0 320 320" className="w-72 h-72 sm:w-80 sm:h-80 select-none">
+              <svg viewBox="0 0 320 320" className="w-72 h-72 sm:w-80 sm:h-80 select-none pointer-events-none">
                 <circle cx={CX} cy={CY} r={R + 4} fill="#111827" />
                 <g ref={wheelRef} style={{ transform: `rotate(${rotation}deg)`, transformOrigin: `${CX}px ${CY}px`, transition: spinning ? 'transform 4s cubic-bezier(0.17,0.67,0.12,0.99)' : 'none' }}>
                   {n >= 2 ? entries.map((e, i) => {
@@ -85,9 +88,10 @@ export default function SpinnerWheelPage({ params }: { params: { lang: string } 
               </svg>
             </div>
             <button onClick={spin} disabled={spinning || n < 2}
-              className="mt-5 w-full max-w-xs py-3 text-base font-bold rounded-xl text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-40 transition-colors">
+              className="relative z-10 touch-manipulation mt-5 w-full max-w-xs py-3 text-base font-bold rounded-xl text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-40 transition-colors">
               {spinning ? t('sw_spinning') : t('sw_spin')}
             </button>
+            <SoundToggle className="mt-2" />
             {winner && (
               <div className="mt-4 w-full max-w-xs text-center rounded-xl border-2 border-brand-300 bg-brand-50 py-3 px-4">
                 <div className="text-xs text-brand-500">{t('sw_winner')}</div>

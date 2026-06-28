@@ -25,7 +25,8 @@ export default function NumberOrderPage({ params }: { params: { lang: string } }
   useEffect(() => { if (!running) return; const id = setInterval(() => setTime((t) => t + 0.1), 100); return () => clearInterval(id) }, [running])
 
   function click(n: number) {
-    if (!stage.playing || n !== next) return
+    if (!stage.playing) return
+    if (n !== next) { sfx('lose'); return }
     if (n === 1) setRunning(true)
     if (n === 25) { setRunning(false); setBest((b) => { const nb = b === null ? time : Math.min(b, time); localStorage.setItem('numorder-best', String(nb)); return nb }); stage.finish() }
     setNext((x) => x + 1); sfx('point')
@@ -58,7 +59,6 @@ export default function NumberOrderPage({ params }: { params: { lang: string } }
         </div>
 
         {done && <div className="rounded-xl bg-emerald-50 text-emerald-700 py-3 font-semibold">{t('no_done', { time: time.toFixed(1) })}</div>}
-        <button onClick={stage.begin} className="px-5 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('no_new')}</button>
       </div>
       <Leaderboard game="number-order" score={best != null ? Math.round(best * 10) / 10 : null} unit=" s" better="lower" />
     </ToolLayout>
