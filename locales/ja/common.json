@@ -4087,6 +4087,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pt_bohr_zoom": "クリックで拡大/縮小",
     "np_settings": "表示設定",
     "np_find_short": "検索",
     "np_all_short": "すべて",

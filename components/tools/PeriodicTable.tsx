@@ -55,6 +55,7 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
   // fresh load (not persisted). On desktop it's always shown.
   const [bohrOpen, setBohrOpen] = useState(true)
   const [anim, setAnim] = useState(true) // electron orbit animation (on by default)
+  const [bohrBig, setBohrBig] = useState(false) // reduced by default (aligns with the left column); click to zoom
   // Temperature mode: a table-wide slider recolours all 118 cells by phase at T.
   const [tempMode, setTempMode] = useState(false)
   const [tempS, setTempS] = useState(() => Math.round(SMAX * tToPct(25) / 100)) // start at room temp 25°C
@@ -90,6 +91,18 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('pt_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('pt_subtitle')}</p>
+        </div>
+
+        {/* search — type a name, symbol or atomic number to spotlight matches */}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && firstMatch) select(firstMatch) }}
+              placeholder={t('pt_search_ph')} aria-label={t('pt_search_ph')} autoComplete="off"
+              className="w-full rounded-xl border border-gray-200 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+          </div>
+          {filtering && <button type="button" onClick={() => { setQuery(''); setLegendFilter(null) }} className="shrink-0 px-3 py-2 text-sm text-gray-500 rounded-xl border border-gray-200 hover:bg-gray-50">{t('pt_clear')}</button>}
         </div>
 
         {/* detail card */}
@@ -136,23 +149,12 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
                <button type="button" onClick={() => setAnim((a) => !a)} aria-pressed={anim} aria-label={t('pt_anim')} title={t('pt_anim')}
                  className={`leading-none text-[13px] w-5 h-5 rounded-full border transition-colors ${anim ? 'border-brand-300 text-brand-600 bg-brand-50' : 'border-gray-200 text-gray-400'}`}>⟳</button>
              </div>
-             <div className={`rounded-xl bg-white/55 px-2 py-2 ${bohrOpen ? '' : 'hidden'} sm:block`}>
-               <BohrModel shells={shellArr} color={COLORS[sel.cat]} symbol={sel.sym} number={sel.n} animate={anim} />
-             </div>
+             <button type="button" onClick={() => setBohrBig((b) => !b)} title={t('pt_bohr_zoom')} aria-label={t('pt_bohr_zoom')}
+               className={`rounded-xl bg-white/55 px-2 py-2 ${bohrBig ? 'cursor-zoom-out' : 'cursor-zoom-in'} ${bohrOpen ? '' : 'hidden'} sm:block`}>
+               <BohrModel shells={shellArr} color={COLORS[sel.cat]} symbol={sel.sym} number={sel.n} animate={anim} size={bohrBig ? 200 : 150} />
+             </button>
            </div>
          )}
-        </div>
-
-        {/* search — type a name, symbol or atomic number to spotlight matches */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1">
-            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && firstMatch) select(firstMatch) }}
-              placeholder={t('pt_search_ph')} aria-label={t('pt_search_ph')} autoComplete="off"
-              className="w-full rounded-xl border border-gray-200 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
-          </div>
-          {filtering && <button type="button" onClick={() => { setQuery(''); setLegendFilter(null) }} className="shrink-0 px-3 py-2 text-sm text-gray-500 rounded-xl border border-gray-200 hover:bg-gray-50">{t('pt_clear')}</button>}
         </div>
 
         {/* temperature control — sits ABOVE the table and recolours the whole grid */}
