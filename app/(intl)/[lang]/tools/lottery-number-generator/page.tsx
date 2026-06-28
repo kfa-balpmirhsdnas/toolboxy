@@ -81,10 +81,15 @@ export default function LotteryNumberGeneratorPage() {
   }
 
   const Ball = ({ n, bonus, shown }: { n: number; bonus?: boolean; shown: boolean }) => (
-    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full shadow-sm transition-all duration-100"
-      style={{ background: `radial-gradient(circle at 34% 28%, rgba(255,255,255,.5), ${ballColor(n)} 62%)`, boxShadow: bonus ? '0 0 0 2px #f59e0b inset' : undefined, opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.35)' }}>
-      <span className="inline-flex items-center justify-center rounded-full bg-white" style={{ width: '64%', height: '64%' }}>
-        <span className="text-xs font-extrabold tabular-nums text-gray-800">{n}</span>
+    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full transition-all duration-100"
+      style={{
+        // glossy 3D sphere: top-left specular highlight + darkened bottom rim over the base colour
+        background: `radial-gradient(circle at 30% 25%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.3) 13%, rgba(255,255,255,0) 33%), radial-gradient(circle at 50% 84%, rgba(0,0,0,.45) 0%, rgba(0,0,0,0) 60%), ${ballColor(n)}`,
+        boxShadow: `0 2px 3px rgba(0,0,0,.28), inset 0 -3px 5px rgba(0,0,0,.3), inset 0 2px 3px rgba(255,255,255,.45)${bonus ? ', 0 0 0 2px #f59e0b' : ''}`,
+        opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.35)',
+      }}>
+      <span className="inline-flex items-center justify-center bg-white" style={{ width: '72%', height: '62%', borderRadius: '50%', boxShadow: 'inset 0 1px 2px rgba(0,0,0,.2)' }}>
+        <span className="text-xs font-extrabold tabular-nums text-gray-900">{n}</span>
       </span>
     </span>
   )
@@ -125,7 +130,7 @@ export default function LotteryNumberGeneratorPage() {
 
         <div className="flex gap-2">
           <button onClick={generate} className="flex-1 inline-flex items-center justify-center gap-2 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition">
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0" style={{ background: 'radial-gradient(circle at 34% 28%, rgba(255,255,255,.5), #fbc400 62%)' }}><span className="rounded-full bg-white" style={{ width: '56%', height: '56%' }} /></span>
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0" style={{ background: 'radial-gradient(circle at 30% 25%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.3) 13%, rgba(255,255,255,0) 33%), radial-gradient(circle at 50% 84%, rgba(0,0,0,.4), rgba(0,0,0,0) 60%), #fbc400', boxShadow: 'inset 0 -2px 3px rgba(0,0,0,.28), inset 0 1px 2px rgba(255,255,255,.5)' }}><span className="bg-white" style={{ width: '64%', height: '54%', borderRadius: '50%' }} /></span>
             {games.length ? t('lt_regenerate') : t('lt_generate')}
           </button>
           <button onClick={() => setSound((s) => !s)} title={t('lt_sound')} aria-label={t('lt_sound')}
