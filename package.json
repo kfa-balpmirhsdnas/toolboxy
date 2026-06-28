@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/fetch-powerball.mjs && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "fetch:powerball": "node scripts/fetch-powerball.mjs"
   },
   "dependencies": {
     "@cantoo/pdf-lib": "^2.7.1",
