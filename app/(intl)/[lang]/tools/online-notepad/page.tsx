@@ -672,6 +672,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
           onCompositionEnd={flushNow}
+          // Clicking/tapping into the editor closes the symbol palette. PointerDown (not
+          // focus) so inserting a symbol — which programmatically refocuses — keeps it open.
+          onPointerDown={() => { if (showChars) setShowChars(false) }}
           placeholder={t('np_placeholder')}
           spellCheck={false}
           style={{ fontFamily: FAM_CSS(fam) }}
