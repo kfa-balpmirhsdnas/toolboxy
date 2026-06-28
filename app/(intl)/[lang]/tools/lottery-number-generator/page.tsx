@@ -7,6 +7,8 @@ import { getToolBySlug } from '@/lib/tools/registry'
 import { LOTTERIES, DEFAULT_BY_LOCALE, type Lottery } from '@/lib/lotteries'
 
 const tool = getToolBySlug('lottery-number-generator')!
+// Country → flag emoji (UK uses the GB flag; renders as letters on Windows desktop).
+const FLAG: Record<string, string> = { KR: '🇰🇷', US: '🇺🇸', EU: '🇪🇺', JP: '🇯🇵', UK: '🇬🇧', AU: '🇦🇺', CA: '🇨🇦', DE: '🇩🇪', FR: '🇫🇷', ES: '🇪🇸' }
 type Game = { main: number[]; bonus: number[] }
 const parseNums = (s: string) => Array.from(new Set((s.match(/\d+/g) || []).map(Number)))
 
@@ -69,7 +71,7 @@ export default function LotteryNumberGeneratorPage() {
             <label className="block text-xs text-gray-500 mb-1">{t('lt_lottery')}</label>
             <select value={id} onChange={(e) => setId(e.target.value)}
               className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-brand-400">
-              {LOTTERIES.map((l) => <option key={l.id} value={l.id}>{l.name[lang]} ({l.mainMin}-{l.mainMax} × {l.mainCount}{l.bonusCount > 0 ? ` +${l.bonusCount}` : ''})</option>)}
+              {LOTTERIES.map((l) => <option key={l.id} value={l.id}>{FLAG[l.country] || ''} {l.name[lang]} ({l.mainMin}-{l.mainMax} × {l.mainCount}{l.bonusCount > 0 ? ` +${l.bonusCount}` : ''})</option>)}
             </select>
           </div>
           <div>
