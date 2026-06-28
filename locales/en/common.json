@@ -3725,6 +3725,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "np_symbols": "Symbols",
     "dr_drink": "Drink",
     "dr_amount": "Amount",
     "dr_ml": "ml",

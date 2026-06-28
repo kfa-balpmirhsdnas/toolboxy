@@ -30,6 +30,10 @@ const fmtDateFile = (ms: number) => { const d = new Date(ms); return `${String(d
 
 // Auto-list (single level only). A symbol line may use a shortcut (* o @) or the
 // glyph itself; the shortcut is turned into the glyph only on Enter (like numbers).
+// Special-character palette — inserted at the caret. Whitespace-split + de-duped.
+const CHARS = Array.from(new Set(
+  '· … ⁝ ※ • ⸰ ™ → ↑ ↓ ← ↔ ↕ ☜ ☞ ★ ☆ ♥ ♡ ○ ● ◎ □ ■ ☑ ✓ △ ▲ ▽ ▼ ◁ ◀ ▷ ▶ ⏺ ⚫ ☉ ♧ ♣ ♨ ☏ ☎ ♩ ♪ ♬ ♫ ♭ ± × ÷ ≠ ≒ ∞ ∴ ∵ ⊂ ⊃ ∪ ∩ 【 】 「 」 º ℃ ℉ ㎟ ㎠ ㎡ ㎢ ㎣ ㎤ ㎥ ㎦ ½ ⅓ ⅔ ¼ ¾ ⅛ ⅜ ⅝ ⅞ ¹ ² ³ ⁴ ⁿ ₁ ₂ ₃ ₄ α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ Ⅶ Ⅷ Ⅸ Ⅹ ⅰ ⅱ ⅲ ⅳ ⅴ ⅵ ⅶ ⅷ ⅸ ⅹ'.split(/\s+/).filter(Boolean),
+))
 const SYM_TO_GLYPH: Record<string, string> = { '*': '●', o: '○', '@': '■', '-': '▶', '●': '●', '○': '○', '■': '■', '▶': '▶' }
 const NUM_MARK = /^(\d+)([.)>]) /  // "1. " / "1) " / "1> "
 const SYM_MARK = /^([*o@\-▶●○■]) /  // shortcuts (* o @ -) or glyphs (● ○ ■ ▶) + space
@@ -99,6 +103,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [copied, setCopied] = useState(false)
   const [renaming, setRenaming] = useState<string | null>(null)
   const [showFind, setShowFind] = useState(false)
+  const [showChars, setShowChars] = useState(false) // special-character palette
   const [showSettings, setShowSettings] = useState(false) // mobile: font/size/spacing hidden behind a gear
   const [findQ, setFindQ] = useState('')
   const [replaceQ, setReplaceQ] = useState('')
@@ -142,12 +147,13 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.lang])
 
-  // Unique auto name: 260628, then 260628_2, 260628_3 …
+  // Unique auto name: first of a day is the bare date (0628), then 0628B, 0628C…
+  // (no "A" — the first tab already represents the date).
   function uniqueName(existing: Doc[]) {
     const base = dateTag()
     const used = new Set(existing.map((d) => d.name))
     if (!used.has(base)) return base
-    for (let i = 0; i < 26; i++) { const c = base + String.fromCharCode(65 + i); if (!used.has(c)) return c } // 0628A, 0628B…
+    for (let i = 0; i < 25; i++) { const c = base + String.fromCharCode(66 + i); if (!used.has(c)) return c } // 0628B, 0628C…Z
     let i = 2; while (used.has(`${base}${i}`)) i++; return `${base}${i}` // beyond Z
   }
 
@@ -312,6 +318,12 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
       if (top + lh > ta.scrollTop + ta.clientHeight) ta.scrollTop = top + lh - ta.clientHeight
       else if (top < ta.scrollTop) ta.scrollTop = top
     })
+  }
+  // Insert a special character at the caret (replacing any selection).
+  function insertChar(ch: string) {
+    const ta = taRef.current; if (!ta) return
+    const s = ta.selectionStart, e = ta.selectionEnd
+    applyText(text.slice(0, s) + ch + text.slice(e), s + ch.length)
   }
   // Re-sequence the contiguous numbered block (same delimiter) around the caret to 1,2,3…
   function renumberAt(full: string, caret: number, delim: string) {
@@ -570,6 +582,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               <button onClick={() => setShowFind((s) => !s)} title={t('np_findreplace')} aria-label={t('np_findreplace')} aria-pressed={showFind} className={iconBtn + (showFind ? ' bg-brand-50 text-brand-600' : '')}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
               </button>
+              <button onClick={() => setShowChars((s) => !s)} title={t('np_symbols')} aria-label={t('np_symbols')} aria-pressed={showChars} className={iconBtn + (showChars ? ' bg-brand-50 text-brand-600' : '')}>
+                <span className="block w-4 h-4 text-base leading-4 font-serif text-center">Ω</span>
+              </button>
             </div>
             <span className="w-px h-5 bg-gray-200" />
             {/* Mobile-only gear: the display settings are hidden until tapped. */}
@@ -636,6 +651,21 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           </div>
         )}
 
+        {showChars && (
+          <div className="rounded-xl bg-gray-50 border border-gray-200 p-2">
+            <div className="flex items-center justify-between px-1 pb-1.5">
+              <span className="text-xs text-gray-500">{t('np_symbols')}</span>
+              <button onClick={() => setShowChars(false)} aria-label={t('ui_clear')} className="text-gray-400 hover:text-gray-700 text-lg leading-none px-1">×</button>
+            </div>
+            <div className="flex flex-wrap gap-0.5 max-h-44 overflow-y-auto">
+              {CHARS.map((c) => (
+                <button key={c} onClick={() => insertChar(c)} title={c}
+                  className="w-8 h-8 shrink-0 rounded-md text-base text-gray-700 hover:bg-brand-100 hover:text-brand-700 transition-colors">{c}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <textarea
           ref={taRef}
           value={text}
@@ -677,8 +707,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             </span>
           </span>
           <button onClick={clear} disabled={!text}
-            className="px-4 py-2 text-sm rounded-xl border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            🗑 {t('ui_clear')}
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded-xl border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
+            {t('ui_clear')}
           </button>
         </div>
 

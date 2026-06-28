@@ -4099,6 +4099,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "np_symbols": "特殊文字",
     "dr_drink": "飲み物の種類",
     "dr_amount": "量",
     "dr_ml": "ml",
