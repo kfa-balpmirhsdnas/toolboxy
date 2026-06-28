@@ -102,7 +102,6 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
-    "background-remover": "A free tool that automatically erases a photo’s background and makes it transparent. Drop an image and the AI removes the background in your browser, saving a transparent PNG. No install, no signup, and photos never leave your device.",
     "pdf-password": "A free tool to add or remove a password on a PDF. Upload a file, enter a password, and it processes right in your browser. No install, no signup, and files never leave your device.",
     "video-compressor": "A free tool to shrink video files. Drop a video, pick a compression level, and it re-encodes to MP4 right in your browser. No install, no signup, and files never leave your device.",
     "audio-converter": "A free tool to convert audio files to MP3, WAV, M4A or OGG. Drop a file, pick a format, and it converts right in your browser — no install, no signup, and files never leave your device.",
@@ -1627,7 +1626,6 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
-    "background-remover": "The background remover automatically cuts out the background of people, products and other photos, producing a transparent PNG. The AI model runs entirely in your browser, so your photo is never uploaded to a server. The model downloads once on first use, then is cached for fast results. The transparent PNG is ready to use for compositing, product pages, profiles and more.",
     "pdf-password": "The PDF password tool lets you protect a PDF with a password (Lock) or remove the password from a protected PDF (Unlock). Lock encrypts the PDF with the password you enter; Unlock opens it with the correct password and re-saves it without encryption. Everything runs in your browser — the file and password are never sent to a server. If you forget the password, the PDF cannot be unlocked, so keep it safe.",
     "video-compressor": "The video compressor reduces video file size so it is easier to share or upload. Pick a level (High, Medium, Light) and it re-encodes to H.264 (MP4), then shows how much smaller the result is. Everything runs on the ffmpeg engine inside your browser — files are never uploaded. The engine (~30 MB) is fetched once on first use, and longer clips take more time.",
     "audio-converter": "The audio converter changes the format of your music or recordings. Convert to MP3 (universal, small), WAV (lossless), M4A (AAC) or OGG (open format). It runs the ffmpeg engine inside your browser, so files are never uploaded to a server. The engine (~30 MB) is fetched once on your first conversion.",
@@ -1945,7 +1943,6 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
-    "background-remover": ["Upload or drag in a photo.","Press 'Remove background' — it processes in your browser (with progress).","Preview the result on a checkerboard (transparent) background.","Download the transparent PNG."],
     "pdf-password": ["Choose 'Lock' or 'Unlock'.","Upload or drag in a PDF file.","Enter the password (Lock = the one to set, Unlock = the current one).","Press the button — it processes in your browser.","When done, download the resulting PDF."],
     "video-compressor": ["Upload or drag in a video file.","Choose a compression level (High, Medium or Light).","Press 'Compress' — it processes in your browser (with progress).","Check the size reduction and download the result."],
     "audio-converter": ["Upload or drag in an audio file.","Choose an output format (MP3, WAV, M4A or OGG).","Press 'Convert' — it processes in your browser.","When done, preview and download the result."],
@@ -3738,9 +3735,6 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
-    "br_drop": "Upload or drag in a photo",
-    "br_remove": "Remove background",
-    "br_note_first": "The first run downloads the AI model once (may take a moment). After that it’s fast.",
     "md_note_local": "Everything is processed in your browser — files never leave your device.",
     "pp_lock": "Lock",
     "pp_unlock": "Unlock",
@@ -6920,7 +6914,6 @@
     ]
   },
   "toolNames": {
-    "background-remover": "Background Remover",
     "pdf-password": "PDF Password (Protect & Unlock)",
     "video-compressor": "Video Compressor",
     "audio-converter": "Audio Converter",
@@ -7072,7 +7065,6 @@
     }
   },
   "toolTitles": {
-    "background-remover": "Free Background Remover · Make Photo Backgrounds Transparent",
     "image-viewer": "Free Online Image Viewer · View Photos in Your Browser, No Install",
     "social-character-counter": "Instagram, X & YouTube Character Limit Checker"
   }
