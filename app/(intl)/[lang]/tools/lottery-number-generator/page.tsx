@@ -84,8 +84,11 @@ export default function LotteryNumberGeneratorPage() {
     // 2s suspense after the click, then reveal one ball at a time with one sound each.
     timers.current.push(setTimeout(() => {
       setGames(out); setDrawing(false)
+      // same order as the render (main balls then bonus balls, per game)
+      const isBonus: boolean[] = []
+      out.forEach((g) => { g.main.forEach(() => isBonus.push(false)); g.bonus.forEach(() => isBonus.push(true)) })
       for (let i = 1; i <= total; i++) {
-        timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(262, 0.12, 'sine', 0.42) }, i * step)) // identical low pop for every ball
+        timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(isBonus[i - 1] ? 330 : 262, 0.12, 'sine', 0.42) }, i * step)) // bonus a bit higher
       }
       // ending fanfare once the last ball is out (rising C-E-G-C arpeggio)
       const end = total * step + 500
