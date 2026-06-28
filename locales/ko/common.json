@@ -4109,6 +4109,8 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "td_field_list": "목록",
+    "td_cancel": "취소",
     "td_tab_done": "완료",
     "td_empty_done": "완료된 할 일이 없습니다.",
     "td_tab_starred": "별표",

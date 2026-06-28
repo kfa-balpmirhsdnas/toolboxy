@@ -25,7 +25,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
   const [loaded, setLoaded] = useState(false)
   const [input, setInput] = useState('')
   const [editing, setEditing] = useState<Todo | null>(null)
-  const [draft, setDraft] = useState({ text: '', details: '', due: '' })
+  const [draft, setDraft] = useState({ text: '', details: '', due: '', listId: DEFAULT })
   const [addingList, setAddingList] = useState(false)
   const [newListName, setNewListName] = useState('')
   const tracked = useRef(false)
@@ -69,9 +69,9 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
   const toggleStar = (id: string) => setItems((a) => a.map((i) => (i.id === id ? { ...i, starred: !i.starred } : i)))
   const clearDone = () => setItems((a) => a.filter((i) => !(inView(i) && i.done)))
 
-  const openEdit = (it: Todo) => { setEditing(it); setDraft({ text: it.text, details: it.details || '', due: it.due || '' }) }
+  const openEdit = (it: Todo) => { setEditing(it); setDraft({ text: it.text, details: it.details || '', due: it.due || '', listId: it.listId }) }
   const saveEdit = () => {
-    if (editing) { const v = draft.text.trim(); if (v) setItems((a) => a.map((i) => (i.id === editing.id ? { ...i, text: v, details: draft.details, due: draft.due } : i))) }
+    if (editing) { const v = draft.text.trim(); if (v) setItems((a) => a.map((i) => (i.id === editing.id ? { ...i, text: v, details: draft.details, due: draft.due, listId: draft.listId } : i))) }
     setEditing(null)
   }
   const deleteEditing = () => { if (editing) setItems((a) => a.filter((i) => i.id !== editing.id)); setEditing(null) }
@@ -177,11 +177,9 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
                   {it.done && <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>}
                 </button>
 
-                {/* title opens the edit modal */}
-                <button type="button" onClick={() => openEdit(it)} className="flex-1 min-w-0 text-left">
-                  <span className={`block break-words text-[15px] leading-snug ${it.done ? 'line-through text-gray-400' : 'text-gray-800'}`}>{it.text}</span>
-                  {it.due && <span className={`inline-flex items-center gap-1 text-[11px] mt-0.5 ${!it.done && it.due < todayStr() ? 'text-rose-500' : 'text-gray-400'}`}>📅 {it.due}</span>}
-                </button>
+                {/* title opens the edit modal; due date sits on the far right, one line */}
+                <button type="button" onClick={() => openEdit(it)} className={`flex-1 min-w-0 text-left truncate text-[15px] leading-snug ${it.done ? 'line-through text-gray-400' : 'text-gray-800'}`}>{it.text}</button>
+                {it.due && <span className={`shrink-0 whitespace-nowrap text-[11px] ${!it.done && it.due < todayStr() ? 'text-rose-500' : 'text-gray-400'}`}>📅 {it.due}</span>}
 
                 <button type="button" onClick={() => toggleStar(it.id)} aria-label={t('td_starred')} aria-pressed={it.starred} title={t('td_starred')} className="shrink-0 px-1 text-gray-300 hover:text-yellow-500">
                   {star(it.starred, 'w-5 h-5')}
@@ -204,6 +202,15 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
             <h2 className="text-lg font-bold text-gray-900">{t('td_edit_title')}</h2>
             <button onClick={() => setEditing(null)} aria-label={t('td_close')} className="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-400 text-xl leading-none">×</button>
           </div>
+          <div>
+            <span className="text-xs font-semibold text-gray-500">{t('td_field_list')}</span>
+            <div className="mt-1 flex flex-wrap gap-1.5">
+              {lists.map((l) => (
+                <button key={l.id} type="button" onClick={() => setDraft((d) => ({ ...d, listId: l.id }))}
+                  className={`px-3 py-1 rounded-full text-sm border transition ${draft.listId === l.id ? 'border-brand-400 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}>{listName(l)}</button>
+              ))}
+            </div>
+          </div>
           <label className="block">
             <span className="text-xs font-semibold text-gray-500">{t('td_field_title')}</span>
             <input value={draft.text} onChange={(e) => setDraft((d) => ({ ...d, text: e.target.value }))} onKeyDown={(e) => e.key === 'Enter' && saveEdit()}
@@ -221,7 +228,10 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
           </label>
           <div className="flex items-center justify-between pt-1">
             <button onClick={deleteEditing} className="px-3 py-2 text-sm font-medium text-rose-500 rounded-xl hover:bg-rose-50">{t('td_delete')}</button>
-            <button onClick={saveEdit} className="px-5 py-2 text-sm font-semibold text-white bg-brand-600 rounded-xl hover:bg-brand-700 active:scale-95 transition">{t('td_save')}</button>
+            <div className="flex items-center gap-2">
+              <button onClick={saveEdit} className="px-5 py-2 text-sm font-semibold text-white bg-brand-600 rounded-xl hover:bg-brand-700 active:scale-95 transition">{t('td_save')}</button>
+              <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm font-medium text-gray-500 rounded-xl border border-gray-200 hover:bg-gray-50">{t('td_cancel')}</button>
+            </div>
           </div>
         </div>
       </Modal>
