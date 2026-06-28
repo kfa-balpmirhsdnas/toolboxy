@@ -102,6 +102,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "drink-calorie-calculator": "A free calculator for calories in drinks — from soju, beer, makgeolli and wine to cola and lattes. Pick a drink and enter how much you had, and it shows the calories plus a walking equivalent. No install, no signup.",
     "exercise-calorie-calculator": "A free calculator for calories burned by activity — walking, running, cycling, swimming and more. Enter your weight and duration and it uses MET values to estimate the calories burned. No install, no signup.",
     "fasting-timer": "A free intermittent fasting timer for 16:8, 18:6, OMAD and more. Set your fast start time and it shows elapsed and remaining time plus your eating window in real time — and keeps counting after you close the tab. No install, no signup.",
     "image-mosaic": "Hide sensitive info — faces, names, phone numbers — in a photo. Drag over the areas to mask them with mosaic, blur, or a solid block, then save as PNG/JPG. Everything runs in your browser; your photo never leaves your device.",
@@ -1621,6 +1622,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "drink-calorie-calculator": "The drink calorie calculator estimates the calories in what you drank from the drink type and amount. Using an average calories-per-100 ml figure, it computes “per-100 ml × amount ÷ 100”, and also shows how many minutes of walking would burn that off. Actual values vary by strength, sugar and brand. Nothing you enter is stored.",
     "exercise-calorie-calculator": "The exercise calorie calculator estimates how many calories you burn based on the activity, your weight and the time spent. It uses each activity’s MET (metabolic equivalent) value with the formula “MET × 3.5 × weight(kg) ÷ 200 × minutes”, and also shows calories per minute and a rice-bowl equivalent. Nothing is stored — all the math runs in your browser.",
     "fasting-timer": "An intermittent fasting timer helps you track your fasting and eating windows. Pick a protocol such as 16:8 (16 hours fasting, 8 hours eating), start your fast, and a circular ring shows elapsed time, time remaining, and when your eating window opens. Everything is stored only in your browser, so the timer keeps running even after you close and reopen the tab.",
     "image-mosaic": "Upload a photo and drag over the parts you want to hide to cover them with a mosaic, blur, or solid black. Great for safely removing personal details — faces, names, phone numbers, addresses — before sharing. You can mask several spots at once, adjust the strength, and undo. Everything happens inside your browser and the image is never uploaded to any server.",
@@ -1934,6 +1936,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
+    "drink-calorie-calculator": ["Choose a drink — a typical serving size fills in automatically.","Enter the amount you had (ml) or tap 50/200/355/500 ml.","See the total calories and the per-100 ml figure.","Use the “walk ○ min” equivalent to gauge the exercise needed."],
     "exercise-calorie-calculator": ["Enter your weight and the workout duration (minutes).","Pick an activity to apply its MET value.","Use the 15/30/45/60-minute buttons to change the time quickly.","See the calories burned, per-minute rate and rice-bowl equivalent.","Switch the unit (kg/lbs) at the top."],
     "fasting-timer": ["Pick your fasting protocol (e.g. 16:8, 18:6, OMAD).","Tap 'Start fasting now' to begin the timer.","If your last meal was earlier, adjust the 'Fasting started at' time.","Watch the ring for elapsed/remaining time and when you can eat.","The timer continues after you close the tab; use 'Reset' to start over."],
     "image-mosaic": ["Upload a photo.","Drag over the parts to hide with mosaic, blur, or black.","Save the result as PNG or JPG."],
@@ -3722,6 +3725,28 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "dr_drink": "Drink",
+    "dr_amount": "Amount",
+    "dr_ml": "ml",
+    "dr_per100": "{n} kcal per 100 ml",
+    "dr_walk": "≈ {n} min of walking to burn",
+    "dr_disclaimer": "An estimate. Real calories vary by product, strength and sugar.",
+    "dr_soju": "Soju",
+    "dr_beer": "Beer",
+    "dr_makgeolli": "Makgeolli",
+    "dr_wine": "Wine",
+    "dr_whisky": "Whisky",
+    "dr_vodka": "Vodka",
+    "dr_champagne": "Champagne",
+    "dr_sake": "Sake",
+    "dr_highball": "Highball",
+    "dr_cola": "Cola",
+    "dr_cider": "Lemon-lime soda",
+    "dr_orangejuice": "Orange juice",
+    "dr_latte": "Caffè latte",
+    "dr_milk": "Milk",
+    "dr_sportsdrink": "Sports drink",
+    "dr_energydrink": "Energy drink",
     "ex_metric": "Metric",
     "ex_imperial": "Imperial",
     "ex_weight": "Weight",
@@ -6808,6 +6833,7 @@
     ]
   },
   "toolNames": {
+    "drink-calorie-calculator": "Drink Calorie Calculator",
     "exercise-calorie-calculator": "Exercise Calorie Calculator",
     "fasting-timer": "Intermittent Fasting Timer",
     "image-mosaic": "Image Mosaic & Blur",
