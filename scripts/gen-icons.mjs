@@ -148,12 +148,12 @@ const VECTOR = {
 
 // Emit both the rounded desktop icon and the full-bleed maskable icon for mobile.
 function textBoth(label, slug) { textIcon(label, `${slug}.png`, true); textIcon(label, `${slug}-maskable.png`, false) }
-async function shapeBoth(src, slug) { await shapeIcon(src, `${slug}.png`, true); await shapeIcon(src, `${slug}-maskable.png`, false) }
+async function shapeBoth(src, slug, anyScale = 0.66, maskScale = anyScale) { await shapeIcon(src, `${slug}.png`, true, anyScale); await shapeIcon(src, `${slug}-maskable.png`, false, maskScale) }
 
 let n = 0
 for (const [slug, labels] of Object.entries(DICT)) LOCS.forEach((loc, i) => { textBoth(labels[i], `${slug}-${loc}`); n += 2 })
 for (const [slug, label] of Object.entries(SINGLE)) { textBoth(label, slug); n += 2 }
 for (const [slug, nodes] of Object.entries(VECTOR)) { vectorIcon(nodes, `${slug}.png`, true); vectorIcon(nodes, `${slug}-maskable.png`, false); n += 2 }
 await shapeBoth('white-noise-machine.png', 'white-noise-machine'); n += 2
-await shapeBoth('cheonsugyeong.png', 'cheonsugyeong'); n += 2
+await shapeBoth('cheonsugyeong.png', 'cheonsugyeong', 0.84, 0.78); n += 2 // bigger symbol to match the other app icons
 console.log(`generated ${n} icons`)
