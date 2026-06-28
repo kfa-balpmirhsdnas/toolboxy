@@ -26,6 +26,7 @@ const dateTag = () => {
   return `${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}` // MMDD
 }
 const fmtDate = (ms: number) => { const d = new Date(ms); return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}` }
+const fmtDateFile = (ms: number) => { const d = new Date(ms); return `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}` } // YYMMDD for filenames
 
 // Auto-list (single level only). A symbol line may use a shortcut (* o @) or the
 // glyph itself; the shortcut is turned into the glyph only on Enter (like numbers).
@@ -426,18 +427,13 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     ta.addEventListener('focus', h)
     return () => ta.removeEventListener('focus', h)
   }, [])
-  // Keep the active tab visible. For a tab in the latter half, scroll the bar all the
-  // way to the end so the "+ new tab" button (and trailing tabs) stay reachable.
+  // Keep the active tab visible & symmetric: a latter-half tab scrolls the bar to its
+  // right end (so the "+ new tab" button shows); a first-half tab scrolls to the left
+  // end (so the leading tabs show).
   useEffect(() => {
     const bar = tabBarRef.current; if (!bar) return
-    const el = bar.querySelector(`[data-tab="${activeId}"]`) as HTMLElement | null; if (!el) return
-    const idx = docs.findIndex((d) => d.id === activeId)
-    if (idx >= 0 && idx >= docs.length / 2) { bar.scrollTo({ left: bar.scrollWidth, behavior: 'smooth' }); return }
-    const er = el.getBoundingClientRect(), br = bar.getBoundingClientRect()
-    let delta = 0
-    if (er.left < br.left + 8) delta = er.left - br.left - 8
-    else if (er.right > br.right - 8) delta = er.right - br.right + 8
-    if (delta) bar.scrollTo({ left: bar.scrollLeft + delta, behavior: 'smooth' })
+    const idx = docs.findIndex((d) => d.id === activeId); if (idx < 0) return
+    bar.scrollTo({ left: idx >= docs.length / 2 ? bar.scrollWidth : 0, behavior: 'smooth' })
   }, [activeId, docs.length])
 
   // Find / replace within the active tab (literal, case-sensitive).
@@ -473,7 +469,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const { zipSync, strToU8 } = await import('fflate')
     const data: Record<string, Uint8Array> = {}
     for (const d of docs) {
-      const base = (((d.name || 'notes').replace(/[\\/:*?"<>|]/g, '_').slice(0, 50)) || 'notes') + `_${fmtDate(d.createdAt)}`
+      const base = (((d.name || 'notes').replace(/[\\/:*?"<>|]/g, '_').slice(0, 50)) || 'notes') + `_${fmtDateFile(d.createdAt)}`
       let name = `${base}.txt`; let i = 2
       while (data[name]) name = `${base}_${i++}.txt`
       data[name] = strToU8(d.text || '')
@@ -492,7 +488,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${(active?.name || 'notes').replace(/[\\/:*?"<>|]/g, '_').slice(0, 50)}_${fmtDate(active.createdAt)}.txt`
+    a.download = `${(active?.name || 'notes').replace(/[\\/:*?"<>|]/g, '_').slice(0, 50)}_${fmtDateFile(active.createdAt)}.txt`
     a.click()
     URL.revokeObjectURL(url)
   }
