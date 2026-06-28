@@ -1,10 +1,16 @@
 'use client'
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('exercise-calorie-calculator')!
+// Per-locale "calories equal this many of a familiar food" comparison.
+const FOODS: Record<string, { emoji: string; kcal: number }> = {
+  ko: { emoji: '🍚', kcal: 300 }, // 공기밥
+  en: { emoji: '🍎', kcal: 95 },  // apple
+  ja: { emoji: '🍙', kcal: 190 }, // おにぎり
+}
 // [translation key, MET] — MET values from the Compendium of Physical Activities.
 const ACTS: [string, number][] = [
   ['walk', 3.5], ['briskwalk', 5.0], ['run8', 8.3], ['run11', 11.0], ['cycle', 7.5], ['swim', 8.0],
@@ -14,6 +20,7 @@ const ACTS: [string, number][] = [
 
 export default function ExerciseCalorieCalculatorPage() {
   const t = useTranslations('toolui')
+  const locale = useLocale()
   const [unit, setUnit] = useState<'metric' | 'imperial'>('metric')
   const [weight, setWeight] = useState(65)
   const [actIdx, setActIdx] = useState(2)
@@ -23,7 +30,8 @@ export default function ExerciseCalorieCalculatorPage() {
   const met = ACTS[actIdx][1]
   const perMin = (met * 3.5 * wKg) / 200 // ACSM kcal/min
   const total = Math.round(perMin * Math.max(0, min))
-  const rice = total / 300 // a bowl of rice ≈ 300 kcal
+  const food = FOODS[locale] ?? FOODS.en
+  const foodCount = total / food.kcal
 
   return (
     <ToolLayout tool={tool}>
@@ -55,8 +63,9 @@ export default function ExerciseCalorieCalculatorPage() {
         </div>
         <div className="bg-gradient-to-br from-rose-50 to-orange-50 rounded-2xl p-5 border border-rose-100 text-center">
           <p className="text-4xl font-bold text-rose-600">{total.toLocaleString()} <span className="text-lg">kcal</span></p>
-          <p className="text-xs text-gray-500 mt-1">{t('ex_permin', { n: perMin.toFixed(1) })}</p>
-          <p className="text-xs text-gray-400 mt-2">🍚 {t('ex_rice', { n: rice.toFixed(1) })}</p>
+          <p className="text-2xl font-light text-gray-300 leading-none my-1">=</p>
+          <p className="text-3xl font-bold text-gray-800"><span className="align-middle">{food.emoji}</span> {t('ex_food', { n: foodCount.toFixed(1) })}</p>
+          <p className="text-xs text-gray-400 mt-2">({t('ex_permin', { n: perMin.toFixed(1) })})</p>
         </div>
         <p className="text-xs text-gray-400 text-center">{t('ex_disclaimer')}</p>
       </div>

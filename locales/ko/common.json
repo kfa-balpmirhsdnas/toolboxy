@@ -4126,6 +4126,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "ex_food": "공기밥 {n}개",
     "np_symbols": "특수문자",
     "dr_drink": "음료 종류",
     "dr_amount": "용량",
