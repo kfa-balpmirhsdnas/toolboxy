@@ -12,6 +12,12 @@ const FOODS: Record<string, { emoji: string; kcal: number }> = {
   ja: { emoji: '🍙', kcal: 190 }, // おにぎり
 }
 
+// Emoji per activity for the dropdown (an <option> can't hold an SVG like the presets do).
+const ACT_EMOJI: Record<string, string> = {
+  walk: '🚶', briskwalk: '🚶', run8: '🏃', run11: '🏃', cycle: '🚴', swim: '🏊',
+  jumprope: '🤸', hike: '🥾', yoga: '🧘', weights: '🏋️', soccer: '⚽', basketball: '🏀',
+  tennis: '🎾', badminton: '🏸', dance: '💃', stairs: '🪜', aerobics: '🤸', housework: '🧹',
+}
 // A small SVG icon per activity (related activities share one), shown on the presets.
 const ICON_OF: Record<string, string> = {
   walk: 'person', briskwalk: 'person', run8: 'run', run11: 'run', cycle: 'cycle', swim: 'swim',
@@ -73,7 +79,7 @@ export default function ExerciseCalorieCalculatorPage() {
         <div><label className="block text-xs text-gray-500 mb-1">{t('ex_activity')}</label>
           <select value={actIdx} onChange={(e) => setActIdx(Number(e.target.value))}
             className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
-            {ACTS.map((a, i) => <option key={i} value={i}>{t('ex_' + a[0])}</option>)}
+            {ACTS.map((a, i) => <option key={i} value={i}>{ACT_EMOJI[a[0]]} {t('ex_' + a[0])}</option>)}
           </select></div>
         <div className="flex gap-2">
           {[15, 30, 45, 60].map((m) => (
