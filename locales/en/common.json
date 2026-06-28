@@ -3725,6 +3725,14 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "if_reset_confirm": "Reset the current fast?",
+    "if_leftshort": "left",
+    "if_notify_on": "Hourly alerts on",
+    "if_notify_off": "Get hourly alerts",
+    "if_notify_hour": "{h} hours of fasting — keep going! 💪",
+    "if_notify_done": "Fast complete! Time to eat 🎉",
+    "if_notify_denied": "Notifications are blocked. Allow them in your browser settings.",
+    "if_notify_unsupported": "This browser does not support notifications.",
     "dr_s_glass": "1 glass",
     "dr_s_halfbottle": "half bottle",
     "dr_s_bottle": "1 bottle",

@@ -4126,6 +4126,14 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "if_reset_confirm": "현재 단식 기록을 초기화할까요?",
+    "if_leftshort": "남음",
+    "if_notify_on": "시간마다 알림 켜짐",
+    "if_notify_off": "시간마다 알림 받기",
+    "if_notify_hour": "단식 {h}시간째예요! 잘하고 있어요 💪",
+    "if_notify_done": "단식 완료! 식사 시간이에요 🎉",
+    "if_notify_denied": "브라우저 알림이 차단돼 있어요. 설정에서 허용해 주세요.",
+    "if_notify_unsupported": "이 브라우저는 알림을 지원하지 않아요.",
     "dr_s_glass": "1잔",
     "dr_s_halfbottle": "반병",
     "dr_s_bottle": "1병",

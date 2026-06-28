@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -30,6 +30,8 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
   const [fastH, setFastH] = useState(16)
   const [start, setStart] = useState<number | null>(null)
   const [now, setNow] = useState(() => Date.now())
+  const [notify, setNotify] = useState(false)
+  const notifRef = useRef({ hour: 0, done: false }) // last hour milestone announced + completion sent
 
   // Restore the running fast (so closing/reopening keeps counting), then tick each second.
   useEffect(() => {
@@ -37,11 +39,12 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
       const d = JSON.parse(localStorage.getItem(KEY) || 'null')
       if (d?.fastH) setFastH(d.fastH)
       if (d?.start) setStart(d.start)
+      if (d?.notify) setNotify(true)
     } catch { /* ignore */ }
   }, [])
   useEffect(() => {
-    try { localStorage.setItem(KEY, JSON.stringify({ fastH, start })) } catch { /* ignore */ }
-  }, [fastH, start])
+    try { localStorage.setItem(KEY, JSON.stringify({ fastH, start, notify })) } catch { /* ignore */ }
+  }, [fastH, start, notify])
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(id)
@@ -55,13 +58,46 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
   const eatEnd = start ? fastEnd + eatH * 3600000 : 0
   const remaining = fasting ? fastMs - elapsed : start ? eatEnd - now : 0
   const progress = start ? Math.min(1, elapsed / fastMs) : 0
+  const pct = Math.round(progress * 100)
 
-  const R = 86
+  // Seed the milestone tracker from the current fast so old hours aren't re-announced.
+  useEffect(() => {
+    if (!start) { notifRef.current = { hour: 0, done: false }; return }
+    const el = Date.now() - start
+    notifRef.current = { hour: el < fastMs ? Math.floor(el / 3600000) : 0, done: el >= fastMs }
+  }, [start, fastMs])
+
+  // Hourly + completion notifications (best-effort: fires while the app is running).
+  useEffect(() => {
+    if (!notify || !start || typeof Notification === 'undefined' || Notification.permission !== 'granted') return
+    const el = now - start
+    if (el < fastMs) {
+      const h = Math.floor(el / 3600000)
+      if (h >= 1 && h > notifRef.current.hour) {
+        notifRef.current.hour = h
+        try { new Notification('ToolBoxy', { body: t('if_notify_hour', { h }), icon: '/icon-192.png' }) } catch { /* ignore */ }
+      }
+    } else if (!notifRef.current.done) {
+      notifRef.current.done = true
+      try { new Notification('ToolBoxy', { body: t('if_notify_done'), icon: '/icon-192.png' }) } catch { /* ignore */ }
+    }
+  }, [now, notify, start, fastMs, t])
+
+  const onStartChange = (v: string) => { const ms = new Date(v).getTime(); if (!Number.isNaN(ms)) setStart(ms) }
+  const reset = () => { if (window.confirm(t('if_reset_confirm'))) setStart(null) }
+  const toggleNotify = async () => {
+    if (notify) { setNotify(false); return }
+    if (typeof Notification === 'undefined') { alert(t('if_notify_unsupported')); return }
+    let perm = Notification.permission
+    if (perm === 'default') perm = await Notification.requestPermission()
+    if (perm === 'granted') setNotify(true)
+    else alert(t('if_notify_denied'))
+  }
+
+  const R = 112
   const C = 2 * Math.PI * R
   const ringP = start ? (fasting ? progress : 1) : 0
   const accent = fasting || !start ? '#059669' : '#f59e0b'
-
-  const onStartChange = (v: string) => { const ms = new Date(v).getTime(); if (!Number.isNaN(ms)) setStart(ms) }
 
   return (
     <ToolLayout tool={tool}>
@@ -76,27 +112,37 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
           ))}
         </div>
 
-        {/* Progress ring */}
-        <div className="relative mx-auto" style={{ width: 200, height: 200 }}>
-          <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90">
-            <circle cx="100" cy="100" r={R} fill="none" stroke="#e5e7eb" strokeWidth="12" />
-            <circle cx="100" cy="100" r={R} fill="none" stroke={accent} strokeWidth="12" strokeLinecap="round"
+        {/* Progress ring — the headline element */}
+        <div className="relative mx-auto" style={{ width: 256, height: 256 }}>
+          <svg viewBox="0 0 256 256" className="w-full h-full -rotate-90">
+            <circle cx="128" cy="128" r={R} fill="none" stroke="#e5e7eb" strokeWidth="14" />
+            <circle cx="128" cy="128" r={R} fill="none" stroke={accent} strokeWidth="14" strokeLinecap="round"
               strokeDasharray={C} strokeDashoffset={C * (1 - ringP)} style={{ transition: 'stroke-dashoffset .5s, stroke .5s' }} />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {start ? (
               <>
-                <p className="text-xs font-bold uppercase tracking-wide" style={{ color: accent }}>
+                <p className="text-sm font-bold uppercase tracking-wide" style={{ color: accent }}>
                   {fasting ? t('if_status_fasting') : t('if_status_eating')}
                 </p>
-                <p className="text-3xl font-bold font-mono text-gray-800 tabular-nums">{fmtDur(fasting ? elapsed : remaining)}</p>
-                <p className="text-xs text-gray-400">{fasting ? t('if_of', { h: fastH }) : t('if_eatleft')}</p>
+                <p className="text-4xl font-bold font-mono text-gray-800 tabular-nums leading-tight">{fmtDur(fasting ? elapsed : remaining)}</p>
+                {fasting ? (
+                  <p className="text-sm text-gray-500 tabular-nums"><span className="font-mono">{fmtDur(remaining)}</span> {t('if_leftshort')} · <b style={{ color: accent }}>{pct}%</b></p>
+                ) : (
+                  <p className="text-sm text-gray-400">{t('if_eatleft')}</p>
+                )}
               </>
             ) : (
-              <p className="text-sm text-gray-400 text-center px-6">{t('if_idle')}</p>
+              <p className="text-sm text-gray-400 text-center px-8">{t('if_idle')}</p>
             )}
           </div>
         </div>
+
+        {/* Hourly-alert toggle */}
+        <button onClick={toggleNotify}
+          className={'w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-medium transition ' + (notify ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
+          {notify ? '🔔' : '🔕'} {t(notify ? 'if_notify_on' : 'if_notify_off')}
+        </button>
 
         {/* Actions / status */}
         {!start ? (
@@ -119,12 +165,8 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
               <input type="datetime-local" value={toLocalInput(start)} onChange={(e) => onStartChange(e.target.value)}
                 className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-emerald-400" />
             </div>
-            {fasting ? (
-              <p className="text-center text-xs text-gray-500">{t('if_remaining')}: <b className="font-mono">{fmtDur(remaining)}</b> · {Math.round(progress * 100)}%</p>
-            ) : (
-              <p className="text-center text-sm font-medium text-amber-600">🎉 {t('if_done')}</p>
-            )}
-            <button onClick={() => setStart(null)} className="w-full py-2 text-sm text-gray-500 hover:text-red-500 transition">{t('if_reset')}</button>
+            {!fasting && <p className="text-center text-sm font-medium text-amber-600">🎉 {t('if_done')}</p>}
+            <button onClick={reset} className="w-full py-2 text-sm text-gray-500 hover:text-red-500 transition">{t('if_reset')}</button>
           </div>
         )}
         <p className="text-xs text-gray-400 text-center">{t('if_disclaimer')}</p>

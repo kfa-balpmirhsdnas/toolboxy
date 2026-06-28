@@ -4099,6 +4099,14 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "if_reset_confirm": "現在の断食記録をリセットしますか？",
+    "if_leftshort": "残り",
+    "if_notify_on": "1時間ごとの通知オン",
+    "if_notify_off": "1時間ごとに通知を受け取る",
+    "if_notify_hour": "断食{h}時間経過！その調子 💪",
+    "if_notify_done": "断食完了！食事の時間です 🎉",
+    "if_notify_denied": "通知がブロックされています。ブラウザ設定で許可してください。",
+    "if_notify_unsupported": "このブラウザは通知に対応していません。",
     "dr_s_glass": "1杯",
     "dr_s_halfbottle": "半本",
     "dr_s_bottle": "1本",
