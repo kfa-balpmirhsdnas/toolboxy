@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { useGameStage, GameStageOverlay , SoundToggle, sfx } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, sfx, useFitCell } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('word-guess')!
@@ -36,6 +36,7 @@ export default function WordGuessPage({ params }: { params: { lang: string } }) 
   const stage = useGameStage()
 
   const cols = lang === 'EN' ? 5 : 6
+  const [CELL, boxRef] = useFitCell(cols, 6, { reserve: 300, maxCell: 46, gap: 4, pad: 0 })
   const ansJ = lang === 'EN' ? answer.split('') : jamo(answer)
 
   const reset = useCallback((l: 'EN' | 'KO') => { setLang(l); const bank = l === 'EN' ? EN : KO; setAnswer(bank[Math.floor(Math.random() * bank.length)]); setGuesses([]); setInput(''); setMsg('') }, [])
@@ -57,7 +58,7 @@ export default function WordGuessPage({ params }: { params: { lang: string } }) 
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="relative max-w-xs mx-auto space-y-4 text-center select-none">
+      <div ref={boxRef} data-game-stage className="relative w-full max-w-xs mx-auto space-y-4 text-center select-none">
         <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('wg_title')}</h1>
@@ -79,7 +80,7 @@ export default function WordGuessPage({ params }: { params: { lang: string } }) 
                   const ch = gj[c] === '_' ? '' : gj[c] || ''
                   const st = sc[c]
                   const bg = !g ? 'bg-white border-gray-200' : st === 'g' ? 'bg-emerald-500 text-white border-emerald-500' : st === 'y' ? 'bg-amber-400 text-white border-amber-400' : 'bg-gray-300 text-white border-gray-300'
-                  return <div key={c} className={`w-9 h-9 rounded border-2 flex items-center justify-center font-bold uppercase ${bg}`}>{ch}</div>
+                  return <div key={c} style={{ width: CELL, height: CELL, fontSize: Math.round(CELL * 0.44) }} className={`rounded border-2 flex items-center justify-center font-bold uppercase ${bg}`}>{ch}</div>
                 })}
               </div>
             )
