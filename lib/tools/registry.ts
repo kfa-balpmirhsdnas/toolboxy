@@ -66,6 +66,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 
 export const TOOLS: ToolMeta[] = [
   {slug:'fasting-timer',category:'health',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['간헐적 단식 타이머','간헐적 단식','16:8','단식 타이머','공복 타이머','intermittent fasting timer','fasting tracker','16:8 fasting','断食タイマー','間欠的断食'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'exercise-calorie-calculator',category:'health',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['운동 칼로리 소모','운동 칼로리 계산기','칼로리 소모량','MET 계산','달리기 칼로리','exercise calorie calculator','calories burned','MET calculator','運動カロリー','消費カロリー計算'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'image-mosaic',category:'image',also:['utility'],added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['이미지 모자이크','사진 모자이크','블러','얼굴 가리기','민감정보 가리기','image mosaic','blur image','pixelate','censor photo','redact','画像モザイク','ぼかし','顔隠し'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'todo-list',category:'utility',also:['text'],added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['할 일 목록','체크리스트','to-do list','todo','checklist','task list','やることリスト','チェックリスト','할일','투두'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'screen-capture',category:'image',also:['video'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['화면 캡처','온라인 화면 캡처','스크린샷','screenshot','screen capture','画面キャプチャ','スクショ'],maxFileSizeMB:{free:0,pro:0} },
