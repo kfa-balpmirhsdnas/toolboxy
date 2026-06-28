@@ -65,6 +65,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'powerball-results',category:'random',added:'2026-06-29',phase:1,isPro:false,isNew:true,tags:['powerball','powerball results','powerball winning numbers','powerball numbers','lottery results','winning numbers history','파워볼 당첨번호','파워볼 결과 조회','역대 당첨번호','パワーボール 当選番号','パワーボール 抽選結果'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'lottery-number-generator',category:'random',added:'2026-06-29',phase:1,isPro:false,isNew:true,tags:['로또 번호 생성기','로또 번호 추천','로또 6/45','복권 번호','파워볼 번호','lottery number generator','lotto number generator','powerball generator','random lottery numbers','ロト番号生成','宝くじ番号'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'background-remover',category:'image',added:'2026-06-29',phase:1,isPro:false,isNew:true,tags:['배경 제거','사진 배경 제거','누끼 따기','배경 투명','이미지 배경 제거','background remover','remove background','transparent background','bg remover','背景除去','背景透過'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'pdf-password',category:'pdf',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['pdf 비밀번호','pdf 잠금','pdf 암호 설정','pdf 암호 해제','pdf 비밀번호 제거','protect pdf','unlock pdf','pdf password','encrypt pdf','remove pdf password','pdfパスワード','pdf保護'],maxFileSizeMB:{free:50,pro:200} },

@@ -102,6 +102,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "powerball-results": "See the latest Powerball winning numbers and the full history of past draws. Look up results by date, browse recent draws, and view number frequency. Built on official NY State open data, refreshed after every Mon/Wed/Sat drawing.",
     "lottery-number-generator": "A free generator for lottery numbers — Powerball, Mega Millions, EuroMillions, Japan Loto, Korea Lotto 6/45 and more. Pick a lottery and it generates numbers per its rules. Multiple lines, fixed and excluded numbers, all in your browser.",
     "background-remover": "A free tool that automatically erases a photo’s background and makes it transparent. Drop an image and the AI removes the background in your browser, saving a transparent PNG. No install, no signup, and photos never leave your device.",
     "pdf-password": "A free tool to add or remove a password on a PDF. Upload a file, enter a password, and it processes right in your browser. No install, no signup, and files never leave your device.",
@@ -1628,6 +1629,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "powerball-results": "Powerball Results shows the latest U.S. Powerball winning numbers — five white balls (1–69) and the red Powerball (1–26) — plus Power Play and the full draw history since 2010. Look up the result for any date, browse recent draws, and see which numbers have appeared most often. Data comes from the official New York State open-data feed; the page fetches the newest draw live and falls back to a saved snapshot if the source is unavailable. This is an informational tool: Powerball is a game of chance, and past results never predict or influence future draws.",
     "lottery-number-generator": "The lottery number generator creates random numbers that follow each lottery’s rules (number range, count and bonus ball). It supports 16 lotteries including US Powerball and Mega Millions, EuroMillions, Japan Loto 6/7 and Korea Lotto 6/45. Main numbers are unique; the bonus ball is drawn from a separate pool. You can generate several lines at once and force or exclude specific numbers. It’s a light, for-fun tool for when you can’t be bothered to pick — it does not guarantee a win.",
     "background-remover": "The background remover automatically cuts out the background of people, products and other photos, producing a transparent PNG. The AI model runs entirely in your browser, so your photo is never uploaded to a server. The model downloads once on first use, then is cached for fast results. The transparent PNG is ready to use for compositing, product pages, profiles and more.",
     "pdf-password": "The PDF password tool lets you protect a PDF with a password (Lock) or remove the password from a protected PDF (Unlock). Lock encrypts the PDF with the password you enter; Unlock opens it with the correct password and re-saves it without encryption. Everything runs in your browser — the file and password are never sent to a server. If you forget the password, the PDF cannot be unlocked, so keep it safe.",
@@ -1947,6 +1949,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
+    "powerball-results": ["Open the page to see the latest winning numbers and the next draw date.","Pick a date to look up that specific drawing.","Scroll the recent draws list or load more history.","Open Number frequency to see which numbers came up most (for reference only)."],
     "lottery-number-generator": ["Choose a lottery (a sensible default is picked for your language).","Set how many lines, and optionally enter fixed or excluded numbers.","Press 'Generate' to create numbers by the rules.","Use 'Regenerate' for new numbers and 'Copy' to take them with you."],
     "background-remover": ["Upload or drag in a photo.","Press 'Remove background' — it processes in your browser (with progress).","Preview the result on a checkerboard (transparent) background.","Download the transparent PNG."],
     "pdf-password": ["Choose 'Lock' or 'Unlock'.","Upload or drag in a PDF file.","Enter the password (Lock = the one to set, Unlock = the current one).","Press the button — it processes in your browser.","When done, download the resulting PDF."],
@@ -3741,6 +3744,26 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pr_latest": "Latest winning numbers",
+    "pr_powerplay": "Power Play",
+    "pr_nextdraw": "Next draw",
+    "pr_live": "Live",
+    "pr_loading": "Loading…",
+    "pr_fallback": "Couldn't load the latest data — showing saved results.",
+    "pr_error": "Couldn't load Powerball data. Please try again later.",
+    "pr_lookup": "Look up a draw by date",
+    "pr_legacy": "(pre-2015 matrix)",
+    "pr_nodraw": "No draw on that date.",
+    "pr_recent": "Recent draws",
+    "pr_showmore": "Show more",
+    "pr_freq": "Number frequency",
+    "pr_freq_note": "Past results do not predict future draws.",
+    "pr_draws_analyzed": "{n} draws analyzed",
+    "pr_freq_white": "Most frequent white balls",
+    "pr_freq_pb": "Most frequent Powerball",
+    "pr_source": "Source",
+    "pr_updated": "Last updated",
+    "pr_disclaimer": "For reference only. Powerball numbers are drawn at random; past results don't predict or influence future draws. Always verify official results before claiming any prize.",
     "lt_draw": "Draw numbers",
     "lt_drawing": "Drawing…",
     "lt_sound": "Sound",
@@ -6936,6 +6959,7 @@
     ]
   },
   "toolNames": {
+    "powerball-results": "Powerball Results",
     "lottery-number-generator": "Lottery Number Generator",
     "background-remover": "Background Remover",
     "pdf-password": "PDF Password (Protect & Unlock)",
@@ -7089,6 +7113,7 @@
     }
   },
   "toolTitles": {
+    "powerball-results": "Powerball Results — Latest Winning Numbers & History",
     "lottery-number-generator": "Free Lottery Number Generator · Powerball, EuroMillions & More",
     "background-remover": "Free Background Remover · Make Photo Backgrounds Transparent",
     "image-viewer": "Free Online Image Viewer · View Photos in Your Browser, No Install",
