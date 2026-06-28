@@ -73,7 +73,7 @@ export default function ExerciseCalorieCalculatorPage() {
         <div><label className="block text-xs text-gray-500 mb-1">{t('ex_activity')}</label>
           <select value={actIdx} onChange={(e) => setActIdx(Number(e.target.value))}
             className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
-            {ACTS.map((a, i) => <option key={i} value={i}>{t('ex_' + a[0])} (MET {a[1]})</option>)}
+            {ACTS.map((a, i) => <option key={i} value={i}>{t('ex_' + a[0])}</option>)}
           </select></div>
         <div className="flex gap-2">
           {[15, 30, 45, 60].map((m) => (
@@ -85,7 +85,7 @@ export default function ExerciseCalorieCalculatorPage() {
         </div>
         <div className="bg-gradient-to-br from-rose-50 to-orange-50 rounded-2xl p-5 border border-rose-100 text-center">
           <p className="text-4xl font-bold text-rose-600">{total.toLocaleString()} <span className="text-lg">kcal</span></p>
-          <p className="text-2xl font-light text-gray-300 leading-none my-1">=</p>
+          <p className="text-2xl font-light text-gray-300 leading-none my-1">≈</p>
           <p className="font-bold text-gray-800 leading-tight"><span className="text-3xl align-middle">{food.emoji}</span> <span className="text-xl align-middle">{t('ex_food', { n: foodCount.toFixed(1) })}</span></p>
           <p className="text-xs text-gray-400 mt-2">({t('ex_permin', { n: perMin.toFixed(1) })})</p>
         </div>

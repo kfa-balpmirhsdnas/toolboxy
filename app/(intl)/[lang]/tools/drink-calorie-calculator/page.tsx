@@ -73,7 +73,7 @@ export default function DrinkCalorieCalculatorPage() {
 
         <div className="bg-gradient-to-br from-violet-50 to-fuchsia-50 rounded-2xl p-5 border border-violet-100 text-center">
           <p className="text-4xl font-bold text-violet-600">{total.toLocaleString()} <span className="text-lg">kcal</span></p>
-          <p className="text-2xl font-light text-gray-300 leading-none my-1">=</p>
+          <p className="text-2xl font-light text-gray-300 leading-none my-1">≈</p>
           <p className="font-bold text-gray-800 leading-tight"><span className="text-3xl align-middle">🚶</span> <span className="text-xl align-middle">{t('dr_walk', { n: walkMin })}</span></p>
           <p className="text-xs text-gray-400 mt-2">({t('dr_per100', { n: drink.kcal })})</p>
         </div>
