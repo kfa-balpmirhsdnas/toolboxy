@@ -90,6 +90,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [savedAt, setSavedAt] = useState('')
   const [copied, setCopied] = useState(false)
   const [renaming, setRenaming] = useState<string | null>(null)
+  const [showFind, setShowFind] = useState(false)
+  const [findQ, setFindQ] = useState('')
+  const [replaceQ, setReplaceQ] = useState('')
+  const [matchInfo, setMatchInfo] = useState('')
   const router = useRouter()
   const [user, setUser] = useState<User | null | 'loading'>('loading')
   const tracked = useRef(false)
@@ -281,6 +285,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const mod = e.ctrlKey || e.metaKey; const k = e.key.toLowerCase()
     if (mod && k === 'z' && !e.shiftKey) { e.preventDefault(); undo() }
     else if (mod && (k === 'y' || (k === 'z' && e.shiftKey))) { e.preventDefault(); redo() }
+    else if (mod && k === 'f') { e.preventDefault(); setShowFind(true) }
   }
 
   // Tabs
@@ -308,6 +313,57 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     setDocs(rest)
   }
   function renameDoc(id: string, name: string) { patchDoc(id, { name: name || docs.find((d) => d.id === id)?.name || dateTag() }) }
+
+  // On mobile, snap the editor box to just under the header on focus (the keyboard's
+  // native scroll otherwise overshoots past it). Desktop scrolls immediately.
+  function scrollBoxTop() {
+    const el = wrapRef.current; if (!el) return
+    const run = () => { const hd = document.querySelector('header'); const off = (hd ? hd.getBoundingClientRect().height : 0) + 8; window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - off), behavior: 'smooth' }) }
+    if (window.innerWidth >= 640) run(); else setTimeout(run, 300)
+  }
+
+  // Find / replace within the active tab (literal, case-sensitive).
+  function findNext(fromStart = false) {
+    const ta = taRef.current; if (!ta || !findQ) return
+    let idx = text.indexOf(findQ, fromStart ? 0 : (ta.selectionEnd || 0))
+    if (idx < 0) idx = text.indexOf(findQ, 0) // wrap around
+    if (idx < 0) { setMatchInfo(t('np_no_match')); return }
+    ta.focus(); ta.setSelectionRange(idx, idx + findQ.length)
+    setMatchInfo(t('np_matches', { n: text.split(findQ).length - 1 }))
+  }
+  function replaceOne() {
+    const ta = taRef.current; if (!ta || !findQ) return
+    if (text.slice(ta.selectionStart, ta.selectionEnd) === findQ) {
+      const at = ta.selectionStart
+      onChange(text.slice(0, at) + replaceQ + text.slice(ta.selectionEnd))
+      requestAnimationFrame(() => { const t2 = taRef.current; if (t2) { t2.focus(); t2.setSelectionRange(at + replaceQ.length, at + replaceQ.length) } })
+    } else findNext()
+  }
+  function replaceAll() {
+    if (!findQ) return
+    const total = text.split(findQ).length - 1
+    if (!total) { setMatchInfo(t('np_no_match')); return }
+    onChange(text.split(findQ).join(replaceQ))
+    setMatchInfo(t('np_replaced', { n: total }))
+  }
+
+  // Download every tab as its own .txt inside a single zip (login-gated like TXT).
+  async function zipDownload() {
+    if (user === 'loading') return
+    if (!user) { router.push(loginHref(params.lang, `/${params.lang}/tools/online-notepad`)); return }
+    const { zipSync, strToU8 } = await import('fflate')
+    const data: Record<string, Uint8Array> = {}
+    for (const d of docs) {
+      const base = ((d.name || 'notes').replace(/[\\/:*?"<>|]/g, '_').slice(0, 50)) || 'notes'
+      let name = `${base}.txt`; let i = 2
+      while (data[name]) name = `${base}_${i++}.txt`
+      data[name] = strToU8(d.text || '')
+    }
+    const blob = new Blob([zipSync(data, { level: 6 })], { type: 'application/zip' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a'); a.href = url; a.download = 'notepad.zip'; a.click()
+    URL.revokeObjectURL(url)
+  }
 
   function download() {
     if (user === 'loading') return // still resolving — ignore the click
@@ -384,6 +440,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               <button onClick={redo} disabled={!canRedo} title={t('np_redo')} aria-label={t('np_redo')} className={iconBtn}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M15 14l5-5-5-5" /><path d="M20 9H9a5 5 0 0 0 0 10h1" /></svg>
               </button>
+              <button onClick={() => setShowFind((s) => !s)} title={t('np_findreplace')} aria-label={t('np_findreplace')} aria-pressed={showFind} className={iconBtn + (showFind ? ' bg-brand-50 text-brand-600' : '')}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+              </button>
             </div>
             <span className="w-px h-5 bg-gray-200" />
             {/* Per-tab display settings — icon-only (label text dropped to keep the
@@ -423,13 +482,27 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           </div>
         </div>
 
+        {showFind && (
+          <div className="flex flex-wrap items-center gap-2 p-2 rounded-xl bg-gray-50 border border-gray-200">
+            <input value={findQ} onChange={(e) => setFindQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') findNext(); if (e.key === 'Escape') setShowFind(false) }}
+              placeholder={t('np_find')} autoFocus className="min-w-0 flex-1 sm:flex-none sm:w-40 rounded-lg border border-gray-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            <input value={replaceQ} onChange={(e) => setReplaceQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') replaceOne(); if (e.key === 'Escape') setShowFind(false) }}
+              placeholder={t('np_replace')} className="min-w-0 flex-1 sm:flex-none sm:w-40 rounded-lg border border-gray-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            <button onClick={() => findNext()} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-white disabled:opacity-40">{t('np_find_next')}</button>
+            <button onClick={replaceOne} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-white disabled:opacity-40">{t('np_replace_btn')}</button>
+            <button onClick={replaceAll} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-40">{t('np_replace_all')}</button>
+            {matchInfo && <span className="text-xs text-gray-500">{matchInfo}</span>}
+            <button onClick={() => setShowFind(false)} aria-label={t('ui_clear')} className="ml-auto text-gray-400 hover:text-gray-700 text-lg leading-none px-1">×</button>
+          </div>
+        )}
+
         <textarea
           ref={taRef}
           value={text}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
           onCompositionEnd={flushNow}
-          onFocus={() => { if (window.innerWidth >= 640) wrapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }} // mobile: let the keyboard's native scroll handle it (ours overshoots)
+          onFocus={scrollBoxTop}
           placeholder={t('np_placeholder')}
           spellCheck={false}
           style={{ fontFamily: FAM_CSS(fam) }}
@@ -440,6 +513,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           <button onClick={download} disabled={!text}
             className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
             ⬇ {t('np_download')}
+          </button>
+          <button onClick={zipDownload} disabled={docs.every((d) => !d.text)}
+            className="px-4 py-2 text-sm font-semibold rounded-xl border border-brand-200 text-brand-700 bg-brand-50 hover:bg-brand-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+            🗜 {t('np_zip')}
           </button>
           <button onClick={copy} disabled={!text}
             className="px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">

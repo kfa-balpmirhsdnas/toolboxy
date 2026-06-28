@@ -4109,6 +4109,16 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "np_findreplace": "찾기·바꾸기",
+    "np_find": "찾을 내용",
+    "np_replace": "바꿀 내용",
+    "np_find_next": "다음 찾기",
+    "np_replace_btn": "바꾸기",
+    "np_replace_all": "모두 바꾸기",
+    "np_no_match": "결과 없음",
+    "np_matches": "{n}개 일치",
+    "np_replaced": "{n}개 바꿈",
+    "np_zip": "ZIP 다운로드",
     "td_rename_hint": "한 번 더 눌러 이름 수정",
     "td_all_done": "모두 완료했어요! 🎉",
     "td_field_list": "목록",
