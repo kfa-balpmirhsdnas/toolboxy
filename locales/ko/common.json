@@ -4114,6 +4114,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "np_created": "문서 생성일",
     "pt_bohr_zoom": "클릭하면 확대/축소",
     "np_settings": "표시 설정",
     "np_find_short": "찾기",

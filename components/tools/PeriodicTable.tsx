@@ -56,6 +56,7 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
   const [bohrOpen, setBohrOpen] = useState(true)
   const [anim, setAnim] = useState(true) // electron orbit animation (on by default)
   const [bohrBig, setBohrBig] = useState(false) // reduced by default (aligns with the left column); click to zoom
+  const [bohrHover, setBohrHover] = useState(false) // desktop: also enlarges on hover
   // Temperature mode: a table-wide slider recolours all 118 cells by phase at T.
   const [tempMode, setTempMode] = useState(false)
   const [tempS, setTempS] = useState(() => Math.round(SMAX * tToPct(25) / 100)) // start at room temp 25°C
@@ -150,8 +151,9 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
                  className={`leading-none text-[13px] w-5 h-5 rounded-full border transition-colors ${anim ? 'border-brand-300 text-brand-600 bg-brand-50' : 'border-gray-200 text-gray-400'}`}>⟳</button>
              </div>
              <button type="button" onClick={() => setBohrBig((b) => !b)} title={t('pt_bohr_zoom')} aria-label={t('pt_bohr_zoom')}
-               className={`rounded-xl bg-white/55 px-2 py-2 ${bohrBig ? 'cursor-zoom-out' : 'cursor-zoom-in'} ${bohrOpen ? '' : 'hidden'} sm:block`}>
-               <BohrModel shells={shellArr} color={COLORS[sel.cat]} symbol={sel.sym} number={sel.n} animate={anim} size={bohrBig ? 200 : 150} />
+               onMouseEnter={() => setBohrHover(true)} onMouseLeave={() => setBohrHover(false)}
+               className={`rounded-xl bg-white/55 px-2 py-2 transition-all ${bohrBig ? 'cursor-zoom-out' : 'cursor-zoom-in'} ${bohrOpen ? '' : 'hidden'} sm:block`}>
+               <BohrModel shells={shellArr} color={COLORS[sel.cat]} symbol={sel.sym} number={sel.n} animate={anim} size={bohrBig || bohrHover ? 200 : 150} />
              </button>
            </div>
          )}

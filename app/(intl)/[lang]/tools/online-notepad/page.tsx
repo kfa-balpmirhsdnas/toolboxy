@@ -18,13 +18,14 @@ type SizeLvl = 'xs' | 'sm' | 'md' | 'lg' | 'xl' // font size (wider range)
 type Fam = string
 // Per-document settings live on the doc itself so each tab keeps its own look.
 // `updatedAt` drives multi-tab conflict resolution (newest write wins per doc).
-type Doc = { id: string; name: string; text: string; fam: Fam; size: SizeLvl; lh: Lvl; updatedAt: number }
+type Doc = { id: string; name: string; text: string; fam: Fam; size: SizeLvl; lh: Lvl; updatedAt: number; createdAt: number }
 const uid = () => Math.random().toString(36).slice(2, 9)
 // Tab title = today's date as YYMMDD (e.g. 260628).
 const dateTag = () => {
   const d = new Date()
-  return `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`
+  return `${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}` // MMDD
 }
+const fmtDate = (ms: number) => { const d = new Date(ms); return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}` }
 
 const SIZE_CLS: Record<SizeLvl, string> = { xs: 'text-[11px]', sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[18px]', xl: 'text-[22px]' }
 const LH_CLS: Record<Lvl, string> = { sm: 'leading-snug', md: 'leading-relaxed', lg: 'leading-loose' }
@@ -83,7 +84,7 @@ function mergeState(local: { docs: Doc[]; deleted: Tomb }, remote: { docs?: Doc[
 
 export default function OnlineNotepadPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
-  const first = useRef<Doc>({ id: uid(), name: dateTag(), text: '', ...DEFAULTS, updatedAt: Date.now() }).current
+  const first = useRef<Doc>({ id: uid(), name: dateTag(), text: '', ...DEFAULTS, updatedAt: Date.now(), createdAt: Date.now() }).current
 
   const [docs, setDocs] = useState<Doc[]>([first])
   const [activeId, setActiveId] = useState(first.id)
@@ -153,7 +154,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
         const data = JSON.parse(raw) as { docs?: Partial<Doc>[]; activeId?: string; deleted?: Tomb }
         deletedRef.current = data.deleted || {}
         if (data.docs?.length) {
-          const restored = data.docs.map((d) => ({ ...DEFAULTS, updatedAt: 0, ...d } as Doc))
+          const restored = data.docs.map((d) => ({ ...DEFAULTS, updatedAt: 0, ...d, createdAt: d.createdAt ?? d.updatedAt ?? Date.now() } as Doc))
           setDocs(restored)
           setActiveId(restored.some((d) => d.id === data.activeId) ? data.activeId! : restored[0].id)
           const h: Record<string, { hist: string[]; idx: number }> = {}
@@ -293,7 +294,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   function addDoc() {
     const src = docs.find((d) => d.id === activeId) ?? docs[0]
     // A new tab inherits the current tab's font / size / line-spacing.
-    const d: Doc = { id: uid(), name: uniqueName(docs), text: '', fam: src?.fam ?? DEFAULTS.fam, size: src?.size ?? DEFAULTS.size, lh: src?.lh ?? DEFAULTS.lh, updatedAt: Date.now() }
+    const d: Doc = { id: uid(), name: uniqueName(docs), text: '', fam: src?.fam ?? DEFAULTS.fam, size: src?.size ?? DEFAULTS.size, lh: src?.lh ?? DEFAULTS.lh, updatedAt: Date.now(), createdAt: Date.now() }
     histories.current[d.id] = { hist: [''], idx: 0 }
     setDocs((ds) => [...ds, d]); setActiveId(d.id)
   }
@@ -303,7 +304,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     delete histories.current[id]
     const rest = docs.filter((x) => x.id !== id)
     if (rest.length === 0) {
-      const nd: Doc = { id: uid(), name: uniqueName([]), text: '', ...DEFAULTS, updatedAt: Date.now() }
+      const nd: Doc = { id: uid(), name: uniqueName([]), text: '', ...DEFAULTS, updatedAt: Date.now(), createdAt: Date.now() }
       histories.current[nd.id] = { hist: [''], idx: 0 }
       setDocs([nd]); setActiveId(nd.id); return
     }
@@ -318,12 +319,22 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   // On mobile, snap the editor box to just under the header on focus (the keyboard's
   // native scroll otherwise overshoots past it). Desktop scrolls immediately.
   function scrollBoxTop() {
-    const el = wrapRef.current; if (!el) return
+    // The "box line" = the top edge of the white tool card; scroll it to just under
+    // the sticky header. (wrapRef is inside the card, so target the card itself.)
+    const el = (wrapRef.current?.closest('.bg-white') as HTMLElement | null) || wrapRef.current; if (!el) return
     const run = () => { const hd = document.querySelector('header'); const off = (hd ? hd.getBoundingClientRect().height : 0) + 8; window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - off), behavior: 'smooth' }) }
     // Run after the browser's own focus-scroll so ours wins and the box top lands on
     // the line. Desktop: a short tick; mobile: wait for the keyboard to open first.
     setTimeout(run, window.innerWidth >= 640 ? 60 : 300)
   }
+  // Attach focus-scroll as a NATIVE listener — it fires reliably for every focus
+  // (incl. real taps/clicks), unlike React's onFocus which proved flaky here.
+  useEffect(() => {
+    const ta = taRef.current; if (!ta) return
+    const h = () => scrollBoxTop()
+    ta.addEventListener('focus', h)
+    return () => ta.removeEventListener('focus', h)
+  }, [])
 
   // Find / replace within the active tab (literal, case-sensitive).
   function findNext(fromStart = false) {
@@ -480,10 +491,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex gap-2 text-xs">
-              <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_chars', { n: chars.toLocaleString() })}</span>
-              <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_lines', { n: lines.toLocaleString() })}</span>
-            </div>
             <span className={'text-xs font-medium transition-colors ' + (savedAt ? 'text-green-600' : 'text-gray-400')}>
               {savedAt ? `✓ ${t('np_autosaved')} ${savedAt}` : t('np_saving')}
             </span>
@@ -510,14 +517,13 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
           onCompositionEnd={flushNow}
-          onFocus={scrollBoxTop}
           placeholder={t('np_placeholder')}
           spellCheck={false}
           style={{ fontFamily: FAM_CSS(fam) }}
           className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
         />
 
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <button onClick={download} disabled={!text}
             className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
             ⬇ {t('np_download')}
@@ -530,8 +536,14 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             className="px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
             {copied ? '✓ ' + t('np_copied') : t('ui_copy')}
           </button>
+          {/* stats + document creation date, just left of Clear */}
+          <span className="ml-auto flex items-center gap-2 text-xs text-gray-500">
+            <span title={t('np_created')}>📅 {fmtDate(active.createdAt)}</span>
+            <span className="px-2 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_chars', { n: chars.toLocaleString() })}</span>
+            <span className="px-2 py-1 rounded-lg bg-gray-100 text-gray-600 font-medium">{t('np_lines', { n: lines.toLocaleString() })}</span>
+          </span>
           <button onClick={clear} disabled={!text}
-            className="px-4 py-2 text-sm text-gray-500 hover:text-red-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors ml-auto">
+            className="px-4 py-2 text-sm text-gray-500 hover:text-red-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
             {t('ui_clear')}
           </button>
         </div>
