@@ -67,6 +67,7 @@ export default function ImageViewerPage() {
   const [playing, setPlaying] = useState(false)
   const [interval, setIntervalSec] = useState(5)
   const [fs, setFs] = useState(false)
+  const [fmt, setFmt] = useState<'orig' | 'jpg' | 'png' | 'webp'>('orig')
 
   const fileRef = useRef<HTMLInputElement>(null)
   const dirRef = useRef<HTMLInputElement>(null)
@@ -160,6 +161,32 @@ export default function ImageViewerPage() {
   }, [])
   const toggleFs = () => { if (document.fullscreenElement) document.exitFullscreen(); else viewerRef.current?.requestFullscreen?.() }
 
+  // Save the current image. "orig" downloads the file as-is; the others re-encode
+  // through a canvas, baking in the current rotation + flip (zoom/pan are view-only).
+  async function save() {
+    if (!cur) return
+    const base = cur.name.replace(/\.[^.]+$/, '') || 'image'
+    if (fmt === 'orig') { const a = document.createElement('a'); a.href = cur.url; a.download = cur.name; a.click(); return }
+    try {
+      const im = await new Promise<HTMLImageElement>((res, rej) => { const x = new Image(); x.onload = () => res(x); x.onerror = rej; x.src = cur.url })
+      const deg = ((rot % 360) + 360) % 360
+      const swap = deg % 180 !== 0
+      const w = im.naturalWidth, h = im.naturalHeight
+      const cw = swap ? h : w, ch = swap ? w : h
+      const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch
+      const ctx = cv.getContext('2d'); if (!ctx) return
+      const type = fmt === 'jpg' ? 'image/jpeg' : fmt === 'webp' ? 'image/webp' : 'image/png'
+      if (type === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cw, ch) } // JPEG has no alpha
+      ctx.translate(cw / 2, ch / 2); ctx.rotate((deg * Math.PI) / 180); ctx.scale(flip ? -1 : 1, 1)
+      ctx.drawImage(im, -w / 2, -h / 2)
+      cv.toBlob((blob) => {
+        if (!blob) return
+        const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = `${base}.${fmt}`; a.click()
+        setTimeout(() => URL.revokeObjectURL(u), 2000)
+      }, type, 0.92)
+    } catch { /* ignore */ }
+  }
+
   // Wheel zoom (centered).
   const onWheel = (e: React.WheelEvent) => { e.preventDefault(); setZoom((z) => Math.min(8, Math.max(1, z + (e.deltaY < 0 ? 0.2 : -0.2)))) }
   // Drag-to-pan (only when zoomed).
@@ -221,6 +248,14 @@ export default function ImageViewerPage() {
             <span className="w-px h-5 bg-white/15 mx-1" />
             <button className={tBtn + (showInfo ? ' bg-white/15' : '')} title="이미지 정보" onClick={() => setShowInfo((s) => !s)}>ℹ️</button>
             <button className={tBtn} title="전체화면" onClick={toggleFs}>{fs ? '🗗' : '⛶'}</button>
+            <span className="w-px h-5 bg-white/15 mx-1" />
+            <select value={fmt} onChange={(e) => setFmt(e.target.value as typeof fmt)} title="저장 형식" className="bg-gray-700 text-gray-200 text-xs rounded-md px-1 py-1 border-0 focus:outline-none">
+              <option value="orig">원본</option>
+              <option value="jpg">JPG</option>
+              <option value="png">PNG</option>
+              <option value="webp">WebP</option>
+            </select>
+            <button className={tBtn} title="현재 이미지 저장" onClick={save}>⬇</button>
             <span className="ml-auto text-xs text-gray-400 tabular-nums px-1">{idx + 1} / {images.length}</span>
             <button className={tBtn} title="모두 닫기" onClick={clearAll}>✕</button>
           </div>
