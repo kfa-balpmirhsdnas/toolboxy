@@ -3716,6 +3716,9 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "np_list": "List",
+    "np_list_sym": "Bullet list",
+    "np_list_num": "Numbered list",
     "np_chars_label": "Characters",
     "np_lines_label": "Lines",
     "np_created": "Created",

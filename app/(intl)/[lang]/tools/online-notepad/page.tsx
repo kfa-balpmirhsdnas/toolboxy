@@ -27,11 +27,11 @@ const dateTag = () => {
 }
 const fmtDate = (ms: number) => { const d = new Date(ms); return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}` }
 
-// Auto-list (single level only): symbol shortcuts (typed char → bullet glyph) and the
-// line markers we recognise for auto-continue. Numbered lists also auto-renumber.
-const SYM_BULLET: Record<string, string> = { '*': '●', o: '○', '@': '■' }
+// Auto-list (single level only). A symbol line may use a shortcut (* o @) or the
+// glyph itself; the shortcut is turned into the glyph only on Enter (like numbers).
+const SYM_TO_GLYPH: Record<string, string> = { '*': '●', o: '○', '@': '■', '●': '●', '○': '○', '■': '■' }
 const NUM_MARK = /^(\d+)([.)>]) /  // "1. " / "1) " / "1> "
-const SYM_MARK = /^([●○■]) /       // "● " / "○ " / "■ "
+const SYM_MARK = /^([*o@●○■]) /    // "* " / "o " / "@ " / "● " / "○ " / "■ "
 
 const SIZE_CLS: Record<SizeLvl, string> = { xs: 'text-[11px]', sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[18px]', xl: 'text-[22px]' }
 const LH_CLS: Record<Lvl, string> = { sm: 'leading-snug', md: 'leading-relaxed', lg: 'leading-loose' }
@@ -342,15 +342,33 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
       let nt = text.slice(0, pos) + '\n' + nextM + text.slice(pos); let caret = pos + 1 + nextM.length
       ;({ text: nt, caret } = renumberAt(nt, caret, delim)); applyText(nt, caret); return true
     }
-    const nt = text.slice(0, pos) + '\n' + marker + text.slice(pos); applyText(nt, pos + 1 + marker.length); return true
+    // symbol: turn the trigger (* o @) into its glyph on this line, then continue with the glyph
+    const glyph = SYM_TO_GLYPH[sym![1]]
+    let nt = text.slice(0, ls) + glyph + text.slice(ls + 1)
+    nt = nt.slice(0, pos) + '\n' + glyph + ' ' + nt.slice(pos)
+    applyText(nt, pos + glyph.length + 2); return true
   }
-  // Space after a lone * / o / @ at line start → turn it into the bullet glyph.
-  function symSpace(): boolean {
-    const ta = taRef.current; if (!ta) return false
-    const pos = ta.selectionStart; if (pos !== ta.selectionEnd) return false
+  // Apply a bullet to the current line (from the toolbar select).
+  function applyBullet(kind: 'sym' | 'num') {
+    const ta = taRef.current; if (!ta) return
+    const pos = ta.selectionStart
     const ls = text.lastIndexOf('\n', pos - 1) + 1
-    const g = SYM_BULLET[text.slice(ls, pos)]; if (!g) return false
-    applyText(text.slice(0, ls) + g + ' ' + text.slice(pos), ls + g.length + 1); return true
+    const nl = text.indexOf('\n', pos); const le = nl === -1 ? text.length : nl
+    const stripped = text.slice(ls, le).replace(/^(?:[*o@●○■] |\d+[.)>] )/, '')
+    const marker = kind === 'sym' ? '● ' : '1. '
+    let nt = text.slice(0, ls) + marker + stripped + text.slice(le); let caret = ls + marker.length + stripped.length
+    if (kind === 'num') ({ text: nt, caret } = renumberAt(nt, caret, '.'))
+    applyText(nt, caret)
+  }
+  // After a delete, re-sequence the numbered block at the caret (auto-decrement).
+  function renumberAfterDelete() {
+    const ta = taRef.current; if (!ta) return
+    const caret = ta.selectionStart; const full = ta.value
+    const ls = full.lastIndexOf('\n', caret - 1) + 1
+    const m = full.slice(ls).match(/^\d+([.)>]) /)
+    if (!m) return
+    const { text: nt, caret: nc } = renumberAt(full, caret, m[1])
+    if (nt !== full) applyText(nt, nc)
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
@@ -359,7 +377,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     else if (mod && (k === 'y' || (k === 'z' && e.shiftKey))) { e.preventDefault(); redo() }
     else if (mod && k === 'f') { e.preventDefault(); setShowFind(true) }
     else if (!mod && !e.nativeEvent.isComposing && e.key === 'Enter' && !e.shiftKey) { if (listEnter()) e.preventDefault() }
-    else if (!mod && !e.nativeEvent.isComposing && e.key === ' ') { if (symSpace()) e.preventDefault() }
+    else if (!mod && !e.nativeEvent.isComposing && (e.key === 'Backspace' || e.key === 'Delete')) { requestAnimationFrame(renumberAfterDelete) }
   }
 
   // Tabs
@@ -546,6 +564,13 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
               </button>
             </div>
+            <span className="w-px h-5 bg-gray-200" />
+            {/* List bullet: apply a symbol or numbered marker to the current line. */}
+            <select aria-label={t('np_list')} title={t('np_list')} value="" onChange={(e) => { if (e.target.value) applyBullet(e.target.value as 'sym' | 'num'); e.currentTarget.value = '' }} className={selCls}>
+              <option value="">{t('np_list')}</option>
+              <option value="sym">● {t('np_list_sym')}</option>
+              <option value="num">1. {t('np_list_num')}</option>
+            </select>
             <span className="w-px h-5 bg-gray-200" />
             {/* Mobile-only gear: the display settings are hidden until tapped. */}
             <button onClick={() => setShowSettings((s) => !s)} title={t('np_settings')} aria-label={t('np_settings')} aria-pressed={showSettings} className={'sm:hidden ' + iconBtn + (showSettings ? ' bg-brand-50 text-brand-600' : '')}>
