@@ -60,8 +60,16 @@ export default function LotteryNumberGeneratorPage() {
   const generate = useCallback(() => {
     timers.current.forEach(clearTimeout); timers.current = []
     if (sound) {
-      try { const AC = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext; if (AC) { if (!audioRef.current) audioRef.current = new AC(); audioRef.current.resume() } } catch { /* ignore */ }
-      blip(523, 0.1, 'triangle', 0.32) // click on the draw button (also primes audio so the 1st ball sounds)
+      try {
+        const AC = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+        if (AC) {
+          if (!audioRef.current) audioRef.current = new AC()
+          const ctx = audioRef.current
+          const click = () => blip(523, 0.1, 'triangle', 0.34) // sound the instant the button is pressed
+          if (ctx.state === 'suspended') ctx.resume().then(click).catch(() => {}) // first press: play right after the context wakes
+          else click()
+        }
+      } catch { /* ignore */ }
     }
     const l = LOTTERIES.find((x) => x.id === id) || LOTTERIES[0]
     const exclude = new Set(parseNums(excludeStr))
@@ -77,7 +85,7 @@ export default function LotteryNumberGeneratorPage() {
     timers.current.push(setTimeout(() => {
       setGames(out); setDrawing(false)
       for (let i = 1; i <= total; i++) {
-        timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(330, 0.12, 'sine', 0.42) }, i * step)) // identical pop for every ball
+        timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(262, 0.12, 'sine', 0.42) }, i * step)) // identical low pop for every ball
       }
     }, 2000))
   }, [id, count, fixedStr, excludeStr, sound])
