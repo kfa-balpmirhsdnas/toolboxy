@@ -255,13 +255,17 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     } catch { /* ignore */ }
   }
   useEffect(() => {
-    const onHide = () => { if (document.visibilityState === 'hidden') flushNow() }
-    window.addEventListener('blur', flushNow)
-    window.addEventListener('pagehide', flushNow)
+    // Blur the editor first so an in-progress IME composition (the last char) is
+    // committed into textarea.value before we read & save it — otherwise that last
+    // character can get dropped when focus is lost.
+    const onLeave = () => { taRef.current?.blur(); flushNow() }
+    const onHide = () => { if (document.visibilityState === 'hidden') onLeave() }
+    window.addEventListener('blur', onLeave)
+    window.addEventListener('pagehide', onLeave)
     document.addEventListener('visibilitychange', onHide)
     return () => {
-      window.removeEventListener('blur', flushNow)
-      window.removeEventListener('pagehide', flushNow)
+      window.removeEventListener('blur', onLeave)
+      window.removeEventListener('pagehide', onLeave)
       document.removeEventListener('visibilitychange', onHide)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -325,6 +329,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const ls = text.lastIndexOf('\n', pos - 1) + 1
     const nl = text.indexOf('\n', pos); const le = nl === -1 ? text.length : nl
     const line = text.slice(ls, le)
+    if (/^-{3,}$/.test(line.trim())) { // "---" + Enter → a full divider line, caret on the next line
+      const divider = '-'.repeat(30)
+      applyText(text.slice(0, ls) + divider + '\n' + text.slice(le), ls + divider.length + 1); return true
+    }
     const num = line.match(NUM_MARK); const sym = line.match(SYM_MARK)
     if (!num && !sym) return false
     const marker = (num ?? sym)![0]
@@ -400,16 +408,19 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     ta.addEventListener('focus', h)
     return () => ta.removeEventListener('focus', h)
   }, [])
-  // Scroll the active tab fully into view in the horizontally-scrolling tab bar.
+  // Keep the active tab visible. For a tab in the latter half, scroll the bar all the
+  // way to the end so the "+ new tab" button (and trailing tabs) stay reachable.
   useEffect(() => {
     const bar = tabBarRef.current; if (!bar) return
     const el = bar.querySelector(`[data-tab="${activeId}"]`) as HTMLElement | null; if (!el) return
+    const idx = docs.findIndex((d) => d.id === activeId)
+    if (idx >= 0 && idx >= docs.length / 2) { bar.scrollTo({ left: bar.scrollWidth, behavior: 'smooth' }); return }
     const er = el.getBoundingClientRect(), br = bar.getBoundingClientRect()
     let delta = 0
     if (er.left < br.left + 8) delta = er.left - br.left - 8
     else if (er.right > br.right - 8) delta = er.right - br.right + 8
     if (delta) bar.scrollTo({ left: bar.scrollLeft + delta, behavior: 'smooth' })
-  }, [activeId])
+  }, [activeId, docs.length])
 
   // Find / replace within the active tab (literal, case-sensitive).
   function findNext(fromStart = false) {
@@ -444,7 +455,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const { zipSync, strToU8 } = await import('fflate')
     const data: Record<string, Uint8Array> = {}
     for (const d of docs) {
-      const base = ((d.name || 'notes').replace(/[\\/:*?"<>|]/g, '_').slice(0, 50)) || 'notes'
+      const base = (((d.name || 'notes').replace(/[\\/:*?"<>|]/g, '_').slice(0, 50)) || 'notes') + `_${fmtDate(d.createdAt)}`
       let name = `${base}.txt`; let i = 2
       while (data[name]) name = `${base}_${i++}.txt`
       data[name] = strToU8(d.text || '')
@@ -463,7 +474,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${(active?.name || 'notes').replace(/[\\/:*?"<>|]/g, '_').slice(0, 50)}.txt`
+    a.download = `${(active?.name || 'notes').replace(/[\\/:*?"<>|]/g, '_').slice(0, 50)}_${fmtDate(active.createdAt)}.txt`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -611,14 +622,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           </button>
           <button onClick={copy} disabled={!text}
             className="px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            {copied ? '✓ ' + t('np_copied') : t('ui_copy')}
+            {copied ? '✓ ' + t('np_copied') : '📋 ' + t('ui_copy')}
           </button>
-          {/* creation date + char/line counts — icon + number only, just left of Clear */}
+          {/* char/line counts + creation date — icon + number only, just left of Clear */}
           <span className="ml-auto flex items-center gap-x-3 gap-y-0.5 flex-wrap text-xs text-gray-400 tabular-nums">
-            <span className="inline-flex items-center gap-1" title={t('np_created')}>
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></svg>
-              {fmtDate(active.createdAt)}
-            </span>
             <span className="inline-flex items-center gap-1" title={t('np_chars_label')}>
               <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7" /><line x1="9" x2="15" y1="20" y2="20" /><line x1="12" x2="12" y1="4" y2="20" /></svg>
               {chars.toLocaleString()}
@@ -627,10 +634,14 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" x2="3" y1="6" y2="6" /><line x1="15" x2="3" y1="12" y2="12" /><line x1="17" x2="3" y1="18" y2="18" /></svg>
               {lines.toLocaleString()}
             </span>
+            <span className="inline-flex items-center gap-1" title={t('np_created')}>
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></svg>
+              {fmtDate(active.createdAt)}
+            </span>
           </span>
           <button onClick={clear} disabled={!text}
-            className="px-4 py-2 text-sm text-gray-500 hover:text-red-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            {t('ui_clear')}
+            className="px-4 py-2 text-sm rounded-xl border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+            🗑 {t('ui_clear')}
           </button>
         </div>
 
