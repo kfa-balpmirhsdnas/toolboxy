@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
-import { useGameStage, GameStageOverlay, SoundToggle, isGameMuted } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, isGameMuted, useFitCell } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('simon')!
@@ -33,6 +33,7 @@ function tone(freq: number, dur = 0.35) {
 export default function SimonPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const stage = useGameStage()
+  const [CELL, boxRef] = useFitCell(2, 2, { reserve: 290, maxCell: 150, gap: 12, pad: 0 })
   const [seq, setSeq] = useState<number[]>([])
   const [phase, setPhase] = useState<'idle' | 'watch' | 'input' | 'over'>('idle')
   const [active, setActive] = useState(-1)
@@ -75,7 +76,7 @@ export default function SimonPage({ params }: { params: { lang: string } }) {
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="relative max-w-xs mx-auto space-y-4 text-center select-none">
+      <div ref={boxRef} data-game-stage className="relative w-full max-w-xs mx-auto space-y-4 text-center select-none">
         <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('si_title')}</h1>
@@ -86,7 +87,7 @@ export default function SimonPage({ params }: { params: { lang: string } }) {
           <span>{t('si_best')}: {best}</span>
         </div>
         <div className="font-semibold text-gray-700 h-6">{status}</div>
-        <div className="relative w-56 mx-auto">
+        <div className="relative mx-auto" style={{ width: CELL * 2 + 12 }}>
           <div className="grid grid-cols-2 gap-3">
             {PADS.map((p, i) => (
               <button key={i} onClick={() => press(i)} disabled={phase !== 'input'} aria-label={`pad ${i + 1}`}

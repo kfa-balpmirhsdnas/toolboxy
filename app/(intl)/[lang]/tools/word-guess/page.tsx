@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { useGameStage, GameStageOverlay, SoundToggle, sfx, useFitCell } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, sfx, useFitCell, scrollGameToTop } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('word-guess')!
@@ -52,6 +52,7 @@ export default function WordGuessPage({ params }: { params: { lang: string } }) 
     else { if (!/^[가-힣]{2}$/.test(input.trim())) { setMsg(t('wg_len2')); return } }
     const word = lang === 'EN' ? g : input.trim()
     const ng = [...guesses, word]; setGuesses(ng); setInput(''); setMsg(''); sfx('move')
+    scrollGameToTop() // re-anchor the box top below the header after the keyboard pushed it up
     if (word === answer) { setMsg(t('wg_win', { n: ng.length })); sfx('point') }
     else if (ng.length >= 6) setMsg(t('wg_lose', { a: answer }))
   }

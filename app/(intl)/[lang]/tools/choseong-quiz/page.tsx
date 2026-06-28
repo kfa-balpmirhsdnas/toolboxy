@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
-import { useGameStage, GameStageOverlay , SoundToggle, sfx } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, sfx, scrollGameToTop } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { choseong } from '@/lib/gosaseongeo'
 
@@ -43,6 +43,7 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
 
   function submit() {
     if (!stage.playing) return
+    scrollGameToTop() // re-anchor the box top below the header after the keyboard pushed it up
     if (result) { setIdx((n) => n + 1); setInput(''); setResult(''); setLastPts(0); qStart.current = Date.now(); return }
     const ok = input.trim() === quiz[idx][0]
     setResult(ok ? 'ok' : 'no')
