@@ -300,7 +300,18 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   // re-applied after React re-renders).
   function applyText(nt: string, caret: number) {
     onChange(nt)
-    requestAnimationFrame(() => { const ta = taRef.current; if (ta) { ta.focus(); ta.selectionStart = ta.selectionEnd = caret } })
+    requestAnimationFrame(() => {
+      const ta = taRef.current; if (!ta) return
+      ta.focus(); ta.selectionStart = ta.selectionEnd = caret
+      // A programmatic caret move (list Enter, etc.) doesn't auto-scroll the textarea the
+      // way a native keystroke does, so the new line can stay hidden. Nudge it into view.
+      if (nt.indexOf('\n', caret) === -1) { ta.scrollTop = ta.scrollHeight; return } // caret on the last line → reveal bottom
+      const cs = getComputedStyle(ta)
+      const lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.5
+      const top = (parseFloat(cs.paddingTop) || 0) + (nt.slice(0, caret).split('\n').length - 1) * lh
+      if (top + lh > ta.scrollTop + ta.clientHeight) ta.scrollTop = top + lh - ta.clientHeight
+      else if (top < ta.scrollTop) ta.scrollTop = top
+    })
   }
   // Re-sequence the contiguous numbered block (same delimiter) around the caret to 1,2,3…
   function renumberAt(full: string, caret: number, delim: string) {
@@ -330,7 +341,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const ls = text.lastIndexOf('\n', pos - 1) + 1
     const nl = text.indexOf('\n', pos); const le = nl === -1 ? text.length : nl
     const line = text.slice(ls, le)
-    if (/^-{3,10}$/.test(line.trim())) { // 3–10 dashes + Enter → a full divider line (a longer line is left alone, so Enter works normally on the divider itself)
+    if (/^-{3,5}$/.test(line.trim())) { // 3–5 dashes + Enter → a full divider line (a longer line is left alone, so Enter works normally on the divider itself)
       const divider = '-'.repeat(50)
       applyText(text.slice(0, ls) + divider + '\n' + text.slice(le), ls + divider.length + 1); return true
     }
