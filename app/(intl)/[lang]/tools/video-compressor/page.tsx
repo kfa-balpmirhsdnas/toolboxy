@@ -99,7 +99,7 @@ export default function VideoCompressorPage({ params }: { params: { lang: string
             </div>
           </>
         )}
-        <p className="text-xs text-gray-400 text-center">{t('md_note_fast')}</p>
+        <p className="text-xs text-gray-400 text-center">{t('md_note_local')}</p>
       </div>
     </ToolLayout>
   )

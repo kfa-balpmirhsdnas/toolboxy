@@ -102,6 +102,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "pdf-password": "A free tool to add or remove a password on a PDF. Upload a file, enter a password, and it processes right in your browser. No install, no signup, and files never leave your device.",
     "video-compressor": "A free tool to shrink video files. Drop a video, pick a compression level, and it re-encodes to MP4 right in your browser. No install, no signup, and files never leave your device.",
     "audio-converter": "A free tool to convert audio files to MP3, WAV, M4A or OGG. Drop a file, pick a format, and it converts right in your browser — no install, no signup, and files never leave your device.",
     "image-viewer": "A free online image viewer that opens right in your browser — no install, no signup. Open multiple files or folders by picker or drag-and-drop, then zoom, rotate, go fullscreen, run a slideshow, jump via thumbnails, crop, and save as JPG/PNG/WebP. Everything runs locally; your files never leave your device.",
@@ -1625,6 +1626,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "pdf-password": "The PDF password tool lets you protect a PDF with a password (Lock) or remove the password from a protected PDF (Unlock). Lock encrypts the PDF with the password you enter; Unlock opens it with the correct password and re-saves it without encryption. Everything runs in your browser — the file and password are never sent to a server. If you forget the password, the PDF cannot be unlocked, so keep it safe.",
     "video-compressor": "The video compressor reduces video file size so it is easier to share or upload. Pick a level (High, Medium, Light) and it re-encodes to H.264 (MP4), then shows how much smaller the result is. Everything runs on the ffmpeg engine inside your browser — files are never uploaded. The engine (~30 MB) is fetched once on first use, and longer clips take more time.",
     "audio-converter": "The audio converter changes the format of your music or recordings. Convert to MP3 (universal, small), WAV (lossless), M4A (AAC) or OGG (open format). It runs the ffmpeg engine inside your browser, so files are never uploaded to a server. The engine (~30 MB) is fetched once on your first conversion.",
     "drink-calorie-calculator": "The drink calorie calculator estimates the calories in what you drank from the drink type and amount. Using an average calories-per-100 ml figure, it computes “per-100 ml × amount ÷ 100”, and also shows how many minutes of walking would burn that off. Actual values vary by strength, sugar and brand. Nothing you enter is stored.",
@@ -1941,6 +1943,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
+    "pdf-password": ["Choose 'Lock' or 'Unlock'.","Upload or drag in a PDF file.","Enter the password (Lock = the one to set, Unlock = the current one).","Press the button — it processes in your browser.","When done, download the resulting PDF."],
     "video-compressor": ["Upload or drag in a video file.","Choose a compression level (High, Medium or Light).","Press 'Compress' — it processes in your browser (with progress).","Check the size reduction and download the result."],
     "audio-converter": ["Upload or drag in an audio file.","Choose an output format (MP3, WAV, M4A or OGG).","Press 'Convert' — it processes in your browser.","When done, preview and download the result."],
     "drink-calorie-calculator": ["Choose a drink — a typical serving size fills in automatically.","Enter the amount you had (ml) or tap 50/200/355/500 ml.","See the total calories and the per-100 ml figure.","Use the “walk ○ min” equivalent to gauge the exercise needed."],
@@ -3732,6 +3735,16 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "md_note_local": "Everything is processed in your browser — files never leave your device.",
+    "pp_lock": "Lock",
+    "pp_unlock": "Unlock",
+    "pp_drop": "Upload or drag in a PDF",
+    "pp_pw_set": "Password to set",
+    "pp_pw_enter": "PDF password",
+    "pp_lock_btn": "Protect with password",
+    "pp_unlock_btn": "Remove password",
+    "pp_err_wrongpw": "Incorrect password.",
+    "pp_err_encrypted": "This PDF is already protected — use 'Unlock' first.",
     "vc_level": "Compression",
     "vc_high": "High (smaller)",
     "vc_medium": "Medium",
@@ -6901,6 +6914,7 @@
     ]
   },
   "toolNames": {
+    "pdf-password": "PDF Password (Protect & Unlock)",
     "video-compressor": "Video Compressor",
     "audio-converter": "Audio Converter",
     "image-viewer": "Online Image Viewer",

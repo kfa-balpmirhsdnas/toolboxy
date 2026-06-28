@@ -96,7 +96,7 @@ export default function AudioConverterPage({ params }: { params: { lang: string 
             {outUrl && <audio src={outUrl} controls className="w-full" />}
           </>
         )}
-        <p className="text-xs text-gray-400 text-center">{t('md_note_fast')}</p>
+        <p className="text-xs text-gray-400 text-center">{t('md_note_local')}</p>
       </div>
     </ToolLayout>
   )

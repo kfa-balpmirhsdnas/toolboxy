@@ -65,6 +65,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'pdf-password',category:'pdf',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['pdf 비밀번호','pdf 잠금','pdf 암호 설정','pdf 암호 해제','pdf 비밀번호 제거','protect pdf','unlock pdf','pdf password','encrypt pdf','remove pdf password','pdfパスワード','pdf保護'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'video-compressor',category:'video',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['동영상 압축','비디오 압축','영상 용량 줄이기','mp4 압축','동영상 용량 줄이기','video compressor','compress video','reduce video size','mp4 compress','動画圧縮','ビデオ圧縮'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'audio-converter',category:'audio',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['오디오 변환','오디오 변환기','mp3 변환','wav 변환','m4a 변환','ogg 변환','audio converter','convert to mp3','wav to mp3','m4a converter','音声変換','mp3に変換'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'image-viewer',category:'image',added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['이미지 뷰어','온라인 이미지 뷰어','사진 보기','무설치 사진 뷰어','image viewer','online image viewer','photo viewer','画像ビューア','写真ビューア'],maxFileSizeMB:{free:0,pro:0} },
