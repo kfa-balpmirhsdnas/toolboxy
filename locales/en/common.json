@@ -102,6 +102,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "audio-converter": "A free tool to convert audio files to MP3, WAV, M4A or OGG. Drop a file, pick a format, and it converts right in your browser — no install, no signup, and files never leave your device.",
     "image-viewer": "A free online image viewer that opens right in your browser — no install, no signup. Open multiple files or folders by picker or drag-and-drop, then zoom, rotate, go fullscreen, run a slideshow, jump via thumbnails, crop, and save as JPG/PNG/WebP. Everything runs locally; your files never leave your device.",
     "drink-calorie-calculator": "A free calculator for calories in drinks — from soju, beer, makgeolli and wine to cola and lattes. Pick a drink and enter how much you had, and it shows the calories plus a walking equivalent. No install, no signup.",
     "exercise-calorie-calculator": "A free calculator for calories burned by activity — walking, running, cycling, swimming and more. Enter your weight and duration and it uses MET values to estimate the calories burned. No install, no signup.",
@@ -1623,6 +1624,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "audio-converter": "The audio converter changes the format of your music or recordings. Convert to MP3 (universal, small), WAV (lossless), M4A (AAC) or OGG (open format). It runs the ffmpeg engine inside your browser, so files are never uploaded to a server. The engine (~30 MB) is fetched once on your first conversion.",
     "drink-calorie-calculator": "The drink calorie calculator estimates the calories in what you drank from the drink type and amount. Using an average calories-per-100 ml figure, it computes “per-100 ml × amount ÷ 100”, and also shows how many minutes of walking would burn that off. Actual values vary by strength, sugar and brand. Nothing you enter is stored.",
     "exercise-calorie-calculator": "The exercise calorie calculator estimates how many calories you burn based on the activity, your weight and the time spent. It uses each activity’s MET (metabolic equivalent) value with the formula “MET × 3.5 × weight(kg) ÷ 200 × minutes”, and also shows calories per minute and a rice-bowl equivalent. Nothing is stored — all the math runs in your browser.",
     "fasting-timer": "An intermittent fasting timer helps you track your fasting and eating windows. Pick a protocol such as 16:8 (16 hours fasting, 8 hours eating), start your fast, and a circular ring shows elapsed time, time remaining, and when your eating window opens. Everything is stored only in your browser, so the timer keeps running even after you close and reopen the tab.",
@@ -1937,6 +1939,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
+    "audio-converter": ["Upload or drag in an audio file.","Choose an output format (MP3, WAV, M4A or OGG).","Press 'Convert' — it processes in your browser.","When done, preview and download the result."],
     "drink-calorie-calculator": ["Choose a drink — a typical serving size fills in automatically.","Enter the amount you had (ml) or tap 50/200/355/500 ml.","See the total calories and the per-100 ml figure.","Use the “walk ○ min” equivalent to gauge the exercise needed."],
     "exercise-calorie-calculator": ["Enter your weight and the workout duration (minutes).","Pick an activity to apply its MET value.","Use the 15/30/45/60-minute buttons to change the time quickly.","See the calories burned, per-minute rate and rice-bowl equivalent.","Switch the unit (kg/lbs) at the top."],
     "fasting-timer": ["Pick your fasting protocol (e.g. 16:8, 18:6, OMAD).","Tap 'Start fasting now' to begin the timer.","If your last meal was earlier, adjust the 'Fasting started at' time.","Watch the ring for elapsed/remaining time and when you can eat.","The timer continues after you close the tab; use 'Reset' to start over."],
@@ -3726,6 +3729,8 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "ac_format": "Output format",
+    "ac_convert": "Convert",
     "iv_drop": "Select images or drag and drop them here",
     "iv_drop_sub": "Multiple files or a folder (it won't auto-scan folders)",
     "iv_pick_files": "Choose files",
@@ -6885,6 +6890,7 @@
     ]
   },
   "toolNames": {
+    "audio-converter": "Audio Converter",
     "image-viewer": "Online Image Viewer",
     "drink-calorie-calculator": "Drink Calorie Calculator",
     "exercise-calorie-calculator": "Exercise Calorie Calculator",
