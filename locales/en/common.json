@@ -6556,6 +6556,8 @@
     "pt_class_toggle": "Categories",
     "pt_temp": "Temperature",
     "pt_nodata": "No data",
+    "pt_search_ph": "Search (name, symbol, number)",
+    "pt_clear": "Clear",
     "pt_ancient": "Ancient",
     "pt_estimated": "est.",
     "pt_bohr": "Bohr model",

@@ -65,6 +65,15 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
     return c
   }, [T])
   const cellBg = (e: Element) => (tempMode ? STATE_COLORS[phaseAt(e.n, T)] : COLORS[e.cat])
+  // Search + category/phase filter (just dims the non-matching cells; click still works).
+  const [query, setQuery] = useState('')
+  const [legendFilter, setLegendFilter] = useState<string | null>(null) // a category (class mode) or a phase (temp mode)
+  const q = query.trim().toLowerCase()
+  const matchesText = (e: Element) => !q || String(e.n) === q || e.sym.toLowerCase().includes(q) || e.en.toLowerCase().includes(q) || e.ko.includes(q) || e.ja.includes(q)
+  const matchesChip = (e: Element) => !legendFilter || (tempMode ? phaseAt(e.n, T) === legendFilter : e.cat === legendFilter)
+  const matches = (e: Element) => matchesText(e) && matchesChip(e)
+  const filtering = !!(q || legendFilter)
+  const firstMatch = filtering ? ELEMENTS.find(matches) : undefined
   const cardRef = useRef<HTMLDivElement>(null)
   // On desktop the card is sticky (always visible), so only scroll-to-card on mobile.
   const select = (e: Element) => { setSel(e); if (window.innerWidth < 640) cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
@@ -134,10 +143,22 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
          )}
         </div>
 
+        {/* search — type a name, symbol or atomic number to spotlight matches */}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && firstMatch) select(firstMatch) }}
+              placeholder={t('pt_search_ph')} aria-label={t('pt_search_ph')} autoComplete="off"
+              className="w-full rounded-xl border border-gray-200 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+          </div>
+          {filtering && <button type="button" onClick={() => { setQuery(''); setLegendFilter(null) }} className="shrink-0 px-3 py-2 text-sm text-gray-500 rounded-xl border border-gray-200 hover:bg-gray-50">{t('pt_clear')}</button>}
+        </div>
+
         {/* temperature control — sits ABOVE the table and recolours the whole grid */}
         <div className="rounded-2xl border border-gray-200 p-3 sm:p-4 space-y-2.5">
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <button type="button" onClick={() => setTempMode((m) => !m)} aria-pressed={tempMode}
+            <button type="button" onClick={() => { setTempMode((m) => !m); setLegendFilter(null) }} aria-pressed={tempMode}
               className={`px-3 py-1.5 rounded-full text-sm font-semibold border transition-colors ${tempMode ? 'border-brand-400 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>
               🌡 {t('pt_temp_toggle')}
             </button>
@@ -180,7 +201,7 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
               return (
                 <button key={e.n} onClick={() => select(e)} style={{ gridColumn: p.col, gridRow: p.row, background: cellBg(e) }}
                   aria-label={name(e)}
-                  className={`aspect-square rounded-[3px] p-0.5 text-center transition hover:ring-2 hover:ring-gray-800 hover:z-10 ${sel.n === e.n ? 'ring-2 ring-gray-900 z-10' : ''}`}>
+                  className={`aspect-square rounded-[3px] p-0.5 text-center transition hover:ring-2 hover:ring-gray-800 hover:z-10 ${sel.n === e.n ? 'ring-2 ring-gray-900 z-10' : ''} ${filtering && !matches(e) ? 'opacity-20' : ''}`}>
                   <div className="text-[7px] text-gray-700 leading-none">{e.n}</div>
                   <div className="text-[12px] sm:text-[13px] font-bold text-gray-900 leading-tight">{e.sym}</div>
                   <div className="text-[6px] text-gray-700 leading-none truncate">{name(e)}</div>
@@ -190,20 +211,15 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
           </div>
         </div>
 
-        {/* legend — phases in temperature mode, categories otherwise */}
-        <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-xs text-gray-600">
-          {tempMode
-            ? PHASES.map((s) => (
-              <span key={s} className="inline-flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-[2px] inline-block" style={{ background: STATE_COLORS[s] }} />
-                {s === 'unknown' ? t('pt_nodata') : t(`pt_s_${s}`)}
-              </span>
-            ))
-            : CATS.map((c) => (
-              <span key={c} className="inline-flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-[2px] inline-block" style={{ background: COLORS[c] }} />{catName(c)}
-              </span>
-            ))}
+        {/* legend doubles as a filter — click to spotlight that phase/category */}
+        <div className="flex flex-wrap gap-x-2 gap-y-1.5 text-xs text-gray-600">
+          {(tempMode ? PHASES : CATS).map((k) => (
+            <button key={k} type="button" onClick={() => setLegendFilter((f) => (f === k ? null : k))}
+              className={`inline-flex items-center gap-1.5 rounded-full px-1.5 py-0.5 transition ${legendFilter === k ? 'ring-2 ring-gray-700 bg-gray-50' : 'hover:bg-gray-100'}`}>
+              <span className="w-3 h-3 rounded-[2px] inline-block" style={{ background: (tempMode ? STATE_COLORS : COLORS)[k] }} />
+              {tempMode ? (k === 'unknown' ? t('pt_nodata') : t(`pt_s_${k}`)) : catName(k)}
+            </button>
+          ))}
         </div>
 
         <p className="text-xs text-gray-400">{t('pt_note')}</p>

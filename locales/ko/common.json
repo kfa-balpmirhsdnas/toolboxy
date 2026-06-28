@@ -6950,6 +6950,8 @@
     "pt_class_toggle": "분류 모드",
     "pt_temp": "온도",
     "pt_nodata": "데이터 없음",
+    "pt_search_ph": "원소 검색 (이름·기호·번호)",
+    "pt_clear": "초기화",
     "pt_ancient": "고대부터",
     "pt_estimated": "추정",
     "pt_bohr": "보어 모형",

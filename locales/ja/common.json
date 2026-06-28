@@ -6923,6 +6923,8 @@
     "pt_class_toggle": "分類モード",
     "pt_temp": "温度",
     "pt_nodata": "データなし",
+    "pt_search_ph": "元素を検索（名前・記号・番号）",
+    "pt_clear": "クリア",
     "pt_ancient": "古代から",
     "pt_estimated": "推定",
     "pt_bohr": "ボーア模型",
