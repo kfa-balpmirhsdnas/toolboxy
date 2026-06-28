@@ -3716,6 +3716,9 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "np_settings": "Display settings",
+    "np_find_short": "Find",
+    "np_all_short": "All",
     "im_privacy_title": "Your photo is never uploaded.",
     "im_privacy": "Everything is processed only inside this browser.",
     "im_upload": "Drag an image here, or click to upload",

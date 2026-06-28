@@ -4114,6 +4114,9 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "np_settings": "표시 설정",
+    "np_find_short": "찾기",
+    "np_all_short": "모두",
     "im_privacy_title": "사진이 서버에 올라가지 않습니다.",
     "im_privacy": "모든 처리가 이 브라우저 안에서만 이뤄집니다.",
     "im_upload": "이미지를 드래그하거나 클릭해 업로드",

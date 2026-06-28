@@ -91,6 +91,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [copied, setCopied] = useState(false)
   const [renaming, setRenaming] = useState<string | null>(null)
   const [showFind, setShowFind] = useState(false)
+  const [showSettings, setShowSettings] = useState(false) // mobile: font/size/spacing hidden behind a gear
   const [findQ, setFindQ] = useState('')
   const [replaceQ, setReplaceQ] = useState('')
   const [matchInfo, setMatchInfo] = useState('')
@@ -319,7 +320,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   function scrollBoxTop() {
     const el = wrapRef.current; if (!el) return
     const run = () => { const hd = document.querySelector('header'); const off = (hd ? hd.getBoundingClientRect().height : 0) + 8; window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - off), behavior: 'smooth' }) }
-    if (window.innerWidth >= 640) run(); else setTimeout(run, 300)
+    // Run after the browser's own focus-scroll so ours wins and the box top lands on
+    // the line. Desktop: a short tick; mobile: wait for the keyboard to open first.
+    setTimeout(run, window.innerWidth >= 640 ? 60 : 300)
   }
 
   // Find / replace within the active tab (literal, case-sensitive).
@@ -445,9 +448,14 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               </button>
             </div>
             <span className="w-px h-5 bg-gray-200" />
+            {/* Mobile-only gear: the display settings are hidden until tapped. */}
+            <button onClick={() => setShowSettings((s) => !s)} title={t('np_settings')} aria-label={t('np_settings')} aria-pressed={showSettings} className={'sm:hidden ' + iconBtn + (showSettings ? ' bg-brand-50 text-brand-600' : '')}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="4" x2="4" y1="21" y2="14" /><line x1="4" x2="4" y1="10" y2="3" /><line x1="12" x2="12" y1="21" y2="12" /><line x1="12" x2="12" y1="8" y2="3" /><line x1="20" x2="20" y1="21" y2="16" /><line x1="20" x2="20" y1="12" y2="3" /><line x1="1" x2="7" y1="14" y2="14" /><line x1="9" x2="15" y1="8" y2="8" /><line x1="17" x2="23" y1="16" y2="16" /></svg>
+            </button>
             {/* Per-tab display settings — icon-only (label text dropped to keep the
-                row compact across locales); hover/AT meaning via title + aria-label. */}
-            <div className="flex items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500">
+                row compact across locales); hover/AT meaning via title + aria-label.
+                Hidden on mobile until the gear is tapped; always shown on desktop. */}
+            <div className={(showSettings ? 'flex' : 'hidden') + ' sm:flex items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500'}>
               <label className="flex items-center gap-1" title={t('np_font')}>{ico(fontIcon)}
                 <select aria-label={t('np_font')} title={t('np_font')} value={fontList.includes(fam) ? fam : 'sans'} onChange={(e) => patchDoc(activeId, { fam: e.target.value })} className={selCls}>
                   {fontList.map((v) => <option key={v} value={v}>{t('np_font_' + v)}</option>)}
@@ -488,11 +496,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               placeholder={t('np_find')} autoFocus className="min-w-0 flex-1 sm:flex-none sm:w-40 rounded-lg border border-gray-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
             <input value={replaceQ} onChange={(e) => setReplaceQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') replaceOne(); if (e.key === 'Escape') setShowFind(false) }}
               placeholder={t('np_replace')} className="min-w-0 flex-1 sm:flex-none sm:w-40 rounded-lg border border-gray-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-            <button onClick={() => findNext()} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-white disabled:opacity-40">{t('np_find_next')}</button>
+            <button onClick={() => findNext()} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-white disabled:opacity-40"><span className="sm:hidden">{t('np_find_short')}</span><span className="hidden sm:inline">{t('np_find_next')}</span></button>
             <button onClick={replaceOne} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-white disabled:opacity-40">{t('np_replace_btn')}</button>
-            <button onClick={replaceAll} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-40">{t('np_replace_all')}</button>
+            <button onClick={replaceAll} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-40"><span className="sm:hidden">{t('np_all_short')}</span><span className="hidden sm:inline">{t('np_replace_all')}</span></button>
             {matchInfo && <span className="text-xs text-gray-500">{matchInfo}</span>}
-            <button onClick={() => setShowFind(false)} aria-label={t('ui_clear')} className="ml-auto text-gray-400 hover:text-gray-700 text-lg leading-none px-1">×</button>
+            <button onClick={() => { setShowFind(false); setFindQ(''); setReplaceQ(''); setMatchInfo('') }} aria-label={t('ui_clear')} className="ml-auto text-gray-400 hover:text-gray-700 text-lg leading-none px-1">×</button>
           </div>
         )}
 

@@ -4087,6 +4087,9 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "np_settings": "表示設定",
+    "np_find_short": "検索",
+    "np_all_short": "すべて",
     "im_privacy_title": "写真はサーバーにアップロードされません。",
     "im_privacy": "すべての処理はこのブラウザ内だけで行われます。",
     "im_upload": "画像をドラッグ、またはクリックしてアップロード",
