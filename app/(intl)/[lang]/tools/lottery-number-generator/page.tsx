@@ -66,7 +66,7 @@ export default function LotteryNumberGeneratorPage() {
     setGames(out); setRevealed(0); setCopied(false)
     if (sound) blip(240, 0.16, 'sawtooth', 0.09) // "draw start"
     const total = out.reduce((s, g) => s + g.main.length + g.bonus.length, 0)
-    const step = Math.max(70, Math.min(170, 2200 / Math.max(1, total)))
+    const step = Math.max(140, Math.min(340, 4400 / Math.max(1, total))) // ~2× slower reveal
     for (let i = 1; i <= total; i++) {
       timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(520 + ((i - 1) % 14) * 34, 0.05, 'triangle', 0.1) }, i * step))
     }
@@ -81,8 +81,12 @@ export default function LotteryNumberGeneratorPage() {
   }
 
   const Ball = ({ n, bonus, shown }: { n: number; bonus?: boolean; shown: boolean }) => (
-    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full text-sm font-extrabold tabular-nums shadow-sm transition-all duration-200"
-      style={{ background: `radial-gradient(circle at 34% 28%, rgba(255,255,255,.65), ${ballColor(n)} 62%)`, color: '#2b2b2b', boxShadow: bonus ? '0 0 0 2px #f59e0b inset' : undefined, opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.35)' }}>{n}</span>
+    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full shadow-sm transition-all duration-100"
+      style={{ background: `radial-gradient(circle at 34% 28%, rgba(255,255,255,.5), ${ballColor(n)} 62%)`, boxShadow: bonus ? '0 0 0 2px #f59e0b inset' : undefined, opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.35)' }}>
+      <span className="inline-flex items-center justify-center rounded-full bg-white" style={{ width: '64%', height: '64%' }}>
+        <span className="text-xs font-extrabold tabular-nums text-gray-800">{n}</span>
+      </span>
+    </span>
   )
 
   let gi = 0 // running ball index for the one-by-one reveal
@@ -98,30 +102,30 @@ export default function LotteryNumberGeneratorPage() {
             {LOTTERIES.map((l) => <option key={l.id} value={l.id}>{FLAG[l.country] || ''} {l.name[lang]} ({l.mainMin}-{l.mainMax} × {l.mainCount}{l.bonusCount > 0 ? ` +${l.bonusCount}` : ''})</option>)}
           </select>
         </div>
-        {/* Games — small, own row */}
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-gray-500">{t('lt_games')}</label>
-          <select value={count} onChange={(e) => setCount(Number(e.target.value))}
-            className="w-20 rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:border-brand-400">
-            {[1, 3, 5, 10].map((n) => <option key={n} value={n}>{n}</option>)}
-          </select>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
+        {/* Games + fixed + exclude — one row */}
+        <div className="grid grid-cols-[auto_1fr_1fr] gap-2 items-end">
           <div>
-            <label className="block text-xs text-gray-500 mb-1">{t('lt_fixed')}</label>
-            <input value={fixedStr} onChange={(e) => setFixedStr(e.target.value)} inputMode="numeric" placeholder="7, 14"
-              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:border-brand-400" />
+            <label className="block text-xs text-gray-500 mb-1">{t('lt_games')}</label>
+            <select value={count} onChange={(e) => setCount(Number(e.target.value))}
+              className="w-16 rounded-lg border border-gray-300 px-2 py-2 text-sm focus:outline-none focus:border-brand-400">
+              {[1, 3, 5, 10].map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
           </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">{t('lt_exclude')}</label>
+          <div className="min-w-0">
+            <label className="block text-xs text-gray-500 mb-1 truncate">{t('lt_fixed')}</label>
+            <input value={fixedStr} onChange={(e) => setFixedStr(e.target.value)} inputMode="numeric" placeholder="7, 14"
+              className="w-full rounded-lg border border-gray-300 px-2 py-2 text-sm font-mono focus:outline-none focus:border-brand-400" />
+          </div>
+          <div className="min-w-0">
+            <label className="block text-xs text-gray-500 mb-1 truncate">{t('lt_exclude')}</label>
             <input value={excludeStr} onChange={(e) => setExcludeStr(e.target.value)} inputMode="numeric" placeholder="4, 13"
-              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:border-brand-400" />
+              className="w-full rounded-lg border border-gray-300 px-2 py-2 text-sm font-mono focus:outline-none focus:border-brand-400" />
           </div>
         </div>
 
         <div className="flex gap-2">
           <button onClick={generate} className="flex-1 inline-flex items-center justify-center gap-2 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition">
-            <span className="inline-block w-5 h-5 rounded-full shrink-0" style={{ background: 'radial-gradient(circle at 34% 28%, #fff, #fbc400 62%)' }} />
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full shrink-0" style={{ background: 'radial-gradient(circle at 34% 28%, rgba(255,255,255,.5), #fbc400 62%)' }}><span className="rounded-full bg-white" style={{ width: '56%', height: '56%' }} /></span>
             {games.length ? t('lt_regenerate') : t('lt_generate')}
           </button>
           <button onClick={() => setSound((s) => !s)} title={t('lt_sound')} aria-label={t('lt_sound')}
