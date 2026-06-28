@@ -57,6 +57,7 @@ export default function LotteryNumberGeneratorPage() {
     timers.current.forEach(clearTimeout); timers.current = []
     if (sound) {
       try { const AC = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext; if (AC) { if (!audioRef.current) audioRef.current = new AC(); audioRef.current.resume() } } catch { /* ignore */ }
+      blip(523, 0.1, 'triangle', 0.32) // click on the draw button (also primes audio so the 1st ball sounds)
     }
     const l = LOTTERIES.find((x) => x.id === id) || LOTTERIES[0]
     const exclude = new Set(parseNums(excludeStr))
@@ -67,12 +68,12 @@ export default function LotteryNumberGeneratorPage() {
     }
     setGames([]); setRevealed(0); setCopied(false); setDrawing(true)
     const total = out.reduce((s, g) => s + g.main.length + g.bonus.length, 0)
-    const step = Math.max(560, Math.min(1360, 17600 / Math.max(1, total))) // very slow — one ball at a time
+    const step = Math.max(1120, Math.min(2720, 35200 / Math.max(1, total))) // very slow — one ball at a time
     // 2s suspense after the click, then reveal one ball at a time with one sound each.
     timers.current.push(setTimeout(() => {
       setGames(out); setDrawing(false)
       for (let i = 1; i <= total; i++) {
-        timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(280 + ((i - 1) % 5) * 14, 0.1, 'sine', 0.28) }, i * step))
+        timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(280 + ((i - 1) % 5) * 14, 0.11, 'sine', 0.4) }, i * step))
       }
     }, 2000))
   }, [id, count, fixedStr, excludeStr, sound])
@@ -94,7 +95,7 @@ export default function LotteryNumberGeneratorPage() {
         boxShadow: `0 2px 3px rgba(0,0,0,.28), inset 0 -3px 5px rgba(0,0,0,.3), inset 0 2px 3px rgba(255,255,255,.45)${bonus ? ', 0 0 0 2px #f59e0b' : ''}`,
         opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.35)',
       }}>
-      <span className="inline-flex items-center justify-center rounded-full bg-white" style={{ width: '66%', height: '66%', boxShadow: 'inset 0 1px 2px rgba(0,0,0,.2)' }}>
+      <span className="inline-flex items-center justify-center rounded-full bg-white" style={{ width: '60%', height: '60%', boxShadow: 'inset 0 1px 2px rgba(0,0,0,.2)' }}>
         <span className="text-xs font-extrabold tabular-nums text-gray-900">{n}</span>
       </span>
     </span>
