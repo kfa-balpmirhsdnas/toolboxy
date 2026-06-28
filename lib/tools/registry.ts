@@ -65,6 +65,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'todo-list',category:'utility',also:['text'],added:'2026-06-28',phase:1,isPro:false,isNew:true,tags:['할 일 목록','체크리스트','to-do list','todo','checklist','task list','やることリスト','チェックリスト','할일','투두'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'screen-capture',category:'image',also:['video'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['화면 캡처','온라인 화면 캡처','스크린샷','screenshot','screen capture','画面キャプチャ','スクショ'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'online-notepad',category:'text',also:['utility'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['온라인 메모장','메모장','notepad','online notepad','notes','메모','text editor','자동 저장'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'batch-image-editor',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 편집기','올인원 이미지','batch image editor','all-in-one image','画像一括編集'],maxFileSizeMB:{free:0,pro:0} },

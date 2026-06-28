@@ -102,6 +102,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "todo-list": "A simple online to-do checklist: add tasks, check them off, edit, delete, and drag to reorder. Shows your completed count and saves automatically in your browser — no login, no server.",
     "periodic-table": "Interactive periodic table — tap an element for its atomic number, mass, group, period, and category. Shows all 118 elements with English/Korean/Japanese names and category colors. Free, no install.",
     "molar-mass-calculator": "Free tool that computes the molar mass (g/mol) of a chemical formula. Supports parentheses and hydrates, shows a per-element breakdown, and uses standard atomic weights.",
     "element-quiz": "Free 4-choice quiz to match element symbols and names. Both directions (symbol↔name), range 1–20/54/118, and score tracking. Great for memorizing the periodic table.",
@@ -1617,6 +1618,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "todo-list": "A simple checklist for jotting tasks and ticking them off one by one. Edit or delete items and drag to reorder them. Your list is saved automatically in this browser only, so it stays even after you close and reopen the window.",
     "resistor-color-code": "Read a resistor's value from its color bands. Choose 4 or 5 bands, pick each band's color, and it computes the resistance (Ω/kΩ/MΩ/GΩ) and tolerance (±%) while previewing the bands on a resistor graphic — handy for quickly checking color codes when working with electronics. Everything runs in your browser, free with no install.",
     "blood-type-inheritance": "Find the blood types a child can have from the parents' blood types. Based on ABO inheritance (A and B are dominant, O recessive), pick both parents' types and it shows which child blood types are possible and which are impossible at a glance. Actual probabilities depend on the parents' genotypes (AA/AO, etc.), so this shows whether each type is possible. Everything runs in your browser, free with no install.",
     "scientific-notation-converter": "Convert very large or small numbers between scientific notation and plain decimals. Type something like 1500000 or 1.5e6 or 1.5×10^6 and it shows the scientific notation (a×10ⁿ), E-notation (1.5e6), and the plain decimal together. Handy for homework and lab data, and everything runs in your browser, free with no install.",
@@ -1926,6 +1928,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
+    "todo-list": ["Type a task and add it.","Check it off when done, drag to reorder.","Your list saves automatically in your browser."],
     "title": "How to use",
     "periodic-table": [
       "Tap an element cell to see its details (atomic number, mass, group, period, category) in the card above.",
@@ -3710,6 +3713,16 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "td_add_ph": "Add a task",
+    "td_add": "Add",
+    "td_completed": "done",
+    "td_clear_done": "Clear completed",
+    "td_empty": "No tasks yet — add one above.",
+    "td_reorder": "Drag to reorder",
+    "td_edit": "Edit",
+    "td_delete": "Delete",
+    "td_save": "Save",
+    "td_privacy": "Everything is stored only in this browser — nothing is sent to any server.",
     "mp_drop": "Drop PDFs or click to add",
     "mp_merging": "Merging…",
     "mp_merge_n": "Merge {n} PDFs",
@@ -6596,6 +6609,7 @@
     "si_help": "Memorise the order the colours light up"
   },
   "toolTags": {
+    "todo-list": ["to-do list","checklist","task list","todo","tasks"],
     "spinner-wheel": [
       "spinner wheel",
       "wheel of names",
@@ -6689,6 +6703,7 @@
     ]
   },
   "toolNames": {
+    "todo-list": "To-Do List",
     "periodic-table": "Periodic Table",
     "molar-mass-calculator": "Molar Mass Calculator",
     "element-quiz": "Element Symbol Quiz",
