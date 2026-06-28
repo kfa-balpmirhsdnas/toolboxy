@@ -83,6 +83,28 @@ export function SoundToggle({ className = '' }: { className?: string }) {
   )
 }
 
+/** Largest square cell (px, incl. 1px grid gaps) for a cols×rows board that keeps
+ * the whole board inside the mobile viewport on BOTH axes — the game box never
+ * overflows width or height. `reserve` = vertical space taken by the box's other
+ * chrome (header, title, score, controls). Recomputes on resize/orientation. */
+export function useFitCell(cols: number, rows: number, opts?: { reserve?: number; maxCell?: number; minCell?: number; maxWidth?: number }) {
+  const { reserve = 250, maxCell = 30, minCell = 10, maxWidth = 420 } = opts || {}
+  const [cell, setCell] = useState(minCell)
+  useEffect(() => {
+    const calc = () => {
+      const availW = Math.min(window.innerWidth, maxWidth) - 24
+      const availH = window.innerHeight - reserve
+      const byW = Math.floor((availW - (cols + 1)) / cols)
+      const byH = Math.floor((availH - (rows + 1)) / rows)
+      setCell(Math.max(minCell, Math.min(maxCell, byW, byH)))
+    }
+    calc()
+    window.addEventListener('resize', calc)
+    return () => window.removeEventListener('resize', calc)
+  }, [cols, rows, reserve, maxCell, minCell, maxWidth])
+  return cell
+}
+
 /** Scroll the game box ([data-game-stage]) up so its top sits just BELOW the
  * sticky site header — never under it, or the game title gets hidden. Shared so
  * every game — GameStage-driven or not — behaves the same on Start. */

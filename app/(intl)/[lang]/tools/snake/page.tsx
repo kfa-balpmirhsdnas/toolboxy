@@ -3,12 +3,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { useGameStage, GameStageOverlay, SoundToggle, sfx } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, sfx, useFitCell } from '@/components/tools/GameStage'
 import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('snake')!
-const N = 17, CELL = 20
+const N = 17
 type P = { x: number; y: number }
 const eq = (a: P, b: P) => a.x === b.x && a.y === b.y
 const randFood = (snake: P[]): P => {
@@ -20,6 +20,7 @@ const randFood = (snake: P[]): P => {
 export default function SnakePage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const stage = useGameStage()
+  const CELL = useFitCell(N, N, { reserve: 320, maxCell: 22 }) // fill the screen without overflowing
   const snakeRef = useRef<P[]>([{ x: 8, y: 8 }])
   const dirRef = useRef<P>({ x: 1, y: 0 })
   const nextDir = useRef<P>({ x: 1, y: 0 })

@@ -429,7 +429,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
           onCompositionEnd={flushNow}
-          onFocus={() => wrapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          onFocus={() => { if (window.innerWidth >= 640) wrapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }} // mobile: let the keyboard's native scroll handle it (ours overshoots)
           placeholder={t('np_placeholder')}
           spellCheck={false}
           style={{ fontFamily: FAM_CSS(fam) }}

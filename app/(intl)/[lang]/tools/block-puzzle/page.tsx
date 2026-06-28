@@ -3,12 +3,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { useGameStage, GameStageOverlay, SoundToggle, sfx } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, sfx, useFitCell } from '@/components/tools/GameStage'
 import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('block-puzzle')!
-const COLS = 10, ROWS = 20, CELL = 20
+const COLS = 10, ROWS = 20
 const COLORS = ['', '#22d3ee', '#a78bfa', '#fb923c', '#facc15', '#4ade80', '#f472b6', '#60a5fa']
 // 7 generic tetromino shapes (colour index in the matrix).
 const SHAPES: number[][][] = [
@@ -48,6 +48,7 @@ function clearLines(b: number[][]) {
 export default function BlockPuzzlePage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const stage = useGameStage()
+  const CELL = useFitCell(COLS, ROWS, { reserve: 272, maxCell: 30 }) // fill the screen without overflowing
   const [board, setBoard] = useState(emptyBoard())
   const pieceRef = useRef<Piece | null>(null)
   const [, force] = useState(0)
