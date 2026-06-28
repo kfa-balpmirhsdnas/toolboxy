@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
+import { SoundToggle } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
@@ -51,7 +52,8 @@ export default function ReactionTimeTestPage({ params }: { params: { lang: strin
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-4">
+      <div className="relative space-y-4">
+        <SoundToggle className="absolute top-0 right-0 z-10" />
         <button onClick={handleClick}
           className={`w-full h-64 rounded-2xl text-white flex flex-col items-center justify-center select-none transition-colors ${box.bg}`}>
           <span className="text-3xl font-bold">{box.title}</span>

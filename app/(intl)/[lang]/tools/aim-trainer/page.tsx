@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
-import { useGameStage, GameStageOverlay, MuteToggle } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, MuteToggle, sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('aim-trainer')!
@@ -30,7 +30,7 @@ export default function AimTrainerPage({ params }: { params: { lang: string } })
     return () => clearInterval(id)
   }, [playing]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  function hit(e: React.MouseEvent) { e.stopPropagation(); if (!playing) return; setHits((h) => h + 1); move() }
+  function hit(e: React.MouseEvent) { e.stopPropagation(); if (!playing) return; setHits((h) => h + 1); move(); sfx('hit') }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
-import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay , SoundToggle, sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('game-2048')!
@@ -42,7 +42,7 @@ export default function Game2048Page({ params }: { params: { lang: string } }) {
     setBoard((b) => {
       const { board: nb, score: s, moved } = move(b, dir)
       if (!moved) return b
-      const withNew = spawn(nb)
+      const withNew = spawn(nb); sfx(s > 0 ? 'point' : 'move')
       setScore((sc) => { const ns = sc + s; setBest((bb) => { const nb2 = Math.max(bb, ns); localStorage.setItem('g2048-best', String(nb2)); return nb2 }); return ns })
       if (![0, 1, 2, 3].some((d) => move(withNew, d).moved)) setOver(true)
       return withNew
@@ -57,7 +57,8 @@ export default function Game2048Page({ params }: { params: { lang: string } }) {
   let sx = 0, sy = 0
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="max-w-xs mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="relative max-w-xs mx-auto space-y-4 text-center select-none">
+        <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('g2_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('g2_subtitle')}</p>

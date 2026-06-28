@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
-import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay , SoundToggle, sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('minesweeper')!
@@ -69,7 +69,7 @@ export default function MinesweeperPage({ params }: { params: { lang: string } }
     if (!started) { cs = build(size, mines, i); setStarted(true) }
     else cs = cs.map((c) => ({ ...c }))
     if (cs[i].flag) return
-    if (cs[i].mine) { cs.forEach((c) => { if (c.mine) c.rev = true }); setDead(true); setCells(cs); return }
+    if (cs[i].mine) { cs.forEach((c) => { if (c.mine) c.rev = true }); setDead(true); setCells(cs); sfx('lose'); return }
     reveal(cs, i, size); setCells(cs)
   }
   function flag(e: React.MouseEvent, i: number) { e.preventDefault(); if (!stage.playing || dead || won || !started) return; setCells((cs) => cs.map((c, k) => (k === i && !c.rev ? { ...c, flag: !c.flag } : c))) }
@@ -77,7 +77,8 @@ export default function MinesweeperPage({ params }: { params: { lang: string } }
   const NC = ['', '#2563eb', '#16a34a', '#dc2626', '#7c3aed', '#b45309', '#0891b2', '#1f2937', '#6b7280']
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="max-w-md mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="relative max-w-md mx-auto space-y-4 text-center select-none">
+        <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('ms_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('ms_subtitle')}</p>

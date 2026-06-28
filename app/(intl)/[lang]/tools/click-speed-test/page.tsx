@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
-import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay , SoundToggle, sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
@@ -45,7 +45,7 @@ export default function ClickSpeedTestPage({ params }: { params: { lang: string 
 
   const cps = +(clicks / DURATION).toFixed(1)
 
-  function click() { if (!stage.playing) return; clicksRef.current += 1; setClicks(clicksRef.current) }
+  function click() { if (!stage.playing) return; clicksRef.current += 1; setClicks(clicksRef.current); sfx('move') }
 
   const box = {
     idle: { bg: 'bg-brand-600', title: t('cps_title'), sub: t('cps_start', { seconds: DURATION }) },
@@ -55,7 +55,8 @@ export default function ClickSpeedTestPage({ params }: { params: { lang: string 
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="space-y-4">
+      <div data-game-stage className="relative space-y-4">
+        <SoundToggle className="absolute top-0 right-0 z-10" />
         <div className="relative">
           <button onClick={click}
             className={`w-full h-64 rounded-2xl text-white flex flex-col items-center justify-center select-none transition-colors ${box.bg}`}>

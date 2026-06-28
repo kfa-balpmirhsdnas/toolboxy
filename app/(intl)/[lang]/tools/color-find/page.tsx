@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
-import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay , SoundToggle, sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('color-find')!
@@ -36,13 +36,14 @@ export default function ColorFindPage({ params }: { params: { lang: string } }) 
 
   function pick(i: number) {
     if (over || !stage.playing) return
-    if (i === board.oddIdx) { const nl = level + 1; setLevel(nl); setBoard(makeLevel(nl)); setTime((tm) => Math.min(30, tm + 1)) }
-    else setTime((tm) => Math.max(0, tm - 3))
+    if (i === board.oddIdx) { const nl = level + 1; setLevel(nl); setBoard(makeLevel(nl)); setTime((tm) => Math.min(30, tm + 1)); sfx('point') }
+    else { setTime((tm) => Math.max(0, tm - 3)); sfx('lose') }
   }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="max-w-xs mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="relative max-w-xs mx-auto space-y-4 text-center select-none">
+        <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('cf2_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('cf2_subtitle')}</p>

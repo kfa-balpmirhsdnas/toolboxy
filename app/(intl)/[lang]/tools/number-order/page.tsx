@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
-import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay , SoundToggle, sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('number-order')!
@@ -28,13 +28,14 @@ export default function NumberOrderPage({ params }: { params: { lang: string } }
     if (!stage.playing || n !== next) return
     if (n === 1) setRunning(true)
     if (n === 25) { setRunning(false); setBest((b) => { const nb = b === null ? time : Math.min(b, time); localStorage.setItem('numorder-best', String(nb)); return nb }); stage.finish() }
-    setNext((x) => x + 1)
+    setNext((x) => x + 1); sfx('point')
   }
   const done = next > 25
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="max-w-xs mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="relative max-w-xs mx-auto space-y-4 text-center select-none">
+        <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('no_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('no_subtitle')}</p>

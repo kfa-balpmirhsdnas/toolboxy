@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
-import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay , SoundToggle, sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('sudoku')!
@@ -61,7 +61,7 @@ export default function SudokuPage({ params }: { params: { lang: string } }) {
   useEffect(() => { try { setBest(JSON.parse(localStorage.getItem('sudoku-best') || '{}')) } catch { /* ignore */ } }, [])
   useEffect(() => { if (stage.phase === 'playing') make(diff) }, [stage.phase]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  function put(v: number) { if (!stage.playing || sel < 0 || given[sel]) return; setGrid((g) => g.map((x, i) => (i === sel ? v : x))) }
+  function put(v: number) { if (!stage.playing || sel < 0 || given[sel]) return; setGrid((g) => g.map((x, i) => (i === sel ? v : x))); sfx('move') }
   const conflict = (i: number) => { const v = grid[i]; if (!v) return false; return [...Array(9)].some((_, k) => (k !== i % 9 && grid[Math.floor(i / 9) * 9 + k] === v) || (k !== Math.floor(i / 9) && grid[k * 9 + (i % 9)] === v)) }
   const solved = grid.length === 81 && grid.every((v, i) => v !== 0 && !conflict(i))
 
@@ -84,7 +84,8 @@ export default function SudokuPage({ params }: { params: { lang: string } }) {
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="max-w-sm mx-auto space-y-4 text-center select-none">
+      <div data-game-stage className="relative max-w-sm mx-auto space-y-4 text-center select-none">
+        <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('sd_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('sd_subtitle')}</p>

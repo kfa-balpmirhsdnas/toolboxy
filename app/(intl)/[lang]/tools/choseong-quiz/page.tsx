@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
-import { useGameStage, GameStageOverlay } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay , SoundToggle, sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { choseong } from '@/lib/gosaseongeo'
 
@@ -46,7 +46,7 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
     if (result) { setIdx((n) => n + 1); setInput(''); setResult(''); setLastPts(0); qStart.current = Date.now(); return }
     const ok = input.trim() === quiz[idx][0]
     setResult(ok ? 'ok' : 'no')
-    if (ok) { const p = BASE + speedBonus(Date.now() - qStart.current); setScore((n) => n + p); setCorrect((n) => n + 1); setLastPts(p) } else setLastPts(0)
+    if (ok) { const p = BASE + speedBonus(Date.now() - qStart.current); setScore((n) => n + p); setCorrect((n) => n + 1); setLastPts(p); sfx('point') } else { setLastPts(0); sfx('lose') }
   }
   // After answering, count 5→1 and auto-advance; pressing the button skips ahead.
   useEffect(() => {
@@ -61,7 +61,8 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="max-w-sm mx-auto space-y-4 text-center">
+      <div data-game-stage className="relative max-w-sm mx-auto space-y-4 text-center">
+        <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('cq_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('cq_subtitle')}</p>
