@@ -30,6 +30,15 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
   const [addingList, setAddingList] = useState(false)
   const [newListName, setNewListName] = useState('')
   const tracked = useRef(false)
+  const boxRef = useRef<HTMLDivElement>(null)
+  // On mobile, focusing the add box scrolls the tool box to just under the header
+  // (instead of the browser over-scrolling past it).
+  const scrollBoxTop = () => {
+    const el = boxRef.current; if (!el || window.innerWidth >= 640) return
+    const header = document.querySelector('header')
+    const offset = (header ? header.getBoundingClientRect().height : 0) + 8
+    setTimeout(() => window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - offset), behavior: 'smooth' }), 300)
+  }
 
   // Load once from this browser, migrating the old flat-array format if present.
   useEffect(() => {
@@ -133,7 +142,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-xl mx-auto space-y-4">
+      <div ref={boxRef} className="max-w-xl mx-auto space-y-4">
         {/* tabs: starred · lists · + new list */}
         <div ref={tabBarRef} className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
           <button data-tab={STARRED} onClick={() => setActive(STARRED)} aria-label={t('td_tab_starred')} title={t('td_tab_starred')} className={tabCls(active === STARRED)}>{star(true, 'w-5 h-5')}</button>
@@ -163,10 +172,10 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
         {/* add a task (not on the read-only Completed view) */}
         {active !== COMPLETED && (
           <div className="flex gap-2">
-            <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()}
+            <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} onFocus={scrollBoxTop}
               placeholder={t('td_add_ph')} aria-label={t('td_add_ph')} enterKeyHint="done"
-              className="flex-1 min-w-0 rounded-xl border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-400" />
-            <button onClick={add} disabled={!input.trim()} className="shrink-0 px-5 py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 active:scale-95 disabled:opacity-40 transition">{t('td_add')}</button>
+              className="flex-1 min-w-0 rounded-xl border border-gray-300 px-4 py-2.5 sm:py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            <button onClick={add} disabled={!input.trim()} className="shrink-0 px-5 py-2.5 sm:py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 active:scale-95 disabled:opacity-40 transition">{t('td_add')}</button>
           </div>
         )}
 

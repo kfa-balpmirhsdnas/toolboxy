@@ -118,6 +118,11 @@ const SINGLE = {
 }
 // Object-type tools: a unified white lucide pictogram (lucide-react v0.408 paths).
 const VECTOR = {
+  'todo-list': [ // list-todo (checkbox + check + lines)
+    ['rect', { x: '3', y: '5', width: '6', height: '6', rx: '1' }],
+    ['path', { d: 'm3 17 2 2 4-4' }],
+    ['path', { d: 'M13 6h8' }], ['path', { d: 'M13 12h8' }], ['path', { d: 'M13 18h8' }],
+  ],
   'online-notepad': [ // notepad-text
     ['path', { d: 'M8 2v4' }], ['path', { d: 'M12 2v4' }], ['path', { d: 'M16 2v4' }],
     ['rect', { x: '4', y: '4', width: '16', height: '18', rx: '2' }],
