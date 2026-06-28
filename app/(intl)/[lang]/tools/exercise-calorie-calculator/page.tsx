@@ -45,7 +45,7 @@ export default function ExerciseCalorieCalculatorPage() {
       <div className="max-w-lg mx-auto px-4 space-y-4">
         <div className="flex rounded-lg overflow-hidden border border-gray-300">
           {(['metric', 'imperial'] as const).map((u) => (
-            <button key={u} onClick={() => setUnit(u)}
+            <button key={u} onClick={() => { if (u === unit) return; setWeight(Math.round(u === 'imperial' ? weight * 2.20462 : weight * 0.453592)); setUnit(u) }}
               className={'flex-1 py-2 text-sm font-medium transition ' + (unit === u ? 'bg-rose-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50')}>{t('ex_' + u)}</button>
           ))}
         </div>

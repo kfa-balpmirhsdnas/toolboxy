@@ -31,7 +31,11 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
   const [start, setStart] = useState<number | null>(null)
   const [now, setNow] = useState(() => Date.now())
   const [notify, setNotify] = useState(false)
+  const [sound, setSound] = useState(false)
   const notifRef = useRef({ hour: 0, done: false }) // last hour milestone announced + completion sent
+  const audioRef = useRef<AudioContext | null>(null)
+  const soundRef = useRef(false); soundRef.current = sound
+  const startRef = useRef<number | null>(null); startRef.current = start
 
   // Restore the running fast (so closing/reopening keeps counting), then tick each second.
   useEffect(() => {
@@ -45,8 +49,18 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
   useEffect(() => {
     try { localStorage.setItem(KEY, JSON.stringify({ fastH, start, notify })) } catch { /* ignore */ }
   }, [fastH, start, notify])
+  // A short clock-tick blip on each second (Web Audio, only while a fast is running).
+  function playTick() {
+    const ctx = audioRef.current; if (!ctx) return
+    const o = ctx.createOscillator(); const g = ctx.createGain(); const t0 = ctx.currentTime
+    o.type = 'square'; o.frequency.value = 1200
+    g.gain.setValueAtTime(0.0001, t0)
+    g.gain.exponentialRampToValueAtTime(0.1, t0 + 0.001)
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.035)
+    o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0 + 0.04)
+  }
   useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000)
+    const id = setInterval(() => { setNow(Date.now()); if (soundRef.current && startRef.current) playTick() }, 1000)
     return () => clearInterval(id)
   }, [])
 
@@ -93,6 +107,14 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
     if (perm === 'granted') setNotify(true)
     else alert(t('if_notify_denied'))
   }
+  const toggleSound = () => {
+    if (sound) { setSound(false); return }
+    try {
+      const AC = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+      if (AC) { if (!audioRef.current) audioRef.current = new AC(); audioRef.current.resume() } // user gesture unlocks audio
+    } catch { /* ignore */ }
+    setSound(true)
+  }
 
   const R = 112
   const C = 2 * Math.PI * R
@@ -138,11 +160,17 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
           </div>
         </div>
 
-        {/* Hourly-alert toggle */}
-        <button onClick={toggleNotify}
-          className={'w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-medium transition ' + (notify ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
-          {notify ? '🔔' : '🔕'} {t(notify ? 'if_notify_on' : 'if_notify_off')}
-        </button>
+        {/* Alert + tick-sound toggles */}
+        <div className="grid grid-cols-2 gap-2">
+          <button onClick={toggleNotify}
+            className={'flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium transition ' + (notify ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
+            {notify ? '🔔' : '🔕'} {t(notify ? 'if_notify_on' : 'if_notify_off')}
+          </button>
+          <button onClick={toggleSound}
+            className={'flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium transition ' + (sound ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
+            {sound ? '🔊' : '🔇'} {t(sound ? 'if_sound_on' : 'if_sound_off')}
+          </button>
+        </div>
 
         {/* Actions / status */}
         {!start ? (
