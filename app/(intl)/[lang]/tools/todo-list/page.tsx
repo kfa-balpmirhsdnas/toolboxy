@@ -136,7 +136,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
       <div className="max-w-xl mx-auto space-y-4">
         {/* tabs: starred · lists · + new list */}
         <div ref={tabBarRef} className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
-          <button data-tab={STARRED} onClick={() => setActive(STARRED)} className={tabCls(active === STARRED)}>{star(active === STARRED, 'w-3.5 h-3.5')}{t('td_tab_starred')}</button>
+          <button data-tab={STARRED} onClick={() => setActive(STARRED)} aria-label={t('td_tab_starred')} title={t('td_tab_starred')} className={tabCls(active === STARRED)}>{star(true, 'w-5 h-5')}</button>
           {lists.map((l) => (
             <span key={l.id} className="relative shrink-0">
               <button data-tab={l.id} onClick={() => setActive(l.id)} className={tabCls(active === l.id) + (l.id !== DEFAULT && active === l.id ? ' pr-7' : '')}>{listName(l)}</button>
