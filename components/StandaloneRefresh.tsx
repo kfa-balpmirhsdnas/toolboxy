@@ -25,7 +25,13 @@ export default function StandaloneRefresh() {
     const sw = navigator.serviceWorker
     let hiddenAt = 0
     let updated = false // a newer service worker took control while this page was open
-    const onUpdated = () => { updated = true }
+    const onUpdated = () => {
+      updated = true
+      // New version landed while backgrounded → refresh now, off-screen, so the
+      // reopen is already fresh (no visible flash). If we're in the foreground
+      // (active use), don't interrupt — the reopen below will pick it up.
+      if (document.visibilityState === 'hidden') location.reload()
+    }
     sw?.addEventListener('controllerchange', onUpdated)
 
     const onVis = () => {
