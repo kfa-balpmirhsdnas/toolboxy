@@ -30,9 +30,9 @@ const fmtDateFile = (ms: number) => { const d = new Date(ms); return `${String(d
 
 // Auto-list (single level only). A symbol line may use a shortcut (* o @) or the
 // glyph itself; the shortcut is turned into the glyph only on Enter (like numbers).
-const SYM_TO_GLYPH: Record<string, string> = { '*': '●', o: '○', '@': '■', '●': '●', '○': '○', '■': '■' }
+const SYM_TO_GLYPH: Record<string, string> = { '*': '●', o: '○', '@': '■', '-': '▲', '●': '●', '○': '○', '■': '■', '▲': '▲' }
 const NUM_MARK = /^(\d+)([.)>]) /  // "1. " / "1) " / "1> "
-const SYM_MARK = /^([*o@●○■]) /    // "* " / "o " / "@ " / "● " / "○ " / "■ "
+const SYM_MARK = /^([*o@\-▲●○■]) /  // shortcuts (* o @ -) or glyphs (● ○ ■ ▲) + space
 
 const SIZE_CLS: Record<SizeLvl, string> = { xs: 'text-[11px]', sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[18px]', xl: 'text-[22px]' }
 const LH_CLS: Record<Lvl, string> = { sm: 'leading-snug', md: 'leading-relaxed', lg: 'leading-loose' }
@@ -355,7 +355,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const pos = ta.selectionStart
     const ls = text.lastIndexOf('\n', pos - 1) + 1
     const nl = text.indexOf('\n', pos); const le = nl === -1 ? text.length : nl
-    const stripped = text.slice(ls, le).replace(/^(?:[*o@●○■] |\d+[.)>] )/, '')
+    const stripped = text.slice(ls, le).replace(/^(?:[*o@\-▲●○■] |\d+[.)>] )/, '')
     const marker = kind === 'sym' ? '● ' : '1. '
     let nt = text.slice(0, ls) + marker + stripped + text.slice(le); let caret = ls + marker.length + stripped.length
     if (kind === 'num') ({ text: nt, caret } = renumberAt(nt, caret, '.'))
@@ -561,12 +561,18 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               </button>
             </div>
             <span className="w-px h-5 bg-gray-200" />
-            {/* List bullet: apply a symbol or numbered marker to the current line. */}
-            <select aria-label={t('np_list')} title={t('np_list')} value="" onChange={(e) => { if (e.target.value) applyBullet(e.target.value as 'sym' | 'num'); e.currentTarget.value = '' }} className={selCls}>
-              <option value="">{t('np_list')}</option>
-              <option value="sym">● {t('np_list_sym')}</option>
-              <option value="num">1. {t('np_list_num')}</option>
-            </select>
+            {/* List bullet: a glyph cue + a select that applies a numbered or symbol marker. */}
+            <span className="flex items-center gap-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-400" aria-hidden="true">
+                <line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" />
+                <circle cx="4.5" cy="6" r="1.2" /><circle cx="4.5" cy="12" r="1.2" /><circle cx="4.5" cy="18" r="1.2" />
+              </svg>
+              <select aria-label={t('np_list')} title={t('np_list')} value="" onChange={(e) => { if (e.target.value) applyBullet(e.target.value as 'sym' | 'num'); e.currentTarget.value = '' }} className={selCls}>
+                <option value="">{t('np_list')}</option>
+                <option value="num" title="1.  1)  1>">{t('np_list_num')}</option>
+                <option value="sym" title="*  o  @  -">{t('np_list_sym')}</option>
+              </select>
+            </span>
             <span className="w-px h-5 bg-gray-200" />
             {/* Mobile-only gear: the display settings are hidden until tapped. */}
             <button onClick={() => setShowSettings((s) => !s)} title={t('np_settings')} aria-label={t('np_settings')} aria-pressed={showSettings} className={'sm:hidden ' + iconBtn + (showSettings ? ' bg-brand-50 text-brand-600' : '')}>

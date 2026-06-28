@@ -4115,8 +4115,8 @@
   },
   "toolui": {
     "np_list": "글머리",
-    "np_list_sym": "기호 글머리",
-    "np_list_num": "번호 글머리",
+    "np_list_sym": "기호",
+    "np_list_num": "번호",
     "np_chars_label": "글자 수",
     "np_lines_label": "줄 수",
     "np_created": "문서 생성일",
