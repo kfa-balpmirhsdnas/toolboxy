@@ -156,11 +156,11 @@ export default function FastingTimerPage({ params }: { params: { lang: string } 
             {start ? (
               <>
                 <p className="text-sm font-bold uppercase tracking-wide" style={{ color: accent }}>
-                  {fasting ? t('if_status_fasting') : t('if_status_eating')}
+                  {fasting && <span className="tabular-nums">{pct}% </span>}{fasting ? t('if_status_fasting') : t('if_status_eating')}
                 </p>
                 <p className="text-4xl font-bold font-mono text-gray-800 tabular-nums leading-tight">{fmtDur(fasting ? elapsed : remaining)}</p>
                 {fasting ? (
-                  <p className="text-sm text-gray-500 tabular-nums"><span className="font-mono">{fmtDur(remaining)}</span> {t('if_leftshort')} · <b style={{ color: accent }}>{pct}%</b></p>
+                  <p className="text-sm text-gray-500 tabular-nums"><span className="font-mono">{fmtDur(remaining)}</span> {t('if_leftshort')}</p>
                 ) : (
                   <p className="text-sm text-gray-400">{t('if_eatleft')}</p>
                 )}
