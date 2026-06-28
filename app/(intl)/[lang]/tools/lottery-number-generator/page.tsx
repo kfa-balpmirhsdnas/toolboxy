@@ -64,11 +64,11 @@ export default function LotteryNumberGeneratorPage() {
       out.push({ main: pickN(l.mainMin, l.mainMax, l.mainCount, exclude, fixed), bonus: l.bonusCount > 0 ? pickN(l.bonusMin, l.bonusMax, l.bonusCount, new Set(), []) : [] })
     }
     setGames(out); setRevealed(0); setCopied(false)
-    if (sound) blip(240, 0.16, 'sawtooth', 0.09) // "draw start"
     const total = out.reduce((s, g) => s + g.main.length + g.bonus.length, 0)
-    const step = Math.max(140, Math.min(340, 4400 / Math.max(1, total))) // ~2× slower reveal
+    const step = Math.max(280, Math.min(680, 8800 / Math.max(1, total))) // slow — one ball at a time
+    // Exactly one sound per ball: the sound fires in the same tick the ball is revealed.
     for (let i = 1; i <= total; i++) {
-      timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(520 + ((i - 1) % 14) * 34, 0.05, 'triangle', 0.1) }, i * step))
+      timers.current.push(setTimeout(() => { setRevealed(i); if (sound) blip(196 + ((i - 1) % 5) * 12, 0.09, 'sine', 0.14) }, i * step))
     }
   }, [id, count, fixedStr, excludeStr, sound])
 
