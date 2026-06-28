@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import Leaderboard from '@/components/tools/Leaderboard'
-import { scrollGameToTop, SoundToggle, sfx, isGameMuted } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, isGameMuted } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('simon')!
@@ -32,6 +32,7 @@ function tone(freq: number, dur = 0.35) {
 
 export default function SimonPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
+  const stage = useGameStage()
   const [seq, setSeq] = useState<number[]>([])
   const [phase, setPhase] = useState<'idle' | 'watch' | 'input' | 'over'>('idle')
   const [active, setActive] = useState(-1)
@@ -52,7 +53,9 @@ export default function SimonPage({ params }: { params: { lang: string } }) {
     timers.current.push(setTimeout(() => { setPhase('input'); inputIdx.current = 0 }, 620 * s.length + 450))
   }, [])
 
-  const start = () => { scrollGameToTop(); tone(PADS[0].f, 0.05); const s = [Math.floor(Math.random() * 4)]; setSeq(s); playSeq(s) }
+  // A round begins once the shared START countdown finishes (stage.phase === 'playing').
+  const startRound = useCallback(() => { const s = [Math.floor(Math.random() * 4)]; setSeq(s); playSeq(s) }, [playSeq])
+  useEffect(() => { if (stage.phase === 'playing') startRound() }, [stage.phase]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function press(pad: number) {
     if (phase !== 'input') return
@@ -65,7 +68,7 @@ export default function SimonPage({ params }: { params: { lang: string } }) {
         const ns = [...seq, Math.floor(Math.random() * 4)]
         setSeq(ns); setTimeout(() => playSeq(ns), 750)
       }
-    } else { setPhase('over'); sfx('lose') }
+    } else { setPhase('over'); stage.finish() }
   }
 
   const status = phase === 'watch' ? t('si_watch') : phase === 'input' ? t('si_your') : phase === 'over' ? t('si_over', { n: round }) : t('si_ready')
@@ -83,16 +86,16 @@ export default function SimonPage({ params }: { params: { lang: string } }) {
           <span>{t('si_best')}: {best}</span>
         </div>
         <div className="font-semibold text-gray-700 h-6">{status}</div>
-        <div className="grid grid-cols-2 gap-3 w-56 mx-auto">
-          {PADS.map((p, i) => (
-            <button key={i} onClick={() => press(i)} disabled={phase !== 'input'} aria-label={`pad ${i + 1}`}
-              className="aspect-square rounded-2xl transition-all active:scale-95"
-              style={{ background: active === i ? p.lit : p.c, boxShadow: active === i ? `0 0 24px ${p.lit}` : 'none', opacity: phase === 'input' || active === i ? 1 : 0.8 }} />
-          ))}
+        <div className="relative w-56 mx-auto">
+          <div className="grid grid-cols-2 gap-3">
+            {PADS.map((p, i) => (
+              <button key={i} onClick={() => press(i)} disabled={phase !== 'input'} aria-label={`pad ${i + 1}`}
+                className="aspect-square rounded-2xl transition-all active:scale-95"
+                style={{ background: active === i ? p.lit : p.c, boxShadow: active === i ? `0 0 24px ${p.lit}` : 'none', opacity: phase === 'input' || active === i ? 1 : 0.8 }} />
+            ))}
+          </div>
+          <GameStageOverlay stage={stage} />
         </div>
-        {(phase === 'idle' || phase === 'over') && (
-          <button onClick={start} className="px-6 py-2.5 rounded-xl bg-brand-600 text-white font-bold hover:bg-brand-700 active:scale-95 transition">{phase === 'over' ? t('si_again') : t('si_start')}</button>
-        )}
         <p className="text-xs text-gray-400">{t('si_help')}</p>
       </div>
       <Leaderboard game="simon" score={best || null} better="higher" />

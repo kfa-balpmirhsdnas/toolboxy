@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { useGameStage, GameStageOverlay , SoundToggle, sfx } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, sfx, useFitCell } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('tic-tac-toe')!
@@ -35,6 +35,7 @@ export default function TicTacToePage({ params }: { params: { lang: string } }) 
   const [board, setBoard] = useState<Cell[]>(Array(9).fill(null))
   const [xTurn, setXTurn] = useState(true)
   const stage = useGameStage()
+  const [CELL, boxRef] = useFitCell(3, 3, { reserve: 232, maxCell: 110 })
   const w = winner(board)
 
   function play(i: number) {
@@ -54,7 +55,7 @@ export default function TicTacToePage({ params }: { params: { lang: string } }) 
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="relative max-w-xs mx-auto space-y-4 text-center select-none">
+      <div ref={boxRef} data-game-stage className="relative w-full max-w-xs mx-auto space-y-4 text-center select-none">
         <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('ttt_title')}</h1>
@@ -68,7 +69,7 @@ export default function TicTacToePage({ params }: { params: { lang: string } }) 
 
         <div className="font-semibold text-gray-700 h-6">{status}</div>
 
-        <div className="relative w-60 mx-auto">
+        <div className="relative mx-auto" style={{ width: CELL * 3 + 16 }}>
           <div className="grid grid-cols-3 gap-2">
             {board.map((c, i) => (
               <button key={i} onClick={() => play(i)} disabled={!!c || !!w || (vsAI && !xTurn)}

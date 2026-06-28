@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
-import { useGameStage, GameStageOverlay, SoundToggle, sfx } from '@/components/tools/GameStage'
+import { useGameStage, GameStageOverlay, SoundToggle, sfx, useFitCell } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('connect-four')!
@@ -37,6 +37,7 @@ function aiMove(b: Cell[][]): number {
 export default function ConnectFourPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const stage = useGameStage()
+  const [CELL, boxRef] = useFitCell(COLS, ROWS, { reserve: 250, maxCell: 44, gap: 6, pad: 8 })
   const [vsAI, setVsAI] = useState(true)
   const [board, setBoard] = useState<Cell[][]>(empty())
   const [turn, setTurn] = useState<Cell>(1)
@@ -73,7 +74,7 @@ export default function ConnectFourPage({ params }: { params: { lang: string } }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div data-game-stage className="relative max-w-sm mx-auto space-y-4 text-center select-none">
+      <div ref={boxRef} data-game-stage className="relative w-full max-w-sm mx-auto space-y-4 text-center select-none">
         <SoundToggle className="absolute top-0 right-0 z-10" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('c4_title')}</h1>
@@ -88,7 +89,7 @@ export default function ConnectFourPage({ params }: { params: { lang: string } }
           <div className="inline-grid gap-1.5 p-2 rounded-2xl bg-blue-600" style={{ gridTemplateColumns: `repeat(${COLS}, 1fr)` }}>
             {board.map((row, r) => row.map((v, c) => (
               <button key={`${r}-${c}`} onClick={() => drop(c)} aria-label={`col ${c + 1}`}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full transition active:scale-95" style={{ background: disc(v) }} />
+                className="rounded-full transition active:scale-95" style={{ width: CELL, height: CELL, background: disc(v) }} />
             )))}
           </div>
           <GameStageOverlay stage={stage} />
