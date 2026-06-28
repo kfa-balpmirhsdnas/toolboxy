@@ -4109,6 +4109,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "td_rename_hint": "한 번 더 눌러 이름 수정",
     "td_all_done": "모두 완료했어요! 🎉",
     "td_field_list": "목록",
     "td_cancel": "취소",

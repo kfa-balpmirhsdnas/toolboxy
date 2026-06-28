@@ -29,6 +29,8 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
   const [draft, setDraft] = useState({ text: '', details: '', due: '', listId: DEFAULT })
   const [addingList, setAddingList] = useState(false)
   const [newListName, setNewListName] = useState('')
+  const [renamingId, setRenamingId] = useState<string | null>(null)
+  const [renameName, setRenameName] = useState('')
   const tracked = useRef(false)
   const boxRef = useRef<HTMLDivElement>(null)
   // On mobile, focusing the add box scrolls the tool box to just under the header
@@ -114,6 +116,13 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
     if (id === DEFAULT || !window.confirm(t('td_delete_list_confirm'))) return
     setItems((a) => a.filter((i) => i.listId !== id)); setLists((l) => l.filter((x) => x.id !== id)); setActive(DEFAULT)
   }
+  // Rename a custom list: tap an already-active custom tab (or double-click it).
+  const startRename = (l: List) => { setRenamingId(l.id); setRenameName(l.name) }
+  const saveRename = () => {
+    const v = renameName.trim()
+    if (renamingId && v) setLists((ls) => ls.map((x) => (x.id === renamingId ? { ...x, name: v } : x)))
+    setRenamingId(null); setRenameName('')
+  }
 
   // Drag reorder within the current view (works with mouse + touch, no library).
   const listRef = useRef<HTMLUListElement>(null)
@@ -148,10 +157,20 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
           <button data-tab={STARRED} onClick={() => setActive(STARRED)} aria-label={t('td_tab_starred')} title={t('td_tab_starred')} className={tabCls(active === STARRED)}>{star(true, 'w-5 h-5')}</button>
           {lists.map((l) => (
             <span key={l.id} className="relative shrink-0">
-              <button data-tab={l.id} onClick={() => setActive(l.id)} className={tabCls(active === l.id) + (l.id !== DEFAULT && active === l.id ? ' pr-7' : '')}>{listName(l)}</button>
-              {l.id !== DEFAULT && active === l.id && (
-                <button onClick={() => deleteList(l.id)} aria-label={t('td_delete_list')} title={t('td_delete_list')}
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full text-brand-500 hover:bg-brand-100 flex items-center justify-center text-base leading-none">×</button>
+              {renamingId === l.id ? (
+                <input autoFocus value={renameName} onChange={(e) => setRenameName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') saveRename(); if (e.key === 'Escape') { setRenamingId(null); setRenameName('') } }} onBlur={saveRename}
+                  className="w-24 rounded-full border border-brand-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+              ) : (
+                <>
+                  <button data-tab={l.id} onClick={() => { if (l.id !== DEFAULT && active === l.id) startRename(l); else setActive(l.id) }}
+                    title={l.id !== DEFAULT ? t('td_rename_hint') : undefined}
+                    className={tabCls(active === l.id) + (l.id !== DEFAULT && active === l.id ? ' pr-7' : '')}>{listName(l)}</button>
+                  {l.id !== DEFAULT && active === l.id && (
+                    <button onClick={() => deleteList(l.id)} aria-label={t('td_delete_list')} title={t('td_delete_list')}
+                      className="absolute right-1.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full text-brand-500 hover:bg-brand-100 flex items-center justify-center text-base leading-none">×</button>
+                  )}
+                </>
               )}
             </span>
           ))}
