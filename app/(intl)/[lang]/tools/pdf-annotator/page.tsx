@@ -223,7 +223,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     const p = pt(e); const d = draftRef.current
     if (d.type === 'pen' || d.type === 'highlight') d.pts!.push(p)
     else if (d.type === 'rect') { d.w = p.x - (d.x || 0); d.h = p.y - (d.y || 0) }
-    else { d.x2 = p.x; d.y2 = p.y }
+    // underline / strikethrough are locked horizontal (clean line under or through text)
+    else { d.x2 = p.x; d.y2 = (d.type === 'underline' || d.type === 'strike') ? (d.y1 || 0) : p.y }
     drawAll(page, scale)
   }
   function onUp() {
@@ -283,8 +284,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           <div className={'flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2' + (ready ? '' : ' opacity-50 pointer-events-none')}>
             <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>◧</button>
             <span className="w-px h-6 bg-gray-300 mx-0.5" />
-            <button onClick={() => setShowPenTools((s) => !s)} title={t('pa_pentools')} aria-label={t('pa_pentools')}
-              className={'h-9 px-2 rounded-lg text-sm flex items-center gap-1 ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>{activeDrawIcon}<span className="text-xs">{showPenTools ? '▲' : '▼'}</span></button>
+            <button onClick={() => { setShowPenTools((s) => !s); setShowSearch(false) }} title={t('pa_pentools')} aria-label={t('pa_pentools')}
+              className={'w-14 h-9 rounded-lg text-sm flex items-center justify-center gap-1 ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}><span className="w-4 text-center">{activeDrawIcon}</span><span className="text-xs">{showPenTools ? '▲' : '▼'}</span></button>
             <button onClick={() => setTool('pan')} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg text-sm ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>✋</button>
             <span className="w-px h-6 bg-gray-300 mx-0.5" />
             <select value={String(scale)} onChange={(e) => setScale(+e.target.value)} title={t('pa_zoom')} aria-label={t('pa_zoom')}
@@ -292,7 +293,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
               {(ZOOMS.includes(scale) ? ZOOMS : [scale, ...ZOOMS]).sort((a, b) => a - b).map((z) => <option key={z} value={z}>{Math.round(z * 100)}%</option>)}
             </select>
             <button onClick={() => wrapRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
-            <button onClick={() => setShowSearch((s) => !s)} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔍</button>
+            <button onClick={() => { setShowSearch((s) => !s); setShowPenTools(false) }} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔍</button>
             <span className="w-px h-6 bg-gray-300 mx-0.5" />
             {/* Save (download annotated PDF) + new file — icon buttons, same style as the rest */}
             <button onClick={download} disabled={exporting} title={t('pa_download')} aria-label={t('pa_download')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 disabled:opacity-60">{exporting ? '⏳' : '💾'}</button>
@@ -340,6 +341,23 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
               </button>
             </div>
           )}
+
+          {/* Find bar — floats right below the toolbar (mutually exclusive with the pen palette) */}
+          {showSearch && (
+            <div className="absolute left-0 right-0 top-full mt-1 z-30 flex items-center gap-2 text-sm rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 shadow-lg">
+              <input autoFocus value={query} onChange={(e) => runSearch(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') jumpMatch(e.shiftKey ? -1 : 1); if (e.key === 'Escape') setShowSearch(false) }}
+                placeholder={t('pa_search')} className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-400" />
+              {query && (matches.length ? (
+                <span className="flex items-center gap-1 text-gray-500 shrink-0">
+                  <button onClick={() => jumpMatch(-1)} className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200">‹</button>
+                  {matchIdx + 1}/{matches.length}
+                  <button onClick={() => jumpMatch(1)} className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200">›</button>
+                </span>
+              ) : <span className="text-gray-400 shrink-0">{t('pa_nomatch')}</span>)}
+              <button onClick={() => setShowSearch(false)} aria-label="close" className="text-gray-400 hover:text-gray-700 text-lg leading-none px-1 shrink-0">×</button>
+            </div>
+          )}
         </div>
 
         {ready ? (
@@ -374,22 +392,6 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           <button onClick={() => setPage((p) => Math.min(numPages, p + 1))} title={t('pa_page')} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">▶</button>
         </div>
 
-        {/* Find bar (editor-style: toggled by the 🔍 button, sits at the bottom) */}
-        {showSearch && (
-          <div className="flex items-center gap-2 text-sm rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
-            <input autoFocus value={query} onChange={(e) => runSearch(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') jumpMatch(e.shiftKey ? -1 : 1); if (e.key === 'Escape') setShowSearch(false) }}
-              placeholder={t('pa_search')} className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-400" />
-            {query && (matches.length ? (
-              <span className="flex items-center gap-1 text-gray-500 shrink-0">
-                <button onClick={() => jumpMatch(-1)} className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200">‹</button>
-                {matchIdx + 1}/{matches.length}
-                <button onClick={() => jumpMatch(1)} className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200">›</button>
-              </span>
-            ) : <span className="text-gray-400 shrink-0">{t('pa_nomatch')}</span>)}
-            <button onClick={() => setShowSearch(false)} aria-label="close" className="text-gray-400 hover:text-gray-700 text-lg leading-none px-1 shrink-0">×</button>
-          </div>
-        )}
           </>
         ) : (
           /* Drop zone — shown until a PDF is opened */
