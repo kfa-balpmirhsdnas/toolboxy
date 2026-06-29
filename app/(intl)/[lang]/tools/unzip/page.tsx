@@ -51,6 +51,16 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Accept a .zip dropped ANYWHERE on the page (a drop outside the box otherwise let the
+  // browser open the file). preventDefault on dragover stops that navigation.
+  useEffect(() => {
+    const over = (e: DragEvent) => { if (e.dataTransfer?.types?.includes('Files')) e.preventDefault() }
+    const drop = (e: DragEvent) => { const f = e.dataTransfer?.files?.[0]; if (f) { e.preventDefault(); load(f) } }
+    window.addEventListener('dragover', over); window.addEventListener('drop', drop)
+    return () => { window.removeEventListener('dragover', over); window.removeEventListener('drop', drop) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function download(e: Entry) {
     const blob = new Blob([e.data as unknown as BlobPart])
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = e.name.split('/').pop() || e.name; a.click()

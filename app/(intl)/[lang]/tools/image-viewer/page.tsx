@@ -100,6 +100,16 @@ export default function ImageViewerPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Import images dropped ANYWHERE on the page (a drop outside the box otherwise made the
+  // browser open the image). preventDefault on dragover stops that navigation.
+  useEffect(() => {
+    const over = (e: DragEvent) => { if (e.dataTransfer?.types?.includes('Files')) e.preventDefault() }
+    const drop = (e: DragEvent) => { const fs = e.dataTransfer?.files; if (fs && fs.length) { e.preventDefault(); addFiles(fs) } }
+    window.addEventListener('dragover', over); window.addEventListener('drop', drop)
+    return () => { window.removeEventListener('dragover', over); window.removeEventListener('drop', drop) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function addFiles(list: FileList | File[] | null) {
     if (!list) return
     const imgs = Array.from(list).filter((f) => f.type.startsWith('image/') || IMG_RE.test(f.name))
