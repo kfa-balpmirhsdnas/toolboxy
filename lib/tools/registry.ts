@@ -66,6 +66,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'area-converter',category:'utility',added:'2026-06-29',phase:1,isPro:false,isNew:true,tags:['평 제곱미터 변환','평수 계산','부동산 면적','평 ㎡','坪 平米 変換','坪数計算','square meters to sqft','sqm to sqft','area converter','real estate area'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'pdf-annotator',category:'pdf',added:'2026-06-29',phase:1,isPro:false,isNew:true,tags:['pdf annotator','annotate pdf','highlight pdf','pdf viewer','PDF 뷰어','PDF 주석','PDF에 메모','PDF 注釈','PDF 書き込み','PDFビューア'],maxFileSizeMB:{free:100,pro:100} },
   {slug:'bill-splitter',category:'finance',added:'2026-06-29',phase:1,isPro:false,isNew:true,tags:['bill splitter','split the bill','tip calculator','더치페이 계산기','N빵 계산','1/N 정산','割り勘計算機','割り勘','わりかん'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'powerball-results',category:'random',added:'2026-06-29',phase:1,isPro:false,isNew:true,tags:['powerball','powerball results','powerball winning numbers','powerball numbers','lottery results','winning numbers history','파워볼 당첨번호','파워볼 결과 조회','역대 당첨번호','パワーボール 当選番号','パワーボール 抽選結果'],maxFileSizeMB:{free:0,pro:0} },
