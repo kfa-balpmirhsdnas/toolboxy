@@ -65,6 +65,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const [query, setQuery] = useState('')
   const [matches, setMatches] = useState<number[]>([])
   const [matchIdx, setMatchIdx] = useState(0)
+  const [searchHits, setSearchHits] = useState<{ x: number; y: number; w: number; h: number }[]>([]) // current-page search highlights (scale-1 coords)
   const [exporting, setExporting] = useState(false)
   const [fileName, setFileName] = useState('annotated')
 
@@ -83,6 +84,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
 
   const idRef = useRef(1)
   const annosRef = useRef<Anno[]>([]); annosRef.current = annos
+  const searchHitsRef = useRef<{ x: number; y: number; w: number; h: number }[]>([]); searchHitsRef.current = searchHits
 
   async function openFile(f: File) {
     if (!f) return
@@ -124,6 +126,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     const ac = annoCanvas.current; if (!ac) return
     const ctx = ac.getContext('2d'); if (!ctx) return
     ctx.clearRect(0, 0, ac.width, ac.height)
+    // search highlights (under the annotations); transient, never saved/exported
+    if (searchHitsRef.current.length) { ctx.save(); ctx.fillStyle = 'rgba(250,204,21,.45)'; for (const h of searchHitsRef.current) ctx.fillRect(h.x * sc, h.y * sc, h.w * sc, h.h * sc); ctx.restore() }
     for (const a of annosRef.current) if (a.page === n) drawAnno(ctx, a, sc)
     if (draftRef.current && draftRef.current.page === n) drawAnno(ctx, draftRef.current, sc)
   }, [])
@@ -151,6 +155,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
         // floor (not round) so the page is never wider than the viewer → no horizontal scroll
         setScale(Math.max(0.4, Math.min(3, Math.floor((avail / vp.width) * 100) / 100)))
         if (stageRef.current) stageRef.current.scrollTop = 0 // editor-style: start at the top of the page
+        // bring the whole tool (toolbar) to the top of the window after a file opens
+        requestAnimationFrame(() => wrapRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }))
       } catch { setScale(1) /* fall back so the page still renders */ }
     })()
     return () => { cancel = true }
@@ -167,7 +173,35 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   }, [])
 
   useEffect(() => { if (status === 'ready' && scale > 0) renderPage(page, scale) }, [status, page, scale, renderPage])
-  useEffect(() => { if (status === 'ready') drawAll(page, scale) }, [annos, page, scale, status, drawAll])
+  useEffect(() => { if (status === 'ready') drawAll(page, scale) }, [annos, page, scale, status, searchHits, drawAll])
+
+  // Compute search-match highlight boxes for the current page (in scale-1 coords).
+  useEffect(() => {
+    const q = query.trim().toLowerCase()
+    if (status !== 'ready' || !showSearch || !q || !pdfRef.current) { setSearchHits([]); return }
+    let cancel = false
+    ;(async () => {
+      try {
+        const { Util } = await import('pdfjs-dist')
+        const pg = await pdfRef.current!.getPage(page)
+        const tc = await pg.getTextContent()
+        const vpTransform = (pg.getViewport({ scale: 1 }) as unknown as { transform: number[] }).transform
+        const hits: { x: number; y: number; w: number; h: number }[] = []
+        for (const it of tc.items as { str?: string; width?: number; transform: number[] }[]) {
+          const s = it.str || ''; const sl = s.toLowerCase(); let from = 0; let idx: number
+          while ((idx = sl.indexOf(q, from)) !== -1) {
+            const tx = Util.transform(vpTransform, it.transform)
+            const fontH = Math.hypot(tx[2], tx[3]) || 10
+            const totalW = it.width || 0
+            hits.push({ x: tx[4] + (idx / Math.max(1, s.length)) * totalW, y: tx[5] - fontH, w: (q.length / Math.max(1, s.length)) * totalW, h: fontH })
+            from = idx + q.length
+          }
+        }
+        if (!cancel) setSearchHits(hits)
+      } catch { if (!cancel) setSearchHits([]) }
+    })()
+    return () => { cancel = true }
+  }, [page, query, showSearch, status])
 
   // Progressive thumbnails.
   useEffect(() => {
