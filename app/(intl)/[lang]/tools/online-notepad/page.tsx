@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { onAuthStateChanged, type User } from 'firebase/auth'
@@ -112,6 +112,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [user, setUser] = useState<User | null | 'loading'>('loading')
   const tracked = useRef(false)
   const taRef = useRef<HTMLTextAreaElement>(null)
+  const pendingSel = useRef<{ s: number; e: number } | null>(null) // caret/range to restore after a programmatic text change commits
   const wrapRef = useRef<HTMLDivElement>(null)
   const tabBarRef = useRef<HTMLDivElement>(null)
   const histories = useRef<Record<string, { hist: string[]; idx: number }>>({ [first.id]: { hist: [''], idx: 0 } })
@@ -304,21 +305,28 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   }
   // Replace the whole text + restore the caret (controlled textarea needs the caret
   // re-applied after React re-renders).
-  function applyText(nt: string, caret: number) {
+  function applyText(nt: string, caret: number, selEnd?: number) {
+    // Stash the caret/range; the layout effect below restores it right after React commits the
+    // new controlled value (which otherwise resets the caret to the end).
+    pendingSel.current = { s: caret, e: selEnd ?? caret }
     onChange(nt)
-    requestAnimationFrame(() => {
-      const ta = taRef.current; if (!ta) return
-      ta.focus(); ta.selectionStart = ta.selectionEnd = caret
-      // A programmatic caret move (list Enter, etc.) doesn't auto-scroll the textarea the
-      // way a native keystroke does, so the new line can stay hidden. Nudge it into view.
-      if (nt.indexOf('\n', caret) === -1) { ta.scrollTop = ta.scrollHeight; return } // caret on the last line → reveal bottom
-      const cs = getComputedStyle(ta)
-      const lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.5
-      const top = (parseFloat(cs.paddingTop) || 0) + (nt.slice(0, caret).split('\n').length - 1) * lh
-      if (top + lh > ta.scrollTop + ta.clientHeight) ta.scrollTop = top + lh - ta.clientHeight
-      else if (top < ta.scrollTop) ta.scrollTop = top
-    })
   }
+  // Restore the pending caret/selection after the textarea's new value is in the DOM (runs
+  // before paint, so no flicker and the range survives the controlled-value reset).
+  useLayoutEffect(() => {
+    const p = pendingSel.current; if (!p) return
+    pendingSel.current = null
+    const ta = taRef.current; if (!ta) return
+    ta.focus(); ta.selectionStart = p.s; ta.selectionEnd = p.e
+    // Nudge the caret line into view (programmatic moves don't auto-scroll like keystrokes).
+    const nt = ta.value, caret = p.s
+    if (nt.indexOf('\n', caret) === -1) { ta.scrollTop = ta.scrollHeight; return }
+    const cs = getComputedStyle(ta)
+    const lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.5
+    const top = (parseFloat(cs.paddingTop) || 0) + (nt.slice(0, caret).split('\n').length - 1) * lh
+    if (top + lh > ta.scrollTop + ta.clientHeight) ta.scrollTop = top + lh - ta.clientHeight
+    else if (top < ta.scrollTop) ta.scrollTop = top
+  }, [text])
   // Insert a special character at the caret (replacing any selection).
   function insertChar(ch: string) {
     const ta = taRef.current; if (!ta) return
@@ -373,15 +381,37 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     nt = nt.slice(0, pos) + '\n' + glyph + ' ' + nt.slice(pos)
     applyText(nt, pos + glyph.length + 2); return true
   }
-  // Apply a bullet to the current line (from the toolbar select).
+  // Apply a bullet/number from the toolbar. With a drag selection it marks EVERY selected
+  // line (numbered 1,2,3… or symbol), keeping the block selected; with no selection it marks
+  // the current line (numbered then merges/renumbers with an adjacent numbered block).
+  const STRIP_MARK = /^(?:[*o@\-▶●○■] |\d+[.)>] )/
   function applyBullet(kind: 'sym' | 'num') {
     const ta = taRef.current; if (!ta) return
-    const pos = ta.selectionStart
-    const ls = text.lastIndexOf('\n', pos - 1) + 1
-    const nl = text.indexOf('\n', pos); const le = nl === -1 ? text.length : nl
-    const stripped = text.slice(ls, le).replace(/^(?:[*o@\-▶●○■] |\d+[.)>] )/, '')
+    // A textarea keeps its selectionStart/End even after the toolbar steals focus, so the
+    // drag range is still here when this runs.
+    const s = ta.selectionStart, e = ta.selectionEnd
+    const blockStart = text.lastIndexOf('\n', s - 1) + 1
+    let endIdx = e
+    if (endIdx > s && text[endIdx - 1] === '\n') endIdx-- // selection ending exactly on a break shouldn't grab the next line
+    const nl = text.indexOf('\n', endIdx); const blockEnd = nl === -1 ? text.length : nl
+    const lines = text.slice(blockStart, blockEnd).split('\n')
+
+    if (lines.length > 1) {
+      let n = 1
+      const block = lines.map((ln) => {
+        const st = ln.replace(STRIP_MARK, '')
+        if (st.trim() === '') return st // leave blank lines alone (and don't number them)
+        return (kind === 'sym' ? '● ' : `${n++}. `) + st
+      }).join('\n')
+      const nt = text.slice(0, blockStart) + block + text.slice(blockEnd)
+      applyText(nt, blockStart, blockStart + block.length) // keep the whole block selected
+      return
+    }
+
+    const stripped = lines[0].replace(STRIP_MARK, '')
     const marker = kind === 'sym' ? '● ' : '1. '
-    let nt = text.slice(0, ls) + marker + stripped + text.slice(le); let caret = ls + marker.length + stripped.length
+    let nt = text.slice(0, blockStart) + marker + stripped + text.slice(blockEnd)
+    let caret = blockStart + marker.length + stripped.length
     if (kind === 'num') ({ text: nt, caret } = renumberAt(nt, caret, '.'))
     applyText(nt, caret)
   }
