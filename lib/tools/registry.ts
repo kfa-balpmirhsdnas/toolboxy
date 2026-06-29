@@ -377,7 +377,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'image-to-base64',category:'image',also:['file'],added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['image','base64','encode','convert','data-url'],maxFileSizeMB:{free:5,pro:10} },
   {slug:'color-shades-generator',category:'design',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['color','shades','tints','palette','design'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'speed-calculator',category:'utility',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['speed','distance','time','calculate','travel'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'ip-address-info',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['ip','address','network','subnet','lookup'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'ip-address-info',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['ip','address','network','subnet','lookup','my ip','what is my ip','내 아이피','나의 아이피','내 ip 주소','아이피 확인'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'data-storage-converter',category:'utility',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['data','storage','gb','mb','kb','byte'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'base64-image-viewer',category:'image',added:'2026-06-23',phase:1,isPro:false,isNew:true,tags:['base64','image','viewer','decode','data-url'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'json-schema-validator',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['json','schema','validate','ajv','format'],maxFileSizeMB:{free:0,pro:0} },

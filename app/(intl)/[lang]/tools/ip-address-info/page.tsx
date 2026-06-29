@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('ip-address-info')!
-function isValidIPv4(ip:string){return /^(d{1,3}.){3}d{1,3}$/.test(ip)&&ip.split('.').every(o=>parseInt(o)<=255)}
+function isValidIPv4(ip:string){return /^(\d{1,3}\.){3}\d{1,3}$/.test(ip)&&ip.split('.').every(o=>parseInt(o)<=255)}
 function isValidIPv6(ip:string){return /^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/.test(ip)}
 function ipClass(ip:string){
   const first=parseInt(ip.split('.')[0])

@@ -339,7 +339,7 @@
     "whitespace-remover": "텍스트에서 공백을 제거하거나 정규화합니다. 줄 트리밍, 공백 축소, 빈 줄 제거 등을 지원합니다.",
     "list-deduplicator": "목록에서 중복 항목을 제거합니다. 대소문자 무시, 빈 줄 제거, 정렬 기능을 지원합니다.",
     "text-truncator": "문자, 단어, 문장 단위로 텍스트를 자릅니다. 끝, 시작, 중간 위치에서 잘라낼 수 있습니다.",
-    "ip-address-info": "IP 주소의 지리정보, ISP, 네트워크 세부 정보를 조회합니다.",
+    "ip-address-info": "내 아이피(나의 아이피) 확인 — IP 주소의 위치, ISP, 네트워크 세부 정보를 조회합니다.",
     "cron-expression-builder": "크론 표현식을 시각적으로 구성하고 검증합니다. 사람이 읽을 수 있는 설명과 다음 실행 시간을 미리 볼 수 있습니다.",
     "text-line-numberer": "텍스트에 줄 번호를 추가합니다. 시작 번호, 간격, 구분자, 제로 패딩, 빈 줄 처리를 설정할 수 있습니다.",
     "css-unit-converter": "px, rem, em, pt, vw, vh 등 CSS 단위를 변환합니다. 기본 폰트 크기와 뷰포트 크기를 설정할 수 있습니다.",
@@ -7408,6 +7408,7 @@
     }
   },
   "toolTitles": {
+    "ip-address-info": "내 아이피 확인 · 나의 IP 주소 조회",
     "area-converter": "평 제곱미터 변환 · 평수 계산기",
     "pdf-annotator": "PDF 뷰어·주석 · PDF에 형광펜·메모",
     "bill-splitter": "더치페이 계산기 · N빵 1/N 정산",
