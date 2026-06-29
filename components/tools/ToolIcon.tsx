@@ -38,6 +38,9 @@ const P: Record<string, ReactNode> = {
   loader: <path d="M21 12a9 9 0 1 1-6.2-8.5" />,
   'chevron-left': <path d="m15 18-6-6 6-6" />,
   'chevron-right': <path d="m9 18 6-6-6-6" />,
+  'chevron-down': <path d="m6 9 6 6 6-6" />,
+  'flip-v': <><path d="M3 12h18" /><path d="M8 8l4-4 4 4" /><path d="M8 16l4 4 4-4" /></>,
+  download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5" /><path d="M12 15V3" /></>,
 }
 
 export default function ToolIcon({ name, className }: { name: keyof typeof P | string; className?: string }) {

@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -62,13 +63,13 @@ export default function RotateImagePage({ params }: { params: { lang: string } }
               <img src={src} alt="preview" style={{ transform }} className="max-h-56 transition-transform" />
             </div>
             <div className="flex flex-wrap gap-2 justify-center">
-              <button onClick={() => setRotation((r) => (r + 270) % 360)} className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 hover:border-brand-400">↺ {t('ri_left')}</button>
-              <button onClick={() => setRotation((r) => (r + 90) % 360)} className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 hover:border-brand-400">↻ {t('ri_right')}</button>
-              <button onClick={() => setFlipH((v) => !v)} className={`px-3 py-1.5 text-sm rounded-lg border ${flipH ? 'bg-brand-600 text-white border-brand-600' : 'border-gray-200 hover:border-brand-400'}`}>⇆ {t('ri_fliph')}</button>
-              <button onClick={() => setFlipV((v) => !v)} className={`px-3 py-1.5 text-sm rounded-lg border ${flipV ? 'bg-brand-600 text-white border-brand-600' : 'border-gray-200 hover:border-brand-400'}`}>⇅ {t('ri_flipv')}</button>
+              <button onClick={() => setRotation((r) => (r + 270) % 360)} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-gray-200 hover:border-brand-400"><ToolIcon name="rotate-ccw" className="w-4 h-4" />{t('ri_left')}</button>
+              <button onClick={() => setRotation((r) => (r + 90) % 360)} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-gray-200 hover:border-brand-400"><ToolIcon name="rotate-cw" className="w-4 h-4" />{t('ri_right')}</button>
+              <button onClick={() => setFlipH((v) => !v)} className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border ${flipH ? 'bg-brand-600 text-white border-brand-600' : 'border-gray-200 hover:border-brand-400'}`}><ToolIcon name="flip" className="w-4 h-4" />{t('ri_fliph')}</button>
+              <button onClick={() => setFlipV((v) => !v)} className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border ${flipV ? 'bg-brand-600 text-white border-brand-600' : 'border-gray-200 hover:border-brand-400'}`}><ToolIcon name="flip-v" className="w-4 h-4" />{t('ri_flipv')}</button>
             </div>
             <div className="flex gap-2 justify-center">
-              <button onClick={download} className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('ati_downloadpng')}</button>
+              <button onClick={download} className="inline-flex items-center gap-1.5 px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700"><ToolIcon name="download" className="w-4 h-4" />{t('ati_downloadpng')}</button>
               <button onClick={() => { setSrc(''); setFile(null) }} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">{t('ati_changeimg')}</button>
             </div>
           </>
