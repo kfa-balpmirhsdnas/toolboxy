@@ -4140,6 +4140,8 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pa_save_confirm": "注釈付きPDFを保存しますか？",
+    "pa_newfile_confirm": "現在の作業内容が消えます。新しいファイルを開きますか？",
     "pa_pentools": "ペンツール",
     "pa_zoom": "ズーム",
     "pa_w_thin": "細",

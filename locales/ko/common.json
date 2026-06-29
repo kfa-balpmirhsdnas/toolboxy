@@ -4167,6 +4167,8 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pa_save_confirm": "저장하시겠습니까?",
+    "pa_newfile_confirm": "기존 작업 내용이 지워집니다. 새 파일을 여시겠습니까?",
     "pa_pentools": "펜 도구",
     "pa_zoom": "확대/축소",
     "pa_w_thin": "가늘게",
