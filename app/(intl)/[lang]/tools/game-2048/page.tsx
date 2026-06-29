@@ -71,7 +71,9 @@ export default function Game2048Page({ params }: { params: { lang: string } }) {
 
         <div className="relative rounded-xl p-2 mx-auto" style={{ background: '#bbada0', width: 280, height: 280 }}
           onTouchStart={(e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY }}
-          onTouchEnd={(e) => { const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; if (Math.max(Math.abs(dx), Math.abs(dy)) > 24) doMove(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 0) : (dy > 0 ? 3 : 2)) }}>
+          onTouchEnd={(e) => { const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; if (Math.max(Math.abs(dx), Math.abs(dy)) > 24) doMove(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 0) : (dy > 0 ? 3 : 2)) }}
+          onMouseDown={(e) => { sx = e.clientX; sy = e.clientY }}
+          onMouseUp={(e) => { const dx = e.clientX - sx, dy = e.clientY - sy; if (Math.max(Math.abs(dx), Math.abs(dy)) > 24) doMove(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 0) : (dy > 0 ? 3 : 2)) }}>
           <div className="grid grid-cols-4 gap-2 h-full">
             {board.map((v, i) => (
               <div key={i} className="rounded-md flex items-center justify-center font-bold" style={{ background: COLORS[v] || '#3c3a32', color: v > 4 ? '#f9f6f2' : '#776e65', fontSize: v >= 1024 ? 20 : v >= 128 ? 24 : 28 }}>{v || ''}</div>

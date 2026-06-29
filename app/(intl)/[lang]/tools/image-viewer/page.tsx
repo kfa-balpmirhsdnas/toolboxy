@@ -35,6 +35,7 @@ export default function ImageViewerPage() {
   const [cropMode, setCropMode] = useState(false)
   const [crop, setCrop] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
   const [viewMode, setViewMode] = useState<'film' | 'grid'>('film') // film: preview + bottom strip; grid (PC): left thumbnails + right preview/info
+  const [thumbCols, setThumbCols] = useState(3) // grid-view thumbnail size (fewer columns = bigger thumbnails)
   const [saveDialog, setSaveDialog] = useState(false) // save → name + format dialog
   const [saveName, setSaveName] = useState('')
   const cropDrag = useRef<{ x: number; y: number } | null>(null)
@@ -377,9 +378,18 @@ export default function ImageViewerPage() {
             viewMode === 'grid' ? (
             /* 썸네일 보기 (PC) — left thumbnail grid, right preview + info; stacks on mobile */
             <div className={'flex flex-col md:flex-row gap-2 ' + (fs ? 'flex-1' : 'md:h-[58vh]')}>
-              {/* left thumbnails : right column = 3 : 2 (PC); fixed-height cells so rows never overlap */}
-              <div ref={thumbRef} className="order-2 md:order-1 md:w-3/5 md:shrink-0 md:h-full flex md:grid md:grid-cols-3 gap-1.5 md:content-start overflow-x-auto md:overflow-y-auto rounded-xl bg-gray-100 p-2">
-                {images.map((im, i) => thumbBtn(im, i, 'shrink-0 w-16 h-16 md:w-full md:h-24'))}
+              {/* left = thumbnails (3:2 vs right) + a size slider underneath (PC) */}
+              <div className="order-2 md:order-1 md:w-3/5 md:shrink-0 md:h-full flex flex-col gap-1.5 min-h-0">
+                <div ref={thumbRef} className="flex-1 min-h-0 flex md:grid gap-1.5 md:content-start overflow-x-auto md:overflow-y-auto rounded-xl bg-gray-100 p-2"
+                  style={{ gridTemplateColumns: `repeat(${thumbCols}, minmax(0, 1fr))` }}>
+                  {images.map((im, i) => thumbBtn(im, i, 'shrink-0 w-16 h-16 md:w-full md:h-auto md:aspect-square'))}
+                </div>
+                {/* thumbnail size — PC only (drag right = bigger thumbnails) */}
+                <div className="hidden md:flex items-center gap-2 px-1 shrink-0">
+                  <ToolIcon name="grid" className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                  <input type="range" min={2} max={6} value={8 - thumbCols} onChange={(e) => setThumbCols(8 - Number(e.target.value))} aria-label={t('iv_thumb_size')} className="flex-1 accent-brand-600" />
+                  <ToolIcon name="grid" className="w-5 h-5 text-gray-400 shrink-0" />
+                </div>
               </div>
               {/* right: preview : info = 5 : 5 */}
               <div className="order-1 md:order-2 flex-1 flex flex-col gap-2 min-w-0 min-h-0">
