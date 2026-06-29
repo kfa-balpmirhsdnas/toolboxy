@@ -8,6 +8,7 @@ import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('pdf-annotator')!
 const WORKER = 'https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs'
 const COLORS = ['#ef4444', '#f59e0b', '#fde047', '#22c55e', '#3b82f6', '#111827']
+const COLOR_LABEL: Record<string, string> = { '#ef4444': '🔴', '#f59e0b': '🟠', '#fde047': '🟡', '#22c55e': '🟢', '#3b82f6': '🔵', '#111827': '⚫' }
 const WIDTHS = [2, 4, 8]
 const EXPORT_SCALE = 2
 
@@ -55,7 +56,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const [penW, setPenW] = useState(4)
   const [annos, setAnnos] = useState<Anno[]>([])
   const [thumbs, setThumbs] = useState<string[]>([])
-  const [showThumbs, setShowThumbs] = useState(false)
+  const [showThumbs, setShowThumbs] = useState(true)
+  const [showSearch, setShowSearch] = useState(false)
   const [query, setQuery] = useState('')
   const [matches, setMatches] = useState<number[]>([])
   const [matchIdx, setMatchIdx] = useState(0)
@@ -264,42 +266,37 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
               className={'w-9 h-9 rounded-lg text-sm font-bold ' + (tool_ === k ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}>{icon}</button>
           ))}
           <span className="w-px h-6 bg-gray-300 mx-1" />
-          {COLORS.map((c) => (
-            <button key={c} onClick={() => setColor(c)} aria-label={c}
-              className={'w-6 h-6 rounded-full border-2 ' + (color === c ? 'border-gray-800' : 'border-white shadow')} style={{ background: c }} />
-          ))}
+          {/* Colour — select box with a colour swatch beside it */}
+          <span className="inline-block w-5 h-5 rounded-full border border-gray-300 shrink-0" style={{ background: color }} aria-hidden="true" />
+          <select value={color} onChange={(e) => setColor(e.target.value)} title={t('pa_color')} aria-label={t('pa_color')}
+            className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
+            {COLORS.map((c) => <option key={c} value={c}>{COLOR_LABEL[c]}</option>)}
+          </select>
+          {/* Stroke width — select box */}
+          <select value={penW} onChange={(e) => setPenW(+e.target.value)} title={t('pa_width')} aria-label={t('pa_width')}
+            className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
+            {WIDTHS.map((w) => <option key={w} value={w}>{w}px</option>)}
+          </select>
           <span className="w-px h-6 bg-gray-300 mx-1" />
-          {WIDTHS.map((w) => <button key={w} onClick={() => setPenW(w)} title={t('pa_width')} className={'w-7 h-7 rounded-lg flex items-center justify-center ' + (penW === w ? 'bg-brand-100' : 'bg-white border border-gray-200')}><span className="rounded-full bg-gray-700" style={{ width: w + 2, height: w + 2 }} /></button>)}
-          <span className="w-px h-6 bg-gray-300 mx-1" />
-          <button onClick={undo} className="px-2.5 h-9 rounded-lg bg-white border border-gray-200 text-sm hover:bg-gray-100">↩ {t('pa_undo')}</button>
-          <button onClick={clearPage} className="px-2.5 h-9 rounded-lg bg-white border border-gray-200 text-sm hover:bg-gray-100">🗑 {t('pa_clear')}</button>
+          <button onClick={undo} title={t('pa_undo')} aria-label={t('pa_undo')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">↩</button>
+          <button onClick={clearPage} title={t('pa_clear')} aria-label={t('pa_clear')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">🗑</button>
         </div>
 
         {/* View controls */}
         <div className="flex flex-wrap items-center gap-2 text-sm">
-          <button onClick={() => setPage((p) => Math.max(1, p - 1))} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">←</button>
-          <span className="tabular-nums">{t('pa_page')} <input type="number" min={1} max={numPages} value={page} onChange={(e) => setPage(Math.min(numPages, Math.max(1, +e.target.value || 1)))} className="w-14 text-center border border-gray-300 rounded px-1 py-0.5" /> / {numPages}</span>
-          <button onClick={() => setPage((p) => Math.min(numPages, p + 1))} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">→</button>
+          <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'px-2.5 py-1.5 rounded-lg ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-gray-100 hover:bg-gray-200')}>◧</button>
+          <span className="w-px h-5 bg-gray-300" />
+          <button onClick={() => setPage((p) => Math.max(1, p - 1))} title={t('pa_page')} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">◀</button>
+          <span className="tabular-nums"><input type="number" min={1} max={numPages} value={page} onChange={(e) => setPage(Math.min(numPages, Math.max(1, +e.target.value || 1)))} className="w-14 text-center border border-gray-300 rounded px-1 py-0.5" /> / {numPages}</span>
+          <button onClick={() => setPage((p) => Math.min(numPages, p + 1))} title={t('pa_page')} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">▶</button>
           <span className="w-px h-5 bg-gray-300" />
           <button onClick={() => setScale((s) => Math.max(0.5, +(s - 0.2).toFixed(2)))} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">−</button>
           <span className="tabular-nums w-12 text-center">{Math.round(scale * 100)}%</span>
           <button onClick={() => setScale((s) => Math.min(3, +(s + 0.2).toFixed(2)))} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">+</button>
           <button onClick={() => stageRef.current?.requestFullscreen?.()} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200" title={t('pa_fullscreen')}>⛶</button>
-          <button onClick={() => setShowThumbs((s) => !s)} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">🗂 {t('pa_thumbs')}</button>
+          <button onClick={() => setShowSearch((s) => !s)} title={t('pa_search')} aria-label={t('pa_search')} className={'px-2.5 py-1.5 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-gray-100 hover:bg-gray-200')}>🔍</button>
           <button onClick={download} disabled={exporting} className="ml-auto px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-700 disabled:opacity-60">{exporting ? t('pa_exporting') : '⬇ ' + t('pa_download')}</button>
           <button onClick={() => { setStatus('idle'); pdfRef.current = null }} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">{t('pa_newfile')}</button>
-        </div>
-
-        {/* Search */}
-        <div className="flex items-center gap-2 text-sm">
-          <input value={query} onChange={(e) => runSearch(e.target.value)} placeholder={'🔍 ' + t('pa_search')} className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-400" />
-          {query && (matches.length ? (
-            <span className="flex items-center gap-1 text-gray-500">
-              <button onClick={() => jumpMatch(-1)} className="px-2 py-1 rounded bg-gray-100">‹</button>
-              {matchIdx + 1}/{matches.length}
-              <button onClick={() => jumpMatch(1)} className="px-2 py-1 rounded bg-gray-100">›</button>
-            </span>
-          ) : <span className="text-gray-400">{t('pa_nomatch')}</span>)}
         </div>
 
         <div className="flex gap-3">
@@ -324,6 +321,24 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             </div>
           </div>
         </div>
+
+        {/* Find bar (editor-style: toggled by the 🔍 button, sits at the bottom) */}
+        {showSearch && (
+          <div className="flex items-center gap-2 text-sm rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
+            <input autoFocus value={query} onChange={(e) => runSearch(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') jumpMatch(e.shiftKey ? -1 : 1); if (e.key === 'Escape') setShowSearch(false) }}
+              placeholder={t('pa_search')} className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-400" />
+            {query && (matches.length ? (
+              <span className="flex items-center gap-1 text-gray-500 shrink-0">
+                <button onClick={() => jumpMatch(-1)} className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200">‹</button>
+                {matchIdx + 1}/{matches.length}
+                <button onClick={() => jumpMatch(1)} className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200">›</button>
+              </span>
+            ) : <span className="text-gray-400 shrink-0">{t('pa_nomatch')}</span>)}
+            <button onClick={() => setShowSearch(false)} aria-label="close" className="text-gray-400 hover:text-gray-700 text-lg leading-none px-1 shrink-0">×</button>
+          </div>
+        )}
+
         <p className="text-xs text-emerald-700 text-center">🔒 {t('pa_local')}</p>
       </div>
     </ToolLayout>

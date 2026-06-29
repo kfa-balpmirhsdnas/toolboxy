@@ -4167,6 +4167,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pa_color": "색상",
     "ac_value": "값",
     "ac_unit": "단위",
     "ac_copy": "복사",
