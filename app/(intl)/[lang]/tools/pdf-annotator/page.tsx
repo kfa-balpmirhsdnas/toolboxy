@@ -61,6 +61,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const [showSearch, setShowSearch] = useState(false)
   const [showPenTools, setShowPenTools] = useState(false) // annotation-tool palette toggled by the "pen tools" button
   const [wOpen, setWOpen] = useState(false) // stroke-width dropdown (shows line-thickness images)
+  const [textEdit, setTextEdit] = useState<{ x: number; y: number; val: string } | null>(null) // inline text-note input
   const [query, setQuery] = useState('')
   const [matches, setMatches] = useState<number[]>([])
   const [matchIdx, setMatchIdx] = useState(0)
@@ -211,8 +212,9 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     e.preventDefault(); (e.target as HTMLElement).setPointerCapture?.(e.pointerId)
     const p = pt(e)
     if (tool_ === 'text') {
-      const txt = window.prompt(t('pa_textprompt')); if (!txt) return
-      setAnnos((a) => [...a, { id: idRef.current++, page, type: 'text', color, width: 1, x: p.x, y: p.y, text: txt, size: 16 }]); return
+      // commit any open text box, then open a fresh inline input at the click point
+      commitText()
+      setTextEdit({ x: p.x, y: p.y, val: '' }); return
     }
     drawing.current = true
     const base = { id: idRef.current++, page, color, width: tool_ === 'highlight' ? 14 : penW }
@@ -245,6 +247,11 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
 
   function undo() { setAnnos((a) => a.slice(0, -1)) }
   function clearPage() { setAnnos((a) => a.filter((x) => x.page !== page)) }
+  // Commit the open inline text box (if non-empty) as a text annotation, then close it.
+  function commitText() {
+    if (textEdit && textEdit.val.trim()) setAnnos((a) => [...a, { id: idRef.current++, page, type: 'text', color, width: 1, x: textEdit.x, y: textEdit.y, text: textEdit.val, size: 16 }])
+    setTextEdit(null)
+  }
 
   async function download() {
     if (!origBytes.current) return
@@ -285,13 +292,13 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           {/* Top toolbar — one row: thumbnails · pen-tools · move · zoom · fullscreen · find · save · new file.
               Always visible (dimmed before a PDF loads) to preview the features. */}
           <div className={'flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2' + (ready ? '' : ' opacity-50 pointer-events-none')}>
-            <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>◧</button>
+            <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg text-xl flex items-center justify-center ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>◧</button>
             <span className="w-px h-6 bg-gray-300 mx-0.5" />
             {/* Save (download annotated PDF) + new file — right after thumbnails, with confirm */}
             <button onClick={() => { if (window.confirm(t('pa_save_confirm'))) download() }} disabled={exporting} title={t('pa_download')} aria-label={t('pa_download')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 disabled:opacity-60">{exporting ? '⏳' : '💾'}</button>
             <button onClick={() => { if (annos.length === 0 || window.confirm(t('pa_newfile_confirm'))) fileInput.current?.click() }} title={t('pa_newfile')} aria-label={t('pa_newfile')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">📂</button>
             <button onClick={() => { setShowPenTools((s) => !s); setShowSearch(false) }} title={t('pa_pentools')} aria-label={t('pa_pentools')}
-              className={'w-14 h-9 rounded-lg text-sm flex items-center justify-center gap-1 ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}><span className="w-4 text-center">{activeDrawIcon}</span><span className="text-xs">{showPenTools ? '▲' : '▼'}</span></button>
+              className={'w-9 h-9 rounded-lg text-sm flex items-center justify-center ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>{activeDrawIcon}</button>
             <button onClick={() => setTool('pan')} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg text-sm ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>✋</button>
             {/* Zoom — select on desktop; a slider inside the bar on mobile */}
             <select value={String(scale)} onChange={(e) => setScale(+e.target.value)} title={t('pa_zoom')} aria-label={t('pa_zoom')}
@@ -388,6 +395,15 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
               <canvas ref={pdfCanvas} className="block" />
               <canvas ref={annoCanvas} className="absolute inset-0" style={{ touchAction: 'none', cursor: tool_ === 'pan' ? 'grab' : 'crosshair' }}
                 onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerLeave={onUp} />
+              {/* Inline text-note input — typed straight on the page (Enter/blur commits, Esc cancels) */}
+              {textEdit && (
+                <input autoFocus value={textEdit.val}
+                  onChange={(e) => setTextEdit((te) => (te ? { ...te, val: e.target.value } : te))}
+                  onBlur={commitText}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commitText() } if (e.key === 'Escape') setTextEdit(null) }}
+                  size={Math.max(4, textEdit.val.length + 1)} placeholder={t('pa_textprompt')}
+                  style={{ position: 'absolute', left: textEdit.x * scale, top: textEdit.y * scale, fontSize: 16 * scale, lineHeight: 1.2, color, padding: 0, margin: 0, border: '1px dashed ' + color, background: 'rgba(255,255,255,.7)', outline: 'none', fontFamily: 'sans-serif' }} />
+              )}
             </div>
           </div>
         </div>
