@@ -270,25 +270,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const DRAW_TOOLS = TOOLS.filter(([k]) => k !== 'pan') // shown in the toggled pen-tools palette
   const activeDrawIcon = DRAW_TOOLS.find(([k]) => k === tool_)?.[1] ?? '🖍️' // the pen-tools toggle mirrors the active drawing tool
 
-  if (status === 'idle' || status === 'loading' || status === 'error') {
-    return (
-      <ToolLayout tool={tool} lang={params.lang}>
-        <div className="max-w-xl mx-auto space-y-3">
-          <div onClick={() => fileInput.current?.click()}
-            onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && openFile(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
-            className="border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-            <div className="text-4xl mb-3">📄✍️</div>
-            <p className="font-medium text-gray-700">{t('pa_open')}</p>
-            <p className="text-sm text-gray-400 mt-1">{t('pa_drop')}</p>
-            {status === 'loading' && <p className="text-sm text-brand-600 mt-3 animate-pulse">{t('pa_loading')}</p>}
-            {status === 'error' && <p className="text-sm text-red-500 mt-3">{t('pa_error')}</p>}
-          </div>
-          <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-center">🔒 {t('pa_local')}</p>
-          <input ref={fileInput} type="file" accept="application/pdf" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.currentTarget.value = ''; if (f) openFile(f) }} />
-        </div>
-      </ToolLayout>
-    )
-  }
+  const ready = status === 'ready' // toolbar always shows (dimmed before a PDF is loaded)
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -296,8 +278,9 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
         {/* Toolbar + floating pen-tools palette (palette is absolute so opening it never
             shifts the page below — fixes the "menu jumps" feel). */}
         <div className="relative">
-          {/* Top toolbar — one row: thumbnails · pen-tools · move · zoom · fullscreen · find · save · new file */}
-          <div className="flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2">
+          {/* Top toolbar — one row: thumbnails · pen-tools · move · zoom · fullscreen · find · save · new file.
+              Always visible (dimmed before a PDF loads) to preview the features. */}
+          <div className={'flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2' + (ready ? '' : ' opacity-50 pointer-events-none')}>
             <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>◧</button>
             <span className="w-px h-6 bg-gray-300 mx-0.5" />
             <button onClick={() => setShowPenTools((s) => !s)} title={t('pa_pentools')} aria-label={t('pa_pentools')}
@@ -311,9 +294,9 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             <button onClick={() => wrapRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
             <button onClick={() => setShowSearch((s) => !s)} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔍</button>
             <span className="w-px h-6 bg-gray-300 mx-0.5" />
-            {/* Save (download annotated PDF) + new file — icon buttons */}
-            <button onClick={download} disabled={exporting} title={t('pa_download')} aria-label={t('pa_download')} className="w-9 h-9 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-60">{exporting ? '⏳' : '💾'}</button>
-            <button onClick={() => { setStatus('idle'); pdfRef.current = null }} title={t('pa_newfile')} aria-label={t('pa_newfile')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">📂</button>
+            {/* Save (download annotated PDF) + new file — icon buttons, same style as the rest */}
+            <button onClick={download} disabled={exporting} title={t('pa_download')} aria-label={t('pa_download')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 disabled:opacity-60">{exporting ? '⏳' : '💾'}</button>
+            <button onClick={() => fileInput.current?.click()} title={t('pa_newfile')} aria-label={t('pa_newfile')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">📂</button>
           </div>
 
           {/* Pen-tools palette — floats below the toolbar (absolute → no layout shift) */}
@@ -359,6 +342,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           )}
         </div>
 
+        {ready ? (
+          <>
         {/* Thumbnails on top (mobile) / left column (desktop) */}
         <div className="flex flex-col md:flex-row gap-3">
           {showThumbs && (
@@ -405,8 +390,22 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             <button onClick={() => setShowSearch(false)} aria-label="close" className="text-gray-400 hover:text-gray-700 text-lg leading-none px-1 shrink-0">×</button>
           </div>
         )}
+          </>
+        ) : (
+          /* Drop zone — shown until a PDF is opened */
+          <div onClick={() => fileInput.current?.click()}
+            onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && openFile(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
+            className="border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
+            <div className="text-4xl mb-3">📄✍️</div>
+            <p className="font-medium text-gray-700">{t('pa_open')}</p>
+            <p className="text-sm text-gray-400 mt-1">{t('pa_drop')}</p>
+            {status === 'loading' && <p className="text-sm text-brand-600 mt-3 animate-pulse">{t('pa_loading')}</p>}
+            {status === 'error' && <p className="text-sm text-red-500 mt-3">{t('pa_error')}</p>}
+          </div>
+        )}
 
         <p className="text-xs text-emerald-700 text-center">🔒 {t('pa_local')}</p>
+        <input ref={fileInput} type="file" accept="application/pdf" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.currentTarget.value = ''; if (f) openFile(f) }} />
       </div>
     </ToolLayout>
   )
