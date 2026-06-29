@@ -53,6 +53,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const [page, setPage] = useState(1)
   const [scale, setScale] = useState(0) // 0 = fit-to-width pending; the page isn't rendered until the fit scale is set (avoids a brief zoomed first render)
   const [tool_, setTool] = useState('highlight')
+  const [captureMsg, setCaptureMsg] = useState('') // brief toast after a screen capture (clipboard / saved)
   const [color, setColor] = useState('#ef4444') // red by default
   const [penW, setPenW] = useState(4)
   const [annos, setAnnos] = useState<Anno[]>([])
@@ -129,7 +130,15 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     // search highlights (under the annotations); transient, never saved/exported
     if (searchHitsRef.current.length) { ctx.save(); ctx.fillStyle = 'rgba(250,204,21,.45)'; for (const h of searchHitsRef.current) ctx.fillRect(h.x * sc, h.y * sc, h.w * sc, h.h * sc); ctx.restore() }
     for (const a of annosRef.current) if (a.page === n) drawAnno(ctx, a, sc)
-    if (draftRef.current && draftRef.current.page === n) drawAnno(ctx, draftRef.current, sc)
+    const dr = draftRef.current
+    if (dr && dr.page === n) {
+      if (dr.type === 'capture') { // dashed marquee for the capture selection (not an annotation)
+        const x = Math.min(dr.x || 0, (dr.x || 0) + (dr.w || 0)) * sc, y = Math.min(dr.y || 0, (dr.y || 0) + (dr.h || 0)) * sc
+        const w = Math.abs(dr.w || 0) * sc, h = Math.abs(dr.h || 0) * sc
+        ctx.save(); ctx.fillStyle = 'rgba(37,99,235,.12)'; ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4])
+        ctx.fillRect(x, y, w, h); ctx.strokeRect(x, y, w, h); ctx.restore()
+      } else drawAnno(ctx, dr, sc)
+    }
   }, [])
 
   // Open with: open the PDF the OS launched the installed app with (File Handling API).
@@ -255,7 +264,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     drawing.current = true
     const base = { id: idRef.current++, page, color, width: tool_ === 'highlight' ? 14 : penW }
     if (tool_ === 'pen' || tool_ === 'highlight') draftRef.current = { ...base, type: tool_, pts: [p] }
-    else if (tool_ === 'rect') draftRef.current = { ...base, type: 'rect', x: p.x, y: p.y, w: 0, h: 0 }
+    else if (tool_ === 'rect' || tool_ === 'capture') draftRef.current = { ...base, type: tool_, x: p.x, y: p.y, w: 0, h: 0 }
     else draftRef.current = { ...base, type: tool_, x1: p.x, y1: p.y, x2: p.x, y2: p.y }
     drawAll(page, scale)
   }
@@ -263,7 +272,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     if (!drawing.current || !draftRef.current) return
     const p = pt(e); const d = draftRef.current
     if (d.type === 'pen' || d.type === 'highlight') d.pts!.push(p)
-    else if (d.type === 'rect') { d.w = p.x - (d.x || 0); d.h = p.y - (d.y || 0) }
+    else if (d.type === 'rect' || d.type === 'capture') { d.w = p.x - (d.x || 0); d.h = p.y - (d.y || 0) }
     // underline / strikethrough are locked horizontal (clean line under or through text)
     else { d.x2 = p.x; d.y2 = (d.type === 'underline' || d.type === 'strike') ? (d.y1 || 0) : p.y }
     drawAll(page, scale)
@@ -272,6 +281,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     if (!drawing.current) return
     drawing.current = false
     const d = draftRef.current; draftRef.current = null
+    if (d && d.type === 'capture') { drawAll(page, scale); captureRegion(d); return } // export the selected region, don't keep it as an annotation
     if (d) {
       // ignore zero-size shapes/dots
       const tiny = (d.type === 'rect' && Math.abs(d.w || 0) < 3 && Math.abs(d.h || 0) < 3) ||
@@ -279,6 +289,33 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
       if (!tiny) setAnnos((a) => [...a, d])
     }
     drawAll(page, scale)
+  }
+
+  // Screen capture: crop the selected region (PDF render + annotations) to a PNG.
+  // PC → copy to clipboard; mobile/unsupported → download.
+  function captureRegion(d: Anno) {
+    const pc = pdfCanvas.current; if (!pc) return
+    const s = scale
+    let x = Math.min(d.x || 0, (d.x || 0) + (d.w || 0)) * s
+    let y = Math.min(d.y || 0, (d.y || 0) + (d.h || 0)) * s
+    let w = Math.abs(d.w || 0) * s, h = Math.abs(d.h || 0) * s
+    x = Math.max(0, x); y = Math.max(0, y); w = Math.min(w, pc.width - x); h = Math.min(h, pc.height - y)
+    if (w < 4 || h < 4) return
+    const out = document.createElement('canvas'); out.width = Math.round(w); out.height = Math.round(h)
+    const octx = out.getContext('2d'); if (!octx) return
+    octx.drawImage(pc, x, y, w, h, 0, 0, out.width, out.height) // the rendered page
+    const ac = annoCanvas.current; if (ac) octx.drawImage(ac, x, y, w, h, 0, 0, out.width, out.height) // annotations on top
+    const toast = (key: string) => { setCaptureMsg(t(key)); setTimeout(() => setCaptureMsg(''), 2200) }
+    out.toBlob(async (blob) => {
+      if (!blob) return
+      const isPC = typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches
+      const clip = navigator.clipboard as Clipboard & { write?: (items: ClipboardItem[]) => Promise<void> }
+      if (isPC && clip?.write && typeof ClipboardItem !== 'undefined') {
+        try { await clip.write([new ClipboardItem({ 'image/png': blob })]); toast('pa_captured_copy'); return } catch { /* fall back to download */ }
+      }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `pdf-capture-p${page}.png`; a.click()
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000); toast('pa_captured_save')
+    }, 'image/png')
   }
 
   function undo() { setAnnos((a) => a.slice(0, -1)) }
@@ -317,7 +354,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     } catch (e) { console.error(e); alert(t('pa_error')) } finally { setExporting(false) }
   }
 
-  const TOOLS: [string, string][] = [['highlight', '🖍️'], ['pen', '✏️'], ['underline', 'U̲'], ['strike', 'S̶'], ['rect', '▭'], ['arrow', '↗'], ['text', '🅰'], ['pan', '✋']]
+  const TOOLS: [string, string][] = [['highlight', '🖍️'], ['pen', '✏️'], ['underline', 'U̲'], ['strike', 'S̶'], ['rect', '▭'], ['arrow', '↗'], ['text', '🅰'], ['capture', '📷'], ['pan', '✋']]
   const DRAW_TOOLS = TOOLS.filter(([k]) => k !== 'pan') // shown in the toggled pen-tools palette
   const activeDrawIcon = DRAW_TOOLS.find(([k]) => k === tool_)?.[1] ?? '🖍️' // the pen-tools toggle mirrors the active drawing tool
 
@@ -340,13 +377,15 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             <button onClick={() => { setShowPenTools((s) => !s); setShowSearch(false) }} title={t('pa_pentools')} aria-label={t('pa_pentools')}
               className={'w-9 h-9 rounded-lg text-sm flex items-center justify-center ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>{activeDrawIcon}</button>
             <button onClick={() => setTool('pan')} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg text-sm ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>✋</button>
-            {/* Zoom — select on desktop; a slider inside the bar on mobile */}
+            {/* Zoom — −/select/+ on desktop (PC); a slider inside the bar on mobile */}
+            <button onClick={() => setScale((s) => Math.max(0.4, +((s || 1) - 0.15).toFixed(2)))} title={t('pa_zoom')} aria-label="zoom out" className="hidden md:flex w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 items-center justify-center text-base">−</button>
             <select value={String(scale)} onChange={(e) => setScale(+e.target.value)} title={t('pa_zoom')} aria-label={t('pa_zoom')}
               className="hidden md:block h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
               {(ZOOMS.includes(scale) ? ZOOMS : [scale, ...ZOOMS]).sort((a, b) => a - b).map((z) => <option key={z} value={z}>{Math.round(z * 100)}%</option>)}
             </select>
+            <button onClick={() => setScale((s) => Math.min(3, +((s || 1) + 0.15).toFixed(2)))} title={t('pa_zoom')} aria-label="zoom in" className="hidden md:flex w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 items-center justify-center text-base">+</button>
             <button onClick={() => wrapRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
-            <button onClick={() => { setShowSearch((s) => !s); setShowPenTools(false) }} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔍</button>
+            <button onClick={() => { setShowSearch((s) => !s); setShowPenTools(false) }} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔭</button>
             {/* Mobile zoom slider — inside the bar (wraps to its own line on narrow screens) */}
             <div className="md:hidden flex items-center gap-1.5 flex-1 min-w-[120px] pl-1">
               <input type="range" min={0.4} max={3} step={0.05} value={scale} onChange={(e) => setScale(+e.target.value)} aria-label={t('pa_zoom')} className="flex-1 accent-brand-600" />
@@ -469,7 +508,15 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           </div>
         )}
 
+        {captureMsg && <p className="text-center text-sm text-brand-700 bg-brand-50 border border-brand-200 rounded-lg py-1.5">📷 {captureMsg}</p>}
         <p className="text-xs text-emerald-700 text-center">🔒 {t('pa_local')}</p>
+
+        {/* Convert this PDF with our other tools */}
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+          {([['pdf-to-jpg', 'PDF → JPG'], ['pdf-to-png', 'PDF → PNG'], ['pdf-to-text', 'PDF → TXT']] as const).map(([slug, label]) => (
+            <a key={slug} href={`/${params.lang}/tools/${slug}`} className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 hover:border-brand-300">{label}</a>
+          ))}
+        </div>
         <input ref={fileInput} type="file" accept="application/pdf" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.currentTarget.value = ''; if (f) openFile(f) }} />
       </div>
     </ToolLayout>
