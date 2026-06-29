@@ -143,6 +143,11 @@ const VECTOR = {
     ['line', { x1: '12', x2: '15', y1: '14', y2: '11' }],
     ['circle', { cx: '12', cy: '14', r: '8' }],
   ],
+  'image-viewer': [ // image
+    ['rect', { x: '3', y: '3', width: '18', height: '18', rx: '2', ry: '2' }],
+    ['circle', { cx: '9', cy: '9', r: '2' }],
+    ['path', { d: 'm21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21' }],
+  ],
   'zip-files': [ // package (closed box)
     ['path', { d: 'm7.5 4.27 9 5.15' }],
     ['path', { d: 'M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z' }],
