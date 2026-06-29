@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -84,7 +85,7 @@ export default function PdfPasswordPage({ params }: { params: { lang: string } }
             <div className="flex items-center gap-2 rounded-xl border border-gray-200 px-4 py-3 text-sm">
               <span className="text-xl">📄</span>
               <span className="flex-1 truncate text-gray-700">{file.name}</span>
-              <button onClick={reset} className="text-gray-400 hover:text-rose-500 shrink-0">✕</button>
+              <button onClick={reset} className="text-gray-400 hover:text-rose-500 shrink-0 inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button>
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">{mode === 'lock' ? t('pp_pw_set') : t('pp_pw_enter')}</label>

@@ -7,6 +7,7 @@ import { onAuthStateChanged, type User } from 'firebase/auth'
 import { auth } from '@/lib/firebase/client'
 import { loginHref } from '@/lib/auth/redirect'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
@@ -738,16 +739,16 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
 
         <div className="flex items-center gap-2 flex-wrap">
           <button onClick={download} disabled={!text}
-            className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            ⬇ {t('np_download')}
+            className="inline-flex items-center justify-center gap-1.5 px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+            <ToolIcon name="download" className="w-4 h-4" />{t('np_download')}
           </button>
           <button onClick={zipDownload} disabled={docs.every((d) => !d.text)}
-            className="px-4 py-2 text-sm font-semibold rounded-xl border border-brand-200 text-brand-700 bg-brand-50 hover:bg-brand-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            🗜 {t('np_zip')}
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl border border-brand-200 text-brand-700 bg-brand-50 hover:bg-brand-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+            <ToolIcon name="archive" className="w-4 h-4" />{t('np_zip')}
           </button>
           <button onClick={copy} disabled={!text}
-            className="px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            {copied ? '✓ ' + t('np_copied') : '📋 ' + t('ui_copy')}
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+            {copied ? <><ToolIcon name="check" className="w-4 h-4" />{t('np_copied')}</> : <><ToolIcon name="copy" className="w-4 h-4" />{t('ui_copy')}</>}
           </button>
           {/* char/line counts + creation date — icon + number only, just left of Clear */}
           <span className="ml-auto flex items-center gap-x-3 gap-y-0.5 flex-wrap text-xs text-gray-400 tabular-nums">

@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -63,7 +64,7 @@ export default function MergePdfPage({ params }: { params: { lang: string } }) {
                 <span className="flex-1 truncate text-gray-700">{f.name}</span>
                 <button onClick={() => move(i, -1)} className="text-gray-400 hover:text-gray-700 px-1">↑</button>
                 <button onClick={() => move(i, 1)} className="text-gray-400 hover:text-gray-700 px-1">↓</button>
-                <button onClick={() => setFiles((fs) => fs.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500 px-1">✕</button>
+                <button onClick={() => setFiles((fs) => fs.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500 px-1 inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button>
               </div>
             ))}
             <button onClick={merge} disabled={files.length < 2 || loading}

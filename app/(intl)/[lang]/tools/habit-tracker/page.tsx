@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
@@ -136,7 +137,7 @@ export default function HabitTrackerPage({ params }: { params: { lang: string } 
                     </span>
                   </td>
                   <td className="py-2 pl-1">
-                    <button onClick={()=>removeHabit(h.id)} className="text-gray-300 hover:text-red-400 text-xs">✕</button>
+                    <button onClick={()=>removeHabit(h.id)} className="text-gray-300 hover:text-red-400 text-xs inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button>
                   </td>
                 </tr>
               ))}

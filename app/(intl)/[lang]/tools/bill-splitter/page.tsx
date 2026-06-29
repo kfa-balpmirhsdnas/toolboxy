@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('bill-splitter')!
@@ -174,7 +175,7 @@ export default function BillSplitterPage() {
                 {t('bs_subtotal')} {money(result.subtotal)}{result.tip > 0 && ` + ${t('bs_tip')} ${money(result.tip)}`}{result.tax > 0 && ` + ${t('bs_tax')} ${money(result.tax)}`} = <b>{money(result.grand)}</b>
               </div>
             )}
-            <button onClick={copy} className="mt-3 text-sm px-4 py-1.5 rounded-xl border border-emerald-300 text-emerald-700 hover:bg-emerald-100">{copied ? '✓ ' + t('bs_copied') : '📋 ' + t('bs_copy')}</button>
+            <button onClick={copy} className="mt-3 text-sm px-4 py-1.5 rounded-xl border border-emerald-300 text-emerald-700 hover:bg-emerald-100 inline-flex items-center justify-center gap-1.5">{copied ? <><ToolIcon name="check" className="w-4 h-4" />{t('bs_copied')}</> : <><ToolIcon name="copy" className="w-4 h-4" />{t('bs_copy')}</>}</button>
           </div>
         )}
       </div>

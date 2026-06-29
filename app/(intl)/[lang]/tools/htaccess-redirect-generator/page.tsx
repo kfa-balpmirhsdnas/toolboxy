@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolCopy } from '@/lib/gtag'
 
@@ -65,7 +66,7 @@ export default function HtaccessRedirectPage({ params }: { params: { lang: strin
                 <option value="301">301</option>
                 <option value="302">302</option>
               </select>
-              <button onClick={() => setRows((rs) => rs.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500 px-1">✕</button>
+              <button onClick={() => setRows((rs) => rs.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500 px-1 inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button>
             </div>
           ))}
           <button onClick={() => setRows((rs) => [...rs, { from: '', to: '', code: '301' }])}

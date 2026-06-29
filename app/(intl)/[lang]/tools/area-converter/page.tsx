@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('area-converter')!
@@ -73,7 +74,7 @@ export default function AreaConverterPage() {
             </div>
           ))}
         </div>
-        <button onClick={copyAll} className="text-sm px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50">{copied ? '✓ ' + t('ac_copied') : '📋 ' + t('ac_copy')}</button>
+        <button onClick={copyAll} className="text-sm px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 inline-flex items-center justify-center gap-1.5">{copied ? <><ToolIcon name="check" className="w-4 h-4" />{t('ac_copied')}</> : <><ToolIcon name="copy" className="w-4 h-4" />{t('ac_copy')}</>}</button>
 
         {/* Common pyeong quick table — the real-estate hook */}
         <div>

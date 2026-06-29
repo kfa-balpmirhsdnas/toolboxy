@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { LOTTERIES, DEFAULT_BY_LOCALE, type Lottery } from '@/lib/lotteries'
 
@@ -179,7 +180,7 @@ export default function LotteryNumberGeneratorPage() {
               )
             })}
             {lot.bonusCount > 0 && <p className="text-xs text-gray-400"><span className="inline-block w-2.5 h-2.5 rounded-full align-middle mr-1" style={{ boxShadow: '0 0 0 2px #f59e0b inset', background: '#fff' }} />{t('lt_bonus')}</p>}
-            <button onClick={copy} className="text-sm px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50">{copied ? '✓ ' + t('lt_copied') : '📋 ' + t('lt_copy')}</button>
+            <button onClick={copy} className="text-sm px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 inline-flex items-center justify-center gap-1.5">{copied ? <><ToolIcon name="check" className="w-4 h-4" />{t('lt_copied')}</> : <><ToolIcon name="copy" className="w-4 h-4" />{t('lt_copy')}</>}</button>
           </div>
         )}
         <p className="text-xs text-gray-400 text-center">{t('lt_disclaimer')}</p>

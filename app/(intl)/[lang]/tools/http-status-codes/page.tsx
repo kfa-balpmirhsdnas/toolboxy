@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('http-status-codes')!
 const CODES:{code:number;name:string;desc:string;cat:string}[]=[
@@ -58,7 +59,7 @@ export default function HttpStatusCodesPage() {
             <div className="flex items-center gap-3 mb-2">
               <span className="text-3xl font-bold" style={{color:CAT_COLORS[selItem.cat]}}>{selItem.code}</span>
               <span className="text-lg font-semibold text-gray-800">{selItem.name}</span>
-              <button onClick={()=>setSel(null)} className="ml-auto text-gray-400 hover:text-gray-600">✕</button>
+              <button onClick={()=>setSel(null)} className="ml-auto text-gray-400 hover:text-gray-600 inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button>
             </div>
             <p className="text-sm text-gray-600">{selItem.desc}</p>
           </div>

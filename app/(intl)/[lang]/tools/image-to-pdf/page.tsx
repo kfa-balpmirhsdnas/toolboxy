@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -83,7 +84,7 @@ export default function ImageToPdfPage({ params }: { params: { lang: string } })
                 <div key={i} className="relative group">
                   <img src={URL.createObjectURL(f)} alt={f.name} className="w-full h-16 object-cover rounded-lg border border-gray-200" />
                   <button onClick={() => setFiles((fs) => fs.filter((_, j) => j !== i))}
-                    className="absolute -top-1.5 -right-1.5 bg-gray-800 text-white rounded-full w-5 h-5 text-xs opacity-0 group-hover:opacity-100">✕</button>
+                    className="absolute -top-1.5 -right-1.5 bg-gray-800 text-white rounded-full w-5 h-5 text-xs opacity-0 group-hover:opacity-100 inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>

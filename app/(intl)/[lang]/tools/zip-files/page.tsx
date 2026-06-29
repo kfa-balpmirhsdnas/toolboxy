@@ -140,7 +140,7 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
                 <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
                   <span className="flex-1 truncate text-gray-700">{relPath(f)}</span>
                   <span className="text-gray-400 shrink-0">{fmt(f.size)}</span>
-                  <button onClick={() => removeAt(i)} className="text-gray-300 hover:text-rose-500 shrink-0">✕</button>
+                  <button onClick={() => removeAt(i)} className="text-gray-300 hover:text-rose-500 shrink-0 inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>

@@ -2,6 +2,7 @@
 import {useState} from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import {TOOLS} from '@/lib/tools/registry'
 
 interface Item{desc:string;qty:string;price:string}
@@ -80,7 +81,7 @@ export default function Page(){
                       className="w-20 text-right border-none outline-none"/>
                   </td>
                   <td className="px-3 py-1 text-right">${((parseFloat(it.qty)||0)*(parseFloat(it.price)||0)).toFixed(2)}</td>
-                  <td className="px-2"><button onClick={()=>removeItem(i)} className="text-red-400">✕</button></td>
+                  <td className="px-2"><button onClick={()=>removeItem(i)} className="text-red-400 inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button></td>
                 </tr>
               ))}
             </tbody>
