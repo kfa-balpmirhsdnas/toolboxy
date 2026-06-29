@@ -488,13 +488,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   // On mobile, snap the editor box to just under the header on focus (the keyboard's
   // native scroll otherwise overshoots past it). Desktop scrolls immediately.
   function scrollBoxTop() {
-    // The "box line" = the top edge of the white tool card; scroll it to just under
-    // the sticky header. (wrapRef is inside the card, so target the card itself.)
-    const el = (wrapRef.current?.closest('.bg-white') as HTMLElement | null) || wrapRef.current; if (!el) return
-    const run = () => { const hd = document.querySelector('header'); const off = (hd ? hd.getBoundingClientRect().height : 0) + 8; window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - off), behavior: 'smooth' }) }
-    // Run after the browser's own focus-scroll so ours wins and the box top lands on
-    // the line. Desktop: a short tick; mobile: wait for the keyboard to open first.
-    setTimeout(run, window.innerWidth >= 640 ? 60 : 300)
+    // Scroll the tool card (its scroll-mt-16 lands it just under the sticky header).
+    const el = wrapRef.current?.closest('.bg-white.rounded-2xl') as HTMLElement | null; if (!el) return
+    // Run after the browser's own focus-scroll so ours wins. Desktop: a short tick;
+    // mobile: wait for the keyboard to open first.
+    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), window.innerWidth >= 640 ? 60 : 300)
   }
   // Attach focus-scroll as a NATIVE listener — it fires reliably for every focus
   // (incl. real taps/clicks), unlike React's onFocus which proved flaky here.

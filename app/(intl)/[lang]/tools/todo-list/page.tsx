@@ -37,9 +37,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
   // (instead of the browser over-scrolling past it).
   const scrollBoxTop = () => {
     const el = boxRef.current; if (!el || window.innerWidth >= 640) return
-    const header = document.querySelector('header')
-    const offset = (header ? header.getBoundingClientRect().height : 0) + 8
-    setTimeout(() => window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - offset), behavior: 'smooth' }), 300)
+    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300) // scroll-mt-16 offsets the header
   }
 
   // Load once from this browser, migrating the old flat-array format if present.
@@ -151,7 +149,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div ref={boxRef} className="max-w-xl mx-auto space-y-4">
+      <div ref={boxRef} className="max-w-xl mx-auto space-y-4 scroll-mt-16">
         {/* tabs: starred · lists · + new list */}
         <div ref={tabBarRef} className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
           <button data-tab={STARRED} onClick={() => setActive(STARRED)} aria-label={t('td_tab_starred')} title={t('td_tab_starred')} className={tabCls(active === STARRED)}>{star(true, 'w-5 h-5')}</button>

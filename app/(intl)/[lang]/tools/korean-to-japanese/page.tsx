@@ -73,10 +73,10 @@ export default function KoreanToJapanesePage({ params }: { params: { lang: strin
             const el = e.currentTarget
             setInput(''); setCopied(false); loadDict()
             if (typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches)
-              setTimeout(() => window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 64, behavior: 'smooth' }), 300)
+              setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300)
           }}
           placeholder={t('kj_ph')}
-          className="w-full scroll-mt-20 rounded-xl border border-gray-200 px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-brand-400" />
+          className="w-full scroll-mt-16 rounded-xl border border-gray-200 px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-brand-400" />
 
         <div className="min-h-[5rem] rounded-xl border border-gray-200 bg-gray-50 p-5 flex items-center justify-center text-center">
           {held !== null ? (
