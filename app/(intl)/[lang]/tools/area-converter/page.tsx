@@ -18,9 +18,8 @@ const UNITS: { k: string; f: number; sym: string; dp: number }[] = [
   { k: 'acre', f: 4046.8564224, sym: 'ac', dp: 4 },
   { k: 'hectare', f: 10000, sym: 'ha', dp: 4 },
 ]
-const PRIMARY: Record<string, string> = { ko: 'sqm', ja: 'sqm', en: 'sqft' }
 const DEFAULTS: Record<string, { unit: string; value: string }> = {
-  ko: { unit: 'pyeong', value: '32' }, ja: { unit: 'pyeong', value: '30' }, en: { unit: 'sqm', value: '100' },
+  ko: { unit: 'pyeong', value: '32' }, ja: { unit: 'sqm', value: '60' }, en: { unit: 'sqm', value: '100' },
 }
 // Frequently-used sizes per locale: ko 평 / ja 坪 (same 3.3㎡ unit), en square feet.
 const PRESETS: Record<string, { unit: string; values: number[] }> = {
@@ -44,7 +43,8 @@ export default function AreaConverterPage() {
 
   const sqm = useMemo(() => (parseFloat(value) || 0) * (UNITS.find((u) => u.k === unit)?.f ?? 1), [value, unit])
   const fmt = (v: number, dp: number) => v.toLocaleString(tag, { maximumFractionDigits: dp })
-  const results = UNITS.filter((u) => u.k !== unit).map((u) => ({ k: u.k, v: sqm / u.f, dp: u.dp }))
+  // include every unit (the selected one too — it echoes the input and is highlighted)
+  const results = UNITS.map((u) => ({ k: u.k, v: sqm / u.f, dp: u.dp }))
 
   function copyAll() {
     const txt = `${fmt(parseFloat(value) || 0, 2)} ${sym(unit)} =\n` + results.map((r) => `${fmt(r.v, r.dp)} ${sym(r.k)} (${name(r.k)})`).join('\n')
@@ -73,9 +73,9 @@ export default function AreaConverterPage() {
         {/* Results */}
         <div className="rounded-2xl border border-gray-200 divide-y divide-gray-100">
           {results.map((r) => (
-            <div key={r.k} className={'flex items-baseline justify-between px-4 py-2.5 ' + (r.k === PRIMARY[lang] ? 'bg-brand-50' : '')}>
-              <span className="text-sm text-gray-500">{name(r.k)} <span className="text-gray-400">{sym(r.k)}</span></span>
-              <span className={'font-mono tabular-nums ' + (r.k === PRIMARY[lang] ? 'text-lg font-bold text-brand-700' : 'text-gray-800')}>{fmt(r.v, r.dp)}</span>
+            <div key={r.k} className={'flex items-baseline justify-between px-4 py-2.5 ' + (r.k === unit ? 'bg-brand-50' : '')}>
+              <span className={'text-sm ' + (r.k === unit ? 'font-semibold text-brand-700' : 'text-gray-500')}>{name(r.k)} <span className={r.k === unit ? 'text-brand-400' : 'text-gray-400'}>{sym(r.k)}</span></span>
+              <span className={'font-mono tabular-nums ' + (r.k === unit ? 'text-lg font-bold text-brand-700' : 'text-gray-800')}>{fmt(r.v, r.dp)}</span>
             </div>
           ))}
         </div>
