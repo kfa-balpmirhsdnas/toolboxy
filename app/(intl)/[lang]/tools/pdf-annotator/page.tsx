@@ -142,7 +142,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
         const pg = await pdfRef.current!.getPage(1)
         const vp = pg.getViewport({ scale: 1 })
         if (cancel) return
-        const avail = (stageRef.current?.clientWidth || 720) - 52 // p-4 padding (32) + vertical scrollbar (~16) + buffer
+        const avail = (stageRef.current?.clientWidth || 720) - 34 // p-2 padding (16) + vertical scrollbar (~18) — fills the width
         // floor (not round) so the page is never wider than the viewer → no horizontal scroll
         setScale(Math.max(0.4, Math.min(3, Math.floor((avail / vp.width) * 100) / 100)))
       } catch { /* keep default */ }
@@ -384,7 +384,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             </div>
           )}
           {/* Page stage */}
-          <div ref={stageRef} className="flex-1 overflow-auto bg-gray-100 rounded-xl p-4 flex justify-center max-h-[56vh] md:max-h-[78vh]">
+          <div ref={stageRef} className="flex-1 overflow-auto bg-gray-100 rounded-xl p-2 flex justify-center max-h-[56vh] md:max-h-[78vh]">
             <div className="relative shadow-lg" style={{ width: 'fit-content', height: 'fit-content' }}>
               <canvas ref={pdfCanvas} className="block" />
               <canvas ref={annoCanvas} className="absolute inset-0" style={{ touchAction: 'none', cursor: tool_ === 'pan' ? 'grab' : 'crosshair' }}
