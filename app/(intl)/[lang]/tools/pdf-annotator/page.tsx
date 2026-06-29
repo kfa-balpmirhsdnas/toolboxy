@@ -182,14 +182,9 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
         // floor (not round) so the page is never wider than the viewer → no horizontal scroll
         setScale(Math.max(0.4, Math.min(3, Math.floor((avail / vp.width) * 100) / 100)))
         if (stageRef.current) stageRef.current.scrollTop = 0 // editor-style: start at the top of the page
-        // After a file opens, bring the tool's top line to just under the sticky header
-        // (scrollIntoView put it at y=0, hidden behind the header — overshooting).
-        requestAnimationFrame(() => {
-          const el = wrapRef.current; if (!el) return
-          const hd = document.querySelector('header')
-          const off = (hd ? hd.getBoundingClientRect().height : 0) + 8
-          window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - off), behavior: 'smooth' })
-        })
+        // After a file opens, scroll the tool card (its top line) into view. The card carries
+        // scroll-mt-20, so it lands just under the sticky header instead of behind it.
+        requestAnimationFrame(() => (wrapRef.current?.closest('.bg-white.rounded-2xl') as HTMLElement | null)?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
       } catch { setScale(1) /* fall back so the page still renders */ }
     })()
     return () => { cancel = true }
