@@ -95,8 +95,9 @@ export default function ToolLayout({ tool, lang: langProp, children }: ToolLayou
       {/* Usage limit banner (logged-in users only, near/at limit) */}
       <UsageGate slug={tool.slug} lang={lang} />
 
-      {/* Tool Content — scroll-mt offsets the sticky header when something scrollIntoViews it */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 scroll-mt-20">
+      {/* Tool Content — scroll-mt offsets the sticky header (~57px) when something
+          scrollIntoViews it, leaving only a small gap below the header */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 scroll-mt-16">
         {children}
       </div>
 
