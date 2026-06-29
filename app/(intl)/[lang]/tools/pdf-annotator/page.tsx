@@ -116,6 +116,16 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     if (draftRef.current && draftRef.current.page === n) drawAnno(ctx, draftRef.current, sc)
   }, [])
 
+  // Open with: open the PDF the OS launched the installed app with (File Handling API).
+  useEffect(() => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const lq = (window as any).launchQueue
+    if (!lq?.setConsumer) return
+    lq.setConsumer(async (p: any) => { const h = p?.files?.[0]; if (!h) return; try { openFile(await h.getFile()) } catch { /* skip */ } })
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => { if (status === 'ready') renderPage(page, scale) }, [status, page, scale, renderPage])
   useEffect(() => { if (status === 'ready') drawAll(page, scale) }, [annos, page, scale, status, drawAll])
 

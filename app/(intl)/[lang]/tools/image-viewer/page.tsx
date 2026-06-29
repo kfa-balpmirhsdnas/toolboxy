@@ -86,6 +86,20 @@ export default function ImageViewerPage() {
   const cur = images[idx]
   const resetView = useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }); setRot(0); setFlip(false) }, [])
 
+  // Open with: load image file(s) the OS launched the installed app with (File Handling API).
+  useEffect(() => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const lq = (window as any).launchQueue
+    if (!lq?.setConsumer) return
+    lq.setConsumer(async (p: any) => {
+      const files: File[] = []
+      for (const h of p?.files || []) { try { files.push(await h.getFile()) } catch { /* skip */ } }
+      if (files.length) addFiles(files)
+    })
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function addFiles(list: FileList | File[] | null) {
     if (!list) return
     const imgs = Array.from(list).filter((f) => f.type.startsWith('image/') || IMG_RE.test(f.name))
