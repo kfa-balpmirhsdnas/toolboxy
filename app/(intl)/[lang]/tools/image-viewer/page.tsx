@@ -266,31 +266,9 @@ export default function ImageViewerPage() {
 
   return (
     <ToolLayout tool={tool}>
-      {images.length === 0 ? (
-        <div className="space-y-4">
-          <div onClick={() => fileRef.current?.click()} onDrop={onDrop} onDragOver={(e) => e.preventDefault()}
-            className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-            <p className="text-5xl mb-3">🖼️</p>
-            <p className="text-base font-medium text-gray-700">{t('iv_drop')}</p>
-            <p className="text-xs text-gray-400 mt-1">{t('iv_drop_sub')}</p>
-            <div className="flex gap-2 justify-center mt-4">
-              <button onClick={(e) => { e.stopPropagation(); fileRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('iv_pick_files')}</button>
-              <button onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">{t('iv_pick_folder')}</button>
-            </div>
-          </div>
-          <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <input ref={dirRef} type="file" className="hidden" {...({ webkitdirectory: '', directory: '' } as any)} onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
-          <div className="flex flex-wrap justify-center gap-2">
-            {['iv_badge_noinstall', 'iv_badge_free', 'iv_badge_private'].map((b) => (
-              <span key={b} className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">✓ {t(b)}</span>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div ref={viewerRef} className={'flex flex-col gap-2 ' + (fs ? 'fixed inset-0 z-50 bg-gray-900 p-3' : '')}>
-          {/* Toolbar */}
-          <div className="flex items-center gap-1 flex-wrap rounded-xl bg-gray-800 px-2 py-1.5">
+      <div ref={viewerRef} className={'flex flex-col gap-2 ' + (fs ? 'fixed inset-0 z-50 bg-gray-900 p-3' : '')}>
+          {/* Toolbar — always visible; dimmed before any image loads to preview the features */}
+          <div className={'flex items-center gap-1 flex-wrap rounded-xl bg-gray-800 px-2 py-1.5' + (images.length ? '' : ' opacity-50 pointer-events-none')}>
             <button className={tBtn} title={t('iv_zoom_out')} onClick={() => setZoom((z) => Math.max(1, z - 0.25))}>➖</button>
             <span className="text-xs text-gray-300 w-12 text-center tabular-nums">{Math.round(zoom * 100)}%</span>
             <button className={tBtn} title={t('iv_zoom_in')} onClick={() => setZoom((z) => Math.min(8, z + 0.25))}>➕</button>
@@ -320,6 +298,8 @@ export default function ImageViewerPage() {
             <button className={tBtn} title={t('iv_close')} onClick={clearAll}>✕</button>
           </div>
 
+          {images.length > 0 ? (
+            <>
           {/* Stage */}
           <div ref={stageRef}
             onWheel={cropMode ? undefined : onWheel}
@@ -362,8 +342,32 @@ export default function ImageViewerPage() {
               ))}
             </div>
           )}
+          </>
+          ) : (
+            /* Drop zone — shown until images are added */
+            <div className="space-y-4 pt-1">
+              <div onClick={() => fileRef.current?.click()} onDrop={onDrop} onDragOver={(e) => e.preventDefault()}
+                className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
+                <p className="text-5xl mb-3">🖼️</p>
+                <p className="text-base font-medium text-gray-700">{t('iv_drop')}</p>
+                <p className="text-xs text-gray-400 mt-1">{t('iv_drop_sub')}</p>
+                <div className="flex gap-2 justify-center mt-4">
+                  <button onClick={(e) => { e.stopPropagation(); fileRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('iv_pick_files')}</button>
+                  <button onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">{t('iv_pick_folder')}</button>
+                </div>
+              </div>
+              <div className="flex flex-wrap justify-center gap-2">
+                {['iv_badge_noinstall', 'iv_badge_free', 'iv_badge_private'].map((b) => (
+                  <span key={b} className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">✓ {t(b)}</span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      )}
+        {/* File inputs — always mounted so toolbar + drop zone can open them */}
+        <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <input ref={dirRef} type="file" className="hidden" {...({ webkitdirectory: '', directory: '' } as any)} onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
     </ToolLayout>
   )
 }
