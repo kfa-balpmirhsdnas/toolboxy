@@ -10,6 +10,7 @@ const WORKER = 'https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs'
 const COLORS = ['#ef4444', '#f59e0b', '#fde047', '#22c55e', '#3b82f6', '#111827']
 const COLOR_LABEL: Record<string, string> = { '#ef4444': '🔴', '#f59e0b': '🟠', '#fde047': '🟡', '#22c55e': '🟢', '#3b82f6': '🔵', '#111827': '⚫' }
 const ZOOMS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3]
+const WIDTHS = [2, 4, 8]
 const EXPORT_SCALE = 2
 
 type Pt = { x: number; y: number }
@@ -59,6 +60,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const [showThumbs, setShowThumbs] = useState(true)
   const [showSearch, setShowSearch] = useState(false)
   const [showPenTools, setShowPenTools] = useState(false) // annotation-tool palette toggled by the "pen tools" button
+  const [wOpen, setWOpen] = useState(false) // stroke-width dropdown (shows line-thickness images)
   const [query, setQuery] = useState('')
   const [matches, setMatches] = useState<number[]>([])
   const [matchIdx, setMatchIdx] = useState(0)
@@ -70,6 +72,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const pdfCanvas = useRef<HTMLCanvasElement>(null)
   const annoCanvas = useRef<HTMLCanvasElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
+  const wrapRef = useRef<HTMLDivElement>(null) // whole tool — fullscreen target so page nav etc. stay usable
   const fileInput = useRef<HTMLInputElement>(null)
   const dims = useRef<Record<number, { w: number; h: number }>>({})
   const pageText = useRef<string[]>([])
@@ -139,8 +142,9 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
         const pg = await pdfRef.current!.getPage(1)
         const vp = pg.getViewport({ scale: 1 })
         if (cancel) return
-        const avail = (stageRef.current?.clientWidth || 720) - 32 // minus the p-4 padding
-        setScale(+Math.max(0.4, Math.min(3, avail / vp.width)).toFixed(2))
+        const avail = (stageRef.current?.clientWidth || 720) - 52 // p-4 padding (32) + vertical scrollbar (~16) + buffer
+        // floor (not round) so the page is never wider than the viewer → no horizontal scroll
+        setScale(Math.max(0.4, Math.min(3, Math.floor((avail / vp.width) * 100) / 100)))
       } catch { /* keep default */ }
     })()
     return () => { cancel = true }
@@ -288,7 +292,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="space-y-3">
+      <div ref={wrapRef} className="space-y-3 bg-white overflow-auto">
         {/* Top toolbar: thumbnails · pen-tools toggle · move · undo · clear · zoom · fullscreen · find */}
         <div className="flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2">
           <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>◧</button>
@@ -299,13 +303,17 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           <button onClick={() => setTool('pan')} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg text-sm ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>✋</button>
           <span className="w-px h-6 bg-gray-300 mx-0.5" />
           <button onClick={undo} title={t('pa_undo')} aria-label={t('pa_undo')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">↩</button>
-          <button onClick={clearPage} title={t('pa_clear')} aria-label={t('pa_clear')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">🗑</button>
+          <button onClick={clearPage} title={t('pa_clear')} aria-label={t('pa_clear')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-700" aria-hidden="true">
+              <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21" /><path d="M22 21H7" /><path d="m5 11 9 9" />
+            </svg>
+          </button>
           <span className="w-px h-6 bg-gray-300 mx-0.5" />
           <select value={String(scale)} onChange={(e) => setScale(+e.target.value)} title={t('pa_zoom')} aria-label={t('pa_zoom')}
             className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
             {(ZOOMS.includes(scale) ? ZOOMS : [scale, ...ZOOMS]).sort((a, b) => a - b).map((z) => <option key={z} value={z}>{Math.round(z * 100)}%</option>)}
           </select>
-          <button onClick={() => stageRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
+          <button onClick={() => wrapRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
           <button onClick={() => setShowSearch((s) => !s)} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔍</button>
         </div>
 
@@ -321,12 +329,25 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
               className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
               {COLORS.map((c) => <option key={c} value={c}>{COLOR_LABEL[c]}</option>)}
             </select>
-            <select value={penW} onChange={(e) => setPenW(+e.target.value)} title={t('pa_width')} aria-label={t('pa_width')}
-              className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
-              <option value={2}>{t('pa_w_thin')}</option>
-              <option value={4}>{t('pa_w_mid')}</option>
-              <option value={8}>{t('pa_w_thick')}</option>
-            </select>
+            {/* Stroke width — dropdown showing the actual line thickness as images */}
+            <div className="relative">
+              {wOpen && <div className="fixed inset-0 z-10" onClick={() => setWOpen(false)} />}
+              <button onClick={() => setWOpen((o) => !o)} title={t('pa_width')} aria-label={t('pa_width')}
+                className="h-9 px-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-100 flex items-center gap-1.5">
+                <span style={{ width: 20, height: penW, borderRadius: 9999, background: '#374151', display: 'block' }} />
+                <span className="text-xs text-gray-400">▼</span>
+              </button>
+              {wOpen && (
+                <div className="absolute z-20 mt-1 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-1 space-y-1">
+                  {WIDTHS.map((w) => (
+                    <button key={w} onClick={() => { setPenW(w); setWOpen(false) }}
+                      className={'flex items-center justify-center w-16 h-8 rounded ' + (penW === w ? 'bg-brand-50' : 'hover:bg-gray-100')}>
+                      <span style={{ width: 34, height: w, borderRadius: 9999, background: '#374151', display: 'block' }} />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -344,7 +365,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             </div>
           )}
           {/* Page stage */}
-          <div ref={stageRef} className="flex-1 overflow-auto bg-gray-100 rounded-xl p-4 flex justify-center" style={{ maxHeight: '78vh' }}>
+          <div ref={stageRef} className="flex-1 overflow-auto bg-gray-100 rounded-xl p-4 flex justify-center max-h-[56vh] md:max-h-[78vh]">
             <div className="relative shadow-lg" style={{ width: 'fit-content', height: 'fit-content' }}>
               <canvas ref={pdfCanvas} className="block" />
               <canvas ref={annoCanvas} className="absolute inset-0" style={{ touchAction: 'none', cursor: tool_ === 'pan' ? 'grab' : 'crosshair' }}
