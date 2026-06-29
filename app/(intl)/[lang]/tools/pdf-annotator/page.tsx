@@ -25,12 +25,12 @@ type Anno = {
 function drawAnno(ctx: CanvasRenderingContext2D, a: Anno, s: number) {
   ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.globalAlpha = 1
   ctx.strokeStyle = a.color; ctx.fillStyle = a.color; ctx.lineWidth = a.width * s
-  if (a.type === 'pen' || a.type === 'highlight' || a.type === 'freehand') {
-    if (a.type === 'highlight') ctx.globalAlpha = 0.35
+  if (a.type === 'pen' || a.type === 'freehand') {
     ctx.beginPath()
     ;(a.pts || []).forEach((p, i) => (i ? ctx.lineTo(p.x * s, p.y * s) : ctx.moveTo(p.x * s, p.y * s)))
-    ctx.stroke(); ctx.globalAlpha = 1
-  } else if (a.type === 'underline' || a.type === 'strike' || a.type === 'arrow' || a.type === 'line') {
+    ctx.stroke()
+  } else if (a.type === 'underline' || a.type === 'strike' || a.type === 'arrow' || a.type === 'line' || a.type === 'highlight') {
+    if (a.type === 'highlight') ctx.globalAlpha = 0.35 // semi-transparent thick horizontal stroke
     ctx.beginPath(); ctx.moveTo((a.x1 || 0) * s, (a.y1 || 0) * s); ctx.lineTo((a.x2 || 0) * s, (a.y2 || 0) * s); ctx.stroke()
     if (a.type === 'arrow') {
       const ang = Math.atan2((a.y2 || 0) - (a.y1 || 0), (a.x2 || 0) - (a.x1 || 0)); const hl = 12 * s
@@ -308,7 +308,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     drawing.current = true
     // the stroke-width option applies to every tool; the highlighter is rendered ~3× as thick
     const base = { id: idRef.current++, page, color, width: tool_ === 'highlight' ? penW * 3 : penW }
-    if (tool_ === 'pen' || tool_ === 'highlight' || tool_ === 'freehand') draftRef.current = { ...base, type: tool_, pts: [p] }
+    if (tool_ === 'pen' || tool_ === 'freehand') draftRef.current = { ...base, type: tool_, pts: [p] }
     else if (tool_ === 'rect' || tool_ === 'capture') draftRef.current = { ...base, type: tool_, x: p.x, y: p.y, w: 0, h: 0 }
     else draftRef.current = { ...base, type: tool_, x1: p.x, y1: p.y, x2: p.x, y2: p.y }
     drawAll(page, scale)
@@ -316,10 +316,10 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   function onMove(e: React.PointerEvent) {
     if (!drawing.current || !draftRef.current) return
     const p = pt(e); const d = draftRef.current
-    if (d.type === 'pen' || d.type === 'highlight' || d.type === 'freehand') d.pts!.push(p)
+    if (d.type === 'pen' || d.type === 'freehand') d.pts!.push(p)
     else if (d.type === 'rect' || d.type === 'capture') { d.w = p.x - (d.x || 0); d.h = p.y - (d.y || 0) }
-    // underline / strikethrough are locked horizontal (clean line under or through text)
-    else { d.x2 = p.x; d.y2 = (d.type === 'underline' || d.type === 'strike') ? (d.y1 || 0) : p.y }
+    // highlight / underline / strikethrough are locked horizontal (clean line over/under/through text)
+    else { d.x2 = p.x; d.y2 = (d.type === 'underline' || d.type === 'strike' || d.type === 'highlight') ? (d.y1 || 0) : p.y }
     drawAll(page, scale)
   }
   function onUp() {
@@ -330,7 +330,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     if (d) {
       // ignore zero-size shapes/dots
       const tiny = (d.type === 'rect' && Math.abs(d.w || 0) < 3 && Math.abs(d.h || 0) < 3) ||
-        ((d.type === 'pen' || d.type === 'highlight' || d.type === 'freehand') && (d.pts?.length || 0) < 2)
+        ((d.type === 'pen' || d.type === 'freehand') && (d.pts?.length || 0) < 2) ||
+        (d.type === 'highlight' && Math.abs((d.x2 || 0) - (d.x1 || 0)) < 3)
       if (!tiny) setAnnos((a) => [...a, d])
     }
     drawAll(page, scale)

@@ -175,13 +175,21 @@ export default function ImageViewerPage() {
 
   function clearAll() { images.forEach((i) => URL.revokeObjectURL(i.url)); setImages([]); setIdx(0); resetView(); setPlaying(false) }
 
-  // Load dimensions + EXIF for the current image.
+  // Dimensions for the current image (cheap — the image is already decoded for display).
   useEffect(() => {
-    if (!cur) return
-    setDims({ w: 0, h: 0 }); setExif({})
+    if (!cur) { setDims({ w: 0, h: 0 }); return }
+    setDims({ w: 0, h: 0 })
     const im = new Image(); im.onload = () => setDims({ w: im.naturalWidth, h: im.naturalHeight }); im.src = cur.url
-    readExif(cur.file).then(setExif)
   }, [cur])
+
+  // EXIF is only shown in the thumbnail (grid) view or the info overlay, so parse it lazily —
+  // only for the image being inspected, not for every image during normal browsing.
+  useEffect(() => {
+    if (!cur || (viewMode !== 'grid' && !showInfo)) { setExif({}); return }
+    let cancel = false
+    readExif(cur.file).then((e) => { if (!cancel) setExif(e) })
+    return () => { cancel = true }
+  }, [cur, viewMode, showInfo])
 
   // Keep the active thumbnail in view.
   useEffect(() => { thumbRef.current?.querySelector(`[data-i="${idx}"]`)?.scrollIntoView({ inline: 'center', block: 'nearest' }) }, [idx])
