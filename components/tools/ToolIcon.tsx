@@ -35,6 +35,9 @@ const P: Record<string, ReactNode> = {
   redo: <><path d="m15 14 5-5-5-5" /><path d="M20 9H9a4 4 0 0 0 0 8h1" /></>,
   eraser: <><path d="m7 21-4.3-4.3a1 1 0 0 1 0-1.4L13 5a2 2 0 0 1 2.8 0l4.2 4.2a2 2 0 0 1 0 2.8L11 21Z" /><path d="M22 21H8" /><path d="m5 11 9 9" /></>,
   sliders: <><line x1="21" x2="14" y1="6" y2="6" /><line x1="10" x2="3" y1="6" y2="6" /><line x1="21" x2="12" y1="12" y2="12" /><line x1="8" x2="3" y1="12" y2="12" /><line x1="21" x2="16" y1="18" y2="18" /><line x1="12" x2="3" y1="18" y2="18" /><circle cx="12" cy="6" r="2" /><circle cx="10" cy="12" r="2" /><circle cx="14" cy="18" r="2" /></>,
+  loader: <path d="M21 12a9 9 0 1 1-6.2-8.5" />,
+  'chevron-left': <path d="m15 18-6-6 6-6" />,
+  'chevron-right': <path d="m9 18 6-6-6-6" />,
 }
 
 export default function ToolIcon({ name, className }: { name: keyof typeof P | string; className?: string }) {

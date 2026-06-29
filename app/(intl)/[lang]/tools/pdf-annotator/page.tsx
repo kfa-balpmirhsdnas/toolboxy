@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('pdf-annotator')!
@@ -18,19 +19,6 @@ type Anno = {
   id: number; page: number; type: string; color: string; width: number
   pts?: Pt[]; x1?: number; y1?: number; x2?: number; y2?: number
   x?: number; y?: number; w?: number; h?: number; text?: string; size?: number
-}
-
-// Binoculars (the classic MS Word "Find" icon).
-function Binoculars() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]" aria-hidden="true">
-      <rect x="3" y="9" width="7" height="11" rx="3.5" />
-      <rect x="14" y="9" width="7" height="11" rx="3.5" />
-      <path d="M10 12.5h4" />
-      <path d="M6.5 9 7 5.4a1 1 0 0 1 2 0L9.5 9" />
-      <path d="M17.5 9 17 5.4a1 1 0 0 0-2 0L14.5 9" />
-    </svg>
-  )
 }
 
 // Draw one annotation onto a 2D canvas. Coords are in PDF points; `s` scales to pixels.
@@ -407,9 +395,10 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     } catch (e) { console.error(e); alert(t('pa_error')) } finally { setExporting(false) }
   }
 
-  const TOOLS: [string, string][] = [['highlight', '🖍️'], ['pen', '✏️'], ['underline', 'U̲'], ['strike', 'S̶'], ['rect', '▭'], ['arrow', '↗'], ['text', '🅰'], ['capture', '📷'], ['pan', '✋']]
+  // [tool, ToolIcon name]
+  const TOOLS: [string, string][] = [['highlight', 'highlighter'], ['pen', 'pen'], ['underline', 'underline'], ['strike', 'strike'], ['rect', 'rect'], ['arrow', 'arrow'], ['text', 'text'], ['capture', 'camera'], ['pan', 'hand']]
   const DRAW_TOOLS = TOOLS.filter(([k]) => k !== 'pan') // shown in the toggled pen-tools palette
-  const activeDrawIcon = DRAW_TOOLS.find(([k]) => k === tool_)?.[1] ?? '🖍️' // the pen-tools toggle mirrors the active drawing tool
+  const activeDrawIcon = DRAW_TOOLS.find(([k]) => k === tool_)?.[1] ?? 'highlighter' // the pen-tools toggle mirrors the active drawing tool
 
   const ready = status === 'ready' // toolbar always shows (dimmed before a PDF is loaded)
 
@@ -422,23 +411,23 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           {/* Top toolbar — one row: thumbnails · pen-tools · move · zoom · fullscreen · find · save · new file.
               Always visible (dimmed before a PDF loads) to preview the features. */}
           <div className={'flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2' + (ready ? '' : ' opacity-50 pointer-events-none')}>
-            <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg text-xl flex items-center justify-center ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>◧</button>
+            <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name="thumbnails" /></button>
             <span className="w-px h-6 bg-gray-300 mx-0.5" />
             {/* Save (download annotated PDF) + new file — right after thumbnails, with confirm */}
-            <button onClick={() => { if (window.confirm(t('pa_save_confirm'))) download() }} disabled={exporting} title={t('pa_download')} aria-label={t('pa_download')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 disabled:opacity-60">{exporting ? '⏳' : '💾'}</button>
-            <button onClick={() => { if (annos.length === 0 || window.confirm(t('pa_newfile_confirm'))) fileInput.current?.click() }} title={t('pa_newfile')} aria-label={t('pa_newfile')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">📂</button>
+            <button onClick={() => { if (window.confirm(t('pa_save_confirm'))) download() }} disabled={exporting} title={t('pa_download')} aria-label={t('pa_download')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 disabled:opacity-60 flex items-center justify-center"><ToolIcon name={exporting ? 'loader' : 'save'} className={exporting ? 'w-[18px] h-[18px] animate-spin' : 'w-[18px] h-[18px]'} /></button>
+            <button onClick={() => { if (annos.length === 0 || window.confirm(t('pa_newfile_confirm'))) fileInput.current?.click() }} title={t('pa_newfile')} aria-label={t('pa_newfile')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 flex items-center justify-center"><ToolIcon name="folder" /></button>
             <button onClick={() => { setShowPenTools((s) => !s); setShowSearch(false) }} title={t('pa_pentools')} aria-label={t('pa_pentools')}
-              className={'w-9 h-9 rounded-lg text-sm flex items-center justify-center ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>{activeDrawIcon}</button>
-            <button onClick={() => setTool('pan')} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg text-sm ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>✋</button>
+              className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name={activeDrawIcon} /></button>
+            <button onClick={() => setTool('pan')} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name="hand" /></button>
             {/* Zoom — −/select/+ on desktop (PC); a slider inside the bar on mobile */}
-            <button onClick={() => setScale((s) => Math.max(0.4, +((s || 1) - 0.15).toFixed(2)))} title={t('pa_zoom')} aria-label="zoom out" className="hidden md:flex w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 items-center justify-center text-base">−</button>
+            <button onClick={() => setScale((s) => Math.max(0.4, +((s || 1) - 0.15).toFixed(2)))} title={t('pa_zoom')} aria-label="zoom out" className="hidden md:flex w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 items-center justify-center"><ToolIcon name="zoom-out" /></button>
             <select value={String(scale)} onChange={(e) => setScale(+e.target.value)} title={t('pa_zoom')} aria-label={t('pa_zoom')}
               className="hidden md:block h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
               {(ZOOMS.includes(scale) ? ZOOMS : [scale, ...ZOOMS]).sort((a, b) => a - b).map((z) => <option key={z} value={z}>{Math.round(z * 100)}%</option>)}
             </select>
-            <button onClick={() => setScale((s) => Math.min(3, +((s || 1) + 0.15).toFixed(2)))} title={t('pa_zoom')} aria-label="zoom in" className="hidden md:flex w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 items-center justify-center text-base">+</button>
-            <button onClick={() => wrapRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
-            <button onClick={() => { setShowSearch((s) => !s); setShowPenTools(false) }} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><Binoculars /></button>
+            <button onClick={() => setScale((s) => Math.min(3, +((s || 1) + 0.15).toFixed(2)))} title={t('pa_zoom')} aria-label="zoom in" className="hidden md:flex w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 items-center justify-center"><ToolIcon name="zoom-in" /></button>
+            <button onClick={() => wrapRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 flex items-center justify-center"><ToolIcon name="maximize" /></button>
+            <button onClick={() => { setShowSearch((s) => !s); setShowPenTools(false) }} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name="search" /></button>
             {/* Mobile zoom slider — inside the bar (wraps to its own line on narrow screens) */}
             <div className="md:hidden flex items-center gap-1.5 flex-1 min-w-[120px] pl-1">
               <input type="range" min={0.4} max={3} step={0.05} value={scale} onChange={(e) => setScale(+e.target.value)} aria-label={t('pa_zoom')} className="flex-1 accent-brand-600" />
@@ -451,7 +440,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             <div className="absolute left-0 right-0 top-full mt-1 z-30 flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2 shadow-lg">
               {DRAW_TOOLS.map(([k, icon]) => (
                 <button key={k} title={t('pa_' + k)} onClick={() => setTool(k)}
-                  className={'w-9 h-9 rounded-lg text-sm font-bold ' + (tool_ === k ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}>{icon}</button>
+                  className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (tool_ === k ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name={icon} /></button>
               ))}
               <span className="w-px h-6 bg-gray-300 mx-0.5" />
               <select value={color} onChange={(e) => setColor(e.target.value)} title={t('pa_color')} aria-label={t('pa_color')}
@@ -479,12 +468,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
               </div>
               <span className="w-px h-6 bg-gray-300 mx-0.5" />
               {/* Undo + clear (eraser) — moved into the palette */}
-              <button onClick={undo} title={t('pa_undo')} aria-label={t('pa_undo')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">↩</button>
-              <button onClick={clearPage} title={t('pa_clear')} aria-label={t('pa_clear')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 flex items-center justify-center">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-700" aria-hidden="true">
-                  <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21" /><path d="M22 21H7" /><path d="m5 11 9 9" />
-                </svg>
-              </button>
+              <button onClick={undo} title={t('pa_undo')} aria-label={t('pa_undo')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 flex items-center justify-center"><ToolIcon name="undo" /></button>
+              <button onClick={clearPage} title={t('pa_clear')} aria-label={t('pa_clear')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 flex items-center justify-center"><ToolIcon name="eraser" /></button>
             </div>
           )}
 
@@ -542,9 +527,9 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
 
         {/* Bottom bar — page navigation (centred) */}
         <div className="flex items-center justify-center gap-2 text-sm">
-          <button onClick={() => setPage((p) => Math.max(1, p - 1))} title={t('pa_page')} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">◀</button>
+          <button onClick={() => setPage((p) => Math.max(1, p - 1))} title={t('pa_page')} aria-label={t('pa_page')} className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-center"><ToolIcon name="chevron-left" /></button>
           <span className="tabular-nums"><input type="number" min={1} max={numPages} value={page} onChange={(e) => setPage(Math.min(numPages, Math.max(1, +e.target.value || 1)))} className="w-10 text-center border border-gray-300 rounded px-1 py-0.5" /> / {numPages}</span>
-          <button onClick={() => setPage((p) => Math.min(numPages, p + 1))} title={t('pa_page')} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">▶</button>
+          <button onClick={() => setPage((p) => Math.min(numPages, p + 1))} title={t('pa_page')} aria-label={t('pa_page')} className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center justify-center"><ToolIcon name="chevron-right" /></button>
         </div>
 
           </>
