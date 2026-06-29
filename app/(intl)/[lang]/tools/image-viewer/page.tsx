@@ -14,11 +14,17 @@ type Img = { file: File; url: string; name: string; size: number }
 const fmtBytes = (b: number) => (b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(0) + ' KB' : (b / 1048576).toFixed(2) + ' MB')
 const loadImg = (src: string) => new Promise<HTMLImageElement>((res, rej) => { const x = new Image(); x.onload = () => res(x); x.onerror = rej; x.src = src })
 
-// Minimal JPEG EXIF reader — DateTimeOriginal + camera Make/Model (best effort).
-async function readExif(file: File): Promise<{ date?: string; camera?: string }> {
+type Exif = {
+  date?: string; camera?: string; lens?: string; colorSpace?: string
+  aperture?: string; shutter?: string; iso?: string; bias?: string
+  flash?: boolean; wb?: 'auto' | 'manual'; gps?: string
+}
+
+// JPEG EXIF reader — camera/lens, exposure settings, colour space, GPS (best effort).
+async function readExif(file: File): Promise<Exif> {
   try {
     if (!/jpe?g/i.test(file.type) && !/\.jpe?g$/i.test(file.name)) return {}
-    const dv = new DataView(await file.slice(0, 131072).arrayBuffer())
+    const dv = new DataView(await file.slice(0, 262144).arrayBuffer())
     if (dv.getUint16(0) !== 0xffd8) return {}
     let off = 2
     while (off + 4 < dv.byteLength) {
@@ -31,23 +37,38 @@ async function readExif(file: File): Promise<{ date?: string; camera?: string }>
         const le = dv.getUint16(tiff) === 0x4949
         const u16 = (o: number) => dv.getUint16(o, le)
         const u32 = (o: number) => dv.getUint32(o, le)
+        const s32 = (o: number) => dv.getInt32(o, le)
         const ascii = (o: number, c: number) => { let s = ''; for (let i = 0; i < c - 1; i++) { const ch = dv.getUint8(o + i); if (!ch) break; s += String.fromCharCode(ch) } return s.trim() }
-        const res: { make?: string; model?: string; date?: string; exif?: number } = {}
-        const readIFD = (ifd: number, want: Record<number, 'make' | 'model' | 'date'>) => {
-          const n = u16(ifd)
-          for (let i = 0; i < n; i++) {
-            const e = ifd + 2 + i * 12
-            const tag = u16(e), count = u32(e + 4)
-            const vOff = count <= 4 ? e + 8 : tiff + u32(e + 8)
-            if (want[tag]) res[want[tag]] = ascii(vOff, count)
-            if (tag === 0x8769) res.exif = tiff + u32(e + 8)
-          }
+        const SIZE: Record<number, number> = { 1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 7: 1, 9: 4, 10: 8 }
+        type En = { type: number; count: number; e: number }
+        const dir = (ifd: number) => { const out: Record<number, En> = {}; const n = u16(ifd); for (let i = 0; i < n; i++) { const e = ifd + 2 + i * 12; out[u16(e)] = { type: u16(e + 2), count: u32(e + 4), e } } return out }
+        const vo = (en: En) => (en.count * (SIZE[en.type] || 1) <= 4 ? en.e + 8 : tiff + u32(en.e + 8))
+        const rat = (o: number) => { const d = u32(o + 4); return d ? u32(o) / d : 0 }
+        const str = (en?: En) => (en ? ascii(vo(en), en.count) : '')
+        const ex: Exif = {}
+        const ifd0 = dir(tiff + u32(tiff + 4))
+        ex.camera = [str(ifd0[0x010f]), str(ifd0[0x0110])].filter(Boolean).join(' ').trim() || undefined
+
+        if (ifd0[0x8769]) {
+          const x = dir(tiff + u32(vo(ifd0[0x8769])))
+          const d = str(x[0x9003] || x[0x9004])
+          if (d) ex.date = d.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3')
+          ex.lens = str(x[0xa434]) || undefined
+          if (x[0x829d]) ex.aperture = 'f/' + rat(vo(x[0x829d])).toFixed(1).replace(/\.0$/, '')
+          if (x[0x829a]) { const v = rat(vo(x[0x829a])); ex.shutter = v > 0 && v < 1 ? `1/${Math.round(1 / v)} s` : `${(+v.toFixed(1))} s` }
+          if (x[0x8827]) ex.iso = 'ISO ' + u16(vo(x[0x8827]))
+          if (x[0x9204]) { const o = vo(x[0x9204]); const bv = s32(o) / (s32(o + 4) || 1); ex.bias = `${bv > 0 ? '+' : ''}${+bv.toFixed(1)} EV` }
+          if (x[0x9209]) ex.flash = (u16(vo(x[0x9209])) & 1) === 1
+          if (x[0xa403]) ex.wb = u16(vo(x[0xa403])) === 0 ? 'auto' : 'manual'
+          if (x[0xa001]) ex.colorSpace = u16(vo(x[0xa001])) === 1 ? 'sRGB' : 'Uncalibrated'
         }
-        readIFD(tiff + u32(tiff + 4), { 0x010f: 'make', 0x0110: 'model' })
-        if (res.exif) readIFD(res.exif, { 0x9003: 'date', 0x9004: 'date' })
-        const camera = [res.make, res.model].filter(Boolean).join(' ').trim()
-        const date = res.date ? res.date.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3') : undefined
-        return { date, camera: camera || undefined }
+        if (ifd0[0x8825]) {
+          const g = dir(tiff + u32(vo(ifd0[0x8825])))
+          const dms = (en?: En, ref?: string) => { if (!en) return undefined; const o = vo(en); const deg = rat(o) + rat(o + 8) / 60 + rat(o + 16) / 3600; return (ref === 'S' || ref === 'W' ? -deg : deg) }
+          const lat = dms(g[0x0002], str(g[0x0001])); const lon = dms(g[0x0004], str(g[0x0003]))
+          if (lat !== undefined && lon !== undefined) ex.gps = `${lat.toFixed(6)}, ${lon.toFixed(6)}`
+        }
+        return ex
       }
       off += 2 + dv.getUint16(off + 2)
     }
@@ -67,7 +88,7 @@ export default function ImageViewerPage() {
   const [flip, setFlip] = useState(false)
   const [showInfo, setShowInfo] = useState(false)
   const [dims, setDims] = useState({ w: 0, h: 0 })
-  const [exif, setExif] = useState<{ date?: string; camera?: string }>({})
+  const [exif, setExif] = useState<Exif>({})
   const [playing, setPlaying] = useState(false)
   const [interval, setIntervalSec] = useState(5)
   const [fs, setFs] = useState(false)
@@ -165,9 +186,14 @@ export default function ImageViewerPage() {
   // Keep the active thumbnail in view.
   useEffect(() => { thumbRef.current?.querySelector(`[data-i="${idx}"]`)?.scrollIntoView({ inline: 'center', block: 'nearest' }) }, [idx])
 
-  // When the first image(s) load, scroll the tool's top edge up to the top of the screen.
+  // When the first image(s) load, scroll the tool card to the top (its scroll-mt-16 keeps it
+  // just under the sticky header). Targeting the card — not viewerRef — fixes mobile, where
+  // scrolling the bare viewer landed behind the header.
   useEffect(() => {
-    if (images.length > 0 && !scrolledOnce.current) { scrolledOnce.current = true; requestAnimationFrame(() => viewerRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })) }
+    if (images.length > 0 && !scrolledOnce.current) {
+      scrolledOnce.current = true
+      requestAnimationFrame(() => (viewerRef.current?.closest('.bg-white.rounded-2xl') as HTMLElement | null)?.scrollIntoView({ block: 'start', behavior: 'smooth' }))
+    }
     if (images.length === 0) scrolledOnce.current = false
   }, [images.length])
 
@@ -316,6 +342,51 @@ export default function ImageViewerPage() {
     </div>
   )
 
+  // Image metadata as labelled sections → 2-column table (label / value); empty rows hidden.
+  const orientation = dims.w && dims.h ? (dims.w > dims.h ? t('iv_landscape') : dims.w < dims.h ? t('iv_portrait') : t('iv_square')) : undefined
+  const infoSections: { title: string; rows: [string, string | undefined][] }[] = [
+    { title: t('iv_info_image'), rows: [
+      [t('iv_filename'), cur?.name],
+      [t('iv_res'), dims.w ? `${dims.w} × ${dims.h}` : undefined],
+      [t('iv_size'), cur ? fmtBytes(cur.size) : undefined],
+      [t('iv_orientation'), orientation],
+      [t('iv_colorspace'), exif.colorSpace],
+    ] },
+    { title: t('iv_info_camera'), rows: [
+      [t('iv_camera'), exif.camera],
+      [t('iv_lens'), exif.lens],
+      [t('iv_taken'), exif.date],
+      [t('iv_aperture'), exif.aperture],
+      [t('iv_shutter'), exif.shutter],
+      [t('iv_iso'), exif.iso],
+      [t('iv_bias'), exif.bias],
+      [t('iv_flash'), exif.flash === undefined ? undefined : (exif.flash ? t('iv_flash_on') : t('iv_flash_off'))],
+      [t('iv_wb'), exif.wb ? t('iv_wb_' + exif.wb) : undefined],
+    ] },
+    { title: t('iv_info_gps'), rows: [[t('iv_gps'), exif.gps]] },
+  ]
+  const infoTable = (
+    <div className="space-y-2.5">
+      {infoSections.map((sec) => {
+        const rows = sec.rows.filter(([, v]) => v)
+        if (!rows.length) return null
+        return (
+          <div key={sec.title}>
+            <p className="text-[11px] font-semibold text-brand-600 uppercase tracking-wide mb-0.5">{sec.title}</p>
+            <table className="w-full"><tbody>
+              {rows.map(([k, v]) => (
+                <tr key={k} className="align-top">
+                  <td className="py-0.5 pr-3 text-gray-400 whitespace-nowrap w-px">{k}</td>
+                  <td className="py-0.5 text-gray-700 break-all">{k === t('iv_gps') ? <a href={`https://www.google.com/maps?q=${v}`} target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">{v}</a> : v}</td>
+                </tr>
+              ))}
+            </tbody></table>
+          </div>
+        )
+      })}
+    </div>
+  )
+
   return (
     <ToolLayout tool={tool}>
       <div ref={viewerRef} className={'flex flex-col gap-2 ' + (fs ? 'fixed inset-0 z-50 bg-gray-900 p-3' : '')}>
@@ -366,17 +437,14 @@ export default function ImageViewerPage() {
             viewMode === 'grid' ? (
             /* 썸네일 보기 (PC) — left thumbnail grid, right preview + info; stacks on mobile */
             <div className={'flex flex-col md:flex-row gap-2 ' + (fs ? 'flex-1' : 'md:h-[58vh]')}>
-              <div ref={thumbRef} className="order-2 md:order-1 md:w-44 md:shrink-0 md:h-full flex md:grid md:grid-cols-2 gap-1.5 md:content-start overflow-x-auto md:overflow-y-auto rounded-xl bg-gray-100 p-2">
+              {/* left thumbnails : right preview = 3 : 2 (PC) */}
+              <div ref={thumbRef} className="order-2 md:order-1 md:w-3/5 md:shrink-0 md:h-full flex md:grid md:grid-cols-3 gap-1.5 md:content-start overflow-x-auto md:overflow-y-auto rounded-xl bg-gray-100 p-2">
                 {images.map((im, i) => thumbBtn(im, i, 'shrink-0 w-16 h-16 md:w-full md:h-auto md:aspect-square'))}
               </div>
               <div className="order-1 md:order-2 flex-1 flex flex-col gap-2 min-w-0 min-h-0">
                 {renderStage(fs ? 'flex-1' : 'flex-1 min-h-[44vh] md:min-h-0')}
-                <div className="hidden md:block shrink-0 rounded-xl bg-gray-100 p-3 text-xs text-gray-600 space-y-0.5">
-                  <p className="font-semibold text-gray-800 break-all">{cur.name}</p>
-                  <p>{t('iv_res')}: {dims.w ? `${dims.w} × ${dims.h}` : '—'}</p>
-                  <p>{t('iv_size')}: {fmtBytes(cur.size)}</p>
-                  {exif.date && <p>{t('iv_taken')}: {exif.date}</p>}
-                  {exif.camera && <p>{t('iv_camera')}: {exif.camera}</p>}
+                <div className="hidden md:block shrink-0 max-h-[44%] overflow-y-auto rounded-xl bg-gray-100 p-3 text-xs">
+                  {infoTable}
                 </div>
               </div>
             </div>
