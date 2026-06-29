@@ -20,6 +20,19 @@ type Anno = {
   x?: number; y?: number; w?: number; h?: number; text?: string; size?: number
 }
 
+// Binoculars (the classic MS Word "Find" icon).
+function Binoculars() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]" aria-hidden="true">
+      <rect x="3" y="9" width="7" height="11" rx="3.5" />
+      <rect x="14" y="9" width="7" height="11" rx="3.5" />
+      <path d="M10 12.5h4" />
+      <path d="M6.5 9 7 5.4a1 1 0 0 1 2 0L9.5 9" />
+      <path d="M17.5 9 17 5.4a1 1 0 0 0-2 0L14.5 9" />
+    </svg>
+  )
+}
+
 // Draw one annotation onto a 2D canvas. Coords are in PDF points; `s` scales to pixels.
 function drawAnno(ctx: CanvasRenderingContext2D, a: Anno, s: number) {
   ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.globalAlpha = 1
@@ -169,8 +182,14 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
         // floor (not round) so the page is never wider than the viewer → no horizontal scroll
         setScale(Math.max(0.4, Math.min(3, Math.floor((avail / vp.width) * 100) / 100)))
         if (stageRef.current) stageRef.current.scrollTop = 0 // editor-style: start at the top of the page
-        // bring the whole tool (toolbar) to the top of the window after a file opens
-        requestAnimationFrame(() => wrapRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }))
+        // After a file opens, bring the tool's top line to just under the sticky header
+        // (scrollIntoView put it at y=0, hidden behind the header — overshooting).
+        requestAnimationFrame(() => {
+          const el = wrapRef.current; if (!el) return
+          const hd = document.querySelector('header')
+          const off = (hd ? hd.getBoundingClientRect().height : 0) + 8
+          window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - off), behavior: 'smooth' })
+        })
       } catch { setScale(1) /* fall back so the page still renders */ }
     })()
     return () => { cancel = true }
@@ -424,7 +443,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             </select>
             <button onClick={() => setScale((s) => Math.min(3, +((s || 1) + 0.15).toFixed(2)))} title={t('pa_zoom')} aria-label="zoom in" className="hidden md:flex w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 items-center justify-center text-base">+</button>
             <button onClick={() => wrapRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
-            <button onClick={() => { setShowSearch((s) => !s); setShowPenTools(false) }} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔭</button>
+            <button onClick={() => { setShowSearch((s) => !s); setShowPenTools(false) }} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><Binoculars /></button>
             {/* Mobile zoom slider — inside the bar (wraps to its own line on narrow screens) */}
             <div className="md:hidden flex items-center gap-1.5 flex-1 min-w-[120px] pl-1">
               <input type="range" min={0.4} max={3} step={0.05} value={scale} onChange={(e) => setScale(+e.target.value)} aria-label={t('pa_zoom')} className="flex-1 accent-brand-600" />
@@ -552,8 +571,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
 
         {/* Convert this PDF with our other tools */}
         <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-          {([['pdf-to-jpg', 'PDF → JPG'], ['pdf-to-png', 'PDF → PNG'], ['pdf-to-text', 'PDF → TXT']] as const).map(([slug, label]) => (
-            <a key={slug} href={`/${params.lang}/tools/${slug}`} className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 hover:border-brand-300">{label}</a>
+          {([['pdf-to-jpg', '🖼️', 'PDF → JPG'], ['pdf-to-png', '🏞️', 'PDF → PNG'], ['pdf-to-text', '📄', 'PDF → TXT']] as const).map(([slug, icon, label]) => (
+            <a key={slug} href={`/${params.lang}/tools/${slug}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 hover:border-brand-300"><span>{icon}</span><span>{label}</span></a>
           ))}
         </div>
         <input ref={fileInput} type="file" accept="application/pdf" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.currentTarget.value = ''; if (f) openFile(f) }} />
