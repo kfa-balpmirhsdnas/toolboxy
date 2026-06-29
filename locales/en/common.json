@@ -3898,6 +3898,8 @@
     "iv_rotate_l": "Rotate 90° left",
     "iv_rotate_r": "Rotate 90° right",
     "iv_flip": "Flip horizontally",
+    "iv_view_film": "Film view (preview + strip)",
+    "iv_view_grid": "Thumbnail view (grid + info)",
     "iv_crop": "Crop",
     "iv_slideshow": "Slideshow",
     "iv_info": "Image info",

@@ -73,7 +73,9 @@ export default function ImageViewerPage() {
   const [fmt, setFmt] = useState<'orig' | 'jpg' | 'png' | 'webp'>('orig')
   const [cropMode, setCropMode] = useState(false)
   const [crop, setCrop] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
+  const [viewMode, setViewMode] = useState<'film' | 'grid'>('film') // film: preview + bottom strip; grid (PC): left thumbnails + right preview/info
   const cropDrag = useRef<{ x: number; y: number } | null>(null)
+  const scrolledOnce = useRef(false)
 
   const fileRef = useRef<HTMLInputElement>(null)
   const dirRef = useRef<HTMLInputElement>(null)
@@ -160,6 +162,12 @@ export default function ImageViewerPage() {
 
   // Keep the active thumbnail in view.
   useEffect(() => { thumbRef.current?.querySelector(`[data-i="${idx}"]`)?.scrollIntoView({ inline: 'center', block: 'nearest' }) }, [idx])
+
+  // When the first image(s) load, scroll the tool's top edge up to the top of the screen.
+  useEffect(() => {
+    if (images.length > 0 && !scrolledOnce.current) { scrolledOnce.current = true; requestAnimationFrame(() => viewerRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })) }
+    if (images.length === 0) scrolledOnce.current = false
+  }, [images.length])
 
   // Keyboard controls.
   useEffect(() => {
@@ -264,6 +272,46 @@ export default function ImageViewerPage() {
   const tBtn = 'p-2 rounded-lg text-gray-200 hover:bg-white/15 disabled:opacity-30 disabled:cursor-not-allowed transition-colors'
   const transform = `translate(${pan.x}px, ${pan.y}px) scale(${zoom}) rotate(${rot}deg) scaleX(${flip ? -1 : 1})`
 
+  const thumbBtn = (im: Img, i: number, sizeCls: string) => (
+    <button key={im.url} data-i={i} onClick={() => { setIdx(i); resetView() }}
+      className={'rounded-lg overflow-hidden border-2 transition-colors ' + sizeCls + (i === idx ? ' border-brand-500' : ' border-transparent opacity-60 hover:opacity-100')}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={im.url} alt={im.name} className="w-full h-full object-cover" />
+    </button>
+  )
+
+  // The preview stage (shared by both view modes — only one is mounted at a time, so the ref is unique).
+  const renderStage = (heightCls: string) => (
+    <div ref={stageRef}
+      onWheel={cropMode ? undefined : onWheel}
+      onMouseDown={cropMode ? cropDown : onDown} onMouseMove={cropMode ? cropMove : onMove} onMouseUp={cropMode ? cropUp : onUp} onMouseLeave={cropMode ? cropUp : onUp}
+      onTouchStart={cropMode ? undefined : onTStart} onTouchEnd={cropMode ? undefined : onTEnd}
+      className={'relative overflow-hidden rounded-xl bg-gray-900 select-none ' + heightCls + (cropMode ? ' cursor-crosshair' : zoom > 1 ? ' cursor-grab active:cursor-grabbing' : '')}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={cur.url} alt={cur.name} draggable={false} style={{ transform }} className="absolute inset-0 m-auto max-w-full max-h-full object-contain" />
+      {cropMode && (
+        crop && crop.w > 4 && crop.h > 4
+          ? <div className="absolute border-2 border-white/90 pointer-events-none" style={{ left: crop.x, top: crop.y, width: crop.w, height: crop.h, boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)' }} />
+          : <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><span className="bg-black/60 text-white text-xs px-3 py-1.5 rounded-full">{t('iv_crop_hint')}</span></div>
+      )}
+      {images.length > 1 && !cropMode && (
+        <>
+          <button onClick={() => go(-1)} className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label={t('iv_prev')}>‹</button>
+          <button onClick={() => go(1)} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label={t('iv_next')}>›</button>
+        </>
+      )}
+      {showInfo && (
+        <div className="absolute top-2 left-2 max-w-[80%] rounded-xl bg-black/70 text-gray-100 text-xs p-3 space-y-1 backdrop-blur">
+          <p className="font-semibold break-all">{cur.name}</p>
+          <p>{t('iv_res')}: {dims.w ? `${dims.w} × ${dims.h}` : '—'}</p>
+          <p>{t('iv_size')}: {fmtBytes(cur.size)}</p>
+          {exif.date && <p>{t('iv_taken')}: {exif.date}</p>}
+          {exif.camera && <p>{t('iv_camera')}: {exif.camera}</p>}
+        </div>
+      )}
+    </div>
+  )
+
   return (
     <ToolLayout tool={tool}>
       <div ref={viewerRef} className={'flex flex-col gap-2 ' + (fs ? 'fixed inset-0 z-50 bg-gray-900 p-3' : '')}>
@@ -276,7 +324,7 @@ export default function ImageViewerPage() {
             <span className="w-px h-5 bg-white/15 mx-1" />
             <button className={tBtn} title={t('iv_rotate_l')} onClick={() => setRot((r) => r - 90)}>↺</button>
             <button className={tBtn} title={t('iv_rotate_r')} onClick={() => setRot((r) => r + 90)}>↻</button>
-            <button className={tBtn} title={t('iv_flip')} onClick={() => setFlip((f) => !f)}>🔁</button>
+            <button className={tBtn + ' text-lg leading-none'} title={t('iv_flip')} onClick={() => setFlip((f) => !f)}>↔</button>
             <button className={tBtn + (cropMode ? ' bg-white/15' : '')} title={t('iv_crop')} onClick={toggleCrop}>✂️</button>
             <span className="w-px h-5 bg-white/15 mx-1" />
             <button className={tBtn + (playing ? ' bg-white/15' : '')} title={t('iv_slideshow')} onClick={() => setPlaying((p) => !p)}>{playing ? '⏸' : '▶'}</button>
@@ -286,6 +334,10 @@ export default function ImageViewerPage() {
             <span className="w-px h-5 bg-white/15 mx-1" />
             <button className={tBtn + (showInfo ? ' bg-white/15' : '')} title={t('iv_info')} onClick={() => setShowInfo((s) => !s)}>ℹ️</button>
             <button className={tBtn} title={t('iv_fullscreen')} onClick={toggleFs}>{fs ? '🗗' : '⛶'}</button>
+            {/* View mode — PC only (the grid layout needs the width) */}
+            <span className="w-px h-5 bg-white/15 mx-1 hidden md:block" />
+            <button className={tBtn + ' hidden md:block text-base leading-none' + (viewMode === 'film' ? ' bg-white/15' : '')} title={t('iv_view_film')} aria-label={t('iv_view_film')} onClick={() => setViewMode('film')}>🎞</button>
+            <button className={tBtn + ' hidden md:block text-base leading-none' + (viewMode === 'grid' ? ' bg-white/15' : '')} title={t('iv_view_grid')} aria-label={t('iv_view_grid')} onClick={() => setViewMode('grid')}>▦</button>
             <span className="w-px h-5 bg-white/15 mx-1" />
             <select value={fmt} onChange={(e) => setFmt(e.target.value as typeof fmt)} title={t('iv_format')} className="bg-gray-700 text-gray-200 text-xs rounded-md px-1 py-1 border-0 focus:outline-none">
               <option value="orig">{t('iv_orig')}</option>
@@ -299,50 +351,34 @@ export default function ImageViewerPage() {
           </div>
 
           {images.length > 0 ? (
-            <>
-          {/* Stage */}
-          <div ref={stageRef}
-            onWheel={cropMode ? undefined : onWheel}
-            onMouseDown={cropMode ? cropDown : onDown} onMouseMove={cropMode ? cropMove : onMove} onMouseUp={cropMode ? cropUp : onUp} onMouseLeave={cropMode ? cropUp : onUp}
-            onTouchStart={cropMode ? undefined : onTStart} onTouchEnd={cropMode ? undefined : onTEnd}
-            className={'relative overflow-hidden rounded-xl bg-gray-900 select-none ' + (fs ? 'flex-1' : 'h-[58vh]') + (cropMode ? ' cursor-crosshair' : zoom > 1 ? ' cursor-grab active:cursor-grabbing' : '')}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={cur.url} alt={cur.name} draggable={false} style={{ transform }} className="absolute inset-0 m-auto max-w-full max-h-full object-contain" />
-            {cropMode && (
-              crop && crop.w > 4 && crop.h > 4
-                ? <div className="absolute border-2 border-white/90 pointer-events-none" style={{ left: crop.x, top: crop.y, width: crop.w, height: crop.h, boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)' }} />
-                : <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><span className="bg-black/60 text-white text-xs px-3 py-1.5 rounded-full">{t('iv_crop_hint')}</span></div>
-            )}
-            {images.length > 1 && !cropMode && (
-              <>
-                <button onClick={() => go(-1)} className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label={t('iv_prev')}>‹</button>
-                <button onClick={() => go(1)} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label={t('iv_next')}>›</button>
-              </>
-            )}
-            {showInfo && (
-              <div className="absolute top-2 left-2 max-w-[80%] rounded-xl bg-black/70 text-gray-100 text-xs p-3 space-y-1 backdrop-blur">
-                <p className="font-semibold break-all">{cur.name}</p>
-                <p>{t('iv_res')}: {dims.w ? `${dims.w} × ${dims.h}` : '—'}</p>
-                <p>{t('iv_size')}: {fmtBytes(cur.size)}</p>
-                {exif.date && <p>{t('iv_taken')}: {exif.date}</p>}
-                {exif.camera && <p>{t('iv_camera')}: {exif.camera}</p>}
+            viewMode === 'grid' ? (
+            /* 썸네일 보기 (PC) — left thumbnail grid, right preview + info; stacks on mobile */
+            <div className={'flex flex-col md:flex-row gap-2 ' + (fs ? 'flex-1' : 'md:h-[58vh]')}>
+              <div ref={thumbRef} className="order-2 md:order-1 md:w-44 md:shrink-0 md:h-full flex md:grid md:grid-cols-2 gap-1.5 md:content-start overflow-x-auto md:overflow-y-auto rounded-xl bg-gray-100 p-2">
+                {images.map((im, i) => thumbBtn(im, i, 'shrink-0 w-16 h-16 md:w-full md:h-auto md:aspect-square'))}
               </div>
-            )}
-          </div>
-
-          {/* Thumbnails */}
-          {images.length > 1 && (
-            <div ref={thumbRef} className="flex gap-1.5 overflow-x-auto py-1">
-              {images.map((im, i) => (
-                <button key={im.url} data-i={i} onClick={() => { setIdx(i); resetView() }}
-                  className={'shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ' + (i === idx ? 'border-brand-500' : 'border-transparent opacity-60 hover:opacity-100')}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={im.url} alt={im.name} className="w-full h-full object-cover" />
-                </button>
-              ))}
+              <div className="order-1 md:order-2 flex-1 flex flex-col gap-2 min-w-0 min-h-0">
+                {renderStage(fs ? 'flex-1' : 'flex-1 min-h-[44vh] md:min-h-0')}
+                <div className="hidden md:block shrink-0 rounded-xl bg-gray-100 p-3 text-xs text-gray-600 space-y-0.5">
+                  <p className="font-semibold text-gray-800 break-all">{cur.name}</p>
+                  <p>{t('iv_res')}: {dims.w ? `${dims.w} × ${dims.h}` : '—'}</p>
+                  <p>{t('iv_size')}: {fmtBytes(cur.size)}</p>
+                  {exif.date && <p>{t('iv_taken')}: {exif.date}</p>}
+                  {exif.camera && <p>{t('iv_camera')}: {exif.camera}</p>}
+                </div>
+              </div>
             </div>
-          )}
-          </>
+            ) : (
+            /* 필름 보기 — preview on top, thumbnail strip at the bottom */
+            <>
+              {renderStage(fs ? 'flex-1' : 'h-[58vh]')}
+              {images.length > 1 && (
+                <div ref={thumbRef} className="flex gap-1.5 overflow-x-auto py-1">
+                  {images.map((im, i) => thumbBtn(im, i, 'shrink-0 w-16 h-16'))}
+                </div>
+              )}
+            </>
+            )
           ) : (
             /* Drop zone — shown until images are added */
             <div className="space-y-4 pt-1">

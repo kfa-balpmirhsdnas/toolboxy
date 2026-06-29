@@ -4282,6 +4282,8 @@
     "iv_rotate_l": "左に90°回転",
     "iv_rotate_r": "右に90°回転",
     "iv_flip": "左右反転",
+    "iv_view_film": "フィルム表示（プレビュー＋サムネ列）",
+    "iv_view_grid": "サムネイル表示（一覧＋情報）",
     "iv_crop": "切り抜き",
     "iv_slideshow": "スライドショー",
     "iv_info": "画像情報",

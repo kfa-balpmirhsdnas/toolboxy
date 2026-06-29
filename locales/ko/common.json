@@ -4309,6 +4309,8 @@
     "iv_rotate_l": "왼쪽 90° 회전",
     "iv_rotate_r": "오른쪽 90° 회전",
     "iv_flip": "좌우 반전",
+    "iv_view_film": "필름 보기 (미리보기 + 썸네일 줄)",
+    "iv_view_grid": "썸네일 보기 (목록 + 정보)",
     "iv_crop": "자르기",
     "iv_slideshow": "슬라이드쇼",
     "iv_info": "이미지 정보",
