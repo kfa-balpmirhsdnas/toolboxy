@@ -51,7 +51,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
   const [numPages, setNumPages] = useState(0)
   const [page, setPage] = useState(1)
-  const [scale, setScale] = useState(1.3)
+  const [scale, setScale] = useState(0) // 0 = fit-to-width pending; the page isn't rendered until the fit scale is set (avoids a brief zoomed first render)
   const [tool_, setTool] = useState('highlight')
   const [color, setColor] = useState('#ef4444') // red by default
   const [penW, setPenW] = useState(4)
@@ -98,6 +98,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
       pdfRef.current = pdf as never
       dims.current = {}; pageText.current = []
       setNumPages(pdf.numPages); setPage(1); setAnnos([]); setThumbs([]); setMatches([]); setQuery('')
+      setScale(0) // re-fit this file from scratch (the fit effect sets the real scale on ready)
       setStatus('ready')
     } catch (e) { console.error(e); setStatus('error') }
   }
@@ -149,7 +150,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
         const avail = (stageRef.current?.clientWidth || 720) - 34 // p-2 padding (16) + vertical scrollbar (~18) — fills the width
         // floor (not round) so the page is never wider than the viewer → no horizontal scroll
         setScale(Math.max(0.4, Math.min(3, Math.floor((avail / vp.width) * 100) / 100)))
-      } catch { /* keep default */ }
+        if (stageRef.current) stageRef.current.scrollTop = 0 // editor-style: start at the top of the page
+      } catch { setScale(1) /* fall back so the page still renders */ }
     })()
     return () => { cancel = true }
   }, [status])
@@ -164,7 +166,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => { if (status === 'ready') renderPage(page, scale) }, [status, page, scale, renderPage])
+  useEffect(() => { if (status === 'ready' && scale > 0) renderPage(page, scale) }, [status, page, scale, renderPage])
   useEffect(() => { if (status === 'ready') drawAll(page, scale) }, [annos, page, scale, status, drawAll])
 
   // Progressive thumbnails.
