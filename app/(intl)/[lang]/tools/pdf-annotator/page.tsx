@@ -9,7 +9,7 @@ const tool = getToolBySlug('pdf-annotator')!
 const WORKER = 'https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs'
 const COLORS = ['#ef4444', '#f59e0b', '#fde047', '#22c55e', '#3b82f6', '#111827']
 const COLOR_LABEL: Record<string, string> = { '#ef4444': '🔴', '#f59e0b': '🟠', '#fde047': '🟡', '#22c55e': '🟢', '#3b82f6': '🔵', '#111827': '⚫' }
-const WIDTHS = [2, 4, 8]
+const ZOOMS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3]
 const EXPORT_SCALE = 2
 
 type Pt = { x: number; y: number }
@@ -144,6 +144,16 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     })()
     return () => { cancel = true }
   }, [status])
+
+  // Import a PDF dropped ANYWHERE on the page (the small drop box alone made dropping
+  // elsewhere open the PDF in the browser instead). preventDefault stops that navigation.
+  useEffect(() => {
+    const over = (e: DragEvent) => { if (e.dataTransfer?.types?.includes('Files')) e.preventDefault() }
+    const drop = (e: DragEvent) => { const f = e.dataTransfer?.files?.[0]; if (f) { e.preventDefault(); openFile(f) } }
+    window.addEventListener('dragover', over); window.addEventListener('drop', drop)
+    return () => { window.removeEventListener('dragover', over); window.removeEventListener('drop', drop) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => { if (status === 'ready') renderPage(page, scale) }, [status, page, scale, renderPage])
   useEffect(() => { if (status === 'ready') drawAll(page, scale) }, [annos, page, scale, status, drawAll])
@@ -291,31 +301,32 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
             {COLORS.map((c) => <option key={c} value={c}>{COLOR_LABEL[c]}</option>)}
           </select>
-          {/* Stroke width — buttons showing the actual line thickness */}
-          {WIDTHS.map((w) => (
-            <button key={w} onClick={() => setPenW(w)} title={t('pa_width')} aria-label={t('pa_width')}
-              className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (penW === w ? 'bg-brand-100' : 'bg-white border border-gray-200 hover:bg-gray-100')}>
-              <span style={{ width: 18, height: w, borderRadius: 9999, background: '#374151', display: 'block' }} />
-            </button>
-          ))}
+          {/* Stroke width — select box (thin / medium / thick) */}
+          <select value={penW} onChange={(e) => setPenW(+e.target.value)} title={t('pa_width')} aria-label={t('pa_width')}
+            className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
+            <option value={2}>{t('pa_w_thin')}</option>
+            <option value={4}>{t('pa_w_mid')}</option>
+            <option value={8}>{t('pa_w_thick')}</option>
+          </select>
           <span className="w-px h-6 bg-gray-300 mx-0.5" />
           <button onClick={undo} title={t('pa_undo')} aria-label={t('pa_undo')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">↩</button>
           <button onClick={clearPage} title={t('pa_clear')} aria-label={t('pa_clear')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">🗑</button>
           <span className="w-px h-6 bg-gray-300 mx-0.5" />
-          {/* Zoom / fullscreen / find — moved up so the menu is one row */}
-          <button onClick={() => setScale((s) => Math.max(0.4, +(s - 0.2).toFixed(2)))} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-base">−</button>
-          <span className="tabular-nums text-sm w-12 text-center">{Math.round(scale * 100)}%</span>
-          <button onClick={() => setScale((s) => Math.min(3, +(s + 0.2).toFixed(2)))} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-base">+</button>
+          {/* Zoom — select box */}
+          <select value={String(scale)} onChange={(e) => setScale(+e.target.value)} title={t('pa_zoom')} aria-label={t('pa_zoom')}
+            className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
+            {(ZOOMS.includes(scale) ? ZOOMS : [scale, ...ZOOMS]).sort((a, b) => a - b).map((z) => <option key={z} value={z}>{Math.round(z * 100)}%</option>)}
+          </select>
           <button onClick={() => stageRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
           <button onClick={() => setShowSearch((s) => !s)} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔍</button>
         </div>
 
-        <div className="flex gap-3">
-          {/* Thumbnails */}
+        {/* Thumbnails on top (mobile) / left column (desktop) */}
+        <div className="flex flex-col md:flex-row gap-3">
           {showThumbs && (
-            <div className="w-28 shrink-0 max-h-[70vh] overflow-y-auto space-y-2 pr-1">
+            <div className="flex md:block gap-2 md:space-y-2 shrink-0 w-full md:w-28 overflow-x-auto md:overflow-x-visible md:max-h-[70vh] md:overflow-y-auto pb-1 md:pb-0 md:pr-1">
               {thumbs.map((src, i) => (
-                <button key={i} onClick={() => setPage(i + 1)} className={'block w-full rounded border-2 ' + (page === i + 1 ? 'border-brand-500' : 'border-gray-200')}>
+                <button key={i} onClick={() => setPage(i + 1)} className={'block shrink-0 w-16 md:w-full rounded border-2 ' + (page === i + 1 ? 'border-brand-500' : 'border-gray-200')}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={src} alt={`p${i + 1}`} className="w-full" />
                   <span className="block text-[10px] text-gray-500">{i + 1}</span>
@@ -336,7 +347,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
         {/* Bottom bar — page navigation + download + new file */}
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <button onClick={() => setPage((p) => Math.max(1, p - 1))} title={t('pa_page')} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">◀</button>
-          <span className="tabular-nums"><input type="number" min={1} max={numPages} value={page} onChange={(e) => setPage(Math.min(numPages, Math.max(1, +e.target.value || 1)))} className="w-14 text-center border border-gray-300 rounded px-1 py-0.5" /> / {numPages}</span>
+          <span className="tabular-nums"><input type="number" min={1} max={numPages} value={page} onChange={(e) => setPage(Math.min(numPages, Math.max(1, +e.target.value || 1)))} className="w-10 text-center border border-gray-300 rounded px-1 py-0.5" /> / {numPages}</span>
           <button onClick={() => setPage((p) => Math.min(numPages, p + 1))} title={t('pa_page')} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">▶</button>
           <button onClick={download} disabled={exporting} className="ml-auto px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-700 disabled:opacity-60">{exporting ? t('pa_exporting') : '⬇ ' + t('pa_download')}</button>
           <button onClick={() => { setStatus('idle'); pdfRef.current = null }} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">{t('pa_newfile')}</button>

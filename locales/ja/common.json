@@ -4140,6 +4140,10 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pa_zoom": "ズーム",
+    "pa_w_thin": "細",
+    "pa_w_mid": "中",
+    "pa_w_thick": "太",
     "pa_color": "色",
     "ac_value": "値",
     "ac_unit": "単位",

@@ -4167,6 +4167,10 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pa_zoom": "확대/축소",
+    "pa_w_thin": "가늘게",
+    "pa_w_mid": "중간",
+    "pa_w_thick": "굵게",
     "pa_color": "색상",
     "ac_value": "값",
     "ac_unit": "단위",
