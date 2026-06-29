@@ -293,9 +293,9 @@ export default function ImageViewerPage() {
               <option value="png">PNG</option>
               <option value="webp">WebP</option>
             </select>
-            <button className={tBtn} title={cropMode ? t('iv_save_crop') : t('iv_save')} onClick={() => (cropMode ? cropSave() : save())}>⬇</button>
+            <button className={tBtn} title={cropMode ? t('iv_save_crop') : t('iv_save')} onClick={() => { if (window.confirm(t('iv_save_confirm'))) (cropMode ? cropSave() : save()) }}>💾</button>
+            <button className={tBtn} title={t('iv_newfile')} aria-label={t('iv_newfile')} onClick={() => { if (images.length === 0 || window.confirm(t('iv_newfile_confirm'))) { clearAll(); fileRef.current?.click() } }}>📂</button>
             <span className="ml-auto text-xs text-gray-400 tabular-nums px-1">{idx + 1} / {images.length}</span>
-            <button className={tBtn} title={t('iv_close')} onClick={clearAll}>✕</button>
           </div>
 
           {images.length > 0 ? (

@@ -3756,6 +3756,9 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "iv_save_confirm": "Download this image?",
+    "iv_newfile": "New files",
+    "iv_newfile_confirm": "Your current images will be cleared. Open new files?",
     "pa_save_confirm": "Download the annotated PDF?",
     "pa_newfile_confirm": "Your current work will be cleared. Open a new file?",
     "pa_pentools": "Pen tools",

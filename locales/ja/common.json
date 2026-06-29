@@ -4140,6 +4140,9 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "iv_save_confirm": "この画像を保存しますか？",
+    "iv_newfile": "新しいファイル",
+    "iv_newfile_confirm": "現在の画像が消えます。新しいファイルを開きますか？",
     "pa_save_confirm": "注釈付きPDFを保存しますか？",
     "pa_newfile_confirm": "現在の作業内容が消えます。新しいファイルを開きますか？",
     "pa_pentools": "ペンツール",
