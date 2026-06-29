@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('mic-test')!
@@ -69,13 +70,13 @@ export default function MicTestPage({ params }: { params: { lang: string } }) {
               </div>
               <p className="text-xs text-gray-400">{level > 3 ? t('mt_detected') : t('mt_speak')}</p>
             </div>
-            {label && <p className="text-xs text-gray-400 truncate">🎙 {label}</p>}
+            {label && <p className="text-xs text-gray-400 truncate inline-flex items-center gap-1"><ToolIcon name="mic" className="w-3.5 h-3.5" />{label}</p>}
             <button onClick={stop} className="px-5 py-2 text-sm text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50">{t('mt_stop')}</button>
           </>
         ) : state === 'denied' ? (
           <p className="rounded-xl bg-rose-50 text-rose-700 text-sm px-4 py-3">{t('mt_denied')}</p>
         ) : (
-          <button onClick={start} className="w-full px-5 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">🎙 {t('mt_start')}</button>
+          <button onClick={start} className="w-full inline-flex items-center justify-center gap-1.5 px-5 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700"><ToolIcon name="mic" className="w-4 h-4" />{t('mt_start')}</button>
         )}
 
         <p className="text-xs text-gray-400">{t('mt_note')}</p>

@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('currency-converter')!
 const RATES:Record<string,number>={USD:1,EUR:0.9189,GBP:0.7892,JPY:154.32,KRW:1352.4,CNY:7.2431,AUD:1.5423,CAD:1.3642,CHF:0.8912,INR:83.41,MXN:17.23,BRL:5.031,SGD:1.3421,HKD:7.813,NOK:10.52,SEK:10.41,DKK:6.852,NZD:1.638,ZAR:18.54,AED:3.672}
@@ -27,7 +28,7 @@ export default function CurrencyConverterPage() {
       <div className="max-w-md mx-auto px-4 space-y-5">
         <div className="grid grid-cols-[1fr,auto,1fr] gap-2 items-end">
           <div><label className="block text-xs font-medium text-gray-600 mb-1">{t('cv_from')}</label><Sel val={from} set={setFrom}/></div>
-          <button onClick={swap} className="mb-0.5 p-2 rounded-full border border-gray-300 hover:bg-gray-50 text-lg">⇄</button>
+          <button onClick={swap} aria-label="swap" className="mb-0.5 inline-flex items-center justify-center p-2 rounded-full border border-gray-300 hover:bg-gray-50"><ToolIcon name="arrow-left-right" className="w-5 h-5" /></button>
           <div><label className="block text-xs font-medium text-gray-600 mb-1">{t('cv_to')}</label><Sel val={to} set={setTo}/></div>
         </div>
         <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('tx_amount')} ({from})</label>

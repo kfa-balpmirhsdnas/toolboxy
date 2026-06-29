@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { useGameStage, GameStageOverlay, SoundToggle, sfx, useFitCell } from '@/components/tools/GameStage'
 import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -107,7 +108,7 @@ export default function BlockPuzzlePage({ params }: { params: { lang: string } }
   const view = board.map((r) => [...r])
   const p = pieceRef.current
   if (p) p.m.forEach((row, y) => row.forEach((v, x) => { if (v && p.y + y >= 0 && p.y + y < ROWS) view[p.y + y][p.x + x] = v }))
-  const ctrl = 'py-3 rounded-lg bg-gray-100 text-gray-700 font-bold text-lg hover:bg-gray-200 active:scale-95 transition'
+  const ctrl = 'py-3 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95 transition inline-flex items-center justify-center'
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -125,10 +126,10 @@ export default function BlockPuzzlePage({ params }: { params: { lang: string } }
           <GameStageOverlay stage={stage} />
         </div>
         <div className="grid grid-cols-4 gap-2 max-w-[230px] mx-auto">
-          <button onClick={() => move(-1)} className={ctrl} aria-label="left">◀</button>
-          <button onClick={rot} className={ctrl} aria-label="rotate">⟳</button>
-          <button onClick={() => move(1)} className={ctrl} aria-label="right">▶</button>
-          <button onClick={hard} className={ctrl} aria-label="drop">⤓</button>
+          <button onClick={() => move(-1)} className={ctrl} aria-label="left"><ToolIcon name="chevron-left" className="w-5 h-5" /></button>
+          <button onClick={rot} className={ctrl} aria-label="rotate"><ToolIcon name="rotate-cw" className="w-5 h-5" /></button>
+          <button onClick={() => move(1)} className={ctrl} aria-label="right"><ToolIcon name="chevron-right" className="w-5 h-5" /></button>
+          <button onClick={hard} className={ctrl} aria-label="drop"><ToolIcon name="arrow-down" className="w-5 h-5" /></button>
         </div>
         <p className="text-xs text-gray-400">{t('bp_help')}</p>
       </div>

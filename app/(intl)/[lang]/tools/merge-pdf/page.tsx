@@ -62,8 +62,8 @@ export default function MergePdfPage({ params }: { params: { lang: string } }) {
               <div key={i} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm">
                 <span className="text-gray-400">{i + 1}.</span>
                 <span className="flex-1 truncate text-gray-700">{f.name}</span>
-                <button onClick={() => move(i, -1)} className="text-gray-400 hover:text-gray-700 px-1">↑</button>
-                <button onClick={() => move(i, 1)} className="text-gray-400 hover:text-gray-700 px-1">↓</button>
+                <button onClick={() => move(i, -1)} aria-label="move up" className="inline-flex items-center justify-center text-gray-400 hover:text-gray-700 px-1"><ToolIcon name="chevron-up" className="w-4 h-4" /></button>
+                <button onClick={() => move(i, 1)} aria-label="move down" className="inline-flex items-center justify-center text-gray-400 hover:text-gray-700 px-1"><ToolIcon name="chevron-down" className="w-4 h-4" /></button>
                 <button onClick={() => setFiles((fs) => fs.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500 px-1 inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button>
               </div>
             ))}

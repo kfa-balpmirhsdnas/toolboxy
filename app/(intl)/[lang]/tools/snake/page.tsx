@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { useGameStage, GameStageOverlay, SoundToggle, sfx, useFitCell } from '@/components/tools/GameStage'
 import Leaderboard from '@/components/tools/Leaderboard'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -77,7 +78,7 @@ export default function SnakePage({ params }: { params: { lang: string } }) {
     if (eq(food, { x, y })) return '#ef4444'
     return '#f8fafc'
   }
-  const ctrl = 'py-3 rounded-lg bg-gray-100 text-gray-700 font-bold text-lg hover:bg-gray-200 active:scale-95 transition'
+  const ctrl = 'py-3 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95 transition inline-flex items-center justify-center'
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
@@ -99,11 +100,11 @@ export default function SnakePage({ params }: { params: { lang: string } }) {
         </div>
         <div className="grid grid-cols-3 gap-2 max-w-[180px] mx-auto">
           <span />
-          <button onClick={() => turn({ x: 0, y: -1 })} className={ctrl} aria-label="up">▲</button>
+          <button onClick={() => turn({ x: 0, y: -1 })} className={ctrl} aria-label="up"><ToolIcon name="chevron-up" className="w-5 h-5" /></button>
           <span />
-          <button onClick={() => turn({ x: -1, y: 0 })} className={ctrl} aria-label="left">◀</button>
-          <button onClick={() => turn({ x: 0, y: 1 })} className={ctrl} aria-label="down">▼</button>
-          <button onClick={() => turn({ x: 1, y: 0 })} className={ctrl} aria-label="right">▶</button>
+          <button onClick={() => turn({ x: -1, y: 0 })} className={ctrl} aria-label="left"><ToolIcon name="chevron-left" className="w-5 h-5" /></button>
+          <button onClick={() => turn({ x: 0, y: 1 })} className={ctrl} aria-label="down"><ToolIcon name="chevron-down" className="w-5 h-5" /></button>
+          <button onClick={() => turn({ x: 1, y: 0 })} className={ctrl} aria-label="right"><ToolIcon name="chevron-right" className="w-5 h-5" /></button>
         </div>
         <p className="text-xs text-gray-400">{t('sn_help')}</p>
       </div>

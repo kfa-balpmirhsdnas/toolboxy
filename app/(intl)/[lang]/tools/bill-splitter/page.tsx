@@ -97,10 +97,10 @@ export default function BillSplitterPage() {
         <div>
           <label className="block text-xs text-gray-500 mb-1">{t('bs_people')}</label>
           <div className="flex items-center gap-3">
-            <button onClick={() => setPeople((p) => Math.max(1, p - 1))} className="w-10 h-10 rounded-xl bg-gray-100 text-gray-600 text-xl font-bold hover:bg-gray-200">−</button>
+            <button onClick={() => setPeople((p) => Math.max(1, p - 1))} aria-label="minus" className="w-10 h-10 inline-flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200"><ToolIcon name="minus" className="w-5 h-5" /></button>
             <input type="number" min={1} value={people} onChange={(e) => setPeople(Math.max(1, parseInt(e.target.value) || 1))}
               className="w-16 text-center rounded-xl border border-gray-300 px-2 py-2 text-lg font-mono focus:outline-none focus:border-emerald-400" />
-            <button onClick={() => setPeople((p) => p + 1)} className="w-10 h-10 rounded-xl bg-gray-100 text-gray-600 text-xl font-bold hover:bg-gray-200">+</button>
+            <button onClick={() => setPeople((p) => p + 1)} aria-label="plus" className="w-10 h-10 inline-flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200"><ToolIcon name="plus" className="w-5 h-5" /></button>
           </div>
         </div>
 
