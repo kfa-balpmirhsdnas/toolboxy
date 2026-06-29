@@ -3906,6 +3906,7 @@
     "iv_fullscreen": "Fullscreen",
     "iv_format": "Save format",
     "iv_save": "Save current image",
+    "iv_save_as": "Save as",
     "iv_save_crop": "Save cropped area",
     "iv_close": "Close all",
     "iv_sec": "{n}s",

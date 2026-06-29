@@ -4317,6 +4317,7 @@
     "iv_fullscreen": "전체화면",
     "iv_format": "저장 형식",
     "iv_save": "현재 이미지 저장",
+    "iv_save_as": "저장 형식 선택",
     "iv_save_crop": "자른 영역 저장",
     "iv_close": "모두 닫기",
     "iv_sec": "{n}초",

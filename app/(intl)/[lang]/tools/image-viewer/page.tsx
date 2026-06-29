@@ -74,6 +74,7 @@ export default function ImageViewerPage() {
   const [cropMode, setCropMode] = useState(false)
   const [crop, setCrop] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
   const [viewMode, setViewMode] = useState<'film' | 'grid'>('film') // film: preview + bottom strip; grid (PC): left thumbnails + right preview/info
+  const [saveMenu, setSaveMenu] = useState(false) // save → pick a format popover (replaces the format select + save confirm)
   const cropDrag = useRef<{ x: number; y: number } | null>(null)
   const scrolledOnce = useRef(false)
 
@@ -201,10 +202,10 @@ export default function ImageViewerPage() {
 
   // Save the current image. "orig" downloads the file as-is; the others re-encode
   // through a canvas, baking in the current rotation + flip (zoom/pan are view-only).
-  async function save() {
+  async function save(f: 'orig' | 'jpg' | 'png' | 'webp' = fmt) {
     if (!cur) return
     const base = cur.name.replace(/\.[^.]+$/, '') || 'image'
-    if (fmt === 'orig') { const a = document.createElement('a'); a.href = cur.url; a.download = cur.name; a.click(); return }
+    if (f === 'orig') { const a = document.createElement('a'); a.href = cur.url; a.download = cur.name; a.click(); return }
     try {
       const im = await new Promise<HTMLImageElement>((res, rej) => { const x = new Image(); x.onload = () => res(x); x.onerror = rej; x.src = cur.url })
       const deg = ((rot % 360) + 360) % 360
@@ -213,13 +214,13 @@ export default function ImageViewerPage() {
       const cw = swap ? h : w, ch = swap ? w : h
       const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch
       const ctx = cv.getContext('2d'); if (!ctx) return
-      const type = fmt === 'jpg' ? 'image/jpeg' : fmt === 'webp' ? 'image/webp' : 'image/png'
+      const type = f === 'jpg' ? 'image/jpeg' : f === 'webp' ? 'image/webp' : 'image/png'
       if (type === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cw, ch) } // JPEG has no alpha
       ctx.translate(cw / 2, ch / 2); ctx.rotate((deg * Math.PI) / 180); ctx.scale(flip ? -1 : 1, 1)
       ctx.drawImage(im, -w / 2, -h / 2)
       cv.toBlob((blob) => {
         if (!blob) return
-        const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = `${base}.${fmt}`; a.click()
+        const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = `${base}.${f}`; a.click()
         setTimeout(() => URL.revokeObjectURL(u), 2000)
       }, type, 0.92)
     } catch { /* ignore */ }
@@ -231,7 +232,7 @@ export default function ImageViewerPage() {
   const cropDown = (e: React.MouseEvent) => { const p = stageXY(e); cropDrag.current = p; setCrop({ x: p.x, y: p.y, w: 0, h: 0 }) }
   const cropMove = (e: React.MouseEvent) => { if (!cropDrag.current) return; const p = stageXY(e), s = cropDrag.current; setCrop({ x: Math.min(s.x, p.x), y: Math.min(s.y, p.y), w: Math.abs(p.x - s.x), h: Math.abs(p.y - s.y) }) }
   const cropUp = () => { cropDrag.current = null }
-  async function cropSave() {
+  async function cropSave(f: 'orig' | 'jpg' | 'png' | 'webp' = fmt) {
     if (!cur || !crop || crop.w < 6 || crop.h < 6) return
     const sr = stageRef.current!.getBoundingClientRect()
     try {
@@ -245,14 +246,16 @@ export default function ImageViewerPage() {
       if (sw < 1 || sh < 1) return
       const cv = document.createElement('canvas'); cv.width = Math.round(sw); cv.height = Math.round(sh)
       const ctx = cv.getContext('2d'); if (!ctx) return
-      const type = fmt === 'jpg' ? 'image/jpeg' : fmt === 'webp' ? 'image/webp' : 'image/png'
+      const type = f === 'jpg' ? 'image/jpeg' : f === 'webp' ? 'image/webp' : 'image/png'
       if (type === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height) }
       ctx.drawImage(im, sx, sy, sw, sh, 0, 0, cv.width, cv.height)
-      const ext = fmt === 'orig' ? 'png' : fmt
+      const ext = f === 'orig' ? 'png' : f
       cv.toBlob((blob) => { if (!blob) return; const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = `${cur.name.replace(/\.[^.]+$/, '') || 'image'}-crop.${ext}`; a.click(); setTimeout(() => URL.revokeObjectURL(u), 2000) }, type, 0.92)
       setCropMode(false); setCrop(null)
     } catch { /* ignore */ }
   }
+  // Save in the chosen format (from the popover), remembering it as the default.
+  function doSave(f: 'orig' | 'jpg' | 'png' | 'webp') { setSaveMenu(false); setFmt(f); if (cropMode) cropSave(f); else save(f) }
 
   // Wheel zoom (centered).
   const onWheel = (e: React.WheelEvent) => { e.preventDefault(); setZoom((z) => Math.min(8, Math.max(1, z + (e.deltaY < 0 ? 0.2 : -0.2)))) }
@@ -321,6 +324,10 @@ export default function ImageViewerPage() {
             <span className="text-xs text-gray-300 w-12 text-center tabular-nums">{Math.round(zoom * 100)}%</span>
             <button className={tBtn} title={t('iv_zoom_in')} onClick={() => setZoom((z) => Math.min(8, z + 0.25))}>➕</button>
             <button className={tBtn} title={t('iv_fit')} onClick={resetView}>⤢</button>
+            {/* View mode — PC only (the grid layout needs the width); placed right after zoom */}
+            <span className="w-px h-5 bg-white/15 mx-1 hidden md:block" />
+            <button className={tBtn + ' hidden md:block text-base leading-none' + (viewMode === 'film' ? ' bg-white/15' : '')} title={t('iv_view_film')} aria-label={t('iv_view_film')} onClick={() => setViewMode('film')}>🎞</button>
+            <button className={tBtn + ' hidden md:block text-base leading-none' + (viewMode === 'grid' ? ' bg-white/15' : '')} title={t('iv_view_grid')} aria-label={t('iv_view_grid')} onClick={() => setViewMode('grid')}>▦</button>
             <span className="w-px h-5 bg-white/15 mx-1" />
             <button className={tBtn} title={t('iv_rotate_l')} onClick={() => setRot((r) => r - 90)}>↺</button>
             <button className={tBtn} title={t('iv_rotate_r')} onClick={() => setRot((r) => r + 90)}>↻</button>
@@ -334,18 +341,22 @@ export default function ImageViewerPage() {
             <span className="w-px h-5 bg-white/15 mx-1" />
             <button className={tBtn + (showInfo ? ' bg-white/15' : '')} title={t('iv_info')} onClick={() => setShowInfo((s) => !s)}>ℹ️</button>
             <button className={tBtn} title={t('iv_fullscreen')} onClick={toggleFs}>{fs ? '🗗' : '⛶'}</button>
-            {/* View mode — PC only (the grid layout needs the width) */}
-            <span className="w-px h-5 bg-white/15 mx-1 hidden md:block" />
-            <button className={tBtn + ' hidden md:block text-base leading-none' + (viewMode === 'film' ? ' bg-white/15' : '')} title={t('iv_view_film')} aria-label={t('iv_view_film')} onClick={() => setViewMode('film')}>🎞</button>
-            <button className={tBtn + ' hidden md:block text-base leading-none' + (viewMode === 'grid' ? ' bg-white/15' : '')} title={t('iv_view_grid')} aria-label={t('iv_view_grid')} onClick={() => setViewMode('grid')}>▦</button>
             <span className="w-px h-5 bg-white/15 mx-1" />
-            <select value={fmt} onChange={(e) => setFmt(e.target.value as typeof fmt)} title={t('iv_format')} className="bg-gray-700 text-gray-200 text-xs rounded-md px-1 py-1 border-0 focus:outline-none">
-              <option value="orig">{t('iv_orig')}</option>
-              <option value="jpg">JPG</option>
-              <option value="png">PNG</option>
-              <option value="webp">WebP</option>
-            </select>
-            <button className={tBtn} title={cropMode ? t('iv_save_crop') : t('iv_save')} onClick={() => { if (window.confirm(t('iv_save_confirm'))) (cropMode ? cropSave() : save()) }}>💾</button>
+            {/* Save → pick a format */}
+            <div className="relative">
+              <button className={tBtn} title={cropMode ? t('iv_save_crop') : t('iv_save')} aria-label={t('iv_save')} onClick={() => setSaveMenu((s) => !s)}>💾</button>
+              {saveMenu && (
+                <>
+                  <div className="fixed inset-0 z-20" onClick={() => setSaveMenu(false)} />
+                  <div className="absolute right-0 top-full mt-1 z-30 min-w-[124px] rounded-lg border border-white/10 bg-gray-800 p-1 shadow-xl">
+                    <p className="px-2 py-1 text-[11px] text-gray-400">{t('iv_save_as')}</p>
+                    {([['orig', t('iv_orig')], ['jpg', 'JPG'], ['png', 'PNG'], ['webp', 'WebP']] as const).map(([f, label]) => (
+                      <button key={f} onClick={() => doSave(f)} className={'block w-full rounded px-2 py-1.5 text-left text-xs text-gray-200 hover:bg-white/15' + (fmt === f ? ' bg-white/10' : '')}>{label}</button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
             <button className={tBtn} title={t('iv_newfile')} aria-label={t('iv_newfile')} onClick={() => { if (images.length === 0 || window.confirm(t('iv_newfile_confirm'))) { clearAll(); fileRef.current?.click() } }}>📂</button>
             <span className="ml-auto text-xs text-gray-400 tabular-nums px-1">{idx + 1} / {images.length}</span>
           </div>
