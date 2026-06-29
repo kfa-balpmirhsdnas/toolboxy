@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -179,7 +180,7 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
         {out && (
           <div className="rounded-xl border-2 border-green-200 bg-green-50 p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-sm text-green-700">{t('zf_done', { n: out.n, name: out.name })}</span>
-            <button onClick={() => downloadUrl(out.url, out.name)} className="shrink-0 self-start sm:self-auto px-4 py-1.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('zf_download')}</button>
+            <button onClick={() => downloadUrl(out.url, out.name)} className="shrink-0 self-start sm:self-auto px-4 py-1.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('zf_download')}</button>
           </div>
         )}
         <p className="text-xs text-gray-400">{t('zf_note')}</p>

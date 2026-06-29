@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -92,7 +93,7 @@ export default function EncodingConverterPage({ params }: { params: { lang: stri
               <textarea value={text} readOnly rows={6} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs font-mono bg-gray-50" />
             </div>
 
-            <button onClick={download} disabled={busy} className="px-5 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50">⬇ {t('ec_download')}</button>
+            <button onClick={download} disabled={busy} className="px-5 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('ec_download')}</button>
           </>
         )}
         <p className="text-xs text-gray-400">{t('ec_note')}</p>

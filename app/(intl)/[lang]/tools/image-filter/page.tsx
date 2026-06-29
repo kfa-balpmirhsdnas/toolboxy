@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -94,7 +95,7 @@ export default function ImageFilterPage({ params }: { params: { lang: string } }
             </div>
 
             <div className="flex gap-2 flex-wrap">
-              <button onClick={download} className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('if_download')}</button>
+              <button onClick={download} className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('if_download')}</button>
               <button onClick={() => setFx(RESET)} className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50">{t('if_reset')}</button>
               <button onClick={() => setSrc('')} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">{t('if_change')}</button>
             </div>

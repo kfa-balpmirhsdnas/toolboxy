@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { getFFmpeg } from '@/lib/ffmpeg'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -95,7 +96,7 @@ export default function VideoCompressorPage({ params }: { params: { lang: string
               ) : (
                 <button onClick={download} className="px-6 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700">{t('md_download')}</button>
               )}
-              <button onClick={() => { setUrl(''); setFile(null); setOut(null) }} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">↺</button>
+              <button onClick={() => { setUrl(''); setFile(null); setOut(null) }} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 inline-flex items-center justify-center" aria-label="reset"><ToolIcon name="refresh" className="w-4 h-4" /></button>
             </div>
           </>
         )}

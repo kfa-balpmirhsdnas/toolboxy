@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -63,7 +64,7 @@ export default function YoutubeThumbnailPage({ params }: { params: { lang: strin
                     <span className="text-sm text-gray-600">{t(key)} <span className="text-gray-400">{res}</span></span>
                     <div className="flex gap-2">
                       <a href={url} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">{t('yt_open')}</a>
-                      <button onClick={() => download(url, q)} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">⬇ {t('yt_download')}</button>
+                      <button onClick={() => download(url, q)} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700 inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('yt_download')}</button>
                     </div>
                   </div>
                 </div>

@@ -2,6 +2,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
@@ -168,7 +169,7 @@ export default function ImageMosaicPage({ params }: { params: { lang: string } }
 
         {hasImage && (
           <div className="flex flex-wrap items-center gap-2">
-            <button onClick={undo} disabled={!count} className="px-3 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">↶ {t('im_undo')}</button>
+            <button onClick={undo} disabled={!count} className="px-3 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5"><ToolIcon name="undo" className="w-4 h-4" />{t('im_undo')}</button>
             <button onClick={reset} disabled={!count} className="px-3 py-2 text-sm text-gray-500 rounded-xl hover:text-red-500 disabled:opacity-40 disabled:cursor-not-allowed">{t('im_reset')}</button>
             <button onClick={() => fileRef.current?.click()} className="px-3 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50">{t('im_change')}</button>
             <div className="ml-auto flex items-center gap-2">
@@ -176,7 +177,7 @@ export default function ImageMosaicPage({ params }: { params: { lang: string } }
                 <option value="png">PNG</option>
                 <option value="jpg">JPG</option>
               </select>
-              <button onClick={download} className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors">⬇ {t('im_download')}</button>
+              <button onClick={download} className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('im_download')}</button>
             </div>
           </div>
         )}

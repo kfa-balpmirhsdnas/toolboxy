@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -106,7 +107,7 @@ export default function CompressPdfPage({ params }: { params: { lang: string } }
             <div className="flex justify-between text-sm"><span className="text-gray-500">{t('cp_original')}</span><span className="font-medium text-gray-700">{fmt(file.size)}</span></div>
             <div className="flex justify-between text-sm"><span className="text-gray-500">{t('cp_result')}</span><span className="font-bold text-green-700">{fmt(out.size)}</span></div>
             {reduction > 0 && <div className="text-center text-green-700 font-bold">−{reduction}%</div>}
-            <button onClick={download} className="w-full px-5 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('cp_download')}</button>
+            <button onClick={download} className="w-full px-5 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('cp_download')}</button>
           </div>
         )}
 

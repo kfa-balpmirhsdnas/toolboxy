@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -69,7 +70,7 @@ export default function VoiceRecorderPage({ params }: { params: { lang: string }
         {url && (
           <div className="space-y-3">
             <audio src={url} controls className="w-full" />
-            <button onClick={download} className="px-5 py-2 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors">⬇ {t('vr_download')}</button>
+            <button onClick={download} className="px-5 py-2 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('vr_download')}</button>
           </div>
         )}
         <p className="text-xs text-gray-400">{t('vr_note')}</p>

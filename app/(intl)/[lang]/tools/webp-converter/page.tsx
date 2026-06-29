@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -99,7 +100,7 @@ export default function WebpConverterPage({ params }: { params: { lang: string }
               <p className="text-sm font-semibold text-green-800">{fmt.toUpperCase()} {t('wc_ready')} · {fmtBytes(result.size)}</p>
               {file && <p className="text-xs text-green-600">{result.size < file.size ? t('wc_smaller', { n: Math.round((1 - result.size / file.size) * 100) }) : t('wc_converted')}</p>}
             </div>
-            <button onClick={download} className="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700">⬇ {t('ui_download')}</button>
+            <button onClick={download} className="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('ui_download')}</button>
           </div>
         )}
       </div>

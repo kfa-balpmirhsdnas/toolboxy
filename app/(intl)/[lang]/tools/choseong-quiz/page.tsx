@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import Leaderboard from '@/components/tools/Leaderboard'
 import { useGameStage, GameStageOverlay, SoundToggle, sfx, scrollGameToTop } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -77,7 +78,7 @@ export default function ChoseongQuizPage({ params }: { params: { lang: string } 
               <div className="text-4xl font-extrabold text-brand-700 mt-2">{score} <span className="text-xl text-brand-400">/ {MAX}</span></div>
               <div className="text-xs text-gray-500 mt-2">{correct} / {N}</div>
             </div>
-            <button onClick={stage.begin} className="w-full px-5 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">↻ {t('quiz_again')}</button>
+            <button onClick={stage.begin} className="w-full px-5 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 inline-flex items-center justify-center gap-1.5"><ToolIcon name="refresh" className="w-4 h-4" />{t('quiz_again')}</button>
           </>
         ) : (
           <>

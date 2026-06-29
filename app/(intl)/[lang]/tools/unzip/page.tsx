@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -123,7 +124,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
           <>
             <div className="flex items-center justify-between">
               <p className="text-xs text-gray-400">{!showAll && entries.length > LIMIT ? t('uz_entries_some', { shown: LIMIT, total: entries.length }) : t('uz_entries', { n: entries.length })}</p>
-              <button onClick={extractAll} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">📂 {t('uz_downloadall')}</button>
+              <button onClick={extractAll} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700 inline-flex items-center justify-center gap-1.5"><ToolIcon name="folder" className="w-4 h-4" />{t('uz_downloadall')}</button>
             </div>
 
             <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
@@ -137,7 +138,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
                 <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
                   <span className="flex-1 truncate text-gray-700">{makeFolder && <span className="text-gray-400">{(name.replace(/\.zip$/i, '') || 'extracted')}/</span>}{e.name}</span>
                   <span className="text-gray-400 shrink-0">{fmt(e.size)}</span>
-                  <button onClick={() => download(e)} className="shrink-0 px-2.5 py-1 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">⬇</button>
+                  <button onClick={() => download(e)} aria-label="download" className="shrink-0 inline-flex items-center justify-center px-2.5 py-1 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"><ToolIcon name="download" className="w-3.5 h-3.5" /></button>
                 </div>
               ))}
             </div>

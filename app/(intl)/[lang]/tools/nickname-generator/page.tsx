@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('nickname-generator')!
@@ -52,7 +53,7 @@ export default function NicknameGeneratorPage({ params }: { params: { lang: stri
           <input value={seed} onChange={(e) => setSeed(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && run()} type="search"
             autoComplete="off" data-1p-ignore placeholder={t('ng_ph')}
             className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-          <button onClick={run} className="px-5 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">↻ {t('ng_gen')}</button>
+          <button onClick={run} className="px-5 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 inline-flex items-center justify-center gap-1.5"><ToolIcon name="refresh" className="w-4 h-4" />{t('ng_gen')}</button>
         </div>
 
         <div className="grid grid-cols-2 gap-2">

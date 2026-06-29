@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -92,7 +93,7 @@ export default function VideoToGifPage({ params }: { params: { lang: string } })
             {out && (
               <div className="rounded-xl border-2 border-green-200 bg-green-50 p-3 flex items-center justify-between">
                 <span className="text-sm text-gray-600">GIF · {fmt(out.size)}</span>
-                <button onClick={download} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">⬇ {t('vg_download')}</button>
+                <button onClick={download} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('vg_download')}</button>
               </div>
             )}
           </>
