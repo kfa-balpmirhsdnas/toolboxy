@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -81,7 +82,7 @@ export default function FaviconGeneratorPage({ params }: { params: { lang: strin
             <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-1">{t('fg_htmltags')}</label>
               <pre className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono text-gray-800 whitespace-pre-wrap">{LINK_TAGS}</pre>
-              <button onClick={copyTags} className="absolute top-8 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? '✓ '+t('ui_copied') : t('ui_copy')}</button>
+              <button onClick={copyTags} className="absolute top-8 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('ui_copied')}</span> : t('ui_copy')}</button>
             </div>
           </>
         )}

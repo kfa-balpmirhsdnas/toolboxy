@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 
@@ -60,7 +61,7 @@ export default function UrlDecoderPage({ params }: { params: { lang: string } })
               />
               {!output.startsWith('⚠') && (
                 <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">
-                  {copied ? '✓ '+t('ui_copied') : t('ui_copy')}
+                  {copied ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('ui_copied')}</span> : t('ui_copy')}
                 </button>
               )}
             </div>

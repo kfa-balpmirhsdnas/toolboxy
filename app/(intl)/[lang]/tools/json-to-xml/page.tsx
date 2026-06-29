@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { getToolBySlug } from '@/lib/tools/registry'
+import ToolIcon from '@/components/tools/ToolIcon'
 
 function toXmlTag(key: string): string {
   return key.replace(/[^a-zA-Z0-9_.-]/g,'_').replace(/^[^a-zA-Z_]/,'_$&') || 'item'
@@ -73,7 +74,7 @@ export default function JsonToXml() {
             <div className="px-5 py-3 border-b border-gray-200 flex items-center justify-between">
               <span className="font-semibold text-gray-700 text-sm">{t('jtx_xmloutput')}</span>
               <button onClick={copy} disabled={!xml} className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded-lg font-medium transition-colors disabled:opacity-40">
-                {copied?'✓ '+t('ui_copied'):t('jtx_copyxml')}
+                {copied ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('ui_copied')}</span> : t('jtx_copyxml')}
               </button>
             </div>
             <pre className="flex-1 p-5 text-xs font-mono overflow-auto text-gray-700 whitespace-pre-wrap">

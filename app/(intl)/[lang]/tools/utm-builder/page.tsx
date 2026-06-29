@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolCopy } from '@/lib/gtag'
 
@@ -63,7 +64,7 @@ export default function UtmBuilderPage({ params }: { params: { lang: string } })
         {output && (
           <div className="relative">
             <div className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono text-brand-700 break-all">{output}</div>
-            <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? '✓ '+t('ui_copied') : t('ui_copy')}</button>
+            <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('ui_copied')}</span> : t('ui_copy')}</button>
           </div>
         )}
       </div>

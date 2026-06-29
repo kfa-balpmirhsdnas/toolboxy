@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy, trackToolDownload } from '@/lib/gtag'
 
@@ -70,7 +71,7 @@ export default function JsonToYamlPage({ params }: { params: { lang: string } })
           <div className="flex items-center justify-between mb-1">
             <label className="text-xs font-medium text-gray-600">{t('jty_yamloutput')}</label>
             <div className="flex gap-2">
-              {output && <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'✓ '+t('ui_copied'):t('ui_copy')}</button>}
+              {output && <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('ui_copied')}</span> : t('ui_copy')}</button>}
               {output && <button onClick={download} className="text-xs text-gray-500 hover:text-gray-700">{t('ui_download')}</button>}
             </div>
           </div>

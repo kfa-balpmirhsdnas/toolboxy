@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 
@@ -60,7 +61,7 @@ export default function OcrPage({ params }: { params: { lang: string } }) {
             {text && (
               <div className="space-y-2">
                 <textarea value={text} onChange={(e) => setText(e.target.value)} rows={7} className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-                <button onClick={copy} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{copied ? `✓ ${t('ok_copied')}` : t('ok_copy')}</button>
+                <button onClick={copy} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{copied ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('ok_copied')}</span> : t('ok_copy')}</button>
               </div>
             )}
           </>

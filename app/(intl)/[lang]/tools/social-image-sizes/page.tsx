@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('social-image-sizes')!
@@ -39,7 +40,7 @@ export default function SocialImageSizesPage({ params }: { params: { lang: strin
                   <button key={k + dims} onClick={() => copy(dims)} title={t('sis_copy')}
                     className="w-full flex items-center justify-between gap-2 py-2 text-sm group">
                     <span className="text-gray-600">{t(k)}</span>
-                    <span className="font-medium text-gray-900 tabular-nums group-hover:text-brand-600">{copied === dims ? `✓ ${t('sis_copied')}` : dims}</span>
+                    <span className="font-medium text-gray-900 tabular-nums group-hover:text-brand-600">{copied === dims ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('sis_copied')}</span> : dims}</span>
                   </button>
                 ))}
               </div>

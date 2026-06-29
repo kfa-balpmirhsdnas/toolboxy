@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('css-box-shadow-generator')!
 const PRESETS=[{k:'soft',x:0,y:4,blur:6,spread:-1,color:'rgba(0,0,0,0.1)',inset:false},{k:'hard',x:4,y:4,blur:0,spread:0,color:'rgba(0,0,0,0.25)',inset:false},{k:'large',x:0,y:20,blur:25,spread:-5,color:'rgba(0,0,0,0.1)',inset:false},{k:'glow',x:0,y:0,blur:15,spread:0,color:'rgba(59,130,246,0.5)',inset:false},{k:'inner',x:0,y:2,blur:4,spread:0,color:'rgba(0,0,0,0.2)',inset:true},{k:'none',x:0,y:0,blur:0,spread:0,color:'rgba(0,0,0,0)',inset:false}]
@@ -59,7 +60,7 @@ export default function CssBoxShadowGeneratorPage() {
         <div className="bg-gray-900 rounded-xl overflow-hidden">
           <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
             <code className="text-green-400 text-xs">{css}</code>
-            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied?'✓':t('ui_copy')}</button>
+            <button onClick={copy} className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">{copied ? <ToolIcon name="check" className="w-3.5 h-3.5 inline" /> : t('ui_copy')}</button>
           </div>
         </div>
       </div>

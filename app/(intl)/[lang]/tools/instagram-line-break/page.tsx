@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('instagram-line-break')!
@@ -34,7 +35,7 @@ export default function InstagramLineBreakPage({ params }: { params: { lang: str
 
         {text && (
           <button onClick={copy} className="w-full px-5 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">
-            {copied ? `✓ ${t('ilb_copied')}` : t('ilb_copy')}
+            {copied ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('ilb_copied')}</span> : t('ilb_copy')}
           </button>
         )}
         <p className="text-xs text-gray-400">{t('ilb_note')}</p>

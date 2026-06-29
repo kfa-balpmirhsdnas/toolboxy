@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 
@@ -45,7 +46,7 @@ function Row({ label, val, id, onCopy, copied, copyLabel }: RowProps) {
       <span className="text-xs text-gray-500 w-28 shrink-0">{label}</span>
       <span className="text-sm font-mono text-gray-800 flex-1 mx-2 break-all">{val}</span>
       <button onClick={() => onCopy(val, id)} className="text-xs text-brand-600 hover:underline shrink-0">
-        {copied===id ? '✓' : copyLabel}
+        {copied === id ? <ToolIcon name="check" className="w-3.5 h-3.5 inline" /> : copyLabel}
       </button>
     </div>
   )

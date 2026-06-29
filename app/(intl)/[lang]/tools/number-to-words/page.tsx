@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('number-to-words')!
 const ones=['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen']
@@ -59,14 +60,14 @@ export default function NumberToWordsPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div><p className="text-xs font-medium text-gray-500 mb-1">{t('ntw_cardinal')}</p>
                     <p className="text-sm font-semibold text-gray-800 capitalize">{words}</p></div>
-                  <button onClick={()=>copy(words)} className="flex-shrink-0 text-xs text-blue-500 hover:text-blue-700">{copied===words?'✓ '+t('ui_copied'):t('ui_copy')}</button>
+                  <button onClick={()=>copy(words)} className="flex-shrink-0 text-xs text-blue-500 hover:text-blue-700">{copied === words ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('ui_copied')}</span> : t('ui_copy')}</button>
                 </div>
               </div>
               {ordinal&&<div className="bg-gray-50 rounded-xl p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div><p className="text-xs font-medium text-gray-500 mb-1">{t('ntw_ordinal')}</p>
                     <p className="text-sm font-semibold text-gray-800 capitalize">{ordinal}</p></div>
-                  <button onClick={()=>copy(ordinal)} className="flex-shrink-0 text-xs text-blue-500 hover:text-blue-700">{copied===ordinal?'✓ '+t('ui_copied'):t('ui_copy')}</button>
+                  <button onClick={()=>copy(ordinal)} className="flex-shrink-0 text-xs text-blue-500 hover:text-blue-700">{copied === ordinal ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('ui_copied')}</span> : t('ui_copy')}</button>
                 </div>
               </div>}
             </div>

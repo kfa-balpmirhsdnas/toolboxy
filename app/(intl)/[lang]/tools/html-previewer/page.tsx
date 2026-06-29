@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 
@@ -47,7 +48,7 @@ export default function HtmlPreviewerPage({ params }: { params: { lang: string }
               </button>
             ))}
           </div>
-          <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied?'✓ '+t('hp_copiedhtml'):t('hp_copyhtml')}</button>
+          <button onClick={copy} className="text-xs text-brand-600 hover:underline">{copied ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('hp_copiedhtml')}</span> : t('hp_copyhtml')}</button>
         </div>
         <div className={`${layout==='split'?'grid grid-cols-2 gap-3':'flex flex-col'}`} style={{height:480}}>
           {layout==='split' && (

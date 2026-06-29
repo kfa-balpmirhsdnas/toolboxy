@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('hashtag-generator')!
@@ -40,7 +41,7 @@ export default function HashtagGeneratorPage({ params }: { params: { lang: strin
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className={over ? 'text-rose-600' : 'text-gray-500'}>{t('hg_count', { n: tags.length })}{over ? ` · ${t('hg_over')}` : ''}</span>
-              <button onClick={copy} className="px-4 py-2 bg-brand-600 text-white rounded-xl hover:bg-brand-700 font-medium">{copied ? `✓ ${t('hg_copied')}` : t('hg_copy')}</button>
+              <button onClick={copy} className="px-4 py-2 bg-brand-600 text-white rounded-xl hover:bg-brand-700 font-medium">{copied ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('hg_copied')}</span> : t('hg_copy')}</button>
             </div>
           </>
         )}

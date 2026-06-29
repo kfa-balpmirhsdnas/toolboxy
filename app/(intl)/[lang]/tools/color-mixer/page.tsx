@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('color-mixer')!
 type Rgb=[number,number,number]
@@ -53,7 +54,7 @@ export default function ColorMixerPage() {
           {swatches.map((h,i)=>(
             <button key={i} onClick={()=>copy(h)} className="flex-1 rounded-xl overflow-hidden group" title={h}>
               <div className="h-16" style={{background:h}}/>
-              <div className="py-1 text-center"><p className="text-xs font-mono text-gray-600 group-hover:text-blue-600 truncate">{copied===h?'✓':h.toUpperCase()}</p></div>
+              <div className="py-1 text-center"><p className="text-xs font-mono text-gray-600 group-hover:text-blue-600 truncate">{copied === h ? <ToolIcon name="check" className="w-3.5 h-3.5 inline" /> : h.toUpperCase()}</p></div>
             </button>
           ))}
         </div>

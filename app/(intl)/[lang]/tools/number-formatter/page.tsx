@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('number-formatter')!
 const LOCALES=[{k:'us',code:'en-US'},{k:'de',code:'de-DE'},{k:'fr',code:'fr-FR'},{k:'jp',code:'ja-JP'},{k:'in',code:'en-IN'},{k:'ar',code:'ar-EG'},{k:'ch',code:'de-CH'},{k:'se',code:'sv-SE'}]
@@ -63,7 +64,7 @@ export default function NumberFormatterPage() {
               <div key={loc.code} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-xl">
                 <span className="text-xs text-gray-500 w-24">{t('nf_l_'+loc.k)}</span>
                 <span className="font-mono font-medium text-gray-800 text-sm flex-1">{v}</span>
-                <button onClick={()=>copy(v)} className="text-xs text-blue-400 hover:text-blue-600 ml-2">{copied===v?'✓':t('ui_copy')}</button>
+                <button onClick={()=>copy(v)} className="text-xs text-blue-400 hover:text-blue-600 ml-2">{copied === v ? <ToolIcon name="check" className="w-3.5 h-3.5 inline" /> : t('ui_copy')}</button>
               </div>
             )
           })}

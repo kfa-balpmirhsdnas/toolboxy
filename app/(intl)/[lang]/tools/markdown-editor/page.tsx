@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('markdown-editor')!
 function renderMarkdown(md: string): string {
@@ -34,7 +35,7 @@ export default function MarkdownEditorPage({ params }: { params: { lang: string 
         <div className="flex items-center gap-2 flex-wrap">
           {(['split','editor','preview'] as const).map(v=>(<button key={v} onClick={()=>setView(v)} className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors capitalize ${view===v?'bg-brand-600 text-white':'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{t('med_'+v)}</button>))}
           <span className="ml-auto text-xs text-gray-400">{t('med_stats',{w:wc,c:markdown.length})}</span>
-          <button onClick={copy} className="text-xs bg-white border border-gray-200 px-3 py-1 rounded-lg hover:bg-brand-50 hover:border-brand-400 transition-colors">{copied?'✓ '+t('ui_copied'):t('med_copymd')}</button>
+          <button onClick={copy} className="text-xs bg-white border border-gray-200 px-3 py-1 rounded-lg hover:bg-brand-50 hover:border-brand-400 transition-colors">{copied ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('ui_copied')}</span> : t('med_copymd')}</button>
           <button onClick={()=>setMarkdown('')} className="text-xs text-gray-400 hover:text-red-500 transition-colors">{t('ui_clear')}</button>
         </div>
         <div className={`gap-4 ${view==='split'?'flex':'block'}`} style={{minHeight:400}}>

@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('password-generator')!
@@ -68,7 +69,7 @@ export default function PasswordGeneratorPage({ params }: { params: { lang: stri
           <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
             <code className="flex-1 text-sm font-mono text-gray-900 break-all">{password}</code>
             <button onClick={() => copy(password)} className="shrink-0 text-sm bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-brand-50 hover:border-brand-400 transition-colors font-medium">
-              {copied ? '✓' : t('ui_copy')}
+              {copied ? <ToolIcon name="check" className="w-3.5 h-3.5 inline" /> : t('ui_copy')}
             </button>
           </div>
         )}

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolCopy } from '@/lib/gtag'
 
@@ -77,7 +78,7 @@ export default function RandomStringPage({ params }: { params: { lang: string } 
         {results.length > 0 && (
           <div className="relative">
             <pre className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono text-gray-800 whitespace-pre-wrap break-all min-h-[3rem]">{results.join('\n')}</pre>
-            <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? '✓ '+t('ui_copied') : t('ui_copy')}</button>
+            <button onClick={copy} className="absolute top-2 right-2 text-xs bg-white border border-gray-200 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors">{copied ? <span className="inline-flex items-center gap-1"><ToolIcon name="check" className="w-3.5 h-3.5" />{t('ui_copied')}</span> : t('ui_copy')}</button>
           </div>
         )}
         <p className="text-xs text-gray-400">{t('rsg_note')}</p>

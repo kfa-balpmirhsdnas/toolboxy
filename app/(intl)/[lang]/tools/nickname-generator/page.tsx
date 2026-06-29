@@ -61,7 +61,7 @@ export default function NicknameGeneratorPage({ params }: { params: { lang: stri
             <button key={n} onClick={() => copy(n)} title={t('ng_copy')}
               className="flex items-center justify-between gap-2 rounded-xl border border-gray-200 px-3 py-2.5 text-sm hover:border-brand-400 hover:bg-brand-50">
               <span className="truncate font-medium text-gray-800">{n}</span>
-              <span className="shrink-0 text-xs text-gray-400">{copied === n ? '✓' : '📋'}</span>
+              <span className="shrink-0 text-xs text-gray-400">{copied === n ? <ToolIcon name="check" className="w-3.5 h-3.5 inline" /> : <ToolIcon name="copy" className="w-3.5 h-3.5 inline" />}</span>
             </button>
           ))}
         </div>

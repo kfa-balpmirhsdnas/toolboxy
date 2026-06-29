@@ -2,6 +2,7 @@
 import { useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('random-palette-generator')!
 function hslToHex(h:number,s:number,l:number):string{
@@ -65,7 +66,7 @@ export default function RandomPaletteGeneratorPage() {
               </button>
               <button onClick={()=>copy(color)}
                 className={'px-2 py-1 rounded-lg text-xs font-mono font-bold transition '+(getLum(color)>0.5?'bg-black/10 text-gray-800 hover:bg-black/20':'bg-white/20 text-white hover:bg-white/30')}>
-                {copied===color?'✓':color.toUpperCase()}
+                {copied === color ? <ToolIcon name="check" className="w-3.5 h-3.5 inline" /> : color.toUpperCase()}
               </button>
             </div>
           ))}
