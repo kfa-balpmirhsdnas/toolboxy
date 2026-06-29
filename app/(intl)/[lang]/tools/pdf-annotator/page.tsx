@@ -11,7 +11,7 @@ const WORKER = 'https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs'
 const COLORS = ['#ef4444', '#f59e0b', '#fde047', '#22c55e', '#3b82f6', '#111827']
 const COLOR_LABEL: Record<string, string> = { '#ef4444': '🔴', '#f59e0b': '🟠', '#fde047': '🟡', '#22c55e': '🟢', '#3b82f6': '🔵', '#111827': '⚫' }
 const ZOOMS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3]
-const WIDTHS = [2, 4, 8]
+const WIDTHS = [1, 2, 4, 8, 14]
 const EXPORT_SCALE = 2
 
 type Pt = { x: number; y: number }
@@ -25,12 +25,12 @@ type Anno = {
 function drawAnno(ctx: CanvasRenderingContext2D, a: Anno, s: number) {
   ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.globalAlpha = 1
   ctx.strokeStyle = a.color; ctx.fillStyle = a.color; ctx.lineWidth = a.width * s
-  if (a.type === 'pen' || a.type === 'highlight') {
+  if (a.type === 'pen' || a.type === 'highlight' || a.type === 'freehand') {
     if (a.type === 'highlight') ctx.globalAlpha = 0.35
     ctx.beginPath()
     ;(a.pts || []).forEach((p, i) => (i ? ctx.lineTo(p.x * s, p.y * s) : ctx.moveTo(p.x * s, p.y * s)))
     ctx.stroke(); ctx.globalAlpha = 1
-  } else if (a.type === 'underline' || a.type === 'strike' || a.type === 'arrow') {
+  } else if (a.type === 'underline' || a.type === 'strike' || a.type === 'arrow' || a.type === 'line') {
     ctx.beginPath(); ctx.moveTo((a.x1 || 0) * s, (a.y1 || 0) * s); ctx.lineTo((a.x2 || 0) * s, (a.y2 || 0) * s); ctx.stroke()
     if (a.type === 'arrow') {
       const ang = Math.atan2((a.y2 || 0) - (a.y1 || 0), (a.x2 || 0) - (a.x1 || 0)); const hl = 12 * s
@@ -54,6 +54,9 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const [page, setPage] = useState(1)
   const [scale, setScale] = useState(0) // 0 = fit-to-width pending; the page isn't rendered until the fit scale is set (avoids a brief zoomed first render)
   const [tool_, setTool] = useState('highlight')
+  const lastDraw = useRef('highlight') // remembers the active drawing tool so the pen button can restore it after pan
+  const [saveDialog, setSaveDialog] = useState(false) // filename prompt before exporting the annotated PDF
+  const [saveName, setSaveName] = useState('')
   const [captureMsg, setCaptureMsg] = useState('') // brief toast after a screen capture (clipboard / saved)
   const [color, setColor] = useState('#ef4444') // red by default
   const [penW, setPenW] = useState(4)
@@ -303,8 +306,9 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
       setTextEdit({ x: p.x, y: p.y, val: '' }); return
     }
     drawing.current = true
-    const base = { id: idRef.current++, page, color, width: tool_ === 'highlight' ? 14 : penW }
-    if (tool_ === 'pen' || tool_ === 'highlight') draftRef.current = { ...base, type: tool_, pts: [p] }
+    // the stroke-width option applies to every tool; the highlighter is rendered ~3× as thick
+    const base = { id: idRef.current++, page, color, width: tool_ === 'highlight' ? penW * 3 : penW }
+    if (tool_ === 'pen' || tool_ === 'highlight' || tool_ === 'freehand') draftRef.current = { ...base, type: tool_, pts: [p] }
     else if (tool_ === 'rect' || tool_ === 'capture') draftRef.current = { ...base, type: tool_, x: p.x, y: p.y, w: 0, h: 0 }
     else draftRef.current = { ...base, type: tool_, x1: p.x, y1: p.y, x2: p.x, y2: p.y }
     drawAll(page, scale)
@@ -312,7 +316,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   function onMove(e: React.PointerEvent) {
     if (!drawing.current || !draftRef.current) return
     const p = pt(e); const d = draftRef.current
-    if (d.type === 'pen' || d.type === 'highlight') d.pts!.push(p)
+    if (d.type === 'pen' || d.type === 'highlight' || d.type === 'freehand') d.pts!.push(p)
     else if (d.type === 'rect' || d.type === 'capture') { d.w = p.x - (d.x || 0); d.h = p.y - (d.y || 0) }
     // underline / strikethrough are locked horizontal (clean line under or through text)
     else { d.x2 = p.x; d.y2 = (d.type === 'underline' || d.type === 'strike') ? (d.y1 || 0) : p.y }
@@ -326,7 +330,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     if (d) {
       // ignore zero-size shapes/dots
       const tiny = (d.type === 'rect' && Math.abs(d.w || 0) < 3 && Math.abs(d.h || 0) < 3) ||
-        ((d.type === 'pen' || d.type === 'highlight') && (d.pts?.length || 0) < 2)
+        ((d.type === 'pen' || d.type === 'highlight' || d.type === 'freehand') && (d.pts?.length || 0) < 2)
       if (!tiny) setAnnos((a) => [...a, d])
     }
     drawAll(page, scale)
@@ -371,9 +375,9 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     setTextEdit(null)
   }
 
-  async function download() {
+  async function download(name = fileName) {
     if (!origBytes.current) return
-    setExporting(true)
+    setSaveDialog(false); setExporting(true)
     try {
       const { PDFDocument } = await import('pdf-lib')
       const doc = await PDFDocument.load(origBytes.current)
@@ -391,14 +395,15 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
       }
       const bytes = await doc.save()
       const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([bytes as BlobPart], { type: 'application/pdf' }))
-      a.download = `${fileName}-annotated.pdf`; a.click()
+      a.download = `${(name || 'annotated').replace(/[\\/:*?"<>|]+/g, '').trim() || 'annotated'}.pdf`; a.click()
     } catch (e) { console.error(e); alert(t('pa_error')) } finally { setExporting(false) }
   }
 
   // [tool, ToolIcon name]
-  const TOOLS: [string, string][] = [['highlight', 'highlighter'], ['pen', 'pen'], ['underline', 'underline'], ['strike', 'strike'], ['rect', 'rect'], ['arrow', 'arrow'], ['text', 'text'], ['capture', 'camera'], ['pan', 'hand']]
+  const TOOLS: [string, string][] = [['highlight', 'highlighter'], ['pen', 'pen'], ['underline', 'underline'], ['strike', 'strike'], ['rect', 'rect'], ['line', 'line'], ['freehand', 'freehand'], ['arrow', 'arrow'], ['text', 'text'], ['capture', 'camera'], ['pan', 'hand']]
   const DRAW_TOOLS = TOOLS.filter(([k]) => k !== 'pan') // shown in the toggled pen-tools palette
-  const activeDrawIcon = DRAW_TOOLS.find(([k]) => k === tool_)?.[1] ?? 'highlighter' // the pen-tools toggle mirrors the active drawing tool
+  // the pen-tools toggle mirrors the active drawing tool (or the last one used, while panning)
+  const activeDrawIcon = (DRAW_TOOLS.find(([k]) => k === tool_) || DRAW_TOOLS.find(([k]) => k === lastDraw.current))?.[1] ?? 'highlighter'
 
   const ready = status === 'ready' // toolbar always shows (dimmed before a PDF is loaded)
 
@@ -413,12 +418,13 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           <div className={'flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2' + (ready ? '' : ' opacity-50 pointer-events-none')}>
             <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name="thumbnails" /></button>
             <span className="w-px h-6 bg-gray-300 mx-0.5" />
-            {/* Save (download annotated PDF) + new file — right after thumbnails, with confirm */}
-            <button onClick={() => { if (window.confirm(t('pa_save_confirm'))) download() }} disabled={exporting} title={t('pa_download')} aria-label={t('pa_download')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 disabled:opacity-60 flex items-center justify-center"><ToolIcon name={exporting ? 'loader' : 'save'} className={exporting ? 'w-[18px] h-[18px] animate-spin' : 'w-[18px] h-[18px]'} /></button>
+            {/* Save (download annotated PDF) + new file — right after thumbnails */}
+            <button onClick={() => { setSaveName(`${fileName}-annotated`); setSaveDialog(true) }} disabled={exporting} title={t('pa_download')} aria-label={t('pa_download')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 disabled:opacity-60 flex items-center justify-center"><ToolIcon name={exporting ? 'loader' : 'save'} className={exporting ? 'w-[18px] h-[18px] animate-spin' : 'w-[18px] h-[18px]'} /></button>
             <button onClick={() => { if (annos.length === 0 || window.confirm(t('pa_newfile_confirm'))) fileInput.current?.click() }} title={t('pa_newfile')} aria-label={t('pa_newfile')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 flex items-center justify-center"><ToolIcon name="folder" /></button>
-            <button onClick={() => { setShowPenTools((s) => !s); setShowSearch(false) }} title={t('pa_pentools')} aria-label={t('pa_pentools')}
-              className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name={activeDrawIcon} /></button>
-            <button onClick={() => setTool('pan')} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name="hand" /></button>
+            {/* Pen-tools (draw mode) ↔ pan (move mode): mutually exclusive toggle */}
+            <button onClick={() => { setShowSearch(false); if (tool_ === 'pan') { setTool(lastDraw.current); setShowPenTools(true) } else setShowPenTools((s) => !s) }} title={t('pa_pentools')} aria-label={t('pa_pentools')}
+              className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (tool_ !== 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name={activeDrawIcon} /></button>
+            <button onClick={() => { setTool('pan'); setShowPenTools(false) }} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name="hand" /></button>
             {/* Zoom — −/select/+ on desktop (PC); a slider inside the bar on mobile */}
             <button onClick={() => setScale((s) => Math.max(0.4, +((s || 1) - 0.15).toFixed(2)))} title={t('pa_zoom')} aria-label="zoom out" className="hidden md:flex w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 items-center justify-center"><ToolIcon name="zoom-out" /></button>
             <select value={String(scale)} onChange={(e) => setScale(+e.target.value)} title={t('pa_zoom')} aria-label={t('pa_zoom')}
@@ -439,7 +445,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           {showPenTools && (
             <div className="absolute left-0 right-0 top-full mt-1 z-30 flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2 shadow-lg">
               {DRAW_TOOLS.map(([k, icon]) => (
-                <button key={k} title={t('pa_' + k)} onClick={() => setTool(k)}
+                <button key={k} title={t('pa_' + k)} onClick={() => { setTool(k); if (k !== 'capture') lastDraw.current = k }}
                   className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (tool_ === k ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name={icon} /></button>
               ))}
               <span className="w-px h-6 bg-gray-300 mx-0.5" />
@@ -546,7 +552,12 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           </div>
         )}
 
-        {captureMsg && <p className="text-center text-sm text-brand-700 bg-brand-50 border border-brand-200 rounded-lg py-1.5">📷 {captureMsg}</p>}
+        {/* Capture confirmation — fixed toast so it's clearly visible right after selecting */}
+        {captureMsg && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-xl bg-gray-900 text-white text-sm px-4 py-2.5 shadow-lg">
+            <ToolIcon name="check" className="w-4 h-4" />{captureMsg}
+          </div>
+        )}
         <p className="text-xs text-emerald-700 text-center">🔒 {t('pa_local')}</p>
 
         {/* Convert this PDF with our other tools */}
@@ -557,6 +568,25 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
         </div>
         <input ref={fileInput} type="file" accept="application/pdf" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.currentTarget.value = ''; if (f) openFile(f) }} />
       </div>
+
+      {/* Save-as dialog — choose the file name before exporting */}
+      {saveDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setSaveDialog(false)}>
+          <div className="w-full max-w-xs rounded-2xl bg-white p-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <p className="text-sm font-semibold text-gray-800 mb-2">{t('pa_save_title')}</p>
+            <div className="flex items-center gap-1">
+              <input autoFocus value={saveName} onChange={(e) => setSaveName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && saveName.trim()) download(saveName) }}
+                className="flex-1 min-w-0 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-brand-400" />
+              <span className="text-sm text-gray-400 shrink-0">.pdf</span>
+            </div>
+            <div className="mt-3 flex justify-end gap-2">
+              <button onClick={() => setSaveDialog(false)} className="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700">{t('pa_cancel')}</button>
+              <button onClick={() => download(saveName)} disabled={!saveName.trim()} className="px-4 py-1.5 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-50">{t('pa_download')}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </ToolLayout>
   )
 }
