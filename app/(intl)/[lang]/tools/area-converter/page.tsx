@@ -89,11 +89,6 @@ export default function AreaConverterPage() {
           </div>
         </div>
 
-        {/* Supply vs exclusive area note */}
-        <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3">
-          <div className="text-sm font-semibold text-amber-800 mb-1">ℹ️ {t('ac_supply_title')}</div>
-          <p className="text-xs text-amber-800 leading-relaxed">{t('ac_supply_body')}</p>
-        </div>
       </div>
     </ToolLayout>
   )
