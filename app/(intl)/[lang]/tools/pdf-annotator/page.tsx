@@ -293,63 +293,71 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div ref={wrapRef} className="space-y-3 bg-white overflow-auto">
-        {/* Top toolbar: thumbnails · pen-tools toggle · move · undo · clear · zoom · fullscreen · find */}
-        <div className="flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2">
-          <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>◧</button>
-          <span className="w-px h-6 bg-gray-300 mx-0.5" />
-          {/* Pen tools — opens the annotation palette below; mirrors the active drawing tool */}
-          <button onClick={() => setShowPenTools((s) => !s)} title={t('pa_pentools')} aria-label={t('pa_pentools')}
-            className={'h-9 px-2 rounded-lg text-sm flex items-center gap-1 ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>{activeDrawIcon}<span className="text-xs">{showPenTools ? '▲' : '▼'}</span></button>
-          <button onClick={() => setTool('pan')} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg text-sm ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>✋</button>
-          <span className="w-px h-6 bg-gray-300 mx-0.5" />
-          <button onClick={undo} title={t('pa_undo')} aria-label={t('pa_undo')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">↩</button>
-          <button onClick={clearPage} title={t('pa_clear')} aria-label={t('pa_clear')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-700" aria-hidden="true">
-              <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21" /><path d="M22 21H7" /><path d="m5 11 9 9" />
-            </svg>
-          </button>
-          <span className="w-px h-6 bg-gray-300 mx-0.5" />
-          <select value={String(scale)} onChange={(e) => setScale(+e.target.value)} title={t('pa_zoom')} aria-label={t('pa_zoom')}
-            className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
-            {(ZOOMS.includes(scale) ? ZOOMS : [scale, ...ZOOMS]).sort((a, b) => a - b).map((z) => <option key={z} value={z}>{Math.round(z * 100)}%</option>)}
-          </select>
-          <button onClick={() => wrapRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
-          <button onClick={() => setShowSearch((s) => !s)} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔍</button>
-        </div>
-
-        {/* Pen-tools palette — revealed by the pen-tools button: drawing tools + colour + width */}
-        {showPenTools && (
+        {/* Toolbar + floating pen-tools palette (palette is absolute so opening it never
+            shifts the page below — fixes the "menu jumps" feel). */}
+        <div className="relative">
+          {/* Top toolbar — one row: thumbnails · pen-tools · move · zoom · fullscreen · find · save · new file */}
           <div className="flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2">
-            {DRAW_TOOLS.map(([k, icon]) => (
-              <button key={k} title={t('pa_' + k)} onClick={() => setTool(k)}
-                className={'w-9 h-9 rounded-lg text-sm font-bold ' + (tool_ === k ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}>{icon}</button>
-            ))}
+            <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>◧</button>
             <span className="w-px h-6 bg-gray-300 mx-0.5" />
-            <select value={color} onChange={(e) => setColor(e.target.value)} title={t('pa_color')} aria-label={t('pa_color')}
+            <button onClick={() => setShowPenTools((s) => !s)} title={t('pa_pentools')} aria-label={t('pa_pentools')}
+              className={'h-9 px-2 rounded-lg text-sm flex items-center gap-1 ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>{activeDrawIcon}<span className="text-xs">{showPenTools ? '▲' : '▼'}</span></button>
+            <button onClick={() => setTool('pan')} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg text-sm ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>✋</button>
+            <span className="w-px h-6 bg-gray-300 mx-0.5" />
+            <select value={String(scale)} onChange={(e) => setScale(+e.target.value)} title={t('pa_zoom')} aria-label={t('pa_zoom')}
               className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
-              {COLORS.map((c) => <option key={c} value={c}>{COLOR_LABEL[c]}</option>)}
+              {(ZOOMS.includes(scale) ? ZOOMS : [scale, ...ZOOMS]).sort((a, b) => a - b).map((z) => <option key={z} value={z}>{Math.round(z * 100)}%</option>)}
             </select>
-            {/* Stroke width — dropdown showing the actual line thickness as images */}
-            <div className="relative">
-              {wOpen && <div className="fixed inset-0 z-10" onClick={() => setWOpen(false)} />}
-              <button onClick={() => setWOpen((o) => !o)} title={t('pa_width')} aria-label={t('pa_width')}
-                className="h-9 px-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-100 flex items-center gap-1.5">
-                <span style={{ width: 20, height: penW, borderRadius: 9999, background: '#374151', display: 'block' }} />
-                <span className="text-xs text-gray-400">▼</span>
-              </button>
-              {wOpen && (
-                <div className="absolute z-20 mt-1 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-1 space-y-1">
-                  {WIDTHS.map((w) => (
-                    <button key={w} onClick={() => { setPenW(w); setWOpen(false) }}
-                      className={'flex items-center justify-center w-16 h-8 rounded ' + (penW === w ? 'bg-brand-50' : 'hover:bg-gray-100')}>
-                      <span style={{ width: 34, height: w, borderRadius: 9999, background: '#374151', display: 'block' }} />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <button onClick={() => wrapRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
+            <button onClick={() => setShowSearch((s) => !s)} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔍</button>
+            <span className="w-px h-6 bg-gray-300 mx-0.5" />
+            {/* Save (download annotated PDF) + new file — icon buttons */}
+            <button onClick={download} disabled={exporting} title={t('pa_download')} aria-label={t('pa_download')} className="w-9 h-9 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-60">{exporting ? '⏳' : '💾'}</button>
+            <button onClick={() => { setStatus('idle'); pdfRef.current = null }} title={t('pa_newfile')} aria-label={t('pa_newfile')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">📂</button>
           </div>
-        )}
+
+          {/* Pen-tools palette — floats below the toolbar (absolute → no layout shift) */}
+          {showPenTools && (
+            <div className="absolute left-0 right-0 top-full mt-1 z-30 flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2 shadow-lg">
+              {DRAW_TOOLS.map(([k, icon]) => (
+                <button key={k} title={t('pa_' + k)} onClick={() => setTool(k)}
+                  className={'w-9 h-9 rounded-lg text-sm font-bold ' + (tool_ === k ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}>{icon}</button>
+              ))}
+              <span className="w-px h-6 bg-gray-300 mx-0.5" />
+              <select value={color} onChange={(e) => setColor(e.target.value)} title={t('pa_color')} aria-label={t('pa_color')}
+                className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
+                {COLORS.map((c) => <option key={c} value={c}>{COLOR_LABEL[c]}</option>)}
+              </select>
+              {/* Stroke width — dropdown showing the actual line thickness as images */}
+              <div className="relative">
+                {wOpen && <div className="fixed inset-0 z-10" onClick={() => setWOpen(false)} />}
+                <button onClick={() => setWOpen((o) => !o)} title={t('pa_width')} aria-label={t('pa_width')}
+                  className="h-9 px-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-100 flex items-center gap-1.5">
+                  <span style={{ width: 20, height: penW, borderRadius: 9999, background: '#374151', display: 'block' }} />
+                  <span className="text-xs text-gray-400">▼</span>
+                </button>
+                {wOpen && (
+                  <div className="absolute z-30 mt-1 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-1 space-y-1">
+                    {WIDTHS.map((w) => (
+                      <button key={w} onClick={() => { setPenW(w); setWOpen(false) }}
+                        className={'flex items-center justify-center w-16 h-8 rounded ' + (penW === w ? 'bg-brand-50' : 'hover:bg-gray-100')}>
+                        <span style={{ width: 34, height: w, borderRadius: 9999, background: '#374151', display: 'block' }} />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <span className="w-px h-6 bg-gray-300 mx-0.5" />
+              {/* Undo + clear (eraser) — moved into the palette */}
+              <button onClick={undo} title={t('pa_undo')} aria-label={t('pa_undo')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">↩</button>
+              <button onClick={clearPage} title={t('pa_clear')} aria-label={t('pa_clear')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-700" aria-hidden="true">
+                  <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21" /><path d="M22 21H7" /><path d="m5 11 9 9" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Thumbnails on top (mobile) / left column (desktop) */}
         <div className="flex flex-col md:flex-row gap-3">
@@ -374,13 +382,11 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           </div>
         </div>
 
-        {/* Bottom bar — page navigation + download + new file */}
-        <div className="flex flex-wrap items-center gap-2 text-sm">
+        {/* Bottom bar — page navigation (centred) */}
+        <div className="flex items-center justify-center gap-2 text-sm">
           <button onClick={() => setPage((p) => Math.max(1, p - 1))} title={t('pa_page')} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">◀</button>
           <span className="tabular-nums"><input type="number" min={1} max={numPages} value={page} onChange={(e) => setPage(Math.min(numPages, Math.max(1, +e.target.value || 1)))} className="w-10 text-center border border-gray-300 rounded px-1 py-0.5" /> / {numPages}</span>
           <button onClick={() => setPage((p) => Math.min(numPages, p + 1))} title={t('pa_page')} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">▶</button>
-          <button onClick={download} disabled={exporting} className="ml-auto px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-700 disabled:opacity-60">{exporting ? t('pa_exporting') : '⬇ ' + t('pa_download')}</button>
-          <button onClick={() => { setStatus('idle'); pdfRef.current = null }} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">{t('pa_newfile')}</button>
         </div>
 
         {/* Find bar (editor-style: toggled by the 🔍 button, sits at the bottom) */}
