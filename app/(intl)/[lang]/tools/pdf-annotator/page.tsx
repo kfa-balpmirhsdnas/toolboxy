@@ -287,25 +287,21 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             {/* Save (download annotated PDF) + new file — right after thumbnails, with confirm */}
             <button onClick={() => { if (window.confirm(t('pa_save_confirm'))) download() }} disabled={exporting} title={t('pa_download')} aria-label={t('pa_download')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 disabled:opacity-60">{exporting ? '⏳' : '💾'}</button>
             <button onClick={() => { if (annos.length === 0 || window.confirm(t('pa_newfile_confirm'))) fileInput.current?.click() }} title={t('pa_newfile')} aria-label={t('pa_newfile')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">📂</button>
-            <span className="w-px h-6 bg-gray-300 mx-0.5" />
             <button onClick={() => { setShowPenTools((s) => !s); setShowSearch(false) }} title={t('pa_pentools')} aria-label={t('pa_pentools')}
               className={'w-14 h-9 rounded-lg text-sm flex items-center justify-center gap-1 ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}><span className="w-4 text-center">{activeDrawIcon}</span><span className="text-xs">{showPenTools ? '▲' : '▼'}</span></button>
             <button onClick={() => setTool('pan')} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg text-sm ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>✋</button>
-            <span className="w-px h-6 bg-gray-300 mx-0.5" />
-            {/* Zoom — select on desktop; a slider below the toolbar on mobile */}
+            {/* Zoom — select on desktop; a slider inside the bar on mobile */}
             <select value={String(scale)} onChange={(e) => setScale(+e.target.value)} title={t('pa_zoom')} aria-label={t('pa_zoom')}
               className="hidden md:block h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
               {(ZOOMS.includes(scale) ? ZOOMS : [scale, ...ZOOMS]).sort((a, b) => a - b).map((z) => <option key={z} value={z}>{Math.round(z * 100)}%</option>)}
             </select>
             <button onClick={() => wrapRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
             <button onClick={() => { setShowSearch((s) => !s); setShowPenTools(false) }} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔍</button>
-          </div>
-
-          {/* Mobile zoom slider — below the toolbar */}
-          <div className="md:hidden flex items-center gap-2 mt-1 px-1">
-            <span className="text-xs text-gray-400">🔍</span>
-            <input type="range" min={0.4} max={3} step={0.05} value={scale} onChange={(e) => setScale(+e.target.value)} aria-label={t('pa_zoom')} className="flex-1 accent-brand-600" />
-            <span className="text-xs tabular-nums text-gray-500 w-10 text-right">{Math.round(scale * 100)}%</span>
+            {/* Mobile zoom slider — inside the bar (wraps to its own line on narrow screens) */}
+            <div className="md:hidden flex items-center gap-1.5 flex-1 min-w-[120px] pl-1">
+              <input type="range" min={0.4} max={3} step={0.05} value={scale} onChange={(e) => setScale(+e.target.value)} aria-label={t('pa_zoom')} className="flex-1 accent-brand-600" />
+              <span className="text-xs tabular-nums text-gray-500 w-10 text-right">{Math.round(scale * 100)}%</span>
+            </div>
           </div>
 
           {/* Pen-tools palette — floats below the toolbar (absolute → no layout shift) */}
