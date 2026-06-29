@@ -441,7 +441,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     // A new tab inherits the current tab's font / size / line-spacing.
     const d: Doc = { id: uid(), name: uniqueName(docs), text: '', fam: src?.fam ?? DEFAULTS.fam, size: src?.size ?? DEFAULTS.size, lh: src?.lh ?? DEFAULTS.lh, updatedAt: Date.now(), createdAt: Date.now() }
     histories.current[d.id] = { hist: [''], idx: 0 }
-    setDocs((ds) => [...ds, d]); setActiveId(d.id)
+    setDocs((ds) => [...ds, d]); setActiveId(d.id); setRenaming(d.id) // open straight into name-edit mode
   }
   function closeDoc(id: string) {
     const doc = docs.find((x) => x.id === id)
@@ -585,6 +585,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                   (on ? 'bg-white border-gray-200 text-brand-700 font-semibold' : 'bg-gray-50 border-transparent text-gray-500 hover:bg-gray-100')}>
                 {renaming === d.id ? (
                   <input autoFocus defaultValue={d.name}
+                    ref={(el) => { if (el && renaming === d.id) requestAnimationFrame(() => el.select()) }}
+                    onFocus={(e) => e.target.select()}
                     onClick={(e) => e.stopPropagation()}
                     onBlur={(e) => { renameDoc(d.id, e.target.value.trim()); setRenaming(null) }}
                     onKeyDown={(e) => { if (e.key === 'Enter') { renameDoc(d.id, (e.target as HTMLInputElement).value.trim()); setRenaming(null) } if (e.key === 'Escape') setRenaming(null) }}
