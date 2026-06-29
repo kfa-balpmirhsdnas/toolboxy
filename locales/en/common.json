@@ -102,6 +102,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "pdf-annotator": "Free online PDF annotator and viewer. Open a PDF and highlight, underline, draw, add text notes and shapes, then download the annotated PDF. Everything runs in your browser — no upload.",
     "bill-splitter": "Free bill splitter — enter the total and number of people to see who pays what. Handles uneven splits, tip (15/18/20% or custom), tax and unequal shares. Split the bill fairly in seconds.",
     "powerball-results": "See the latest Powerball winning numbers and the full history of past draws. Look up results by date, browse recent draws, and view number frequency. Built on official NY State open data, refreshed after every Mon/Wed/Sat drawing.",
     "lottery-number-generator": "A free generator for lottery numbers — Powerball, Mega Millions, EuroMillions, Japan Loto, Korea Lotto 6/45 and more. Pick a lottery and it generates numbers per its rules. Multiple lines, fixed and excluded numbers, all in your browser.",
@@ -827,6 +828,7 @@
     "continue": "Continue without signing up"
   },
   "langTools": {
+    "pdf-annotator": {"faq":[{"q":"Are my annotations saved into the original PDF?","a":"When you click Download, your annotations are merged onto the pages and a new PDF is created. The original file on your device is left unchanged."},{"q":"Is my file uploaded to a server?","a":"No. The PDF is opened, annotated and saved entirely in your browser — it is never sent to any server."},{"q":"Can I annotate a scanned PDF?","a":"Yes — highlighter, pen, shapes and text notes work on any PDF, including scans. Text search only works on PDFs that contain real (selectable) text."}]},
     "bill-splitter": {"faq":[{"q":"What happens when the bill doesn't divide evenly?","a":"It rounds each share to the smallest unit of your currency and assigns the leftover to as few people as possible, so the per-person amounts add up exactly to the bill."},{"q":"How is the tip calculated?","a":"The tip is a percentage of the subtotal (15/18/20% or your own value), added to the total before splitting, so everyone shares it."},{"q":"Can people pay different amounts?","a":"Yes — turn on 'By share' in Advanced and give each person a weight; the bill is split in proportion to those shares."}]},
     "spinner-wheel": {
       "intro": "Enter options and spin the wheel to pick one at random.",
@@ -1631,6 +1633,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "pdf-annotator": "PDF Annotator lets you open any PDF and mark it up right in your browser. View pages with zoom, thumbnails and full-text search, then highlight, underline, strike through, draw freehand with the pen, add rectangles and arrows, and drop text notes anywhere. Undo or clear as you go, then download a new PDF with your annotations merged in. Your file never leaves your device — all rendering and saving happen locally.",
     "bill-splitter": "Bill Splitter divides a bill among any number of people. Enter the total and headcount for an instant per-person amount; when it doesn't divide evenly it rounds to the currency and shows exactly who covers the few cents or won left over. Open the advanced options to add a tip (15/18/20% or your own), include or add tax, or split by unequal shares so people who ate more pay more. Pick ₩, $ or ¥ and copy the result — everything runs in your browser.",
     "powerball-results": "Powerball Results shows the latest U.S. Powerball winning numbers — five white balls (1–69) and the red Powerball (1–26) — plus Power Play and the full draw history since 2010. Look up the result for any date, browse recent draws, and see which numbers have appeared most often. Data comes from the official New York State open-data feed; the page fetches the newest draw live and falls back to a saved snapshot if the source is unavailable. This is an informational tool: Powerball is a game of chance, and past results never predict or influence future draws.",
     "lottery-number-generator": "The lottery number generator creates random numbers that follow each lottery’s rules (number range, count and bonus ball). It supports 16 lotteries including US Powerball and Mega Millions, EuroMillions, Japan Loto 6/7 and Korea Lotto 6/45. Main numbers are unique; the bonus ball is drawn from a separate pool. You can generate several lines at once and force or exclude specific numbers. It’s a light, for-fun tool for when you can’t be bothered to pick — it does not guarantee a win.",
@@ -1952,6 +1955,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
+    "pdf-annotator": ["Open a PDF (drag & drop or choose a file).","Use the toolbar to highlight, draw, or add shapes and text notes.","Navigate with page controls, zoom, thumbnails or text search.","Download the annotated PDF — it's built in your browser."],
     "bill-splitter": ["Enter the bill total and choose the currency.","Set the number of people.","Open Advanced for tip, tax or unequal shares.","Read each person's amount and tap Copy."],
     "powerball-results": ["Open the page to see the latest winning numbers and the next draw date.","Pick a date to look up that specific drawing.","Scroll the recent draws list or load more history.","Open Number frequency to see which numbers came up most (for reference only)."],
     "lottery-number-generator": ["Choose a lottery (a sensible default is picked for your language).","Set how many lines, and optionally enter fixed or excluded numbers.","Press 'Generate' to create numbers by the rules.","Use 'Regenerate' for new numbers and 'Copy' to take them with you."],
@@ -3748,6 +3752,31 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pa_open": "Open a PDF",
+    "pa_drop": "Drag & drop a PDF here, or click to choose",
+    "pa_local": "Files are processed in your browser and never uploaded.",
+    "pa_loading": "Opening…",
+    "pa_error": "Couldn't open this PDF. Please try another file.",
+    "pa_page": "Page",
+    "pa_fullscreen": "Fullscreen",
+    "pa_thumbs": "Pages",
+    "pa_search": "Search text in PDF",
+    "pa_nomatch": "No matches",
+    "pa_download": "Download annotated PDF",
+    "pa_exporting": "Building PDF…",
+    "pa_newfile": "New file",
+    "pa_highlight": "Highlighter",
+    "pa_pen": "Pen",
+    "pa_underline": "Underline",
+    "pa_strike": "Strikethrough",
+    "pa_rect": "Rectangle",
+    "pa_arrow": "Arrow",
+    "pa_text": "Text note",
+    "pa_pan": "Move / scroll",
+    "pa_width": "Stroke width",
+    "pa_undo": "Undo",
+    "pa_clear": "Clear page",
+    "pa_textprompt": "Enter note text",
     "bs_total": "Bill total",
     "bs_people": "People",
     "bs_advanced": "Advanced (tip, tax, custom split)",
@@ -6983,6 +7012,7 @@
     ]
   },
   "toolNames": {
+    "pdf-annotator": "PDF Annotator",
     "bill-splitter": "Bill Splitter",
     "powerball-results": "Powerball Results",
     "lottery-number-generator": "Lottery Number Generator",
@@ -7138,6 +7168,7 @@
     }
   },
   "toolTitles": {
+    "pdf-annotator": "PDF Annotator — Annotate, Highlight & View PDF Online",
     "bill-splitter": "Bill Splitter — Split the Bill & Tip Calculator",
     "powerball-results": "Powerball Results — Latest Winning Numbers & History",
     "lottery-number-generator": "Free Lottery Number Generator · Powerball, EuroMillions & More",
