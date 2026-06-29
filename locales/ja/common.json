@@ -4140,6 +4140,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pa_clear_confirm": "このページの書き込みがすべて消えます。",
     "iv_save_confirm": "この画像を保存しますか？",
     "iv_newfile": "新しいファイル",
     "iv_newfile_confirm": "現在の画像が消えます。新しいファイルを開きますか？",

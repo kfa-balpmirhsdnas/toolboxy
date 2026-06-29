@@ -53,7 +53,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const [page, setPage] = useState(1)
   const [scale, setScale] = useState(1.3)
   const [tool_, setTool] = useState('highlight')
-  const [color, setColor] = useState('#fde047')
+  const [color, setColor] = useState('#ef4444') // red by default
   const [penW, setPenW] = useState(4)
   const [annos, setAnnos] = useState<Anno[]>([])
   const [thumbs, setThumbs] = useState<string[]>([])
@@ -246,7 +246,11 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   }
 
   function undo() { setAnnos((a) => a.slice(0, -1)) }
-  function clearPage() { setAnnos((a) => a.filter((x) => x.page !== page)) }
+  function clearPage() {
+    if (!annos.some((a) => a.page === page)) return // nothing drawn on this page
+    if (!window.confirm(t('pa_clear_confirm'))) return
+    setAnnos((a) => a.filter((x) => x.page !== page))
+  }
   // Commit the open inline text box (if non-empty) as a text annotation, then close it.
   function commitText() {
     if (textEdit && textEdit.val.trim()) setAnnos((a) => [...a, { id: idRef.current++, page, type: 'text', color, width: 1, x: textEdit.x, y: textEdit.y, text: textEdit.val, size: 16 }])
