@@ -109,9 +109,12 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     const vp1 = pg.getViewport({ scale: 1 }); dims.current[n] = { w: vp1.width, h: vp1.height }
     const vp = pg.getViewport({ scale: sc })
     if (tok !== renderTok.current) return
+    // Size BOTH canvases together (before the async render) so the overlay can never end up
+    // a different size than the page — a stale render already bailed at the check above.
     const c = pdfCanvas.current; c.width = vp.width; c.height = vp.height
-    await pg.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise
     const ac = annoCanvas.current; if (ac) { ac.width = vp.width; ac.height = vp.height }
+    await pg.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise
+    if (tok !== renderTok.current) return
     drawAll(n, sc)
   }, [])
 
