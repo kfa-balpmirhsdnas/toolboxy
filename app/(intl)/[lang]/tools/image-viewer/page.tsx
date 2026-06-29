@@ -6,6 +6,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
+import { readExif, type Exif } from '@/lib/exif'
 
 const tool = getToolBySlug('image-viewer')!
 const IMG_RE = /\.(jpe?g|png|gif|webp|bmp|svg|avif|ico|tiff?)$/i
@@ -13,68 +14,6 @@ type Img = { file: File; url: string; name: string; size: number }
 
 const fmtBytes = (b: number) => (b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(0) + ' KB' : (b / 1048576).toFixed(2) + ' MB')
 const loadImg = (src: string) => new Promise<HTMLImageElement>((res, rej) => { const x = new Image(); x.onload = () => res(x); x.onerror = rej; x.src = src })
-
-type Exif = {
-  date?: string; camera?: string; lens?: string; colorSpace?: string
-  aperture?: string; shutter?: string; iso?: string; bias?: string
-  flash?: boolean; wb?: 'auto' | 'manual'; gps?: string
-}
-
-// JPEG EXIF reader — camera/lens, exposure settings, colour space, GPS (best effort).
-async function readExif(file: File): Promise<Exif> {
-  try {
-    if (!/jpe?g/i.test(file.type) && !/\.jpe?g$/i.test(file.name)) return {}
-    const dv = new DataView(await file.slice(0, 262144).arrayBuffer())
-    if (dv.getUint16(0) !== 0xffd8) return {}
-    let off = 2
-    while (off + 4 < dv.byteLength) {
-      const marker = dv.getUint16(off)
-      if ((marker & 0xff00) !== 0xff00) break
-      if (marker === 0xffe1) {
-        const seg = off + 4
-        if (dv.getUint32(seg) !== 0x45786966) return {} // 'Exif'
-        const tiff = seg + 6
-        const le = dv.getUint16(tiff) === 0x4949
-        const u16 = (o: number) => dv.getUint16(o, le)
-        const u32 = (o: number) => dv.getUint32(o, le)
-        const s32 = (o: number) => dv.getInt32(o, le)
-        const ascii = (o: number, c: number) => { let s = ''; for (let i = 0; i < c - 1; i++) { const ch = dv.getUint8(o + i); if (!ch) break; s += String.fromCharCode(ch) } return s.trim() }
-        const SIZE: Record<number, number> = { 1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 7: 1, 9: 4, 10: 8 }
-        type En = { type: number; count: number; e: number }
-        const dir = (ifd: number) => { const out: Record<number, En> = {}; const n = u16(ifd); for (let i = 0; i < n; i++) { const e = ifd + 2 + i * 12; out[u16(e)] = { type: u16(e + 2), count: u32(e + 4), e } } return out }
-        const vo = (en: En) => (en.count * (SIZE[en.type] || 1) <= 4 ? en.e + 8 : tiff + u32(en.e + 8))
-        const rat = (o: number) => { const d = u32(o + 4); return d ? u32(o) / d : 0 }
-        const str = (en?: En) => (en ? ascii(vo(en), en.count) : '')
-        const ex: Exif = {}
-        const ifd0 = dir(tiff + u32(tiff + 4))
-        ex.camera = [str(ifd0[0x010f]), str(ifd0[0x0110])].filter(Boolean).join(' ').trim() || undefined
-
-        if (ifd0[0x8769]) {
-          const x = dir(tiff + u32(vo(ifd0[0x8769])))
-          const d = str(x[0x9003] || x[0x9004])
-          if (d) ex.date = d.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3')
-          ex.lens = str(x[0xa434]) || undefined
-          if (x[0x829d]) ex.aperture = 'f/' + rat(vo(x[0x829d])).toFixed(1).replace(/\.0$/, '')
-          if (x[0x829a]) { const v = rat(vo(x[0x829a])); ex.shutter = v > 0 && v < 1 ? `1/${Math.round(1 / v)} s` : `${(+v.toFixed(1))} s` }
-          if (x[0x8827]) ex.iso = 'ISO ' + u16(vo(x[0x8827]))
-          if (x[0x9204]) { const o = vo(x[0x9204]); const bv = s32(o) / (s32(o + 4) || 1); ex.bias = `${bv > 0 ? '+' : ''}${+bv.toFixed(1)} EV` }
-          if (x[0x9209]) ex.flash = (u16(vo(x[0x9209])) & 1) === 1
-          if (x[0xa403]) ex.wb = u16(vo(x[0xa403])) === 0 ? 'auto' : 'manual'
-          if (x[0xa001]) ex.colorSpace = u16(vo(x[0xa001])) === 1 ? 'sRGB' : 'Uncalibrated'
-        }
-        if (ifd0[0x8825]) {
-          const g = dir(tiff + u32(vo(ifd0[0x8825])))
-          const dms = (en?: En, ref?: string) => { if (!en) return undefined; const o = vo(en); const deg = rat(o) + rat(o + 8) / 60 + rat(o + 16) / 3600; return (ref === 'S' || ref === 'W' ? -deg : deg) }
-          const lat = dms(g[0x0002], str(g[0x0001])); const lon = dms(g[0x0004], str(g[0x0003]))
-          if (lat !== undefined && lon !== undefined) ex.gps = `${lat.toFixed(6)}, ${lon.toFixed(6)}`
-        }
-        return ex
-      }
-      off += 2 + dv.getUint16(off + 2)
-    }
-  } catch { /* ignore */ }
-  return {}
-}
 
 const INTERVALS = [3, 5, 10]
 
