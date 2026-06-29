@@ -26,6 +26,9 @@ export default function SelectSampleOnFocus() {
         (tag === 'INPUT' && TEXT_INPUT_TYPES.has((el as HTMLInputElement).type))
       if (!isField) return
       const field = el as HTMLInputElement | HTMLTextAreaElement
+      // Opt-out: fields holding the user's own content (e.g. the notepad editor) set
+      // data-no-autoselect so the first tap doesn't select everything.
+      if (field.hasAttribute('data-no-autoselect')) return
       if (field.readOnly || field.disabled || seen.has(field)) return
       seen.add(field)
       if (!field.value) return

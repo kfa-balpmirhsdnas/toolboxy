@@ -724,6 +724,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
 
         <textarea
           ref={taRef}
+          data-no-autoselect
           value={text}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
