@@ -3756,6 +3756,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pa_pentools": "Pen tools",
     "pa_zoom": "Zoom",
     "pa_w_thin": "Thin",
     "pa_w_mid": "Medium",

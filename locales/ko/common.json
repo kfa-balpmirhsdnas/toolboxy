@@ -4167,6 +4167,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pa_pentools": "펜 도구",
     "pa_zoom": "확대/축소",
     "pa_w_thin": "가늘게",
     "pa_w_mid": "중간",

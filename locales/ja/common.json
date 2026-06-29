@@ -4140,6 +4140,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "pa_pentools": "ペンツール",
     "pa_zoom": "ズーム",
     "pa_w_thin": "細",
     "pa_w_mid": "中",

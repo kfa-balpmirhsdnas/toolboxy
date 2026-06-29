@@ -58,6 +58,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const [thumbs, setThumbs] = useState<string[]>([])
   const [showThumbs, setShowThumbs] = useState(true)
   const [showSearch, setShowSearch] = useState(false)
+  const [showPenTools, setShowPenTools] = useState(false) // annotation-tool palette toggled by the "pen tools" button
   const [query, setQuery] = useState('')
   const [matches, setMatches] = useState<number[]>([])
   const [matchIdx, setMatchIdx] = useState(0)
@@ -262,6 +263,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   }
 
   const TOOLS: [string, string][] = [['highlight', '🖍️'], ['pen', '✏️'], ['underline', 'U̲'], ['strike', 'S̶'], ['rect', '▭'], ['arrow', '↗'], ['text', '🅰'], ['pan', '✋']]
+  const DRAW_TOOLS = TOOLS.filter(([k]) => k !== 'pan') // shown in the toggled pen-tools palette
+  const activeDrawIcon = DRAW_TOOLS.find(([k]) => k === tool_)?.[1] ?? '🖍️' // the pen-tools toggle mirrors the active drawing tool
 
   if (status === 'idle' || status === 'loading' || status === 'error') {
     return (
@@ -286,33 +289,18 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-3">
-        {/* Toolbar — single row on desktop (wraps on narrow screens) */}
+        {/* Top toolbar: thumbnails · pen-tools toggle · move · undo · clear · zoom · fullscreen · find */}
         <div className="flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2">
-          {/* Thumbnail-panel toggle — far left, before the highlighter */}
           <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>◧</button>
           <span className="w-px h-6 bg-gray-300 mx-0.5" />
-          {TOOLS.map(([k, icon]) => (
-            <button key={k} title={t('pa_' + k)} onClick={() => setTool(k)}
-              className={'w-9 h-9 rounded-lg text-sm font-bold ' + (tool_ === k ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}>{icon}</button>
-          ))}
-          <span className="w-px h-6 bg-gray-300 mx-0.5" />
-          {/* Colour — select box only (the option shows a coloured dot) */}
-          <select value={color} onChange={(e) => setColor(e.target.value)} title={t('pa_color')} aria-label={t('pa_color')}
-            className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
-            {COLORS.map((c) => <option key={c} value={c}>{COLOR_LABEL[c]}</option>)}
-          </select>
-          {/* Stroke width — select box (thin / medium / thick) */}
-          <select value={penW} onChange={(e) => setPenW(+e.target.value)} title={t('pa_width')} aria-label={t('pa_width')}
-            className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
-            <option value={2}>{t('pa_w_thin')}</option>
-            <option value={4}>{t('pa_w_mid')}</option>
-            <option value={8}>{t('pa_w_thick')}</option>
-          </select>
+          {/* Pen tools — opens the annotation palette below; mirrors the active drawing tool */}
+          <button onClick={() => setShowPenTools((s) => !s)} title={t('pa_pentools')} aria-label={t('pa_pentools')}
+            className={'h-9 px-2 rounded-lg text-sm flex items-center gap-1 ' + (showPenTools ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>{activeDrawIcon}<span className="text-xs">{showPenTools ? '▲' : '▼'}</span></button>
+          <button onClick={() => setTool('pan')} title={t('pa_pan')} aria-label={t('pa_pan')} className={'w-9 h-9 rounded-lg text-sm ' + (tool_ === 'pan' ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 hover:bg-gray-100')}>✋</button>
           <span className="w-px h-6 bg-gray-300 mx-0.5" />
           <button onClick={undo} title={t('pa_undo')} aria-label={t('pa_undo')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">↩</button>
           <button onClick={clearPage} title={t('pa_clear')} aria-label={t('pa_clear')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">🗑</button>
           <span className="w-px h-6 bg-gray-300 mx-0.5" />
-          {/* Zoom — select box */}
           <select value={String(scale)} onChange={(e) => setScale(+e.target.value)} title={t('pa_zoom')} aria-label={t('pa_zoom')}
             className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
             {(ZOOMS.includes(scale) ? ZOOMS : [scale, ...ZOOMS]).sort((a, b) => a - b).map((z) => <option key={z} value={z}>{Math.round(z * 100)}%</option>)}
@@ -320,6 +308,27 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           <button onClick={() => stageRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
           <button onClick={() => setShowSearch((s) => !s)} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔍</button>
         </div>
+
+        {/* Pen-tools palette — revealed by the pen-tools button: drawing tools + colour + width */}
+        {showPenTools && (
+          <div className="flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2">
+            {DRAW_TOOLS.map(([k, icon]) => (
+              <button key={k} title={t('pa_' + k)} onClick={() => setTool(k)}
+                className={'w-9 h-9 rounded-lg text-sm font-bold ' + (tool_ === k ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}>{icon}</button>
+            ))}
+            <span className="w-px h-6 bg-gray-300 mx-0.5" />
+            <select value={color} onChange={(e) => setColor(e.target.value)} title={t('pa_color')} aria-label={t('pa_color')}
+              className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
+              {COLORS.map((c) => <option key={c} value={c}>{COLOR_LABEL[c]}</option>)}
+            </select>
+            <select value={penW} onChange={(e) => setPenW(+e.target.value)} title={t('pa_width')} aria-label={t('pa_width')}
+              className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
+              <option value={2}>{t('pa_w_thin')}</option>
+              <option value={4}>{t('pa_w_mid')}</option>
+              <option value={8}>{t('pa_w_thick')}</option>
+            </select>
+          </div>
+        )}
 
         {/* Thumbnails on top (mobile) / left column (desktop) */}
         <div className="flex flex-col md:flex-row gap-3">
