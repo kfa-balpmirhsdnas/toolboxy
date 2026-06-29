@@ -75,17 +75,15 @@ export default function PasswordGeneratorPage({ params }: { params: { lang: stri
             </button>
           </div>
         )}
-        {strength && (
-          <div>
-            <div className="flex justify-between text-xs mb-1">
-              <span className="text-gray-500">{t('pg_strength')}</span>
-              <span className={`font-semibold ${strength.color}`}>{strength.label}</span>
-            </div>
-            <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-              <div className={`h-full rounded-full transition-all ${strength.width} ${strength.bg}`} />
-            </div>
+        <div>
+          <div className="flex justify-between text-xs mb-1">
+            <span className="text-gray-500">{t('pg_strength')}</span>
+            <span className={`font-semibold ${strength ? strength.color : 'text-gray-300'}`}>{strength ? strength.label : '—'}</span>
           </div>
-        )}
+          <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+            <div className={`h-full rounded-full transition-all ${strength ? `${strength.width} ${strength.bg}` : 'w-0'}`} />
+          </div>
+        </div>
         <div>
           <div className="flex justify-between text-sm text-gray-700 mb-2"><span>{t('pg_length')}</span><span className="font-semibold">{length}</span></div>
           <input type="range" min={8} max={64} value={length} onChange={(e) => setLength(Number(e.target.value))} className="w-full accent-brand-600" />

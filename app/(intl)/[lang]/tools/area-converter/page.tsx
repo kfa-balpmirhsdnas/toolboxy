@@ -25,7 +25,7 @@ const DEFAULTS: Record<string, { unit: string; value: string }> = {
 // Frequently-used sizes per locale: ko 평 / ja 坪 (same 3.3㎡ unit), en square feet.
 const PRESETS: Record<string, { unit: string; values: number[] }> = {
   ko: { unit: 'pyeong', values: [18, 24, 25, 32, 34, 40] },
-  ja: { unit: 'pyeong', values: [15, 20, 25, 30, 40, 50] },
+  ja: { unit: 'sqm', values: [25, 40, 55, 70, 85, 100] },
   en: { unit: 'sqft', values: [500, 750, 1000, 1500, 2000, 2500] },
 }
 
@@ -89,7 +89,7 @@ export default function AreaConverterPage() {
               <button key={p} onClick={() => { setUnit(PRESETS[lang].unit); setValue(String(p)) }}
                 className="rounded-xl border border-gray-200 bg-white px-2 py-2 text-center hover:border-brand-300 hover:bg-brand-50">
                 <div className="font-bold text-gray-800">{p}{sym(PRESETS[lang].unit)}</div>
-                <div className="text-xs text-gray-500 font-mono">{fmt(p * (UNITS.find((u) => u.k === PRESETS[lang].unit)?.f ?? 1), 1)}㎡</div>
+                <div className="text-xs text-gray-500 font-mono">{PRESETS[lang].unit === 'sqm' ? `${fmt(p / 3.3057851, 1)}${lang === 'ja' ? '坪' : '평'}` : `${fmt(p * (UNITS.find((u) => u.k === PRESETS[lang].unit)?.f ?? 1), 1)}㎡`}</div>
               </button>
             ))}
           </div>
