@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import Modal from '@/components/Modal'
 import { sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -246,7 +247,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
         <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[260px] rounded-2xl bg-white p-4 shadow-xl space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-gray-900">{t('td_edit_title')}</h2>
-            <button onClick={() => setEditing(null)} aria-label={t('td_close')} className="w-7 h-7 rounded-full hover:bg-gray-100 text-gray-400 text-lg leading-none">×</button>
+            <button onClick={() => setEditing(null)} aria-label={t('td_close')} className="w-7 h-7 inline-flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400"><ToolIcon name="x" className="w-4 h-4" /></button>
           </div>
           <div>
             <span className="text-[11px] font-semibold text-gray-500">{t('td_field_list')}</span>

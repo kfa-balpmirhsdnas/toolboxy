@@ -702,7 +702,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             <button onClick={replaceOne} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-white disabled:opacity-40">{t('np_replace_btn')}</button>
             <button onClick={replaceAll} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-40"><span className="sm:hidden">{t('np_all_short')}</span><span className="hidden sm:inline">{t('np_replace_all')}</span></button>
             {matchInfo && <span className="text-xs text-gray-500">{matchInfo}</span>}
-            <button onClick={() => { setShowFind(false); setFindQ(''); setReplaceQ(''); setMatchInfo('') }} aria-label={t('ui_clear')} className="ml-auto text-gray-400 hover:text-gray-700 text-lg leading-none px-1">×</button>
+            <button onClick={() => { setShowFind(false); setFindQ(''); setReplaceQ(''); setMatchInfo('') }} aria-label={t('ui_clear')} className="ml-auto inline-flex items-center justify-center text-gray-400 hover:text-gray-700 px-1"><ToolIcon name="x" className="w-4 h-4" /></button>
           </div>
         )}
 
@@ -710,7 +710,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           <div className="rounded-xl bg-gray-50 border border-gray-200 p-2">
             <div className="flex items-center justify-between px-1 pb-1.5">
               <span className="text-xs text-gray-500">{t('np_symbols')}</span>
-              <button onClick={() => setShowChars(false)} aria-label={t('ui_clear')} className="text-gray-400 hover:text-gray-700 text-lg leading-none px-1">×</button>
+              <button onClick={() => setShowChars(false)} aria-label={t('ui_clear')} className="inline-flex items-center justify-center text-gray-400 hover:text-gray-700 px-1"><ToolIcon name="x" className="w-4 h-4" /></button>
             </div>
             <div className="flex flex-wrap gap-0.5 max-h-44 overflow-y-auto">
               {CHARS.map((c) => (

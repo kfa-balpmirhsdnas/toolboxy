@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { COUNTRIES, flag, cName, capName, type Country } from '@/lib/countries'
 
@@ -57,7 +58,7 @@ export default function CapitalQuizPage({ params }: { params: { lang: string } }
           })}
         </div>
 
-        {picked && <button onClick={next} className="px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{t('pq_next')} →</button>}
+        {picked && <button onClick={next} className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700">{t('pq_next')}<ToolIcon name="chevron-right" className="w-4 h-4" /></button>}
         <p className="text-sm text-gray-500">{t('pq_score')}: <b className="text-gray-800">{score} / {total}</b></p>
       </div>
     </ToolLayout>

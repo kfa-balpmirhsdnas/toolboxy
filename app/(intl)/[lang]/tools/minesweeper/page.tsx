@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
+import ToolIcon from '@/components/tools/ToolIcon'
 import Leaderboard from '@/components/tools/Leaderboard'
 import { useGameStage, GameStageOverlay , SoundToggle, sfx } from '@/components/tools/GameStage'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -103,7 +104,7 @@ export default function MinesweeperPage({ params }: { params: { lang: string } }
         </div>
 
         <div className="flex justify-center gap-2">
-          <button onClick={() => setFlagMode((v) => !v)} className={`px-4 py-2 text-sm rounded-xl border-2 ${flagMode ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}>🚩 {t('ms_flagmode')}</button>
+          <button onClick={() => setFlagMode((v) => !v)} className={`inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm rounded-xl border-2 ${flagMode ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500'}`}><ToolIcon name="flag" className="w-4 h-4" />{t('ms_flagmode')}</button>
           <button onClick={stage.begin} className="px-4 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t('ms_new')}</button>
         </div>
         <p className="text-xs text-gray-400">{t('ms_note')}</p>

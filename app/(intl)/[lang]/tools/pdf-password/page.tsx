@@ -93,7 +93,7 @@ export default function PdfPasswordPage({ params }: { params: { lang: string } }
                 <input type={show ? 'text' : 'password'} value={pw} onChange={(e) => { setPw(e.target.value); setOut(null); setError('') }}
                   onKeyDown={(e) => { if (e.key === 'Enter') run() }} autoComplete="off"
                   className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-brand-400" />
-                <button onClick={() => setShow((s) => !s)} className="px-3 py-2 text-gray-400 hover:text-gray-600" aria-label="show/hide">{show ? '🙈' : '👁'}</button>
+                <button onClick={() => setShow((s) => !s)} className="inline-flex items-center justify-center px-3 py-2 text-gray-400 hover:text-gray-600" aria-label="show/hide">{show ? <ToolIcon name="eye-off" className="w-4 h-4" /> : <ToolIcon name="eye" className="w-4 h-4" />}</button>
               </div>
             </div>
             {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl p-3">{error}</p>}

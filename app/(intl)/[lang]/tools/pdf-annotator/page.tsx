@@ -481,12 +481,12 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
                 placeholder={t('pa_search')} className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-400" />
               {query && (matches.length ? (
                 <span className="flex items-center gap-1 text-gray-500 shrink-0">
-                  <button onClick={() => jumpMatch(-1)} className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200">‹</button>
+                  <button onClick={() => jumpMatch(-1)} aria-label="prev match" className="inline-flex items-center justify-center px-2 py-1 rounded bg-gray-100 hover:bg-gray-200"><ToolIcon name="chevron-left" className="w-4 h-4" /></button>
                   {matchIdx + 1}/{matches.length}
-                  <button onClick={() => jumpMatch(1)} className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200">›</button>
+                  <button onClick={() => jumpMatch(1)} aria-label="next match" className="inline-flex items-center justify-center px-2 py-1 rounded bg-gray-100 hover:bg-gray-200"><ToolIcon name="chevron-right" className="w-4 h-4" /></button>
                 </span>
               ) : <span className="text-gray-400 shrink-0">{t('pa_nomatch')}</span>)}
-              <button onClick={() => setShowSearch(false)} aria-label="close" className="text-gray-400 hover:text-gray-700 text-lg leading-none px-1 shrink-0">×</button>
+              <button onClick={() => setShowSearch(false)} aria-label="close" className="inline-flex items-center justify-center text-gray-400 hover:text-gray-700 px-1 shrink-0"><ToolIcon name="x" className="w-4 h-4" /></button>
             </div>
           )}
         </div>

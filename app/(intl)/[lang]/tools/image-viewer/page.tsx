@@ -300,8 +300,8 @@ export default function ImageViewerPage() {
       )}
       {images.length > 1 && !cropMode && (
         <>
-          <button onClick={() => go(-1)} className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label={t('iv_prev')}>‹</button>
-          <button onClick={() => go(1)} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white text-xl hover:bg-black/60 flex items-center justify-center" aria-label={t('iv_next')}>›</button>
+          <button onClick={() => go(-1)} className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-black/60 flex items-center justify-center" aria-label={t('iv_prev')}><ToolIcon name="chevron-left" className="w-6 h-6" /></button>
+          <button onClick={() => go(1)} className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-black/60 flex items-center justify-center" aria-label={t('iv_next')}><ToolIcon name="chevron-right" className="w-6 h-6" /></button>
         </>
       )}
       {showInfo && (
