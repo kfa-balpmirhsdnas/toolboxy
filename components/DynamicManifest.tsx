@@ -29,8 +29,12 @@ export default function DynamicManifest() {
         link.rel = 'manifest'
         document.head.appendChild(link)
       }
-      // Title is "<Tool name> – <subtitle> | ToolBoxy"; keep just the tool name.
-      const label = (document.title || '').split(/\s+[–—|]\s+/)[0].trim()
+      // Prefer the tool name the server already put in the manifest link (from toolNames).
+      // Otherwise a tool with a long, keyword-rich SEO <title> would become the app name.
+      // Fall back to the first segment of the page title for pages with no server name.
+      const cur = link.getAttribute('href') || ''
+      const serverName = cur.includes('?') ? new URLSearchParams(cur.slice(cur.indexOf('?') + 1)).get('name') : null
+      const label = serverName || (document.title || '').split(/\s+[–—|·]\s+/)[0].trim()
       const params = new URLSearchParams({ start: pathname || '/en' })
       if (label && label.toLowerCase() !== 'toolboxy') params.set('name', label)
       // No &icon: a dynamic SVG-with-text icon breaks Android WebAPK minting.
