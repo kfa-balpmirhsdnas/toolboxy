@@ -80,7 +80,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const annosRef = useRef<Anno[]>([]); annosRef.current = annos
 
   async function openFile(f: File) {
-    if (!f || f.type !== 'application/pdf') return
+    if (!f) return
+    if (f.type !== 'application/pdf' && !/\.pdf$/i.test(f.name)) { setStatus('error'); return } // not a PDF → show the error instead of doing nothing
     setStatus('loading'); setFileName(f.name.replace(/\.pdf$/i, '') || 'annotated')
     try {
       const buf = await f.arrayBuffer()
@@ -127,6 +128,22 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     /* eslint-enable @typescript-eslint/no-explicit-any */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // On load, default the zoom so the page fits the viewer width (PC + mobile).
+  useEffect(() => {
+    if (status !== 'ready' || !pdfRef.current) return
+    let cancel = false
+    ;(async () => {
+      try {
+        const pg = await pdfRef.current!.getPage(1)
+        const vp = pg.getViewport({ scale: 1 })
+        if (cancel) return
+        const avail = (stageRef.current?.clientWidth || 720) - 32 // minus the p-4 padding
+        setScale(+Math.max(0.4, Math.min(3, avail / vp.width)).toFixed(2))
+      } catch { /* keep default */ }
+    })()
+    return () => { cancel = true }
+  }, [status])
 
   useEffect(() => { if (status === 'ready') renderPage(page, scale) }, [status, page, scale, renderPage])
   useEffect(() => { if (status === 'ready') drawAll(page, scale) }, [annos, page, scale, status, drawAll])
@@ -250,7 +267,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             {status === 'error' && <p className="text-sm text-red-500 mt-3">{t('pa_error')}</p>}
           </div>
           <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 text-center">🔒 {t('pa_local')}</p>
-          <input ref={fileInput} type="file" accept="application/pdf" className="hidden" onChange={(e) => e.target.files?.[0] && openFile(e.target.files[0])} />
+          <input ref={fileInput} type="file" accept="application/pdf" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.currentTarget.value = ''; if (f) openFile(f) }} />
         </div>
       </ToolLayout>
     )
@@ -259,44 +276,38 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-3">
-        {/* Toolbar */}
-        <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-gray-200 bg-gray-50 p-2">
+        {/* Toolbar — single row on desktop (wraps on narrow screens) */}
+        <div className="flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-2">
+          {/* Thumbnail-panel toggle — far left, before the highlighter */}
+          <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'w-9 h-9 rounded-lg ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>◧</button>
+          <span className="w-px h-6 bg-gray-300 mx-0.5" />
           {TOOLS.map(([k, icon]) => (
             <button key={k} title={t('pa_' + k)} onClick={() => setTool(k)}
               className={'w-9 h-9 rounded-lg text-sm font-bold ' + (tool_ === k ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}>{icon}</button>
           ))}
-          <span className="w-px h-6 bg-gray-300 mx-1" />
-          {/* Colour — select box with a colour swatch beside it */}
-          <span className="inline-block w-5 h-5 rounded-full border border-gray-300 shrink-0" style={{ background: color }} aria-hidden="true" />
+          <span className="w-px h-6 bg-gray-300 mx-0.5" />
+          {/* Colour — select box only (the option shows a coloured dot) */}
           <select value={color} onChange={(e) => setColor(e.target.value)} title={t('pa_color')} aria-label={t('pa_color')}
             className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
             {COLORS.map((c) => <option key={c} value={c}>{COLOR_LABEL[c]}</option>)}
           </select>
-          {/* Stroke width — select box */}
-          <select value={penW} onChange={(e) => setPenW(+e.target.value)} title={t('pa_width')} aria-label={t('pa_width')}
-            className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
-            {WIDTHS.map((w) => <option key={w} value={w}>{w}px</option>)}
-          </select>
-          <span className="w-px h-6 bg-gray-300 mx-1" />
+          {/* Stroke width — buttons showing the actual line thickness */}
+          {WIDTHS.map((w) => (
+            <button key={w} onClick={() => setPenW(w)} title={t('pa_width')} aria-label={t('pa_width')}
+              className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (penW === w ? 'bg-brand-100' : 'bg-white border border-gray-200 hover:bg-gray-100')}>
+              <span style={{ width: 18, height: w, borderRadius: 9999, background: '#374151', display: 'block' }} />
+            </button>
+          ))}
+          <span className="w-px h-6 bg-gray-300 mx-0.5" />
           <button onClick={undo} title={t('pa_undo')} aria-label={t('pa_undo')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">↩</button>
           <button onClick={clearPage} title={t('pa_clear')} aria-label={t('pa_clear')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-base hover:bg-gray-100">🗑</button>
-        </div>
-
-        {/* View controls */}
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <button onClick={() => setShowThumbs((s) => !s)} title={t('pa_thumbs')} aria-label={t('pa_thumbs')} className={'px-2.5 py-1.5 rounded-lg ' + (showThumbs ? 'bg-brand-100 text-brand-700' : 'bg-gray-100 hover:bg-gray-200')}>◧</button>
-          <span className="w-px h-5 bg-gray-300" />
-          <button onClick={() => setPage((p) => Math.max(1, p - 1))} title={t('pa_page')} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">◀</button>
-          <span className="tabular-nums"><input type="number" min={1} max={numPages} value={page} onChange={(e) => setPage(Math.min(numPages, Math.max(1, +e.target.value || 1)))} className="w-14 text-center border border-gray-300 rounded px-1 py-0.5" /> / {numPages}</span>
-          <button onClick={() => setPage((p) => Math.min(numPages, p + 1))} title={t('pa_page')} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">▶</button>
-          <span className="w-px h-5 bg-gray-300" />
-          <button onClick={() => setScale((s) => Math.max(0.5, +(s - 0.2).toFixed(2)))} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">−</button>
-          <span className="tabular-nums w-12 text-center">{Math.round(scale * 100)}%</span>
-          <button onClick={() => setScale((s) => Math.min(3, +(s + 0.2).toFixed(2)))} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">+</button>
-          <button onClick={() => stageRef.current?.requestFullscreen?.()} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200" title={t('pa_fullscreen')}>⛶</button>
-          <button onClick={() => setShowSearch((s) => !s)} title={t('pa_search')} aria-label={t('pa_search')} className={'px-2.5 py-1.5 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-gray-100 hover:bg-gray-200')}>🔍</button>
-          <button onClick={download} disabled={exporting} className="ml-auto px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-700 disabled:opacity-60">{exporting ? t('pa_exporting') : '⬇ ' + t('pa_download')}</button>
-          <button onClick={() => { setStatus('idle'); pdfRef.current = null }} className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">{t('pa_newfile')}</button>
+          <span className="w-px h-6 bg-gray-300 mx-0.5" />
+          {/* Zoom / fullscreen / find — moved up so the menu is one row */}
+          <button onClick={() => setScale((s) => Math.max(0.4, +(s - 0.2).toFixed(2)))} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-base">−</button>
+          <span className="tabular-nums text-sm w-12 text-center">{Math.round(scale * 100)}%</span>
+          <button onClick={() => setScale((s) => Math.min(3, +(s + 0.2).toFixed(2)))} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-base">+</button>
+          <button onClick={() => stageRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 hover:bg-gray-100">⛶</button>
+          <button onClick={() => setShowSearch((s) => !s)} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 hover:bg-gray-100')}>🔍</button>
         </div>
 
         <div className="flex gap-3">
@@ -320,6 +331,15 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
                 onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerLeave={onUp} />
             </div>
           </div>
+        </div>
+
+        {/* Bottom bar — page navigation + download + new file */}
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <button onClick={() => setPage((p) => Math.max(1, p - 1))} title={t('pa_page')} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">◀</button>
+          <span className="tabular-nums"><input type="number" min={1} max={numPages} value={page} onChange={(e) => setPage(Math.min(numPages, Math.max(1, +e.target.value || 1)))} className="w-14 text-center border border-gray-300 rounded px-1 py-0.5" /> / {numPages}</span>
+          <button onClick={() => setPage((p) => Math.min(numPages, p + 1))} title={t('pa_page')} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">▶</button>
+          <button onClick={download} disabled={exporting} className="ml-auto px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-700 disabled:opacity-60">{exporting ? t('pa_exporting') : '⬇ ' + t('pa_download')}</button>
+          <button onClick={() => { setStatus('idle'); pdfRef.current = null }} className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200">{t('pa_newfile')}</button>
         </div>
 
         {/* Find bar (editor-style: toggled by the 🔍 button, sits at the bottom) */}
