@@ -113,6 +113,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const tracked = useRef(false)
   const taRef = useRef<HTMLTextAreaElement>(null)
   const pendingSel = useRef<{ s: number; e: number } | null>(null) // caret/range to restore after a programmatic text change commits
+  const caretRef = useRef({ s: 0, e: 0 }) // caret saved on leave, restored when the window/tab returns (PC)
   const wrapRef = useRef<HTMLDivElement>(null)
   const tabBarRef = useRef<HTMLDivElement>(null)
   const histories = useRef<Record<string, { hist: string[]; idx: number }>>({ [first.id]: { hist: [''], idx: 0 } })
@@ -238,15 +239,18 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   // glyph) lives in textarea.value before React state commits it, so this captures
   // it for any other open instance. Goes through the same merge, so it's safe and
   // a no-op when nothing changed.
-  function flushNow() {
+  function flushNow(liveVal?: string) {
     try {
       const el = taRef.current
       const aid = activeIdRef.current
       let docs = docsRef.current
       if (el) {
-        const live = el.value
+        // Prefer the value captured BEFORE blur (composing char is still in it). Never
+        // overwrite the current state with a SHORTER value — that only happens when blur
+        // reverted an in-progress IME composition, so it would drop the last character.
+        const live = typeof liveVal === 'string' ? liveVal : el.value
         const cur = docs.find((d) => d.id === aid)
-        if (cur && cur.text !== live) {
+        if (cur && cur.text !== live && live.length >= cur.text.length) {
           docs = docs.map((d) => (d.id === aid ? { ...d, text: live, updatedAt: Date.now() } : d))
           docsRef.current = docs
           setDocs(docs)
@@ -266,15 +270,34 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     // Blur the editor first so an in-progress IME composition (the last char) is
     // committed into textarea.value before we read & save it — otherwise that last
     // character can get dropped when focus is lost.
-    const onLeave = () => { taRef.current?.blur(); flushNow() }
-    const onHide = () => { if (document.visibilityState === 'hidden') onLeave() }
+    const pc = typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches // mouse device = PC
+    const onLeave = () => {
+      const el = taRef.current
+      if (el) caretRef.current = { s: el.selectionStart, e: el.selectionEnd } // save caret before blur
+      const live = el?.value // capture the value BEFORE blur (keeps the composing last char)
+      el?.blur()
+      flushNow(live)
+    }
+    // PC only: when the window/tab comes back, refocus the editor and restore the caret —
+    // unless the user is in another field (tab rename / find). Mobile is skipped to avoid
+    // popping up the on-screen keyboard.
+    const onShow = () => {
+      if (!pc) return
+      const ae = document.activeElement
+      if (ae && ae !== document.body && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA') && ae !== taRef.current) return
+      const ta = taRef.current; if (!ta) return
+      ta.focus(); try { ta.setSelectionRange(caretRef.current.s, caretRef.current.e) } catch { /* ignore */ }
+    }
+    const onVis = () => { if (document.visibilityState === 'hidden') onLeave(); else onShow() }
     window.addEventListener('blur', onLeave)
+    window.addEventListener('focus', onShow)
     window.addEventListener('pagehide', onLeave)
-    document.addEventListener('visibilitychange', onHide)
+    document.addEventListener('visibilitychange', onVis)
     return () => {
       window.removeEventListener('blur', onLeave)
+      window.removeEventListener('focus', onShow)
       window.removeEventListener('pagehide', onLeave)
-      document.removeEventListener('visibilitychange', onHide)
+      document.removeEventListener('visibilitychange', onVis)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.lang])
@@ -704,7 +727,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           value={text}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
-          onCompositionEnd={flushNow}
+          onCompositionEnd={() => flushNow()}
           // Clicking/tapping into the editor closes the symbol palette. PointerDown (not
           // focus) so inserting a symbol — which programmatically refocuses — keeps it open.
           onPointerDown={() => { if (showChars) setShowChars(false) }}
