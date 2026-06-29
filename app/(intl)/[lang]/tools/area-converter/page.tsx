@@ -22,7 +22,12 @@ const PRIMARY: Record<string, string> = { ko: 'sqm', ja: 'sqm', en: 'sqft' }
 const DEFAULTS: Record<string, { unit: string; value: string }> = {
   ko: { unit: 'pyeong', value: '32' }, ja: { unit: 'pyeong', value: '30' }, en: { unit: 'sqm', value: '100' },
 }
-const COMMON_PYEONG = [18, 24, 25, 32, 34, 40]
+// Frequently-used sizes per locale: ko 평 / ja 坪 (same 3.3㎡ unit), en square feet.
+const PRESETS: Record<string, { unit: string; values: number[] }> = {
+  ko: { unit: 'pyeong', values: [18, 24, 25, 32, 34, 40] },
+  ja: { unit: 'pyeong', values: [15, 20, 25, 30, 40, 50] },
+  en: { unit: 'sqft', values: [500, 750, 1000, 1500, 2000, 2500] },
+}
 
 export default function AreaConverterPage() {
   const t = useTranslations('toolui')
@@ -80,11 +85,11 @@ export default function AreaConverterPage() {
         <div>
           <h2 className="text-sm font-semibold text-gray-700 mb-2">{t('ac_quick')}</h2>
           <div className="grid grid-cols-3 gap-2">
-            {COMMON_PYEONG.map((p) => (
-              <button key={p} onClick={() => { setUnit('pyeong'); setValue(String(p)) }}
+            {PRESETS[lang].values.map((p) => (
+              <button key={p} onClick={() => { setUnit(PRESETS[lang].unit); setValue(String(p)) }}
                 className="rounded-xl border border-gray-200 bg-white px-2 py-2 text-center hover:border-brand-300 hover:bg-brand-50">
-                <div className="font-bold text-gray-800">{p}{sym('pyeong')}</div>
-                <div className="text-xs text-gray-500 font-mono">{fmt(p * 3.3057851, 1)}㎡</div>
+                <div className="font-bold text-gray-800">{p}{sym(PRESETS[lang].unit)}</div>
+                <div className="text-xs text-gray-500 font-mono">{fmt(p * (UNITS.find((u) => u.k === PRESETS[lang].unit)?.f ?? 1), 1)}㎡</div>
               </button>
             ))}
           </div>
