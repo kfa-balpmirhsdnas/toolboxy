@@ -39,21 +39,23 @@ export default function PasswordGeneratorPage({ params }: { params: { lang: stri
   const [count, setCount] = useState(1)
   const [passwords, setPasswords] = useState<string[]>([])
 
-  const generate = useCallback(() => {
+  const gen = useCallback((len: number) => {
     let charset = ''
     if (options.uppercase) charset += CHARSETS.uppercase
     if (options.lowercase) charset += CHARSETS.lowercase
     if (options.numbers) charset += CHARSETS.numbers
     if (options.symbols) charset += CHARSETS.symbols
     if (!charset) return
-    const arr = new Uint32Array(length)
+    const arr = new Uint32Array(len)
     const generated = []
     for (let i = 0; i < count; i++) {
       crypto.getRandomValues(arr)
       generated.push(Array.from(arr).map((n) => charset[n % charset.length]).join(''))
     }
     setPassword(generated[0]); setPasswords(generated); setCopied(false)
-  }, [length, options, count])
+  }, [options, count])
+  const generate = useCallback(() => gen(length), [gen, length])
+  const PRESETS = [8, 12, 16, 24, 32, 64]
 
   async function copy(pw: string) {
     await navigator.clipboard.writeText(pw)
@@ -87,6 +89,14 @@ export default function PasswordGeneratorPage({ params }: { params: { lang: stri
         <div>
           <div className="flex justify-between text-sm text-gray-700 mb-2"><span>{t('pg_length')}</span><span className="font-semibold">{length}</span></div>
           <input type="range" min={8} max={64} value={length} onChange={(e) => setLength(Number(e.target.value))} className="w-full accent-brand-600" />
+          <div className="mt-2 grid grid-cols-6 gap-1.5">
+            {PRESETS.map((n) => (
+              <button key={n} onClick={() => { setLength(n); gen(n) }}
+                className={'py-1.5 rounded-lg text-sm font-medium border transition-colors ' + (length === n ? 'bg-brand-600 text-white border-brand-600' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-400 hover:bg-brand-50')}>
+                {n}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-2">
           {(Object.keys(options) as Array<keyof typeof options>).map((key) => (
