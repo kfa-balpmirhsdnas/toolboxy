@@ -82,6 +82,8 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
   const drawing = useRef(false)
   const draftRef = useRef<Anno | null>(null)
   const renderTok = useRef(0)
+  const flipLock = useRef(0) // cooldown so one wheel/swipe past a page edge flips only once
+  const flipPending = useRef<'top' | 'bottom' | null>(null) // where to land after a page flip (next→top, prev→bottom)
 
   const idRef = useRef(1)
   const annosRef = useRef<Anno[]>([]); annosRef.current = annos
@@ -121,6 +123,9 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     await pg.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise
     if (tok !== renderTok.current) return
     drawAll(n, sc)
+    // continuous scroll: after a page flip, land at the top (next page) or bottom (prev page)
+    const fp = flipPending.current; flipPending.current = null
+    if (fp && stageRef.current) stageRef.current.scrollTop = fp === 'bottom' ? stageRef.current.scrollHeight : 0
   }, [])
 
   const drawAll = useCallback((n: number, sc: number) => {
@@ -170,6 +175,40 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     })()
     return () => { cancel = true }
   }, [status])
+
+  // Continuous-scroll feel: scrolling past the bottom edge flips to the next page (landing
+  // at its top), past the top edge flips to the previous page (landing at its bottom).
+  // Wheel works for any tool; touch-swipe only with the pan tool (drawing tools use touch).
+  useEffect(() => {
+    const el = stageRef.current
+    if (!el || status !== 'ready') return
+    const EDGE = 2, COOL = 500
+    const flip = (dir: 1 | -1) => {
+      const now = Date.now(); if (now - flipLock.current < COOL) return
+      const np = page + dir; if (np < 1 || np > numPages) return
+      flipLock.current = now
+      flipPending.current = dir > 0 ? 'top' : 'bottom'
+      setPage(np)
+    }
+    const atBottom = () => el.scrollTop + el.clientHeight >= el.scrollHeight - EDGE
+    const atTop = () => el.scrollTop <= EDGE
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY > 0 && atBottom() && page < numPages) { e.preventDefault(); flip(1) }
+      else if (e.deltaY < 0 && atTop() && page > 1) { e.preventDefault(); flip(-1) }
+    }
+    let ty: number | null = null
+    const onTouchStart = (e: TouchEvent) => { ty = e.touches[0]?.clientY ?? null }
+    const onTouchMove = (e: TouchEvent) => {
+      if (ty == null || tool_ !== 'pan') return
+      const dy = ty - (e.touches[0]?.clientY ?? ty) // + = swipe up (scroll down)
+      if (dy > 60 && atBottom() && page < numPages) { flip(1); ty = e.touches[0].clientY }
+      else if (dy < -60 && atTop() && page > 1) { flip(-1); ty = e.touches[0].clientY }
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchmove', onTouchMove, { passive: true })
+    return () => { el.removeEventListener('wheel', onWheel); el.removeEventListener('touchstart', onTouchStart); el.removeEventListener('touchmove', onTouchMove) }
+  }, [status, page, numPages, tool_])
 
   // Import a PDF dropped ANYWHERE on the page (the small drop box alone made dropping
   // elsewhere open the PDF in the browser instead). preventDefault stops that navigation.
