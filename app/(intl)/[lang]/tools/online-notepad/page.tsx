@@ -622,7 +622,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                   <span className="max-w-[10rem] truncate">{d.name}</span>
                 )}
                 <button onClick={(e) => { e.stopPropagation(); closeDoc(d.id) }} aria-label={t('np_closetab')}
-                  className={'hover:text-red-500 text-base leading-none ' + (d.text.trim() ? 'text-gray-300' : 'text-gray-400')}>×</button>
+                  className={'hover:text-red-500 text-base leading-none ' + (d.text.trim() ? 'text-gray-400' : 'text-red-300')}>×</button>
               </div>
             )
           })}
@@ -691,9 +691,12 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={'text-xs font-medium transition-colors ' + (savedAt ? 'text-green-600' : 'text-gray-400')}>
-              {savedAt ? `✓ ${t('np_autosaved')} ${savedAt}` : t('np_saving')}
-            </span>
+            {/* Only show the save status once the tab actually has content (a fresh empty tab has nothing saved). */}
+            {text && (
+              <span className={'text-xs font-medium transition-colors ' + (savedAt ? 'text-green-600' : 'text-gray-400')}>
+                {savedAt ? `✓ ${t('np_autosaved')} ${savedAt}` : t('np_saving')}
+              </span>
+            )}
           </div>
         </div>
 
