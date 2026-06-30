@@ -490,13 +490,21 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   // native scroll otherwise overshoots past it). Desktop scrolls immediately.
   function scrollBoxTop() {
     // Scroll the tool card to just under the sticky header (its scroll-mt-16). Instant — a
-    // smooth scroll gets cancelled by the keyboard. One scroll only, after the keyboard has
-    // opened, so it lands cleanly without overshooting.
+    // smooth scroll gets cancelled by the keyboard.
     const el = wrapRef.current?.closest('.bg-white.rounded-2xl') as HTMLElement | null; if (!el) return
-    // Decide by INPUT type, not width: a touch device (incl. the wide-screen Galaxy Z Fold)
-    // pops a keyboard and needs the longer wait; a mouse device scrolls right away.
-    const touch = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches
-    setTimeout(() => el.scrollIntoView({ block: 'start' }), touch ? 350 : 60)
+    const go = () => el.scrollIntoView({ block: 'start' })
+    // Mouse devices have no keyboard — scroll right away.
+    if (!window.matchMedia?.('(pointer: coarse)').matches) { setTimeout(go, 60); return }
+    // Touch devices (any width, incl. the wide-screen Galaxy Z Fold): the on-screen keyboard
+    // resizes the visual viewport over a few frames. A fixed delay either fires too early
+    // (lands short) or too late — so scroll ONCE the viewport has stopped resizing, which
+    // lands exactly on the card's top line on every device. Fallback if no resize fires.
+    let done = false
+    const settle = () => { if (done) return; done = true; window.visualViewport?.removeEventListener('resize', onResize); go() }
+    let timer: ReturnType<typeof setTimeout>
+    const onResize = () => { clearTimeout(timer); timer = setTimeout(settle, 150) }
+    window.visualViewport?.addEventListener('resize', onResize)
+    setTimeout(settle, 600)
   }
   // Attach focus-scroll as a NATIVE listener — it fires reliably for every focus
   // (incl. real taps/clicks), unlike React's onFocus which proved flaky here.
