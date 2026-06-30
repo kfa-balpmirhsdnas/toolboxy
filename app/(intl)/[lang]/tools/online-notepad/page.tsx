@@ -654,7 +654,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                   <span className="max-w-[10rem] truncate">{d.name}</span>
                 )}
                 <button onClick={(e) => { e.stopPropagation(); closeDoc(d.id) }} aria-label={t('np_closetab')}
-                  className={'hover:text-red-500 text-base leading-none ' + (d.text.trim() ? 'text-gray-400' : 'text-red-300')}>×</button>
+                  className={'hover:text-red-500 text-base leading-none ' + (d.text.trim() ? (on ? 'text-gray-400' : 'hidden') : 'text-red-300')}>×</button>
               </div>
             )
           })}
@@ -675,7 +675,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                 <ToolIcon name="search" className="w-4 h-4" />
               </button>
               <button onClick={() => { setShowChars((s) => !s); setShowFind(false); setShowSettings(false) }} title={t('np_symbols')} aria-label={t('np_symbols')} aria-pressed={showChars} className={iconBtn + (showChars ? ' bg-brand-50 text-brand-600' : '')}>
-                <span className="block w-4 h-4 text-base leading-4 font-serif text-center">Ω</span>
+                <span className="block w-4 h-4 text-base leading-4 text-center">※</span>
               </button>
             </div>
             <span className="w-px h-5 bg-gray-200" />
@@ -753,7 +753,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             <button onClick={replaceOne} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-white disabled:opacity-40">{t('np_replace_btn')}</button>
             <button onClick={replaceAll} disabled={!findQ} className="px-2.5 py-1.5 text-xs rounded-lg bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-40"><span className="sm:hidden">{t('np_all_short')}</span><span className="hidden sm:inline">{t('np_replace_all')}</span></button>
             {matchInfo && <span className="text-xs text-gray-500">{matchInfo}</span>}
-            <button onClick={() => { setShowFind(false); setFindQ(''); setReplaceQ(''); setMatchInfo('') }} aria-label={t('ui_clear')} className="ml-auto inline-flex items-center justify-center text-gray-400 hover:text-gray-700 px-1"><ToolIcon name="x" className="w-4 h-4" /></button>
           </div>
         )}
 
