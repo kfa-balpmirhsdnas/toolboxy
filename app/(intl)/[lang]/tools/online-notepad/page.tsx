@@ -632,8 +632,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             className="shrink-0 px-2.5 py-1.5 text-gray-400 hover:text-brand-600 text-lg leading-none">+</button>
         </div>
 
-        <div className="flex items-center justify-between flex-wrap gap-x-3 gap-y-2">
-          <div className="flex items-center gap-x-3 gap-y-2 flex-wrap">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-x-3 gap-y-2 flex-wrap sm:flex-nowrap min-w-0">
             <div className="flex items-center gap-0.5">
               <button onClick={undo} disabled={!canUndo} title={t('np_undo')} aria-label={t('np_undo')} className={iconBtn}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 14 4 9l5-5" /><path d="M4 9h11a5 5 0 0 1 0 10h-1" /></svg>
@@ -656,7 +656,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             {/* Per-tab display settings — icon-only (label text dropped to keep the
                 row compact across locales); hover/AT meaning via title + aria-label.
                 Hidden on mobile until the gear is tapped; always shown on desktop. */}
-            <div className={(showSettings ? 'flex' : 'hidden') + ' sm:flex items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500'}>
+            <div className={(showSettings ? 'flex' : 'hidden') + ' sm:flex w-full sm:w-auto items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500'}>
               <label className="flex items-center gap-1" title={t('np_font')}>{ico(fontIcon)}
                 <select aria-label={t('np_font')} title={t('np_font')} value={fontList.includes(fam) ? fam : 'sans'} onChange={(e) => patchDoc(activeId, { fam: e.target.value })} className={selCls}>
                   {fontList.map((v) => <option key={v} value={v}>{t('np_font_' + v)}</option>)}
@@ -692,7 +692,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               </label>
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 shrink-0 min-h-7">
             {/* Only show the save status once the tab actually has content (a fresh empty tab has nothing saved). */}
             {text && (
               <span className={'text-xs font-medium transition-colors ' + (savedAt ? 'text-green-600' : 'text-gray-400')}>
