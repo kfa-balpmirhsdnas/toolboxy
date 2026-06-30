@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import BatchImageProcessor, { type ProcessFn } from '@/components/tools/BatchImageProcessor'
@@ -15,6 +15,20 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
   const t = useTranslations('toolui')
   const [mode, setMode] = useState<'all' | 'gps'>('all')
   const [scans, setScans] = useState<Scan[]>([])
+  const [launched, setLaunched] = useState<File[] | undefined>(undefined) // OS "Open with" files
+
+  // Open with: seed the processor with image file(s) the OS launched the installed app with.
+  useEffect(() => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const lq = (window as any).launchQueue
+    if (!lq?.setConsumer) return
+    lq.setConsumer(async (p: any) => {
+      const files: File[] = []
+      for (const h of p?.files || []) { try { files.push(await h.getFile()) } catch { /* skip */ } }
+      if (files.length) setLaunched(files)
+    })
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+  }, [])
 
   // Read EXIF of every queued file so we can warn (especially about GPS) before stripping.
   const onFilesChange = useCallback((files: File[]) => {
@@ -107,7 +121,7 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
             Per-file EXIF tags render inline via rowExtra — no separate list. */}
         <BatchImageProcessor slug="remove-exif" processFn={processFn} zipBaseName="no-exif"
           accept="image/jpeg,image/png" onFilesChange={onFilesChange}
-          newColumn={metaColumn} hideOrigColMobile hidePrivacyBadge aboveCta={modeSelector} ctaLabel={(n) => t('rx_cta', { n })} />
+          newColumn={metaColumn} hideOrigColMobile hidePrivacyBadge initialFiles={launched} aboveCta={modeSelector} ctaLabel={(n) => t('rx_cta', { n })} />
       </div>
     </ToolLayout>
   )

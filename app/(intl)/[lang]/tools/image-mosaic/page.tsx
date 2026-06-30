@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
@@ -96,6 +96,18 @@ export default function ImageMosaicPage({ params }: { params: { lang: string } }
     }
     img.src = url
   }
+
+  // Open with: load an image the OS launched the installed app with (File Handling API).
+  useEffect(() => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const lq = (window as any).launchQueue
+    if (!lq?.setConsumer) return
+    lq.setConsumer(async (p: any) => {
+      for (const h of p?.files || []) { try { const f = await h.getFile(); loadFile(f); break } catch { /* skip */ } }
+    })
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const toCanvas = (e: React.PointerEvent) => {
     const c = canvasRef.current!, rect = c.getBoundingClientRect()
