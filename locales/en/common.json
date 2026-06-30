@@ -4133,7 +4133,7 @@
     "im_undo": "Undo",
     "im_reset": "Reset",
     "im_change": "Change image",
-    "im_download": "Download",
+    "im_download": "Save",
     "im_note": "The photo you upload and the edited result are never stored or sent anywhere, and disappear when you close the browser.",
     "np_findreplace": "Find & replace",
     "np_find": "Find",

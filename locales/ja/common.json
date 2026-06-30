@@ -4520,7 +4520,7 @@
     "im_undo": "元に戻す",
     "im_reset": "リセット",
     "im_change": "画像を変更",
-    "im_download": "ダウンロード",
+    "im_download": "保存",
     "im_note": "アップロードした写真と加工結果はどこにも保存・送信されず、ブラウザを閉じると消えます。",
     "np_findreplace": "検索・置換",
     "np_find": "検索",

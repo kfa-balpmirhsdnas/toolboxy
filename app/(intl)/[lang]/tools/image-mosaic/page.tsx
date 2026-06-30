@@ -26,6 +26,7 @@ export default function ImageMosaicPage({ params }: { params: { lang: string } }
   const regionsRef = useRef<Region[]>([])
   const dragRef = useRef<{ x0: number; y0: number; x1: number; y1: number } | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const wrapRef = useRef<HTMLDivElement>(null)
   const tracked = useRef(false)
 
   const newCanvas = (w: number, h: number) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c }
@@ -92,6 +93,8 @@ export default function ImageMosaicPage({ params }: { params: { lang: string } }
       const c = canvasRef.current!; c.width = w; c.height = h
       setHasImage(true); rebuild(); bump((n) => n + 1)
       URL.revokeObjectURL(url)
+      // Scroll the tool card under the sticky header so the editor is in view after loading.
+      setTimeout(() => wrapRef.current?.closest('.scroll-mt-16')?.scrollIntoView({ block: 'start' }), 60)
       if (!tracked.current) { trackToolUsed(tool.slug); tracked.current = true }
     }
     img.src = url
@@ -140,7 +143,7 @@ export default function ImageMosaicPage({ params }: { params: { lang: string } }
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-2xl mx-auto space-y-4"
+      <div ref={wrapRef} className="max-w-2xl mx-auto space-y-4"
         onDragOver={(e) => { e.preventDefault(); setDragOver(true) }} onDragLeave={() => setDragOver(false)} onDrop={onDrop}>
         {/* privacy banner — this tool handles sensitive info, so make it loud */}
         <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
@@ -150,6 +153,40 @@ export default function ImageMosaicPage({ params }: { params: { lang: string } }
 
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) loadFile(f); e.target.value = '' }} />
 
+        {/* Toolbar — both rows are ALWAYS visible (dimmed before an image loads). */}
+        {/* Row 1 — effects + intensity */}
+        <div className={'flex flex-wrap items-center gap-2' + (hasImage ? '' : ' opacity-50 pointer-events-none')}>
+          {(['mosaic', 'blur', 'black'] as Effect[]).map((ef) => (
+            <button key={ef} onClick={() => setEffect(ef)} className={pill(effect === ef)}>{t('im_effect_' + ef)}</button>
+          ))}
+          {effect !== 'black' && (
+            <label className="flex items-center gap-2 text-sm text-gray-600 flex-1 min-w-[150px]">{t('im_intensity')}
+              <input type="range" min={5} max={100} value={intensity} onChange={(e) => setIntensity(+e.target.value)} className="flex-1 accent-brand-600 cursor-pointer" />
+            </label>
+          )}
+        </div>
+
+        {/* Row 2 — undo / reset / change · format / save */}
+        <div className={'flex flex-wrap items-center gap-2' + (hasImage ? '' : ' opacity-50 pointer-events-none')}>
+          <button onClick={undo} disabled={!count} className="px-3 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5"><ToolIcon name="undo" className="w-4 h-4" />{t('im_undo')}</button>
+          <button onClick={reset} disabled={!count} className="px-3 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5"><ToolIcon name="refresh" className="w-4 h-4" />{t('im_reset')}</button>
+          <button onClick={() => fileRef.current?.click()} className="px-3 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 inline-flex items-center justify-center gap-1.5"><ToolIcon name="folder" className="w-4 h-4" />{t('im_change')}</button>
+          <div className="ml-auto flex items-center gap-2">
+            <select value={format} onChange={(e) => setFormat(e.target.value as 'png' | 'jpg')} className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-400">
+              <option value="png">PNG</option>
+              <option value="jpg">JPG</option>
+            </select>
+            <button onClick={download} className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('im_download')}</button>
+          </div>
+        </div>
+
+        {hasImage && <p className="text-xs text-gray-500">{t('im_drag_hint')}</p>}
+
+        {/* Canvas stays mounted (hidden until an image loads) so the ref is always available. */}
+        <canvas ref={canvasRef} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
+          style={{ touchAction: 'none' }}
+          className={`block max-w-[80vw] h-auto mx-auto rounded-lg border border-gray-200 cursor-crosshair select-none ${hasImage ? '' : 'hidden'}`} />
+
         {!hasImage && (
           <button onClick={() => fileRef.current?.click()}
             className={`w-full rounded-2xl border-2 border-dashed py-16 px-6 text-center transition ${dragOver ? 'border-brand-400 bg-brand-50' : 'border-gray-300 hover:border-brand-300 hover:bg-gray-50'}`}>
@@ -157,41 +194,6 @@ export default function ImageMosaicPage({ params }: { params: { lang: string } }
             <div className="mt-3 font-semibold text-gray-700">{t('im_upload')}</div>
             <div className="text-sm text-gray-400 mt-1">{t('im_upload_hint')}</div>
           </button>
-        )}
-
-        {hasImage && (
-          <div className="flex flex-wrap items-center gap-2">
-            {(['mosaic', 'blur', 'black'] as Effect[]).map((ef) => (
-              <button key={ef} onClick={() => setEffect(ef)} className={pill(effect === ef)}>{t('im_effect_' + ef)}</button>
-            ))}
-            {effect !== 'black' && (
-              <label className="flex items-center gap-2 text-sm text-gray-600 flex-1 min-w-[150px]">{t('im_intensity')}
-                <input type="range" min={5} max={100} value={intensity} onChange={(e) => setIntensity(+e.target.value)} className="flex-1 accent-brand-600 cursor-pointer" />
-              </label>
-            )}
-          </div>
-        )}
-
-        {hasImage && <p className="text-xs text-gray-500">{t('im_drag_hint')}</p>}
-
-        {/* Canvas stays mounted (hidden until an image loads) so the ref is always available. */}
-        <canvas ref={canvasRef} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
-          style={{ touchAction: 'none' }}
-          className={`block max-w-full h-auto mx-auto rounded-lg border border-gray-200 cursor-crosshair select-none ${hasImage ? '' : 'hidden'}`} />
-
-        {hasImage && (
-          <div className="flex flex-wrap items-center gap-2">
-            <button onClick={undo} disabled={!count} className="px-3 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5"><ToolIcon name="undo" className="w-4 h-4" />{t('im_undo')}</button>
-            <button onClick={reset} disabled={!count} className="px-3 py-2 text-sm text-gray-500 rounded-xl hover:text-red-500 disabled:opacity-40 disabled:cursor-not-allowed">{t('im_reset')}</button>
-            <button onClick={() => fileRef.current?.click()} className="px-3 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50">{t('im_change')}</button>
-            <div className="ml-auto flex items-center gap-2">
-              <select value={format} onChange={(e) => setFormat(e.target.value as 'png' | 'jpg')} className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-400">
-                <option value="png">PNG</option>
-                <option value="jpg">JPG</option>
-              </select>
-              <button onClick={download} className="px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition-colors inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('im_download')}</button>
-            </div>
-          </div>
         )}
 
         <p className="text-xs text-gray-400 text-center pt-2">{t('im_note')}</p>
