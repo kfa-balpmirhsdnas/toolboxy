@@ -52,27 +52,8 @@ export default function Header() {
   const [langOpen, setLangOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const langRef = useRef<HTMLDivElement>(null)
-  const headerRef = useRef<HTMLElement>(null)
 
   useEffect(() => onAuthStateChanged(auth, (u) => setUser(u)), [])
-
-  // Keep the fixed header glued to the TOP OF THE VISIBLE area even when the mobile
-  // keyboard is open. With a soft keyboard, the visual viewport shifts but position:fixed
-  // stays pinned to the (taller) layout viewport, so the header scrolls out of sight once
-  // an input is focused. Track visualViewport.offsetTop and translate the header to match.
-  useEffect(() => {
-    const vv = window.visualViewport
-    const el = headerRef.current
-    if (!vv || !el) return
-    let raf = 0
-    const update = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => { el.style.transform = vv.offsetTop ? `translateY(${vv.offsetTop}px)` : '' })
-    }
-    vv.addEventListener('scroll', update)
-    vv.addEventListener('resize', update)
-    return () => { vv.removeEventListener('scroll', update); vv.removeEventListener('resize', update); cancelAnimationFrame(raf) }
-  }, [])
 
   useEffect(() => {
     const h = (e: MouseEvent) => {
@@ -95,7 +76,7 @@ export default function Header() {
   }
 
   return (
-    <header ref={headerRef} className="fixed top-0 inset-x-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+    <header className="fixed top-0 inset-x-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-2 sm:gap-4">
         <Link href={`/${lang}`} className="font-bold text-xl text-brand-600 shrink-0 whitespace-nowrap">Tool<span className="text-gray-900">Boxy</span></Link>
         <nav className="flex items-center gap-5 text-sm font-medium text-gray-400 flex-1">
