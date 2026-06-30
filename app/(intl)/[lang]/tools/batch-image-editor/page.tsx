@@ -150,7 +150,11 @@ export default function BatchImageEditorPage({ params }: { params: { lang: strin
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-6">
-        <p className="text-sm text-gray-500">{t('bie_intro')}</p>
+        {/* Privacy banner — unified with the other image tools; the one-liner intro moved to How-to. */}
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+          <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+          <span><b>{t('im_privacy_title')}</b> {t('im_privacy')}</span>
+        </div>
 
         <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-3">
           <div className="flex items-center justify-between">
@@ -164,7 +168,7 @@ export default function BatchImageEditorPage({ params }: { params: { lang: strin
             return (
               <div key={id} onDragOver={(e) => e.preventDefault()} onDrop={() => reorder(id)} className="bg-white border border-gray-200 rounded-xl">
                 <div className="flex items-center gap-2 px-3 py-2">
-                  <span draggable onDragStart={() => { dragId.current = id }} className="cursor-grab text-gray-300 select-none" title={t('bie_drag_hint')}>⠿</span>
+                  <span draggable onDragStart={() => { dragId.current = id }} className="w-4 text-center shrink-0 cursor-grab text-gray-300 select-none" title={t('bie_drag_hint')}>⠿</span>
                   <label className="flex items-center gap-2 flex-1 cursor-pointer text-sm font-medium text-gray-700">
                     <input type="checkbox" checked={on} onChange={() => toggle(id)} className="accent-brand-600" />
                     {TASK_EMOJI[id]} {t(`bie_task_${id}`)}
@@ -201,7 +205,7 @@ export default function BatchImageEditorPage({ params }: { params: { lang: strin
           </div>
         </div>
 
-        <BatchImageProcessor slug="batch-image-editor" processFn={processFn} zipBaseName="edited" initialFiles={seed} onComplete={setResults} />
+        <BatchImageProcessor slug="batch-image-editor" processFn={processFn} zipBaseName="edited" hidePrivacyBadge initialFiles={seed} onComplete={setResults} />
         <BatchToolNav current="batch-image-editor" lang={params.lang} results={results} />
       </div>
     </ToolLayout>
