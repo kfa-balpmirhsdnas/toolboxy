@@ -491,9 +491,12 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   function scrollBoxTop() {
     // Scroll the tool card to just under the sticky header (its scroll-mt-16). Instant — a
     // smooth scroll gets cancelled by the keyboard. One scroll only, after the keyboard has
-    // opened on mobile, so it lands cleanly without overshooting.
+    // opened, so it lands cleanly without overshooting.
     const el = wrapRef.current?.closest('.bg-white.rounded-2xl') as HTMLElement | null; if (!el) return
-    setTimeout(() => el.scrollIntoView({ block: 'start' }), window.innerWidth >= 640 ? 60 : 350)
+    // Decide by INPUT type, not width: a touch device (incl. the wide-screen Galaxy Z Fold)
+    // pops a keyboard and needs the longer wait; a mouse device scrolls right away.
+    const touch = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches
+    setTimeout(() => el.scrollIntoView({ block: 'start' }), touch ? 350 : 60)
   }
   // Attach focus-scroll as a NATIVE listener — it fires reliably for every focus
   // (incl. real taps/clicks), unlike React's onFocus which proved flaky here.
