@@ -4,12 +4,12 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
+import ColorSwatchSelect from '@/components/tools/ColorSwatchSelect'
 import { getToolBySlug } from '@/lib/tools/registry'
 
 const tool = getToolBySlug('pdf-annotator')!
 const WORKER = 'https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs'
 const COLORS = ['#ef4444', '#f59e0b', '#fde047', '#22c55e', '#3b82f6', '#111827']
-const COLOR_LABEL: Record<string, string> = { '#ef4444': '🔴', '#f59e0b': '🟠', '#fde047': '🟡', '#22c55e': '🟢', '#3b82f6': '🔵', '#111827': '⚫' }
 const ZOOMS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3]
 const WIDTHS = [1, 2, 4, 8, 14]
 const EXPORT_SCALE = 2
@@ -450,10 +450,7 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
                   className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (tool_ === k ? 'bg-brand-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name={icon} /></button>
               ))}
               <span className="w-px h-6 bg-gray-300 mx-0.5" />
-              <select value={color} onChange={(e) => setColor(e.target.value)} title={t('pa_color')} aria-label={t('pa_color')}
-                className="h-9 rounded-lg border border-gray-200 bg-white px-1.5 text-sm">
-                {COLORS.map((c) => <option key={c} value={c}>{COLOR_LABEL[c]}</option>)}
-              </select>
+              <ColorSwatchSelect value={color} onChange={setColor} colors={COLORS} title={t('pa_color')} ariaLabel={t('pa_color')} />
               {/* Stroke width — dropdown showing the actual line thickness as images */}
               <div className="relative">
                 {wOpen && <div className="fixed inset-0 z-10" onClick={() => setWOpen(false)} />}
