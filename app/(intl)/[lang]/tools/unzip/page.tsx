@@ -114,7 +114,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
 
         <div onClick={() => inputRef.current?.click()} onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
-          <input ref={inputRef} type="file" accept=".zip,application/zip" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+          <input ref={inputRef} type="file" accept=".zip,application/zip,application/x-zip-compressed,multipart/x-zip" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
           <p className="text-4xl mb-2">📦</p><p className="text-sm font-medium text-gray-600">{name || t('uz_drop')}</p>
         </div>
 
@@ -149,7 +149,11 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
             )}
           </>
         )}
-        <p className="text-xs text-gray-400">{t('uz_note')}</p>
+        {/* Privacy banner — unified with the other file tools */}
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+          <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+          <span>{t('bfr_privacy')}</span>
+        </div>
       </div>
     </ToolLayout>
   )

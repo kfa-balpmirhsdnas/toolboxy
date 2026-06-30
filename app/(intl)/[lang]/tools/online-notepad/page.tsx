@@ -822,13 +822,13 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
         />
 
         <div className="flex items-center gap-2 flex-wrap">
-          <button onClick={download} disabled={!text}
+          <button onClick={download} disabled={!text} aria-label={t('np_download')} title={t('np_download')}
             className="inline-flex items-center justify-center gap-1.5 px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            <ToolIcon name="download" className="w-4 h-4" />{t('np_download')}
+            <ToolIcon name="download" className="w-4 h-4" /><span className="hidden sm:inline">{t('np_download')}</span>
           </button>
-          <button onClick={zipDownload} disabled={docs.every((d) => !d.text)}
+          <button onClick={zipDownload} disabled={docs.every((d) => !d.text)} aria-label={t('np_zip')} title={t('np_zip')}
             className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl border border-brand-200 text-brand-700 bg-brand-50 hover:bg-brand-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            <ToolIcon name="archive" className="w-4 h-4" />{t('np_zip')}
+            <ToolIcon name="archive" className="w-4 h-4" /><span className="hidden sm:inline">{t('np_zip')}</span>
           </button>
           <button onClick={copy} disabled={!text}
             className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">

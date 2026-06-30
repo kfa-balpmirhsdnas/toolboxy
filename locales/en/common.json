@@ -1968,6 +1968,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howtoIntro": {
+    "unzip": "Lists the files inside a ZIP. \"Extract all\" creates a folder named after the zip and extracts everything into it (on supported browsers; otherwise files download individually). Password-protected ZIPs aren’t supported.",
     "batch-image-editor": "Resize, convert, compress, watermark, and rename — all in one pass.",
     "period-tracker": "Log each cycle to predict your next period, ovulation and fertile window — privately, on your device.",
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
