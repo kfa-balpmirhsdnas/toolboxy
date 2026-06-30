@@ -418,10 +418,10 @@ export default function ImageViewerPage() {
                   <button onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">{t('iv_pick_folder')}</button>
                 </div>
               </div>
-              <div className="flex flex-wrap justify-center gap-2">
-                {['iv_badge_noinstall', 'iv_badge_free', 'iv_badge_private'].map((b) => (
-                  <span key={b} className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">✓ {t(b)}</span>
-                ))}
+              {/* Privacy banner — same wording as image-mosaic */}
+              <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+                <span><b>{t('im_privacy_title')}</b> {t('im_privacy')}</span>
               </div>
             </div>
           )}
