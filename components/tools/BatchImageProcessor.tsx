@@ -96,6 +96,12 @@ interface Props {
    * undefined → nothing, so other tools are unaffected.
    */
   aboveCta?: ReactNode
+  /**
+   * Optional replacement for the list's "new size" column (header + per-file cell),
+   * e.g. remove-exif shows the shot date there instead. Default undefined keeps the
+   * normal output-size column.
+   */
+  newColumn?: { header: ReactNode; cell: (file: File) => ReactNode }
 }
 
 let _seq = 0
@@ -129,7 +135,7 @@ function dedupeName(name: string, used: Set<string>): string {
   return candidate
 }
 
-export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange, sizeUnit = 'bytes', rowExtra, aboveCta }: Props) {
+export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange, sizeUnit = 'bytes', rowExtra, aboveCta, newColumn }: Props) {
   const t = useTranslations('toolui')
   const [items, setItems] = useState<InputItem[]>([])
   const [results, setResults] = useState<OutItem[]>([])
@@ -323,6 +329,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
   const totalIn = results.reduce((s, r) => s + r.inSize, 0)
   const totalOut = results.reduce((s, r) => s + r.outSize, 0)
   const sizeColW = sizeUnit === 'pixels' ? 'w-[5.5rem]' : 'w-16'
+  const newColW = newColumn ? 'w-24' : sizeColW
 
   return (
     <div className="space-y-4">
@@ -405,7 +412,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
             <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 text-xs font-medium text-gray-500">
               <span className="flex-1 min-w-0">{t('bip_col_name')}</span>
               <span className={`${sizeColW} text-right shrink-0`}>{t('bip_col_orig')}</span>
-              <span className={`${sizeColW} text-right shrink-0`}>{t('bip_col_new')}</span>
+              <span className={`${newColW} text-right shrink-0`}>{newColumn ? newColumn.header : t('bip_col_new')}</span>
               <span className="w-4 shrink-0" />
             </div>
             <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
@@ -420,7 +427,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
                       {rowExtra && <div className="mt-0.5">{rowExtra(it.file)}</div>}
                     </div>
                     <span className={`${sizeColW} text-right shrink-0 text-gray-500`}>{origCell}</span>
-                    <span className={`${sizeColW} text-right shrink-0 text-gray-700`}>{newCell}</span>
+                    <span className={`${newColW} text-right shrink-0 text-gray-700 text-xs`}>{newColumn ? newColumn.cell(it.file) : newCell}</span>
                     <button onClick={() => removeItem(it.id)} aria-label={t('bip_remove')} className="w-4 shrink-0 text-gray-300 hover:text-red-500 transition-colors">✕</button>
                   </div>
                 )

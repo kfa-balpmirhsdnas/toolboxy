@@ -4179,6 +4179,7 @@
     "rx_tag_camera": "カメラ",
     "rx_tag_date": "撮影日",
     "rx_tag_clean": "メタデータなし",
+    "rx_col_taken": "撮影日",
     "rx_cta": "{n}枚のメタデータを削除",
     "rx_privacy_title": "プライバシー重視の設計",
     "rx_privacy_1": "すべての処理はブラウザ内で — 写真がアップロードされることはありません。",
