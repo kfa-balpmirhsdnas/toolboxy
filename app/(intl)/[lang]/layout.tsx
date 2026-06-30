@@ -95,7 +95,9 @@ export default async function LangLayout({
           <ScrollInputOnFocus />
           <StandaloneRefresh />
           <Header />
-          <main className="min-h-screen">{children}</main>
+          {/* Header is position:fixed (always pinned, immune to mobile sticky quirks +
+              modal scroll-lock), so reserve its height here to keep content below it. */}
+          <main className="min-h-screen pt-14">{children}</main>
           <Footer />
         </SignupGateProvider>
       </NextIntlClientProvider>
