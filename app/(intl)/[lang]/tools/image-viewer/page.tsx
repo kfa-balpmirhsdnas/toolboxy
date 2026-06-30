@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
+import ToolbarBar, { toolbarBtn, toolbarDivider } from '@/components/tools/ToolbarBar'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 import { readExif, type Exif } from '@/lib/exif'
@@ -252,8 +253,6 @@ export default function ImageViewerPage() {
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1)
     touch.current = null
   }
-
-  const tBtn = 'inline-flex items-center justify-center p-2 rounded-lg text-gray-200 hover:bg-white/15 disabled:opacity-30 disabled:cursor-not-allowed transition-colors'
   const transform = `translate(${pan.x}px, ${pan.y}px) scale(${zoom}) rotate(${rot}deg) scaleX(${flip ? -1 : 1})`
 
   const thumbBtn = (im: Img, i: number, sizeCls: string) => (
@@ -342,32 +341,35 @@ export default function ImageViewerPage() {
   return (
     <ToolLayout tool={tool}>
       <div ref={viewerRef} className={'flex flex-col gap-2 ' + (fs ? 'fixed inset-0 z-50 bg-gray-900 p-3' : '')}>
-          {/* Toolbar — always visible; dimmed before any image loads to preview the features */}
-          <div className={'flex items-center gap-1 flex-wrap rounded-xl bg-gray-800 px-2 py-1.5' + (images.length ? '' : ' opacity-50 pointer-events-none')}>
-            {/* Save → name + format dialog (swapped with zoom) */}
-            <button className={tBtn} title={cropMode ? t('iv_save_crop') : t('iv_save')} aria-label={t('iv_save')} onClick={openSave}><ToolIcon name="save" /></button>
-            {/* Open file picker directly (no confirm) */}
-            <button className={tBtn} title={t('iv_newfile')} aria-label={t('iv_newfile')} onClick={() => fileRef.current?.click()}><ToolIcon name="folder" /></button>
-            {/* View mode — PC only (the grid layout needs the width) */}
-            <span className="w-px h-5 bg-white/15 mx-1 hidden md:block" />
-            <button className={tBtn + ' hidden md:inline-flex' + (viewMode === 'film' ? ' bg-white/15' : '')} title={t('iv_view_film')} aria-label={t('iv_view_film')} onClick={() => setViewMode('film')}><ToolIcon name="film" /></button>
-            <button className={tBtn + ' hidden md:inline-flex' + (viewMode === 'grid' ? ' bg-white/15' : '')} title={t('iv_view_grid')} aria-label={t('iv_view_grid')} onClick={() => setViewMode('grid')}><ToolIcon name="grid" /></button>
-            <span className="w-px h-5 bg-white/15 mx-1" />
-            <button className={tBtn} title={t('iv_rotate_l')} onClick={() => setRot((r) => r - 90)}><ToolIcon name="rotate-ccw" /></button>
-            <button className={tBtn} title={t('iv_rotate_r')} onClick={() => setRot((r) => r + 90)}><ToolIcon name="rotate-cw" /></button>
-            <button className={tBtn} title={t('iv_flip')} onClick={() => setFlip((f) => !f)}><ToolIcon name="flip" /></button>
-            <button className={tBtn + (cropMode ? ' bg-white/15' : '')} title={t('iv_crop')} onClick={toggleCrop}><ToolIcon name="crop" /></button>
-            <button className={tBtn} title={t('iv_reset')} aria-label={t('iv_reset')} onClick={() => { setCropMode(false); setCrop(null); resetView() }}><ToolIcon name="refresh" /></button>
-            <span className="w-px h-5 bg-white/15 mx-1" />
-            <button className={tBtn + (showInfo ? ' bg-white/15' : '')} title={t('iv_info')} onClick={() => setShowInfo((s) => !s)}><ToolIcon name="info" /></button>
-            <button className={tBtn} title={t('iv_fullscreen')} onClick={toggleFs}><ToolIcon name={fs ? 'minimize' : 'maximize'} /></button>
-            <span className="w-px h-5 bg-white/15 mx-1" />
-            {/* Zoom (swapped with save/open) */}
-            <button className={tBtn} title={t('iv_zoom_out')} onClick={() => setZoom((z) => Math.max(1, z - 0.25))}><ToolIcon name="zoom-out" /></button>
-            <span className="text-xs text-gray-300 w-12 text-center tabular-nums">{Math.round(zoom * 100)}%</span>
-            <button className={tBtn} title={t('iv_zoom_in')} onClick={() => setZoom((z) => Math.min(8, z + 0.25))}><ToolIcon name="zoom-in" /></button>
-            <button className={tBtn} title={t('iv_fit')} onClick={resetView}><ToolIcon name="fit" /></button>
-          </div>
+          {/* Toolbar — always visible; dimmed before any image loads. Click its empty space to
+              toggle dark/white (shared ToolbarBar). */}
+          <ToolbarBar disabled={!images.length}>
+            {(dark) => (<>
+              {/* Save → name + format dialog (swapped with zoom) */}
+              <button className={toolbarBtn(dark)} title={cropMode ? t('iv_save_crop') : t('iv_save')} aria-label={t('iv_save')} onClick={openSave}><ToolIcon name="save" /></button>
+              {/* Open file picker directly (no confirm) */}
+              <button className={toolbarBtn(dark)} title={t('iv_newfile')} aria-label={t('iv_newfile')} onClick={() => fileRef.current?.click()}><ToolIcon name="folder" /></button>
+              {/* View mode — PC only (the grid layout needs the width) */}
+              <span className={toolbarDivider(dark) + ' hidden md:block'} />
+              <button className={toolbarBtn(dark, viewMode === 'film') + ' hidden md:inline-flex'} title={t('iv_view_film')} aria-label={t('iv_view_film')} onClick={() => setViewMode('film')}><ToolIcon name="film" /></button>
+              <button className={toolbarBtn(dark, viewMode === 'grid') + ' hidden md:inline-flex'} title={t('iv_view_grid')} aria-label={t('iv_view_grid')} onClick={() => setViewMode('grid')}><ToolIcon name="grid" /></button>
+              <span className={toolbarDivider(dark)} />
+              <button className={toolbarBtn(dark)} title={t('iv_rotate_l')} onClick={() => setRot((r) => r - 90)}><ToolIcon name="rotate-ccw" /></button>
+              <button className={toolbarBtn(dark)} title={t('iv_rotate_r')} onClick={() => setRot((r) => r + 90)}><ToolIcon name="rotate-cw" /></button>
+              <button className={toolbarBtn(dark)} title={t('iv_flip')} onClick={() => setFlip((f) => !f)}><ToolIcon name="flip" /></button>
+              <button className={toolbarBtn(dark, cropMode)} title={t('iv_crop')} onClick={toggleCrop}><ToolIcon name="crop" /></button>
+              <button className={toolbarBtn(dark)} title={t('iv_reset')} aria-label={t('iv_reset')} onClick={() => { setCropMode(false); setCrop(null); resetView() }}><ToolIcon name="refresh" /></button>
+              <span className={toolbarDivider(dark)} />
+              <button className={toolbarBtn(dark, showInfo)} title={t('iv_info')} onClick={() => setShowInfo((s) => !s)}><ToolIcon name="info" /></button>
+              <button className={toolbarBtn(dark)} title={t('iv_fullscreen')} onClick={toggleFs}><ToolIcon name={fs ? 'minimize' : 'maximize'} /></button>
+              <span className={toolbarDivider(dark)} />
+              {/* Zoom (swapped with save/open) */}
+              <button className={toolbarBtn(dark)} title={t('iv_zoom_out')} onClick={() => setZoom((z) => Math.max(1, z - 0.25))}><ToolIcon name="zoom-out" /></button>
+              <span className={'text-xs w-12 text-center tabular-nums ' + (dark ? 'text-gray-300' : 'text-gray-500')}>{Math.round(zoom * 100)}%</span>
+              <button className={toolbarBtn(dark)} title={t('iv_zoom_in')} onClick={() => setZoom((z) => Math.min(8, z + 0.25))}><ToolIcon name="zoom-in" /></button>
+              <button className={toolbarBtn(dark)} title={t('iv_fit')} onClick={resetView}><ToolIcon name="fit" /></button>
+            </>)}
+          </ToolbarBar>
 
           {images.length > 0 ? (
             viewMode === 'grid' ? (
