@@ -20,6 +20,7 @@
 import { useState, useRef, useCallback, useEffect, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
+import ToolIcon from '@/components/tools/ToolIcon'
 
 /** Result a tool's processFn must return for each file (or null to skip it). */
 export interface BatchResult {
@@ -374,12 +375,14 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
               <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
                 {(['list', 'thumbnails'] as const).map((v) => (
                   <button key={v} onClick={() => setView(v)}
-                    className={'px-2.5 py-1 rounded-md font-medium transition-colors ' + (view === v ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>
+                    className={'flex items-center gap-1 whitespace-nowrap px-2.5 py-1 rounded-md font-medium transition-colors ' + (view === v ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>
+                    <ToolIcon name={v === 'list' ? 'list' : 'grid'} className="w-3.5 h-3.5" />
                     {v === 'list' ? t('bip_view_list') : t('bip_view_thumb')}
                   </button>
                 ))}
               </div>
-              <button onClick={clearAll} className="text-xs text-gray-400 hover:text-red-500 transition-colors">
+              <button onClick={clearAll} className="flex items-center gap-1 whitespace-nowrap shrink-0 text-xs text-gray-500 hover:text-red-600 border border-gray-200 hover:border-red-300 hover:bg-red-50 rounded-lg px-2 py-1 transition-colors">
+                <ToolIcon name="trash" className="w-3.5 h-3.5" />
                 {t('ui_clear')}
               </button>
             </div>

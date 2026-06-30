@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import RenameRulesPanel from '@/components/tools/RenameRulesPanel'
+import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { buildNewName, DEFAULT_RULES, type RenameRules } from '@/lib/batch-image/rename'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
@@ -115,7 +116,7 @@ export default function BulkFileRenamerPage({ params }: { params: { lang: string
 
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold text-gray-700">{t('bfr_files_n', { n: files.length })}</p>
-              <button onClick={clearAll} className="text-xs text-gray-400 hover:text-red-500">{t('ui_clear')}</button>
+              <button onClick={clearAll} className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-600 border border-gray-200 hover:border-red-300 hover:bg-red-50 rounded-lg px-2 py-1 transition-colors"><ToolIcon name="trash" className="w-3.5 h-3.5" />{t('ui_clear')}</button>
             </div>
 
             <div className="rounded-xl border border-gray-200 divide-y divide-gray-100 max-h-96 overflow-y-auto">
