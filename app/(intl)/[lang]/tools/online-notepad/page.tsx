@@ -491,9 +491,14 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   function scrollBoxTop() {
     // Scroll the tool card (its scroll-mt-16 lands it just under the sticky header).
     const el = wrapRef.current?.closest('.bg-white.rounded-2xl') as HTMLElement | null; if (!el) return
-    // Run after the browser's own focus-scroll so ours wins. Desktop: a short tick;
-    // mobile: wait for the keyboard to open first.
-    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), window.innerWidth >= 640 ? 60 : 300)
+    const go = () => el.scrollIntoView({ block: 'start' }) // instant — a smooth scroll gets cancelled by the keyboard
+    if (window.innerWidth >= 640) { setTimeout(go, 60); return }
+    // Mobile: scroll once the on-screen keyboard has resized the visual viewport, so our
+    // scroll lands after (not before) the browser's own focus/keyboard scroll. Fallback tick.
+    let done = false
+    const run = () => { if (done) return; done = true; go(); requestAnimationFrame(go); window.visualViewport?.removeEventListener('resize', run) }
+    window.visualViewport?.addEventListener('resize', run)
+    setTimeout(run, 450)
   }
   // Attach focus-scroll as a NATIVE listener — it fires reliably for every focus
   // (incl. real taps/clicks), unlike React's onFocus which proved flaky here.
@@ -617,7 +622,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                   <span className="max-w-[10rem] truncate">{d.name}</span>
                 )}
                 <button onClick={(e) => { e.stopPropagation(); closeDoc(d.id) }} aria-label={t('np_closetab')}
-                  className="text-gray-400 hover:text-red-500 text-base leading-none">×</button>
+                  className={'hover:text-red-500 text-base leading-none ' + (d.text.trim() ? 'text-gray-300' : 'text-gray-400')}>×</button>
               </div>
             )
           })}
