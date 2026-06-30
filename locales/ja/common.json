@@ -7160,7 +7160,7 @@
     "ht_fri": "金",
     "ht_sat": "土",
     "np_placeholder": "入力を始めましょう… メモはこのブラウザに自動保存されます。",
-    "np_autosaved": "このブラウザに保存しました",
+    "np_autosaved": "この端末に保存",
     "np_saving": "保存中…",
     "np_words": "{n}語",
     "np_chars": "{n}文字",
