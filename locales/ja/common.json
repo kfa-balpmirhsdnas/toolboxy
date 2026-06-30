@@ -4558,7 +4558,7 @@
     "td_add_ph": "やることを入力",
     "td_add": "追加",
     "td_completed": "完了",
-    "td_clear_done": "完了を消去",
+    "td_clear_done": "クリア",
     "td_empty": "タスクがありません。上から追加してください。",
     "td_reorder": "ドラッグで並べ替え",
     "td_edit": "編集",

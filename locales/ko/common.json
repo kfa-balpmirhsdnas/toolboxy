@@ -4585,7 +4585,7 @@
     "td_add_ph": "할 일을 입력하세요",
     "td_add": "추가",
     "td_completed": "완료",
-    "td_clear_done": "완료 항목 지우기",
+    "td_clear_done": "지우기",
     "td_empty": "할 일이 없습니다. 위에 입력해 추가하세요.",
     "td_reorder": "드래그하여 순서 변경",
     "td_edit": "수정",

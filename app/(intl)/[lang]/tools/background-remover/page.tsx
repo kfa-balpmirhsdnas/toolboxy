@@ -27,7 +27,6 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
   const [outUrl, setOutUrl] = useState('')
   const [busy, setBusy] = useState(false)
   const [prog, setProg] = useState(0)
-  const [finishing, setFinishing] = useState(false) // past the download → inference (no % → indeterminate)
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -50,28 +49,21 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
 
   async function removeBg() {
     if (!file) return
-    setBusy(true); setOutUrl(''); setError(''); setProg(0); setFinishing(false)
-    // The library reports the (first-run) model download 0→100, then runs inference which
-    // restarts the counter at 0. Showing that raw reset looks like a failure — so once the
-    // first phase has clearly finished and the counter drops back, switch to an indeterminate
-    // "working" state instead of jumping to 0%.
-    let peak = 0, doneDownloading = false
+    setBusy(true); setOutUrl(''); setError(''); setProg(1)
+    // The library's own counter restarts between the model download and inference, which looked
+    // like a failure. Instead drive a smooth simulated bar that eases toward ~95% and snaps to
+    // 100% on completion — so it always reads 1 → 100 without resetting.
+    const timer = setInterval(() => setProg((p) => (p >= 95 ? 95 : p + Math.max(0.4, (95 - p) * 0.035))), 150)
     try {
       const mod = await loadImgly()
-      const blob: Blob = await mod.removeBackground(file, {
-        progress: (_key: string, current: number, total: number) => {
-          if (doneDownloading || !total) return
-          const pct = Math.round((current / total) * 100)
-          if (peak > 50 && pct + 20 < peak) { doneDownloading = true; setFinishing(true); return }
-          peak = Math.max(peak, pct)
-          setProg(Math.min(99, pct))
-        },
-      })
+      const blob: Blob = await mod.removeBackground(file)
+      setProg(100)
       setOutUrl(URL.createObjectURL(blob))
       trackToolDownload('background-remover', 'png')
     } catch (e) {
       console.error(e); setError(t('md_error'))
     } finally {
+      clearInterval(timer)
       setBusy(false)
     }
   }
@@ -104,17 +96,12 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
                 <img src={outUrl} alt="result" className="w-full max-h-80 object-contain" />
               </div>
             )}
-            {busy && (() => {
-              const indeterminate = finishing || prog === 0
-              return (
-                <div className="space-y-1">
-                  <p className="text-sm text-brand-600 text-center">{t('md_processing')}{!indeterminate && ` ${prog}%`}</p>
-                  <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
-                    <div className={'h-full bg-brand-500 ' + (indeterminate ? 'w-full animate-pulse' : 'transition-all')} style={indeterminate ? undefined : { width: prog + '%' }} />
-                  </div>
-                </div>
-              )
-            })()}
+            {busy && (
+              <div className="space-y-1">
+                <p className="text-sm text-brand-600 text-center">{t('md_processing')} {Math.round(prog)}%</p>
+                <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden"><div className="h-full bg-brand-500 transition-all duration-200" style={{ width: prog + '%' }} /></div>
+              </div>
+            )}
             {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl p-3">{error}</p>}
             <div className="flex gap-2">
               {!outUrl ? (

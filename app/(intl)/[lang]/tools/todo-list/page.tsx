@@ -88,15 +88,19 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
     const v = input.trim(); if (!v) return
     const onStar = active === STARRED
     setItems((a) => [...a, { id: uid(), text: v, done: false, starred: onStar, details: '', due: '', listId: onStar ? DEFAULT : active }])
-    setInput(''); sfx('drop')
+    setInput(''); sfx('rotate') // short, non-distracting (utility, not a game)
     if (!tracked.current) { trackToolUsed(tool.slug); tracked.current = true }
   }
   const toggle = (id: string) => {
     const it = items.find((i) => i.id === id)
-    if (it && !it.done) sfx('celebrate') // celebrate only when completing
+    if (it && !it.done) sfx('point') // short positive blip only when completing
     setItems((a) => a.map((i) => (i.id === id ? { ...i, done: !i.done } : i)))
   }
-  const toggleStar = (id: string) => setItems((a) => a.map((i) => (i.id === id ? { ...i, starred: !i.starred } : i)))
+  const toggleStar = (id: string) => {
+    const it = items.find((i) => i.id === id)
+    if (it && !it.starred) sfx('point') // short blip only when adding a star
+    setItems((a) => a.map((i) => (i.id === id ? { ...i, starred: !i.starred } : i)))
+  }
   const clearDone = () => { sfx('lock'); setItems((a) => a.filter((i) => !i.done)) }
 
   const openEdit = (it: Todo) => { setEditing(it); setDraft({ text: it.text, details: it.details || '', due: it.due || '', listId: it.listId }) }
@@ -201,7 +205,7 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
         {total > 0 && (
           <div className="flex items-center justify-between text-sm text-gray-600">
             <span><b className="text-brand-600">{done}</b>/{total} {t('td_completed')}</span>
-            {active === COMPLETED && done > 0 && <button onClick={clearDone} className="text-gray-400 hover:text-rose-500 transition">{t('td_clear_done')}</button>}
+            {active === COMPLETED && done > 0 && <button onClick={clearDone} className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-rose-600 border border-gray-200 hover:border-rose-300 hover:bg-rose-50 rounded-lg px-2 py-1 transition"><ToolIcon name="trash" className="w-3.5 h-3.5" />{t('td_clear_done')}</button>}
           </div>
         )}
         {total > 0 && <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden"><div className="h-full bg-brand-500 transition-all" style={{ width: `${Math.round((done / total) * 100)}%` }} /></div>}
@@ -236,10 +240,11 @@ export default function TodoListPage({ params }: { params: { lang: string } }) {
           </ul>
         )}
 
-        <p className="flex items-center gap-1.5 text-xs text-gray-400 pt-1">
-          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-          {t('td_privacy')}
-        </p>
+        {/* Privacy banner — unified style with the other tools */}
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+          <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+          <span>{t('td_privacy')}</span>
+        </div>
       </div>
 
       {/* edit modal: title · details · due date · delete */}
