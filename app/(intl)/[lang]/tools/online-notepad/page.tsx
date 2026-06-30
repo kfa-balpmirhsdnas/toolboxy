@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { onAuthStateChanged, type User } from 'firebase/auth'
@@ -94,6 +94,37 @@ function mergeState(local: { docs: Doc[]; deleted: Tomb }, remote: { docs?: Doc[
   return { docs, deleted }
 }
 
+// Compact custom dropdown for the format controls (font / size / line-height). The trigger
+// shows the current value; the popup lists the options. A single shared `open` key controls
+// which menu is expanded, so opening one closes the others.
+function MenuSelect({ id, open, setOpen, selCls, icon, label, options, value, onPick }: {
+  id: string; open: string | null; setOpen: (v: string | null) => void; selCls: string
+  icon: ReactNode; label: ReactNode; options: { value: string; label: ReactNode }[]
+  value: string; onPick: (v: string) => void
+}) {
+  const isOpen = open === id
+  return (
+    <div className="relative flex-1 min-w-0 sm:flex-none">
+      {isOpen && <div className="fixed inset-0 z-10" onClick={() => setOpen(null)} />}
+      <button type="button" onClick={() => setOpen(isOpen ? null : id)} className={selCls + ' flex items-center gap-1 w-full'}>
+        {icon}
+        <span className="truncate flex-1 text-left">{label}</span>
+        <span className="shrink-0 text-gray-400 text-[9px]">▾</span>
+      </button>
+      {isOpen && (
+        <div className="absolute z-30 mt-1 left-0 min-w-full bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-xs whitespace-nowrap">
+          {options.map((o) => (
+            <button key={o.value} type="button" onClick={() => { onPick(o.value); setOpen(null) }}
+              className={'block w-full px-3 py-1.5 text-left hover:bg-gray-50 ' + (o.value === value ? 'text-brand-600 font-medium bg-brand-50' : 'text-gray-700')}>
+              {o.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function OnlineNotepadPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const first = useRef<Doc>({ id: uid(), name: dateTag(), text: '', ...DEFAULTS, updatedAt: Date.now(), createdAt: Date.now() }).current
@@ -107,7 +138,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [showFind, setShowFind] = useState(false)
   const [showChars, setShowChars] = useState(false) // special-character palette
   const [showSettings, setShowSettings] = useState(false) // mobile: font/size/spacing hidden behind a gear
-  const [listOpen, setListOpen] = useState(false) // custom bullet/list dropdown
+  const [openMenu, setOpenMenu] = useState<string | null>(null) // which format dropdown is open
   const [findQ, setFindQ] = useState('')
   const [replaceQ, setReplaceQ] = useState('')
   const [matchInfo, setMatchInfo] = useState('')
@@ -629,6 +660,45 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const fontIcon = ({ ko: '가', ja: 'あ', en: 'A' } as Record<string, string>)[params.lang] || 'A'
   const ico = (g: string) => <span className="inline-flex w-4 justify-center text-gray-500 text-[13px] font-bold leading-none">{g}</span>
 
+  // Format controls (font / size / line-height / bullets) — all custom dropdowns. Rendered
+  // once here and placed inline on desktop / full-width below the bar on mobile.
+  const settingsControls = (
+    <>
+      <MenuSelect id="font" open={openMenu} setOpen={setOpenMenu} selCls={selCls} icon={ico(fontIcon)}
+        label={t('np_font_' + (fontList.includes(fam) ? fam : 'sans'))}
+        options={fontList.map((v) => ({ value: v, label: t('np_font_' + v) }))}
+        value={fontList.includes(fam) ? fam : 'sans'} onPick={(v) => patchDoc(activeId, { fam: v })} />
+      <MenuSelect id="size" open={openMenu} setOpen={setOpenMenu} selCls={selCls} icon={ico('↕')}
+        label={t('np_' + size)} options={(['xs', 'sm', 'md', 'lg', 'xl'] as const).map((v) => ({ value: v, label: t('np_' + v) }))}
+        value={size} onPick={(v) => patchDoc(activeId, { size: v as SizeLvl })} />
+      <MenuSelect id="lh" open={openMenu} setOpen={setOpenMenu} selCls={selCls} icon={ico('≡')}
+        label={t('np_' + lh)} options={(['sm', 'md', 'lg'] as const).map((v) => ({ value: v, label: t('np_' + v) }))}
+        value={lh} onPick={(v) => patchDoc(activeId, { lh: v as Lvl })} />
+      {/* List bullet — custom dropdown (leading marker 1./● + dimmed example markers) */}
+      <div className="relative flex-1 min-w-0 sm:flex-none" title={t('np_list')}>
+        {openMenu === 'list' && <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />}
+        <button type="button" onClick={() => setOpenMenu(openMenu === 'list' ? null : 'list')} aria-label={t('np_list')} className={selCls + ' flex items-center gap-1 w-full'}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0 text-gray-400" aria-hidden="true">
+            <line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" />
+            <circle cx="4.5" cy="6" r="1.2" /><circle cx="4.5" cy="12" r="1.2" /><circle cx="4.5" cy="18" r="1.2" />
+          </svg>
+          <span className="truncate flex-1 text-left">{t('np_list')}</span>
+          <span className="shrink-0 text-gray-400 text-[9px]">▾</span>
+        </button>
+        {openMenu === 'list' && (
+          <div className="absolute z-30 mt-1 right-0 bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-xs whitespace-nowrap">
+            <button type="button" onClick={() => { applyBullet('num'); setOpenMenu(null) }} className="flex items-center gap-3 w-full px-3 py-1.5 hover:bg-gray-50 text-left">
+              <span className="text-gray-700">1. {t('np_list_num')}</span><span className="text-gray-300 ml-auto">1. 1) 1&gt;</span>
+            </button>
+            <button type="button" onClick={() => { applyBullet('sym'); setOpenMenu(null) }} className="flex items-center gap-3 w-full px-3 py-1.5 hover:bg-gray-50 text-left">
+              <span className="text-gray-700">● {t('np_list_sym')}</span><span className="text-gray-300 ml-auto">* @ o</span>
+            </button>
+          </div>
+        )}
+      </div>
+    </>
+  )
+
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div ref={wrapRef} className="space-y-3 scroll-mt-20">
@@ -683,55 +753,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             <button onClick={() => { setShowSettings((s) => !s); setShowFind(false); setShowChars(false) }} title={t('np_settings')} aria-label={t('np_settings')} aria-pressed={showSettings} className={'sm:hidden ' + iconBtn + (showSettings ? ' bg-brand-50 text-brand-600' : '')}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="4" x2="4" y1="21" y2="14" /><line x1="4" x2="4" y1="10" y2="3" /><line x1="12" x2="12" y1="21" y2="12" /><line x1="12" x2="12" y1="8" y2="3" /><line x1="20" x2="20" y1="21" y2="16" /><line x1="20" x2="20" y1="12" y2="3" /><line x1="1" x2="7" y1="14" y2="14" /><line x1="9" x2="15" y1="8" y2="8" /><line x1="17" x2="23" y1="16" y2="16" /></svg>
             </button>
-            {/* Per-tab display settings — icon-only (label text dropped to keep the
-                row compact across locales); hover/AT meaning via title + aria-label.
-                Hidden on mobile until the gear is tapped; always shown on desktop. */}
-            <div className={(showSettings ? 'flex' : 'hidden') + ' sm:flex w-full sm:w-auto items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500'}>
-              <label className="flex items-center gap-1 flex-1 min-w-0 sm:flex-none" title={t('np_font')}>{ico(fontIcon)}
-                <select aria-label={t('np_font')} title={t('np_font')} value={fontList.includes(fam) ? fam : 'sans'} onChange={(e) => patchDoc(activeId, { fam: e.target.value })} className={selCls}>
-                  {fontList.map((v) => <option key={v} value={v}>{t('np_font_' + v)}</option>)}
-                </select>
-              </label>
-              <label className="flex items-center gap-1 flex-1 min-w-0 sm:flex-none" title={t('np_size')}>{ico('↕')}
-                <select aria-label={t('np_size')} title={t('np_size')} value={size} onChange={(e) => patchDoc(activeId, { size: e.target.value as SizeLvl })} className={selCls}>
-                  <option value="xs">{t('np_xs')}</option>
-                  <option value="sm">{t('np_sm')}</option>
-                  <option value="md">{t('np_md')}</option>
-                  <option value="lg">{t('np_lg')}</option>
-                  <option value="xl">{t('np_xl')}</option>
-                </select>
-              </label>
-              <label className="flex items-center gap-1 flex-1 min-w-0 sm:flex-none" title={t('np_lineheight')}>{ico('≡')}
-                <select aria-label={t('np_lineheight')} title={t('np_lineheight')} value={lh} onChange={(e) => patchDoc(activeId, { lh: e.target.value as Lvl })} className={selCls}>
-                  <option value="sm">{t('np_sm')}</option>
-                  <option value="md">{t('np_md')}</option>
-                  <option value="lg">{t('np_lg')}</option>
-                </select>
-              </label>
-              {/* List bullet — custom dropdown so each row can show a leading marker (1. / ●)
-                  and dimmed example markers (native <option> can't colour part of its text). */}
-              <div className="relative flex-1 min-w-0 sm:flex-none" title={t('np_list')}>
-                {listOpen && <div className="fixed inset-0 z-10" onClick={() => setListOpen(false)} />}
-                <button type="button" onClick={() => setListOpen((o) => !o)} aria-label={t('np_list')} className={selCls + ' flex items-center gap-1 w-full'}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0 text-gray-400" aria-hidden="true">
-                    <line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" />
-                    <circle cx="4.5" cy="6" r="1.2" /><circle cx="4.5" cy="12" r="1.2" /><circle cx="4.5" cy="18" r="1.2" />
-                  </svg>
-                  <span className="truncate flex-1 text-left">{t('np_list')}</span>
-                  <span className="shrink-0 text-gray-400 text-[9px]">▾</span>
-                </button>
-                {listOpen && (
-                  <div className="absolute z-30 mt-1 right-0 bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-xs whitespace-nowrap">
-                    <button type="button" onClick={() => { applyBullet('num'); setListOpen(false) }} className="flex items-center gap-3 w-full px-3 py-1.5 hover:bg-gray-50 text-left">
-                      <span className="text-gray-700">1. {t('np_list_num')}</span><span className="text-gray-300 ml-auto">1. 1) 1&gt;</span>
-                    </button>
-                    <button type="button" onClick={() => { applyBullet('sym'); setListOpen(false) }} className="flex items-center gap-3 w-full px-3 py-1.5 hover:bg-gray-50 text-left">
-                      <span className="text-gray-700">● {t('np_list_sym')}</span><span className="text-gray-300 ml-auto">* @ o</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+            {/* Display settings — inline on desktop; on mobile they move to a full-width row
+                below the bar (so the save-time on the right doesn't squeeze them). */}
+            <div className="hidden sm:flex items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500">{settingsControls}</div>
           </div>
           <div className="flex items-center gap-2 shrink-0 min-h-7">
             {/* Show the save status only when the tab has content; "saving…" auto-hides after 3s. */}
@@ -742,6 +766,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             )}
           </div>
         </div>
+
+        {/* Mobile display settings — full-width row below the bar (uses the whole width). */}
+        {showSettings && <div className="sm:hidden flex items-center gap-2 flex-wrap text-xs text-gray-500">{settingsControls}</div>}
 
         {showFind && (
           <div className="flex flex-wrap items-center gap-2 p-2 rounded-xl bg-gray-50 border border-gray-200">
