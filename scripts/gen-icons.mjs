@@ -159,6 +159,22 @@ const VECTOR = {
     ['path', { d: 'm3.3 7 8.7 5 8.7-5' }],
     ['path', { d: 'M12 22V12' }],
   ],
+  'remove-exif': [ // shield-check (privacy — strip location/metadata)
+    ['path', { d: 'M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z' }],
+    ['path', { d: 'm9 12 2 2 4-4' }],
+  ],
+  'background-remover': [ // scissors (cut the subject out)
+    ['circle', { cx: '6', cy: '6', r: '3' }],
+    ['path', { d: 'M8.12 8.12 12 12' }],
+    ['path', { d: 'M20 4 8.12 15.88' }],
+    ['circle', { cx: '6', cy: '18', r: '3' }],
+    ['path', { d: 'M14.8 14.8 20 20' }],
+  ],
+  'image-mosaic': [ // grid-3x3 (mosaic / pixelate)
+    ['rect', { x: '3', y: '3', width: '18', height: '18', rx: '2' }],
+    ['path', { d: 'M3 9h18' }], ['path', { d: 'M3 15h18' }],
+    ['path', { d: 'M9 3v18' }], ['path', { d: 'M15 3v18' }],
+  ],
   'unzip': [ // package-open
     ['path', { d: 'M12 22v-9' }],
     ['path', { d: 'M15.17 2.21a1.67 1.67 0 0 1 1.63 0L21 4.57a1.93 1.93 0 0 1 0 3.36L8.82 14.79a1.655 1.655 0 0 1-1.64 0L3 12.43a1.93 1.93 0 0 1 0-3.36z' }],
