@@ -108,13 +108,6 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
         <BatchImageProcessor slug="remove-exif" processFn={processFn} zipBaseName="no-exif"
           accept="image/jpeg,image/png" onFilesChange={onFilesChange}
           newColumn={metaColumn} hideOrigColMobile hidePrivacyBadge aboveCta={modeSelector} ctaLabel={(n) => t('rx_cta', { n })} />
-
-        {/* Privacy emphasis (privacy tool) */}
-        <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-xs text-emerald-800 space-y-1">
-          <p className="font-semibold">🔒 {t('rx_privacy_title')}</p>
-          <p>{t('rx_privacy_1')}</p>
-          <p>{t('rx_privacy_2')}</p>
-        </div>
       </div>
     </ToolLayout>
   )
