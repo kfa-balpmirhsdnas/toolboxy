@@ -3949,6 +3949,8 @@
     "lt_disclaimer": "Just for fun. It only picks random numbers — it does not guarantee a win or improve your odds.",
     "br_drop": "Upload or drag in a photo",
     "br_remove": "Remove background",
+    "br_open": "Open",
+    "br_save": "Save",
     "br_note_first": "The first run downloads the AI model once (may take a moment). After that it’s fast.",
     "md_note_local": "Everything is processed in your browser — files never leave your device.",
     "pp_lock": "Lock",

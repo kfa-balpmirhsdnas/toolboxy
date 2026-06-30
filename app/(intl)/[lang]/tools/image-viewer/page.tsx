@@ -206,9 +206,14 @@ export default function ImageViewerPage() {
 
   // Crop: drag a rectangle on the (un-zoomed, un-rotated) image, then save just that region.
   function toggleCrop() { if (cropMode) { setCropMode(false); setCrop(null) } else { resetView(); setCrop(null); setCropMode(true) } }
-  const stageXY = (e: React.MouseEvent) => { const r = stageRef.current!.getBoundingClientRect(); return { x: Math.max(0, Math.min(e.clientX - r.left, r.width)), y: Math.max(0, Math.min(e.clientY - r.top, r.height)) } }
-  const cropDown = (e: React.MouseEvent) => { const p = stageXY(e); cropDrag.current = p; setCrop({ x: p.x, y: p.y, w: 0, h: 0 }) }
-  const cropMove = (e: React.MouseEvent) => { if (!cropDrag.current) return; const p = stageXY(e), s = cropDrag.current; const nc = { x: Math.min(s.x, p.x), y: Math.min(s.y, p.y), w: Math.abs(p.x - s.x), h: Math.abs(p.y - s.y) }; lastCrop.current = nc; setCrop(nc) }
+  // Works for both mouse and touch (so crop drag works on mobile too).
+  const stageXY = (e: React.MouseEvent | React.TouchEvent) => {
+    const pt = 'touches' in e ? (e.touches[0] || e.changedTouches[0]) : e
+    const r = stageRef.current!.getBoundingClientRect()
+    return { x: Math.max(0, Math.min(pt.clientX - r.left, r.width)), y: Math.max(0, Math.min(pt.clientY - r.top, r.height)) }
+  }
+  const cropDown = (e: React.MouseEvent | React.TouchEvent) => { const p = stageXY(e); cropDrag.current = p; setCrop({ x: p.x, y: p.y, w: 0, h: 0 }) }
+  const cropMove = (e: React.MouseEvent | React.TouchEvent) => { if (!cropDrag.current) return; const p = stageXY(e), s = cropDrag.current; const nc = { x: Math.min(s.x, p.x), y: Math.min(s.y, p.y), w: Math.abs(p.x - s.x), h: Math.abs(p.y - s.y) }; lastCrop.current = nc; setCrop(nc) }
   // Finishing a crop drag pops the save (name + format) dialog automatically.
   const cropUp = () => { cropDrag.current = null; const c = lastCrop.current; if (c && c.w >= 6 && c.h >= 6) openSave() }
   async function cropSave(f: 'orig' | 'jpg' | 'png' | 'webp' = fmt, name?: string) {
@@ -268,7 +273,8 @@ export default function ImageViewerPage() {
     <div ref={stageRef}
       onWheel={cropMode ? undefined : onWheel}
       onMouseDown={cropMode ? cropDown : onDown} onMouseMove={cropMode ? cropMove : onMove} onMouseUp={cropMode ? cropUp : onUp} onMouseLeave={cropMode ? cropUp : onUp}
-      onTouchStart={cropMode ? undefined : onTStart} onTouchEnd={cropMode ? undefined : onTEnd}
+      onTouchStart={cropMode ? cropDown : onTStart} onTouchMove={cropMode ? cropMove : undefined} onTouchEnd={cropMode ? cropUp : onTEnd}
+      style={cropMode ? { touchAction: 'none' } : undefined}
       className={'relative overflow-hidden rounded-xl bg-gray-900 select-none ' + heightCls + (cropMode ? ' cursor-crosshair' : zoom > 1 ? ' cursor-grab active:cursor-grabbing' : '')}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={cur.url} alt={cur.name} draggable={false} style={{ transform }} className="absolute inset-0 m-auto max-w-full max-h-full object-contain" />
@@ -349,10 +355,10 @@ export default function ImageViewerPage() {
               <button className={toolbarBtn(dark)} title={cropMode ? t('iv_save_crop') : t('iv_save')} aria-label={t('iv_save')} onClick={openSave}><ToolIcon name="save" /></button>
               {/* Open file picker directly (no confirm) */}
               <button className={toolbarBtn(dark)} title={t('iv_newfile')} aria-label={t('iv_newfile')} onClick={() => fileRef.current?.click()}><ToolIcon name="folder" /></button>
-              {/* View mode — PC only (the grid layout needs the width) */}
-              <span className={toolbarDivider(dark) + ' hidden md:block'} />
-              <button className={toolbarBtn(dark, viewMode === 'film') + ' hidden md:inline-flex'} title={t('iv_view_film')} aria-label={t('iv_view_film')} onClick={() => setViewMode('film')}><ToolIcon name="film" /></button>
-              <button className={toolbarBtn(dark, viewMode === 'grid') + ' hidden md:inline-flex'} title={t('iv_view_grid')} aria-label={t('iv_view_grid')} onClick={() => setViewMode('grid')}><ToolIcon name="grid" /></button>
+              {/* View mode — film / thumbnail grid (shown on mobile too) */}
+              <span className={toolbarDivider(dark)} />
+              <button className={toolbarBtn(dark, viewMode === 'film')} title={t('iv_view_film')} aria-label={t('iv_view_film')} onClick={() => setViewMode('film')}><ToolIcon name="film" /></button>
+              <button className={toolbarBtn(dark, viewMode === 'grid')} title={t('iv_view_grid')} aria-label={t('iv_view_grid')} onClick={() => setViewMode('grid')}><ToolIcon name="grid" /></button>
               <span className={toolbarDivider(dark)} />
               <button className={toolbarBtn(dark)} title={t('iv_rotate_l')} onClick={() => setRot((r) => r - 90)}><ToolIcon name="rotate-ccw" /></button>
               <button className={toolbarBtn(dark)} title={t('iv_rotate_r')} onClick={() => setRot((r) => r + 90)}><ToolIcon name="rotate-cw" /></button>

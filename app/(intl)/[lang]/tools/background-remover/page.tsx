@@ -121,9 +121,9 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
                 <button onClick={removeBg} disabled={busy}
                   className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40">{busy ? t('md_processing') : t('br_remove')}</button>
               ) : (
-                <button onClick={download} className="px-6 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700">{t('md_download')} (PNG)</button>
+                <button onClick={download} className="px-6 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 inline-flex items-center gap-1.5"><ToolIcon name="save" className="w-4 h-4" />{t('br_save')} (PNG)</button>
               )}
-              <button onClick={() => { setUrl(''); setFile(null); setOutUrl('') }} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 inline-flex items-center justify-center" aria-label="reset"><ToolIcon name="refresh" className="w-4 h-4" /></button>
+              <button onClick={() => inputRef.current?.click()} title={t('br_open')} aria-label={t('br_open')} className="px-3 py-2 text-sm text-gray-600 hover:text-brand-600 border border-gray-200 rounded-xl hover:bg-gray-50 inline-flex items-center gap-1.5"><ToolIcon name="folder" className="w-4 h-4" />{t('br_open')}</button>
             </div>
             {!outUrl && !busy && <p className="text-xs text-gray-400 text-center">{t('br_note_first')}</p>}
           </>
