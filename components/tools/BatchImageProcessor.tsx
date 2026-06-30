@@ -17,7 +17,7 @@
  *   <BatchImageProcessor slug="batch-image-resizer" processFn={processFn} zipBaseName="resized" />
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
@@ -84,6 +84,12 @@ interface Props {
   onFilesChange?: (files: File[]) => void
   /** List-view size columns: 'bytes' (file size, default) or 'pixels' (W×H). */
   sizeUnit?: 'bytes' | 'pixels'
+  /**
+   * Optional per-file annotation rendered under the filename in the input list
+   * (e.g. EXIF tags for remove-exif). Default undefined → nothing extra is shown,
+   * so other tools are unaffected.
+   */
+  rowExtra?: (file: File) => ReactNode
 }
 
 let _seq = 0
@@ -117,7 +123,7 @@ function dedupeName(name: string, used: Set<string>): string {
   return candidate
 }
 
-export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange, sizeUnit = 'bytes' }: Props) {
+export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange, sizeUnit = 'bytes', rowExtra }: Props) {
   const t = useTranslations('toolui')
   const [items, setItems] = useState<InputItem[]>([])
   const [results, setResults] = useState<OutItem[]>([])
@@ -403,7 +409,10 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
                 const newCell = !res ? '—' : sizeUnit === 'pixels' ? fmtPx(res.dims) : fmtBytes(res.outSize)
                 return (
                   <div key={it.id} className="flex items-center gap-2 px-3 py-2">
-                    <span className="flex-1 min-w-0 truncate text-gray-800" title={it.file.name}>{previewName ? previewName(it.file, idx) : it.file.name}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="truncate text-gray-800" title={it.file.name}>{previewName ? previewName(it.file, idx) : it.file.name}</p>
+                      {rowExtra && <div className="mt-0.5">{rowExtra(it.file)}</div>}
+                    </div>
                     <span className={`${sizeColW} text-right shrink-0 text-gray-500`}>{origCell}</span>
                     <span className={`${sizeColW} text-right shrink-0 text-gray-700`}>{newCell}</span>
                     <button onClick={() => removeItem(it.id)} aria-label={t('bip_remove')} className="w-4 shrink-0 text-gray-300 hover:text-red-500 transition-colors">✕</button>

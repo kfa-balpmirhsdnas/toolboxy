@@ -41,6 +41,20 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
   const gpsCount = scans.filter((s) => s.gps).length
   const metaCount = scans.filter((s) => s.any).length
 
+  // Per-file EXIF tags shown inline in the shared processor's list (replaces a separate list).
+  const rowExtra = useCallback((file: File) => {
+    const s = scans.find((x) => x.name === file.name)
+    if (!s) return null
+    return (
+      <div className="flex flex-wrap items-center gap-1 text-[10px]">
+        {s.gps && <span className="rounded bg-amber-100 text-amber-800 px-1.5 py-0.5 font-medium">⚠️ {t('rx_tag_gps')}</span>}
+        {s.camera && <span className="rounded bg-gray-100 text-gray-600 px-1.5 py-0.5">{t('rx_tag_camera')}</span>}
+        {s.date && <span className="rounded bg-gray-100 text-gray-600 px-1.5 py-0.5">{t('rx_tag_date')}</span>}
+        {!s.any && <span className="text-gray-400">{t('rx_tag_clean')}</span>}
+      </div>
+    )
+  }, [scans, t])
+
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="max-w-xl mx-auto space-y-4">
@@ -63,39 +77,27 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
           </div>
         </div>
 
-        {/* Detected metadata + GPS warning (shown once files are queued) */}
+        {/* Detected-metadata summary / GPS warning (per-file tags now live in the list below) */}
         {scans.length > 0 && (
-          <div className="space-y-2">
-            {gpsCount > 0 ? (
-              <p className="text-sm rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2">
-                ⚠️ {t('rx_gps_warn', { n: gpsCount })}
-              </p>
-            ) : metaCount > 0 ? (
-              <p className="text-sm rounded-xl bg-gray-50 border border-gray-200 text-gray-600 px-3 py-2">
-                {t('rx_meta_found', { n: metaCount })}
-              </p>
-            ) : (
-              <p className="text-sm rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 px-3 py-2">
-                {t('rx_no_meta')}
-              </p>
-            )}
-            <div className="rounded-xl border border-gray-200 divide-y divide-gray-100 max-h-44 overflow-y-auto">
-              {scans.map((s, i) => (
-                <div key={i} className="flex items-center gap-2 px-3 py-1.5 text-xs">
-                  <span className="flex-1 min-w-0 truncate text-gray-700">{s.name}</span>
-                  {s.gps && <span className="shrink-0 rounded bg-amber-100 text-amber-800 px-1.5 py-0.5 font-medium">⚠️ {t('rx_tag_gps')}</span>}
-                  {s.camera && <span className="shrink-0 rounded bg-gray-100 text-gray-600 px-1.5 py-0.5">{t('rx_tag_camera')}</span>}
-                  {s.date && <span className="shrink-0 rounded bg-gray-100 text-gray-600 px-1.5 py-0.5">{t('rx_tag_date')}</span>}
-                  {!s.any && <span className="shrink-0 text-gray-400">{t('rx_tag_clean')}</span>}
-                </div>
-              ))}
-            </div>
-          </div>
+          gpsCount > 0 ? (
+            <p className="text-sm rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2">
+              ⚠️ {t('rx_gps_warn', { n: gpsCount })}
+            </p>
+          ) : metaCount > 0 ? (
+            <p className="text-sm rounded-xl bg-gray-50 border border-gray-200 text-gray-600 px-3 py-2">
+              {t('rx_meta_found', { n: metaCount })}
+            </p>
+          ) : (
+            <p className="text-sm rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 px-3 py-2">
+              {t('rx_no_meta')}
+            </p>
+          )
         )}
 
-        {/* Upload + process + download (shared batch engine; strips at byte level) */}
+        {/* Upload + process + download (shared batch engine; strips at byte level).
+            Per-file EXIF tags render inline via rowExtra — no separate list. */}
         <BatchImageProcessor slug="remove-exif" processFn={processFn} zipBaseName="no-exif"
-          accept="image/jpeg,image/png" onFilesChange={onFilesChange}
+          accept="image/jpeg,image/png" onFilesChange={onFilesChange} rowExtra={rowExtra}
           ctaLabel={(n) => t('rx_cta', { n })} />
 
         {/* Privacy emphasis (privacy tool) */}
