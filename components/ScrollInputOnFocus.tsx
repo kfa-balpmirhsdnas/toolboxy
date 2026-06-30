@@ -30,9 +30,11 @@ export default function ScrollInputOnFocus() {
       if (!isField) return
       // defer so the keyboard begins opening and layout settles first
       setTimeout(() => {
-        const top = el.getBoundingClientRect().top
-        if (top <= HEADER_OFFSET + 8) return // already at/near the top — don't jump
-        window.scrollTo({ top: top + window.scrollY - HEADER_OFFSET, behavior: 'smooth' })
+        // Convention: scroll the tool CARD into view — its scroll-mt-16 clears the fixed
+        // header. Always scrollIntoView, never window.scrollTo offset math (which over-shot
+        // and yanked fields too far up). Fall back to the field if there's no card ancestor.
+        const card = (el.closest('.scroll-mt-16') as HTMLElement | null) ?? el
+        if (card.getBoundingClientRect().top > HEADER_OFFSET + 8) card.scrollIntoView({ block: 'start' })
       }, 250)
     }
     document.addEventListener('focusin', handle)
