@@ -490,21 +490,17 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   // native scroll otherwise overshoots past it). Desktop scrolls immediately.
   function scrollBoxTop() {
     // Scroll the tool card to just under the sticky header (its scroll-mt-16). Instant — a
-    // smooth scroll gets cancelled by the keyboard.
+    // smooth scroll gets cancelled by the keyboard. A single fixed-delay scroll is what
+    // reliably lands on the card's top line: scrolling only AFTER the keyboard has fully
+    // settled (visualViewport) overshoots upward, so we deliberately fire mid-open instead.
     const el = wrapRef.current?.closest('.bg-white.rounded-2xl') as HTMLElement | null; if (!el) return
     const go = () => el.scrollIntoView({ block: 'start' })
-    // Mouse devices have no keyboard — scroll right away.
-    if (!window.matchMedia?.('(pointer: coarse)').matches) { setTimeout(go, 60); return }
-    // Touch devices (any width, incl. the wide-screen Galaxy Z Fold): the on-screen keyboard
-    // resizes the visual viewport over a few frames. A fixed delay either fires too early
-    // (lands short) or too late — so scroll ONCE the viewport has stopped resizing, which
-    // lands exactly on the card's top line on every device. Fallback if no resize fires.
-    let done = false
-    const settle = () => { if (done) return; done = true; window.visualViewport?.removeEventListener('resize', onResize); go() }
-    let timer: ReturnType<typeof setTimeout>
-    const onResize = () => { clearTimeout(timer); timer = setTimeout(settle, 150) }
-    window.visualViewport?.addEventListener('resize', onResize)
-    setTimeout(settle, 600)
+    // Touch devices pop a keyboard and need to wait for it (detect by touch, not width, so the
+    // wide-screen Fold counts too). A wide touch screen (unfolded Fold) animates its keyboard
+    // slower than a phone, so it gets a longer wait. Mouse devices scroll immediately.
+    const touch = (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) || !!window.matchMedia?.('(pointer: coarse)').matches
+    const delay = !touch ? 60 : window.innerWidth >= 640 ? 500 : 350
+    setTimeout(go, delay)
   }
   // Attach focus-scroll as a NATIVE listener — it fires reliably for every focus
   // (incl. real taps/clicks), unlike React's onFocus which proved flaky here.
