@@ -435,11 +435,6 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             <button onClick={() => setScale((s) => Math.min(3, +((s || 1) + 0.15).toFixed(2)))} title={t('pa_zoom')} aria-label="zoom in" className="hidden md:flex w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 items-center justify-center"><ToolIcon name="zoom-in" /></button>
             <button onClick={() => wrapRef.current?.requestFullscreen?.()} title={t('pa_fullscreen')} className="w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 flex items-center justify-center"><ToolIcon name="maximize" /></button>
             <button onClick={() => { setShowSearch((s) => !s); setShowPenTools(false) }} title={t('pa_search')} aria-label={t('pa_search')} className={'w-9 h-9 rounded-lg flex items-center justify-center ' + (showSearch ? 'bg-brand-100 text-brand-700' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100')}><ToolIcon name="search" /></button>
-            {/* Mobile zoom slider — inside the bar (wraps to its own line on narrow screens) */}
-            <div className="md:hidden flex items-center gap-1.5 flex-1 min-w-[120px] pl-1">
-              <input type="range" min={0.4} max={3} step={0.05} value={scale} onChange={(e) => setScale(+e.target.value)} aria-label={t('pa_zoom')} className="flex-1 accent-brand-600" />
-              <span className="text-xs tabular-nums text-gray-500 w-10 text-right">{Math.round(scale * 100)}%</span>
-            </div>
           </div>
 
           {/* Pen-tools palette — floats below the toolbar (absolute → no layout shift) */}
@@ -556,7 +551,20 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
             <ToolIcon name="check" className="w-4 h-4" />{captureMsg}
           </div>
         )}
-        <p className="text-xs text-emerald-700 text-center">🔒 {t('pa_local')}</p>
+        {/* Mobile zoom — moved out of the top toolbar to the bottom (only once a PDF is loaded) */}
+        {ready && (
+          <div className="md:hidden flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
+            <span className="text-xs text-gray-500 shrink-0">{t('pa_zoom')}</span>
+            <input type="range" min={0.4} max={3} step={0.05} value={scale} onChange={(e) => setScale(+e.target.value)} aria-label={t('pa_zoom')} className="flex-1 accent-brand-600" />
+            <span className="text-xs tabular-nums text-gray-500 w-10 text-right shrink-0">{Math.round(scale * 100)}%</span>
+          </div>
+        )}
+
+        {/* Privacy banner — unified style with the other tools */}
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+          <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+          <span>{t('pa_local')}</span>
+        </div>
 
         {/* Convert this PDF with our other tools */}
         <div className="flex flex-wrap items-center justify-center gap-2 pt-1">

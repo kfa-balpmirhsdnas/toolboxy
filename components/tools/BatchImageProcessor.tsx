@@ -372,10 +372,34 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
       {(items.length > 0 || listFirst) && (
         <div className={'space-y-3' + (listFirst ? ' order-first' : '')}>
           {items.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-gray-200 p-6 text-center text-sm text-gray-400">{t('bip_list_empty')}</div>
+            // Preview of the list chrome (header buttons + column headers) before any file loads.
+            <div className="opacity-70 pointer-events-none space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-semibold text-gray-400"><span className="sm:hidden">{t('bip_files_short', { n: 0 })}</span><span className="hidden sm:inline">{t('bip_files_n', { n: 0 })}</span></p>
+                <div className="flex items-center gap-2">
+                  <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
+                    {(['list', 'thumbnails'] as const).map((v) => (
+                      <span key={v} className={'flex items-center gap-1 whitespace-nowrap px-2.5 py-1 rounded-md font-medium ' + (v === 'list' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-400')}>
+                        <ToolIcon name={v === 'list' ? 'list' : 'grid'} className="w-3.5 h-3.5" />{v === 'list' ? t('bip_view_list') : t('bip_view_thumb')}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="flex items-center gap-1 whitespace-nowrap text-xs text-gray-400 border border-gray-200 rounded-lg px-2 py-1"><ToolIcon name="trash" className="w-3.5 h-3.5" />{t('ui_clear')}</span>
+                </div>
+              </div>
+              <div className="border border-gray-200 rounded-xl overflow-hidden text-sm">
+                <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 text-xs font-medium text-gray-400">
+                  <span className="flex-1 min-w-0">{t('bip_col_name')}</span>
+                  <span className={`${origHide}${sizeColW} ${newColumn ? 'text-left' : 'text-right'} shrink-0`}>{t('bip_col_orig')}</span>
+                  <span className={`${newColW} ${newColumn ? 'text-left' : 'text-right'} shrink-0`}>{newColumn ? newColumn.header : t('bip_col_new')}</span>
+                  <span className="w-4 shrink-0" />
+                </div>
+                <div className="p-6 text-center text-gray-300">{t('bip_list_empty')}</div>
+              </div>
+            </div>
           ) : (<>
           <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-semibold text-gray-700">{t('bip_files_n', { n: items.length })}</p>
+            <p className="text-sm font-semibold text-gray-700"><span className="sm:hidden">{t('bip_files_short', { n: items.length })}</span><span className="hidden sm:inline">{t('bip_files_n', { n: items.length })}</span></p>
             <div className="flex items-center gap-2">
               {/* View toggle: list (default) / thumbnails */}
               <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
@@ -430,7 +454,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
             <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 text-xs font-medium text-gray-500">
               <span className="flex-1 min-w-0">{t('bip_col_name')}</span>
               <span className={`${origHide}${sizeColW} text-right shrink-0`}>{t('bip_col_orig')}</span>
-              <span className={`${newColW} text-right shrink-0`}>{newColumn ? newColumn.header : t('bip_col_new')}</span>
+              <span className={`${newColW} ${newColumn ? 'text-left' : 'text-right'} shrink-0`}>{newColumn ? newColumn.header : t('bip_col_new')}</span>
               <span className="w-4 shrink-0" />
             </div>
             <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
@@ -445,7 +469,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
                       {rowExtra && <div className="mt-0.5">{rowExtra(it.file)}</div>}
                     </div>
                     <span className={`${origHide}${sizeColW} text-right shrink-0 text-gray-500`}>{origCell}</span>
-                    <span className={`${newColW} text-right shrink-0 text-gray-700 text-xs`}>{newColumn ? newColumn.cell(it.file) : newCell}</span>
+                    <span className={`${newColW} ${newColumn ? 'text-left' : 'text-right'} shrink-0 text-gray-700 text-xs`}>{newColumn ? newColumn.cell(it.file) : newCell}</span>
                     <button onClick={() => removeItem(it.id)} aria-label={t('bip_remove')} className="w-4 shrink-0 text-gray-300 hover:text-red-500 transition-colors">✕</button>
                   </div>
                 )

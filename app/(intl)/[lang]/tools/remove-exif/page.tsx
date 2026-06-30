@@ -80,7 +80,7 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
       if (!s) return <span className="text-gray-300">…</span>
       if (!s.any) return <span className="text-gray-300">—</span>
       return (
-        <div className="flex flex-wrap justify-end gap-1 text-[10px] font-normal">
+        <div className="flex flex-wrap justify-start gap-1 text-[10px] font-normal">
           {s.gps && <span className="rounded bg-amber-100 text-amber-800 px-1.5 py-0.5 font-medium">⚠️{t('rx_tag_gps')}</span>}
           {s.camera && <span className="rounded bg-gray-100 text-gray-600 px-1.5 py-0.5">{t('rx_tag_camera')}</span>}
           {s.date && <span className="rounded bg-gray-100 text-gray-600 px-1.5 py-0.5">{t('rx_tag_date')}</span>}

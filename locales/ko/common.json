@@ -7240,6 +7240,7 @@
     "bip_supports": "JPG, PNG, WebP, GIF · 브라우저에서 처리",
     "bip_privacy": "이미지가 서버에 올라가지 않습니다. 모든 처리가 이 브라우저 안에서만 이뤄집니다.",
     "bip_files_n": "{n}개 파일 선택됨",
+    "bip_files_short": "{n}개 선택",
     "bip_remove": "제거",
     "bip_process": "{n}장 처리하기",
     "bip_processing": "처리 중… {c}/{t}",

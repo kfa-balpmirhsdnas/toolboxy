@@ -6826,6 +6826,7 @@
     "bip_supports": "JPG, PNG, WebP, GIF · processed in your browser",
     "bip_privacy": "Your images are never uploaded. Everything is processed only inside this browser.",
     "bip_files_n": "{n} files selected",
+    "bip_files_short": "{n} selected",
     "bip_remove": "Remove",
     "bip_process": "Process {n} images",
     "bip_processing": "Processing… {c}/{t}",

@@ -7213,6 +7213,7 @@
     "bip_supports": "JPG, PNG, WebP, GIF・ブラウザ内で処理",
     "bip_privacy": "画像はサーバーにアップロードされません。すべての処理はこのブラウザ内だけで行われます。",
     "bip_files_n": "{n}個のファイルを選択",
+    "bip_files_short": "{n}件選択",
     "bip_remove": "削除",
     "bip_process": "{n}枚を処理",
     "bip_processing": "処理中… {c}/{t}",
