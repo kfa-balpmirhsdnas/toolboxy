@@ -64,10 +64,10 @@ export default function RenameRulesPanel({ rules: r, onChange: up, sampleNames }
             </Rule>
 
             <Rule on={r.frOn} onToggle={(v) => up({ frOn: v })} label={t('brn_find_replace')}>
-              <span>{t('brn_find')}</span>
-              <input value={r.find} onChange={(e) => up({ find: e.target.value })} className={inp + ' w-14 sm:w-28'} />
-              <span>{t('brn_replace')}</span>
-              <input value={r.replace} onChange={(e) => up({ replace: e.target.value })} className={inp + ' w-14 sm:w-28'} />
+              <span className="shrink-0">{t('brn_find')}</span>
+              <input value={r.find} onChange={(e) => up({ find: e.target.value })} className={inp + ' flex-1 min-w-0'} />
+              <span className="shrink-0">{t('brn_replace')}</span>
+              <input value={r.replace} onChange={(e) => up({ replace: e.target.value })} className={inp + ' flex-1 min-w-0'} />
             </Rule>
 
             <Rule on={r.extLowerOn} onToggle={(v) => up({ extLowerOn: v })} label={t('brn_ext_lower')}>

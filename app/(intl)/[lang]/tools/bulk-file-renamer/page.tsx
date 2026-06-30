@@ -36,7 +36,8 @@ export default function BulkFileRenamerPage({ params }: { params: { lang: string
 
   function add(list: FileList | File[] | null) {
     if (!list || !list.length) return
-    setFiles((prev) => [...prev, ...Array.from(list)])
+    const arr = Array.from(list) // snapshot now — a FileList empties once the event ends / input is reset
+    setFiles((prev) => [...prev, ...arr])
   }
   function removeAt(i: number) { setFiles((f) => f.filter((_, k) => k !== i)) }
   function clearAll() { setFiles([]); setSkipExts(new Set()) }
@@ -84,9 +85,6 @@ export default function BulkFileRenamerPage({ params }: { params: { lang: string
           <h1 className="text-2xl font-bold text-gray-900">{t('bfr_title')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('bfr_subtitle')}</p>
         </div>
-
-        {/* zip-rename notice */}
-        <p className="text-sm rounded-xl bg-blue-50 border border-blue-200 text-blue-800 px-4 py-2.5">ℹ️ {t('bfr_zip_note')}</p>
 
         {/* Rename rules (shared with batch-image-rename) */}
         <RenameRulesPanel rules={r} onChange={up} sampleNames={SAMPLE_NAMES} />
@@ -151,6 +149,9 @@ export default function BulkFileRenamerPage({ params }: { params: { lang: string
             </button>
           </>
         )}
+
+        {/* zip-rename notice — at the bottom */}
+        <p className="text-sm rounded-xl bg-blue-50 border border-blue-200 text-blue-800 px-4 py-2.5">ℹ️ {t('bfr_zip_note')}</p>
       </div>
     </ToolLayout>
   )
