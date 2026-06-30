@@ -105,6 +105,9 @@ interface Props {
   /** Hide the "original size" column on mobile (shown again at sm+) — for tools where
    *  size isn't the focus and the row is cramped. Default false. */
   hideOrigColMobile?: boolean
+  /** Hide the built-in "files never leave your device" badge — for tools that show their
+   *  own privacy notice elsewhere. Default false. */
+  hidePrivacyBadge?: boolean
 }
 
 let _seq = 0
@@ -138,7 +141,7 @@ function dedupeName(name: string, used: Set<string>): string {
   return candidate
 }
 
-export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange, sizeUnit = 'bytes', rowExtra, aboveCta, newColumn, hideOrigColMobile }: Props) {
+export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange, sizeUnit = 'bytes', rowExtra, aboveCta, newColumn, hideOrigColMobile, hidePrivacyBadge }: Props) {
   const t = useTranslations('toolui')
   const [items, setItems] = useState<InputItem[]>([])
   const [results, setResults] = useState<OutItem[]>([])
@@ -354,10 +357,12 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
         <p className="text-sm text-gray-400 mt-1">{t('bip_supports')}</p>
       </div>
 
-      {/* Privacy badge */}
-      <p className="text-xs text-center text-green-700 bg-green-50 border border-green-100 rounded-lg py-1.5">
-        🔒 {t('bip_privacy')}
-      </p>
+      {/* Privacy badge (tools with their own privacy notice can hide it) */}
+      {!hidePrivacyBadge && (
+        <p className="text-xs text-center text-green-700 bg-green-50 border border-green-100 rounded-lg py-1.5">
+          🔒 {t('bip_privacy')}
+        </p>
+      )}
 
       {/* Input list */}
       {items.length > 0 && (

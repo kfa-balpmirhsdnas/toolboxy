@@ -80,6 +80,12 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
       <div className="max-w-xl mx-auto space-y-4">
         {/* Tool name lives in ToolLayout's header; the description moved to the How-to section. */}
 
+        {/* Privacy banner — same wording as image-mosaic; this tool handles sensitive photos */}
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+          <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+          <span><b>{t('im_privacy_title')}</b> {t('im_privacy')}</span>
+        </div>
+
         {/* Detected-metadata summary / GPS warning (per-file tags now live in the list below) */}
         {scans.length > 0 && (
           gpsCount > 0 ? (
@@ -101,7 +107,7 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
             Per-file EXIF tags render inline via rowExtra — no separate list. */}
         <BatchImageProcessor slug="remove-exif" processFn={processFn} zipBaseName="no-exif"
           accept="image/jpeg,image/png" onFilesChange={onFilesChange}
-          newColumn={metaColumn} hideOrigColMobile aboveCta={modeSelector} ctaLabel={(n) => t('rx_cta', { n })} />
+          newColumn={metaColumn} hideOrigColMobile hidePrivacyBadge aboveCta={modeSelector} ctaLabel={(n) => t('rx_cta', { n })} />
 
         {/* Privacy emphasis (privacy tool) */}
         <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-xs text-emerald-800 space-y-1">
