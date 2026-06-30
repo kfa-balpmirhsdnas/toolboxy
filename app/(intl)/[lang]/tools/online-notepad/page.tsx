@@ -519,6 +519,26 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     ta.addEventListener('focus', h)
     return () => ta.removeEventListener('focus', h)
   }, [])
+  // Mobile keyboard: shrink the editor to exactly fit the area between the toolbar and the
+  // on-screen keyboard. Then pressing Enter scrolls the textarea INTERNALLY instead of jolting
+  // the whole page on every keystroke. Recompute only on viewport resize (keyboard open/close)
+  // — never on scroll — so typing never triggers a height change (no jitter).
+  useEffect(() => {
+    const vv = window.visualViewport
+    const ta = taRef.current
+    if (!vv || !ta) return
+    let timer: ReturnType<typeof setTimeout>
+    const apply = () => {
+      const kbOpen = window.innerHeight - vv.height > 120 // soft keyboard is up
+      if (!kbOpen) { ta.style.height = ''; return }       // restore the CSS height
+      const top = ta.getBoundingClientRect().top - vv.offsetTop // textarea top within the visible area
+      const avail = vv.height - top - 12
+      if (avail > 120) ta.style.height = avail + 'px'
+    }
+    const onResize = () => { clearTimeout(timer); timer = setTimeout(apply, 200) } // let keyboard + focus-scroll settle
+    vv.addEventListener('resize', onResize)
+    return () => { vv.removeEventListener('resize', onResize); clearTimeout(timer); ta.style.height = '' }
+  }, [])
   // Keep the active tab visible & symmetric: a latter-half tab scrolls the bar to its
   // right end (so the "+ new tab" button shows); a first-half tab scrolls to the left
   // end (so the leading tabs show).
@@ -602,7 +622,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const canRedo = h ? h.idx < h.hist.length - 1 : false
 
   const iconBtn = 'p-1.5 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors'
-  const selCls = 'rounded-md border border-gray-200 bg-white px-1.5 py-0.5 text-xs text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-brand-400'
+  const selCls = 'rounded-md border border-gray-200 bg-white px-1.5 py-0.5 text-xs text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-brand-400 min-w-0 flex-1 sm:flex-none'
   // Icon hints matching each setting's nature: a sample glyph (typeface),
   // ↕ (size), ≡ (line spacing).
   const fontIcon = ({ ko: '가', ja: 'あ', en: 'A' } as Record<string, string>)[params.lang] || 'A'
@@ -666,12 +686,12 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                 row compact across locales); hover/AT meaning via title + aria-label.
                 Hidden on mobile until the gear is tapped; always shown on desktop. */}
             <div className={(showSettings ? 'flex' : 'hidden') + ' sm:flex w-full sm:w-auto items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500'}>
-              <label className="flex items-center gap-1" title={t('np_font')}>{ico(fontIcon)}
+              <label className="flex items-center gap-1 flex-1 min-w-0 sm:flex-none" title={t('np_font')}>{ico(fontIcon)}
                 <select aria-label={t('np_font')} title={t('np_font')} value={fontList.includes(fam) ? fam : 'sans'} onChange={(e) => patchDoc(activeId, { fam: e.target.value })} className={selCls}>
                   {fontList.map((v) => <option key={v} value={v}>{t('np_font_' + v)}</option>)}
                 </select>
               </label>
-              <label className="flex items-center gap-1" title={t('np_size')}>{ico('↕')}
+              <label className="flex items-center gap-1 flex-1 min-w-0 sm:flex-none" title={t('np_size')}>{ico('↕')}
                 <select aria-label={t('np_size')} title={t('np_size')} value={size} onChange={(e) => patchDoc(activeId, { size: e.target.value as SizeLvl })} className={selCls}>
                   <option value="xs">{t('np_xs')}</option>
                   <option value="sm">{t('np_sm')}</option>
@@ -680,7 +700,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                   <option value="xl">{t('np_xl')}</option>
                 </select>
               </label>
-              <label className="flex items-center gap-1" title={t('np_lineheight')}>{ico('≡')}
+              <label className="flex items-center gap-1 flex-1 min-w-0 sm:flex-none" title={t('np_lineheight')}>{ico('≡')}
                 <select aria-label={t('np_lineheight')} title={t('np_lineheight')} value={lh} onChange={(e) => patchDoc(activeId, { lh: e.target.value as Lvl })} className={selCls}>
                   <option value="sm">{t('np_sm')}</option>
                   <option value="md">{t('np_md')}</option>
@@ -688,15 +708,15 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                 </select>
               </label>
               {/* List bullet: a glyph cue + a select that applies a numbered or symbol marker. */}
-              <label className="flex items-center gap-1" title={t('np_list')}>
+              <label className="flex items-center gap-1 flex-1 min-w-0 sm:flex-none" title={t('np_list')}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-400" aria-hidden="true">
                   <line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" />
                   <circle cx="4.5" cy="6" r="1.2" /><circle cx="4.5" cy="12" r="1.2" /><circle cx="4.5" cy="18" r="1.2" />
                 </svg>
                 <select aria-label={t('np_list')} title={t('np_list')} value="" onChange={(e) => { if (e.target.value) applyBullet(e.target.value as 'sym' | 'num'); e.currentTarget.value = '' }} className={selCls}>
                   <option value="">{t('np_list')}</option>
-                  <option value="num" title="1.  1)  1>">{t('np_list_num')}</option>
-                  <option value="sym" title="*  o  @  -">{t('np_list_sym')}</option>
+                  <option value="num">{t('np_list_num')} · 1. 1) 1&gt;</option>
+                  <option value="sym">{t('np_list_sym')} · * @ o</option>
                 </select>
               </label>
             </div>
