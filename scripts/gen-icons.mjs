@@ -88,10 +88,11 @@ function vectorIcon(nodes, file, rounded, scale = 0.56) {
   const S = SIZE * scale, off = (SIZE - S) / 2, k = S / 24
   x.save()
   x.translate(off, off); x.scale(k, k)
-  x.strokeStyle = '#fff'; x.lineWidth = 1.9; x.lineCap = 'round'; x.lineJoin = 'round'
+  x.strokeStyle = '#fff'; x.fillStyle = '#fff'; x.lineWidth = 1.9; x.lineCap = 'round'; x.lineJoin = 'round'
   for (const [tag, a] of nodes) {
     if (tag === 'path') x.stroke(new Path2D(a.d))
     else if (tag === 'rect') { roundedRectPath(x, +a.x, +a.y, +a.width, +a.height, +(a.rx || 0)); x.stroke() }
+    else if (tag === 'fillrect') { roundedRectPath(x, +a.x, +a.y, +a.width, +a.height, +(a.rx || 0)); x.fill() }
     else if (tag === 'line') { x.beginPath(); x.moveTo(+a.x1, +a.y1); x.lineTo(+a.x2, +a.y2); x.stroke() }
     else if (tag === 'circle') { x.beginPath(); x.arc(+a.cx, +a.cy, +a.r, 0, 2 * Math.PI); x.stroke() }
   }
@@ -170,10 +171,10 @@ const VECTOR = {
     ['circle', { cx: '6', cy: '18', r: '3' }],
     ['path', { d: 'M14.8 14.8 20 20' }],
   ],
-  'image-mosaic': [ // grid-3x3 (mosaic / pixelate)
-    ['rect', { x: '3', y: '3', width: '18', height: '18', rx: '2' }],
-    ['path', { d: 'M3 9h18' }], ['path', { d: 'M3 15h18' }],
-    ['path', { d: 'M9 3v18' }], ['path', { d: 'M15 3v18' }],
+  'image-mosaic': [ // a 3x3 grid of solid blocks = pixelation / mosaic tiles
+    ['fillrect', { x: '3', y: '3', width: '5', height: '5', rx: '1' }], ['fillrect', { x: '9.5', y: '3', width: '5', height: '5', rx: '1' }], ['fillrect', { x: '16', y: '3', width: '5', height: '5', rx: '1' }],
+    ['fillrect', { x: '3', y: '9.5', width: '5', height: '5', rx: '1' }], ['fillrect', { x: '9.5', y: '9.5', width: '5', height: '5', rx: '1' }], ['fillrect', { x: '16', y: '9.5', width: '5', height: '5', rx: '1' }],
+    ['fillrect', { x: '3', y: '16', width: '5', height: '5', rx: '1' }], ['fillrect', { x: '9.5', y: '16', width: '5', height: '5', rx: '1' }], ['fillrect', { x: '16', y: '16', width: '5', height: '5', rx: '1' }],
   ],
   'unzip': [ // package-open
     ['path', { d: 'M12 22v-9' }],
