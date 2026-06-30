@@ -66,7 +66,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
-  {slug:'bulk-file-renamer',category:'file',added:'2026-06-30',phase:1,isPro:false,isNew:true,tags:['bulk rename files','batch rename','rename files','file renamer','rename multiple files','파일명 일괄 변경','파일 이름 한번에 바꾸기','파일 이름 일괄 변경','파일명 변경','ファイル名 一括変更','ファイル 一括リネーム','名前 一括変更'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'bulk-file-renamer',category:'file',added:'2026-06-30',phase:1,isPro:false,isNew:true,tags:['bulk file renamer','batch rename files','bulk rename files','rename files','file renamer','파일 이름 일괄 변경','파일명 일괄 변경','파일 이름 한번에 바꾸기','ファイル名 一括変更','ファイル リネーム'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'remove-exif',category:'image',added:'2026-06-30',phase:1,isPro:false,isNew:true,tags:['remove exif','strip metadata','remove photo location','remove gps from photo','clear exif','사진 위치정보 삭제','EXIF 제거','메타데이터 삭제','사진 GPS 삭제','위치정보 제거','Exif 削除','写真 位置情報 削除','メタデータ 削除'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'area-converter',category:'utility',added:'2026-06-29',phase:1,isPro:false,isNew:true,tags:['평 제곱미터 변환','평수 계산','부동산 면적','평 ㎡','坪 平米 変換','坪数計算','square meters to sqft','sqm to sqft','area converter','real estate area'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'pdf-annotator',category:'pdf',added:'2026-06-29',phase:1,isPro:false,isNew:true,tags:['pdf annotator','annotate pdf','highlight pdf','pdf viewer','PDF 뷰어','PDF 주석','PDF에 메모','PDF 注釈','PDF 書き込み','PDFビューア'],maxFileSizeMB:{free:100,pro:100} },
@@ -90,7 +90,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'batch-image-converter',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 변환','일괄 포맷 변환','bulk image converter','batch convert images','画像一括変換'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'batch-image-compressor',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 압축','일괄 용량 줄이기','batch compress images','bulk image compressor','画像一括圧縮'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'batch-image-watermark',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 워터마크','일괄 워터마크','batch watermark images','bulk watermark','画像一括透かし'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'batch-image-rename',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 일괄 이름변경','일괄 파일명 변경','batch rename images','bulk rename','画像一括リネーム'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'batch-image-rename',category:'image',also:['file'],added:'2026-06-27',phase:1,isPro:false,isNew:true,tags:['이미지 이름 일괄 변경','이미지 파일명 일괄 변경','사진 이름 한번에 바꾸기','이미지 일괄 이름변경','bulk image renamer','batch rename images','rename photos','画像名 一括変更','画像 リネーム','画像一括リネーム'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'encoding-converter',category:'file',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['인코딩 변환','euc-kr utf-8','한글 깨짐','text encoding converter','charset converter'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'csv-to-excel',category:'file',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['csv to excel','엑셀 변환','csv xlsx','excel to csv','csv 엑셀 변환'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'nickname-generator',category:'social',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['닉네임 생성기','아이디 추천','아이디 만들기','username generator','nickname generator'],maxFileSizeMB:{free:0,pro:0} },

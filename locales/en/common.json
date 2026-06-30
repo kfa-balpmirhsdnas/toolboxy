@@ -103,7 +103,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
-    "bulk-file-renamer": "Batch rename any files (PDF, docs, archives, images…) by rules — prefix, numbering, find-replace and more. Free, in your browser, download as a renamed zip.",
+    "bulk-file-renamer": "Bulk file renamer — batch rename any files (PDF, docs, archives, images…) by rules: prefix, numbering, find-replace and more. Free, in your browser, download as a renamed zip.",
     "remove-exif": "Remove EXIF & metadata from photos — strip GPS location, camera and date. Free, in your browser, no upload, no quality loss.",
     "area-converter": "Convert square meters to square feet and pyeong/tsubo instantly, both ways. Includes acre, hectare and tatami, a quick table of common apartment sizes, and a note on supply vs. exclusive area.",
     "pdf-annotator": "Free online PDF annotator and viewer. Open a PDF and highlight, underline, draw, add text notes and shapes, then download the annotated PDF. Everything runs in your browser — no upload.",
@@ -815,7 +815,7 @@
     "batch-image-converter": "Bulk image converter — convert many images at once between JPG, PNG, and WebP with a quality slider. Free and private: all conversion happens in your browser, no uploads.",
     "batch-image-compressor": "Batch compress images — shrink many photos at once with a quality slider or a target file size, and see how much each one saved. Free and private, all in your browser.",
     "batch-image-watermark": "Batch watermark images — add a text or logo watermark to many images at once, with position, size, and opacity control. Free and private, all in your browser, no uploads.",
-    "batch-image-rename": "Batch rename images — rename many image files by rule (prefix, numbering, find & replace, case, date…) with a live preview, then download them as a zip. Free and private, in your browser.",
+    "batch-image-rename": "Bulk image renamer — batch rename many image files by rule (prefix, numbering, find & replace, case, date…) with a live preview, then download as a zip. Free and private, in your browser.",
     "batch-image-editor": "Batch Image Editor (All-in-One) — resize, convert, compress, watermark, and rename many images in one pass. Free and private: everything runs in your browser, nothing is uploaded.",
     "screen-capture": "Free online screen capture — grab any screen, window, or tab as an image and download it as PNG/JPG or copy it to the clipboard. Everything runs in your browser; nothing is uploaded.",
     "block-puzzle": "Free block puzzle game: move and rotate falling blocks to fill and clear rows.",
@@ -7218,7 +7218,7 @@
     "batch-image-converter": "Bulk Image Converter (PNG / JPG / WebP)",
     "batch-image-compressor": "Batch Image Compressor (reduce file size)",
     "batch-image-watermark": "Batch Image Watermark (add logo & text)",
-    "batch-image-rename": "Batch Image Rename (numbering & rules)",
+    "batch-image-rename": "Bulk Image Renamer",
     "batch-image-editor": "Batch Image Editor (All-in-One)",
     "screen-capture": "Online Screen Capture",
     "block-puzzle": "Block Puzzle",
@@ -7273,7 +7273,8 @@
     }
   },
   "toolTitles": {
-    "bulk-file-renamer": "Bulk rename files — batch rename any file type",
+    "batch-image-rename": "Bulk Image Renamer — batch rename images",
+    "bulk-file-renamer": "Bulk File Renamer — batch rename files",
     "remove-exif": "Remove EXIF / metadata — strip photo location (GPS)",
     "area-converter": "Area Converter — m² to sq ft & Pyeong",
     "pdf-annotator": "PDF Annotator — Annotate, Highlight & View PDF Online",

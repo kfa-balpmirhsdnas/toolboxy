@@ -81,11 +81,7 @@ export default function BulkFileRenamerPage({ params }: { params: { lang: string
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-5">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('bfr_title')}</h1>
-          <p className="text-gray-500 text-sm mt-1">{t('bfr_subtitle')}</p>
-        </div>
-
+        {/* The tool name + tags come from ToolLayout's own header (no duplicate <h1> here). */}
         {/* Rename rules (shared with batch-image-rename) */}
         <RenameRulesPanel rules={r} onChange={up} sampleNames={SAMPLE_NAMES} />
 
