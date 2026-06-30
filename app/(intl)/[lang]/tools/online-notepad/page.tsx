@@ -107,6 +107,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [showFind, setShowFind] = useState(false)
   const [showChars, setShowChars] = useState(false) // special-character palette
   const [showSettings, setShowSettings] = useState(false) // mobile: font/size/spacing hidden behind a gear
+  const [listOpen, setListOpen] = useState(false) // custom bullet/list dropdown
   const [findQ, setFindQ] = useState('')
   const [replaceQ, setReplaceQ] = useState('')
   const [matchInfo, setMatchInfo] = useState('')
@@ -707,25 +708,36 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                   <option value="lg">{t('np_lg')}</option>
                 </select>
               </label>
-              {/* List bullet: a glyph cue + a select that applies a numbered or symbol marker. */}
-              <label className="flex items-center gap-1 flex-1 min-w-0 sm:flex-none" title={t('np_list')}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-400" aria-hidden="true">
-                  <line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" />
-                  <circle cx="4.5" cy="6" r="1.2" /><circle cx="4.5" cy="12" r="1.2" /><circle cx="4.5" cy="18" r="1.2" />
-                </svg>
-                <select aria-label={t('np_list')} title={t('np_list')} value="" onChange={(e) => { if (e.target.value) applyBullet(e.target.value as 'sym' | 'num'); e.currentTarget.value = '' }} className={selCls}>
-                  <option value="">{t('np_list')}</option>
-                  <option value="num">{t('np_list_num')} · 1. 1) 1&gt;</option>
-                  <option value="sym">{t('np_list_sym')} · * @ o</option>
-                </select>
-              </label>
+              {/* List bullet — custom dropdown so each row can show a leading marker (1. / ●)
+                  and dimmed example markers (native <option> can't colour part of its text). */}
+              <div className="relative flex-1 min-w-0 sm:flex-none" title={t('np_list')}>
+                {listOpen && <div className="fixed inset-0 z-10" onClick={() => setListOpen(false)} />}
+                <button type="button" onClick={() => setListOpen((o) => !o)} aria-label={t('np_list')} className={selCls + ' flex items-center gap-1 w-full'}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0 text-gray-400" aria-hidden="true">
+                    <line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" />
+                    <circle cx="4.5" cy="6" r="1.2" /><circle cx="4.5" cy="12" r="1.2" /><circle cx="4.5" cy="18" r="1.2" />
+                  </svg>
+                  <span className="truncate flex-1 text-left">{t('np_list')}</span>
+                  <span className="shrink-0 text-gray-400 text-[9px]">▾</span>
+                </button>
+                {listOpen && (
+                  <div className="absolute z-30 mt-1 right-0 bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-xs whitespace-nowrap">
+                    <button type="button" onClick={() => { applyBullet('num'); setListOpen(false) }} className="flex items-center gap-3 w-full px-3 py-1.5 hover:bg-gray-50 text-left">
+                      <span className="text-gray-700">1. {t('np_list_num')}</span><span className="text-gray-300 ml-auto">1. 1) 1&gt;</span>
+                    </button>
+                    <button type="button" onClick={() => { applyBullet('sym'); setListOpen(false) }} className="flex items-center gap-3 w-full px-3 py-1.5 hover:bg-gray-50 text-left">
+                      <span className="text-gray-700">● {t('np_list_sym')}</span><span className="text-gray-300 ml-auto">* @ o</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0 min-h-7">
             {/* Show the save status only when the tab has content; "saving…" auto-hides after 3s. */}
             {text && (savedAt || savingVisible) && (
               <span className={'text-xs font-medium transition-colors ' + (savedAt ? 'text-green-600' : 'text-gray-400')}>
-                {savedAt ? `✓ ${t('np_autosaved')} ${savedAt}` : t('np_saving')}
+                {savedAt ? <><span className="hidden sm:inline">{`✓ ${t('np_autosaved')} `}</span>{savedAt}</> : t('np_saving')}
               </span>
             )}
           </div>
