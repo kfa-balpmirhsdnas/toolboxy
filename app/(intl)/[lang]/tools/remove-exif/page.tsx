@@ -9,7 +9,7 @@ import { readExif, stripImageMeta } from '@/lib/exif'
 
 const tool = getToolBySlug('remove-exif')!
 
-type Scan = { name: string; gps: boolean; camera: boolean; date?: string; any: boolean }
+type Scan = { name: string; gps: boolean; camera: boolean; date: boolean; any: boolean }
 
 export default function RemoveExifPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
@@ -24,7 +24,7 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
       const out: Scan[] = []
       for (const f of files) {
         const ex = await readExif(f)
-        out.push({ name: f.name, gps: !!ex.gps, camera: !!ex.camera, date: ex.date, any: !!(ex.gps || ex.camera || ex.date || ex.iso || ex.aperture) })
+        out.push({ name: f.name, gps: !!ex.gps, camera: !!ex.camera, date: !!ex.date, any: !!(ex.gps || ex.camera || ex.date || ex.iso || ex.aperture) })
       }
       if (!cancelled) setScans(out)
     })()
@@ -57,26 +57,21 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
     </div>
   )
 
-  // Per-file EXIF presence tags under the filename (GPS/camera; the shot date has its own column).
-  const rowExtra = useCallback((file: File) => {
-    const s = scans.find((x) => x.name === file.name)
-    if (!s) return null
-    return (
-      <div className="flex flex-wrap items-center gap-1 text-[10px]">
-        {s.gps && <span className="rounded bg-amber-100 text-amber-800 px-1.5 py-0.5 font-medium">⚠️ {t('rx_tag_gps')}</span>}
-        {s.camera && <span className="rounded bg-gray-100 text-gray-600 px-1.5 py-0.5">{t('rx_tag_camera')}</span>}
-        {!s.any && <span className="text-gray-400">{t('rx_tag_clean')}</span>}
-      </div>
-    )
-  }, [scans, t])
-
-  // Replaces the list's "new size" column with the shot date (more useful here than the
-  // barely-changed output size). YYYY-MM-DD only; "—" when the photo has no date.
-  const dateColumn = {
-    header: t('rx_col_taken'),
+  // Replaces the list's "new size" column (barely changes here) with a "Metadata" column that
+  // tags what each photo carries — GPS / camera / date — same badges as before, now in-column.
+  const metaColumn = {
+    header: t('rx_col_meta'),
     cell: (file: File) => {
-      const d = scans.find((x) => x.name === file.name)?.date
-      return d ? <span className="text-gray-700">{d.slice(0, 10)}</span> : <span className="text-gray-300">—</span>
+      const s = scans.find((x) => x.name === file.name)
+      if (!s) return <span className="text-gray-300">…</span>
+      if (!s.any) return <span className="text-gray-300">—</span>
+      return (
+        <div className="flex flex-wrap justify-end gap-1 text-[10px] font-normal">
+          {s.gps && <span className="rounded bg-amber-100 text-amber-800 px-1.5 py-0.5 font-medium">⚠️{t('rx_tag_gps')}</span>}
+          {s.camera && <span className="rounded bg-gray-100 text-gray-600 px-1.5 py-0.5">{t('rx_tag_camera')}</span>}
+          {s.date && <span className="rounded bg-gray-100 text-gray-600 px-1.5 py-0.5">{t('rx_tag_date')}</span>}
+        </div>
+      )
     },
   }
 
@@ -105,8 +100,8 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
         {/* Upload + process + download (shared batch engine; strips at byte level).
             Per-file EXIF tags render inline via rowExtra — no separate list. */}
         <BatchImageProcessor slug="remove-exif" processFn={processFn} zipBaseName="no-exif"
-          accept="image/jpeg,image/png" onFilesChange={onFilesChange} rowExtra={rowExtra}
-          newColumn={dateColumn} aboveCta={modeSelector} ctaLabel={(n) => t('rx_cta', { n })} />
+          accept="image/jpeg,image/png" onFilesChange={onFilesChange}
+          newColumn={metaColumn} aboveCta={modeSelector} ctaLabel={(n) => t('rx_cta', { n })} />
 
         {/* Privacy emphasis (privacy tool) */}
         <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-xs text-emerald-800 space-y-1">

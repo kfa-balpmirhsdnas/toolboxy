@@ -4207,6 +4207,7 @@
     "rx_tag_date": "촬영일",
     "rx_tag_clean": "메타데이터 없음",
     "rx_col_taken": "촬영일",
+    "rx_col_meta": "메타데이터",
     "rx_cta": "{n}장의 메타데이터 삭제",
     "rx_privacy_title": "프라이버시 우선 설계",
     "rx_privacy_1": "모든 처리는 브라우저에서 — 사진은 절대 업로드되지 않습니다.",

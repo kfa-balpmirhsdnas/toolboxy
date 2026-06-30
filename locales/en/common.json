@@ -3794,6 +3794,7 @@
     "rx_tag_date": "Date",
     "rx_tag_clean": "No metadata",
     "rx_col_taken": "Taken",
+    "rx_col_meta": "Metadata",
     "rx_cta": "Remove metadata from {n} image(s)",
     "rx_privacy_title": "Private by design",
     "rx_privacy_1": "All processing happens in your browser — photos are never uploaded.",

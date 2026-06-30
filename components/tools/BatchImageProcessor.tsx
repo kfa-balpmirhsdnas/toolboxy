@@ -329,7 +329,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
   const totalIn = results.reduce((s, r) => s + r.inSize, 0)
   const totalOut = results.reduce((s, r) => s + r.outSize, 0)
   const sizeColW = sizeUnit === 'pixels' ? 'w-[5.5rem]' : 'w-16'
-  const newColW = newColumn ? 'w-24' : sizeColW
+  const newColW = newColumn ? 'w-28' : sizeColW
 
   return (
     <div className="space-y-4">
