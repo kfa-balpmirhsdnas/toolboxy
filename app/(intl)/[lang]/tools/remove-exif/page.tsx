@@ -41,6 +41,22 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
   const gpsCount = scans.filter((s) => s.gps).length
   const metaCount = scans.filter((s) => s.any).length
 
+  // "What to strip" selector — rendered just above the process button (after the file list).
+  const modeSelector = (
+    <div>
+      <p className="text-sm font-medium text-gray-700 mb-1.5">{t('rx_mode')}</p>
+      <div className="grid grid-cols-2 gap-2">
+        {(['all', 'gps'] as const).map((m) => (
+          <button key={m} onClick={() => setMode(m)}
+            className={'text-left rounded-xl border px-3 py-2.5 transition-colors ' + (mode === m ? 'border-brand-500 bg-brand-50' : 'border-gray-200 hover:border-brand-300')}>
+            <span className={'block text-sm font-semibold ' + (mode === m ? 'text-brand-700' : 'text-gray-800')}>{t(m === 'all' ? 'rx_mode_all' : 'rx_mode_gps')}</span>
+            <span className="block text-xs text-gray-500 mt-0.5">{t(m === 'all' ? 'rx_mode_all_d' : 'rx_mode_gps_d')}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+
   // Per-file EXIF tags shown inline in the shared processor's list (replaces a separate list).
   const rowExtra = useCallback((file: File) => {
     const s = scans.find((x) => x.name === file.name)
@@ -59,19 +75,6 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="max-w-xl mx-auto space-y-4">
         {/* Tool name lives in ToolLayout's header; the description moved to the How-to section. */}
-        {/* What gets removed */}
-        <div>
-          <p className="text-sm font-medium text-gray-700 mb-1.5">{t('rx_mode')}</p>
-          <div className="grid grid-cols-2 gap-2">
-            {(['all', 'gps'] as const).map((m) => (
-              <button key={m} onClick={() => setMode(m)}
-                className={'text-left rounded-xl border px-3 py-2.5 transition-colors ' + (mode === m ? 'border-brand-500 bg-brand-50' : 'border-gray-200 hover:border-brand-300')}>
-                <span className={'block text-sm font-semibold ' + (mode === m ? 'text-brand-700' : 'text-gray-800')}>{t(m === 'all' ? 'rx_mode_all' : 'rx_mode_gps')}</span>
-                <span className="block text-xs text-gray-500 mt-0.5">{t(m === 'all' ? 'rx_mode_all_d' : 'rx_mode_gps_d')}</span>
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Detected-metadata summary / GPS warning (per-file tags now live in the list below) */}
         {scans.length > 0 && (
@@ -94,7 +97,7 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
             Per-file EXIF tags render inline via rowExtra — no separate list. */}
         <BatchImageProcessor slug="remove-exif" processFn={processFn} zipBaseName="no-exif"
           accept="image/jpeg,image/png" onFilesChange={onFilesChange} rowExtra={rowExtra}
-          ctaLabel={(n) => t('rx_cta', { n })} />
+          aboveCta={modeSelector} ctaLabel={(n) => t('rx_cta', { n })} />
 
         {/* Privacy emphasis (privacy tool) */}
         <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-xs text-emerald-800 space-y-1">

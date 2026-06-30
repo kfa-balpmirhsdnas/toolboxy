@@ -90,6 +90,12 @@ interface Props {
    * so other tools are unaffected.
    */
   rowExtra?: (file: File) => ReactNode
+  /**
+   * Optional content rendered between the input list and the process button (only
+   * once files are queued) — e.g. remove-exif's "what to strip" selector. Default
+   * undefined → nothing, so other tools are unaffected.
+   */
+  aboveCta?: ReactNode
 }
 
 let _seq = 0
@@ -123,7 +129,7 @@ function dedupeName(name: string, used: Set<string>): string {
   return candidate
 }
 
-export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange, sizeUnit = 'bytes', rowExtra }: Props) {
+export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange, sizeUnit = 'bytes', rowExtra, aboveCta }: Props) {
   const t = useTranslations('toolui')
   const [items, setItems] = useState<InputItem[]>([])
   const [results, setResults] = useState<OutItem[]>([])
@@ -422,6 +428,9 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
             </div>
           </div>
           )}
+
+          {/* Optional pre-action content (e.g. remove-exif's strip-scope selector) */}
+          {aboveCta}
 
           {/* Process button + progress */}
           {status === 'processing' ? (
