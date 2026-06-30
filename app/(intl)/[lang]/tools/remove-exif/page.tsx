@@ -101,7 +101,7 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
             Per-file EXIF tags render inline via rowExtra — no separate list. */}
         <BatchImageProcessor slug="remove-exif" processFn={processFn} zipBaseName="no-exif"
           accept="image/jpeg,image/png" onFilesChange={onFilesChange}
-          newColumn={metaColumn} aboveCta={modeSelector} ctaLabel={(n) => t('rx_cta', { n })} />
+          newColumn={metaColumn} hideOrigColMobile aboveCta={modeSelector} ctaLabel={(n) => t('rx_cta', { n })} />
 
         {/* Privacy emphasis (privacy tool) */}
         <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 text-xs text-emerald-800 space-y-1">
