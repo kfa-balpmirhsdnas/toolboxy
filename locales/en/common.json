@@ -103,6 +103,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "bulk-file-renamer": "Batch rename any files (PDF, docs, archives, images…) by rules — prefix, numbering, find-replace and more. Free, in your browser, download as a renamed zip.",
     "remove-exif": "Remove EXIF & metadata from photos — strip GPS location, camera and date. Free, in your browser, no upload, no quality loss.",
     "area-converter": "Convert square meters to square feet and pyeong/tsubo instantly, both ways. Includes acre, hectare and tatami, a quick table of common apartment sizes, and a note on supply vs. exclusive area.",
     "pdf-annotator": "Free online PDF annotator and viewer. Open a PDF and highlight, underline, draw, add text notes and shapes, then download the annotated PDF. Everything runs in your browser — no upload.",
@@ -831,6 +832,7 @@
     "continue": "Continue without signing up"
   },
   "langTools": {
+    "bulk-file-renamer": {"faq":[{"q":"Does it change my original file names?","a":"No. Browsers can't rename your files in place, so the tool bundles renamed copies into a zip you download. Your original files stay exactly as they are."},{"q":"Can I rename any file type?","a":"Yes — PDFs, Office documents, archives (zip), images, text, anything. Only the names change; the file contents are untouched."},{"q":"Are my files uploaded to a server?","a":"No. Everything runs locally in your browser. Your files never leave your device."},{"q":"What if I mix different file types?","a":"You can use the extension filter to rename only certain types (e.g. only PDFs). Files of other types keep their original names in the zip."}]},
     "remove-exif": {"faq":[{"q":"What is EXIF metadata?","a":"EXIF is hidden information your camera or phone stores inside a photo — the GPS location where it was taken, the camera and lens, the date and time, and exposure settings like ISO and aperture."},{"q":"Why is location data risky?","a":"A photo with GPS EXIF reveals exactly where it was taken — your home, school or workplace. Posting it online can expose that location to anyone who downloads the file."},{"q":"Does it reduce image quality?","a":"No. The metadata is removed at the byte level, so the actual image pixels are never re-encoded — resolution and quality are identical to the original."},{"q":"Are my photos uploaded to a server?","a":"No. Everything runs locally in your browser. Your photos never leave your device, and the cleaned image is saved as a new file."}]},
     "area-converter": {"faq":[{"q":"How many square meters is one pyeong (평/坪)?","a":"1 pyeong = about 3.3058 m² (exactly 400/121 m²) — the unit used for real estate in Korea and Japan. 1 m² ≈ 0.3025 pyeong. Example: 32 pyeong ≈ 105.8 ㎡."},{"q":"How do I convert square meters to square feet?","a":"Multiply m² by 10.7639 to get square feet (1 m² = 10.7639 ft²). To go back, divide square feet by 10.7639."},{"q":"What's the difference between supply and exclusive (net) area?","a":"Exclusive (net) area is the interior space of your own unit; supply area adds shared spaces such as hallways and stairs. Korean listings usually quote the supply area, so the usable interior is smaller than the advertised size."}]},
     "pdf-annotator": {"faq":[{"q":"Are my annotations saved into the original PDF?","a":"When you click Download, your annotations are merged onto the pages and a new PDF is created. The original file on your device is left unchanged."},{"q":"Is my file uploaded to a server?","a":"No. The PDF is opened, annotated and saved entirely in your browser — it is never sent to any server."},{"q":"Can I annotate a scanned PDF?","a":"Yes — highlighter, pen, shapes and text notes work on any PDF, including scans. Text search only works on PDFs that contain real (selectable) text."}]},
@@ -1638,6 +1640,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "bulk-file-renamer": "Bulk File Renamer renames many files at once — PDFs, documents, archives, images, anything. Drop your files, switch on the rules you need (prefix/suffix, sequential numbering, find-and-replace, case, spaces, date, truncate, lowercase extensions) and watch the new names update live. When several file types are mixed you can pick which extensions to rename. Because browsers cannot rename your original files in place, the renamed copies are bundled into a zip you download — your originals stay untouched. Everything runs in your browser; no file is uploaded.",
     "remove-exif": "Remove EXIF deletes the hidden metadata your camera and phone embed in photos — GPS location, camera model, lens, date and exposure settings — so you can share images safely. Drop one or many JPEG/PNG files; the tool shows what each photo contains (with a warning when GPS location is present), then strips it. Choose to remove everything or only the location (GPS). Because metadata is removed at the byte level, the pixels are never re-encoded — resolution and quality stay exactly the same. Everything runs in your browser; your photos are never uploaded, and the originals on your device are left untouched.",
     "area-converter": "Area Converter is a real-estate-focused area calculator. Convert between square meters, square feet, pyeong/tsubo (1 pyeong = 3.3058 ㎡, the unit used in Korean and Japanese real estate), tatami, acre and hectare — every value updates in real time, both directions. A quick table turns common apartment sizes (24/32/34 평) into ㎡ in one tap, and a short guide explains the difference between supply (gross) and exclusive (net) area. Everything runs in your browser.",
     "pdf-annotator": "PDF Annotator lets you open any PDF and mark it up right in your browser. View pages with zoom, thumbnails and full-text search, then highlight, underline, strike through, draw freehand with the pen, add rectangles and arrows, and drop text notes anywhere. Undo or clear as you go, then download a new PDF with your annotations merged in. Your file never leaves your device — all rendering and saving happen locally.",
@@ -1962,6 +1965,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howto": {
+    "bulk-file-renamer": ["Drop or choose your files (any type, many at once).","Turn on the rename rules you need and check the live preview.","Optionally pick which extensions to rename when types are mixed.","Download the renamed files as a zip."],
     "remove-exif": ["Drop or choose your photos (JPEG/PNG, one or many).","Check the detected metadata — a warning shows if a photo has GPS location.","Pick remove everything or location (GPS) only.","Process and download the cleaned images (a zip for multiple)."],
     "area-converter": ["Type a value and pick its unit.","All other units convert instantly, both ways.","Tap a common apartment size to load it.","Copy the conversions, or read the supply-vs-exclusive note."],
     "pdf-annotator": ["Open a PDF (drag & drop or choose a file).","Use the toolbar to highlight, draw, or add shapes and text notes.","Navigate with page controls, zoom, thumbnails or text search.","Download the annotated PDF — it's built in your browser."],
@@ -3761,6 +3765,17 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "bfr_title": "Bulk file renamer",
+    "bfr_subtitle": "Rename PDFs, documents, archives, images — any files — by rules.",
+    "bfr_zip_note": "Browsers can't rename your original files, so the renamed copies download as a zip — your originals stay untouched.",
+    "bfr_drop": "Drop files here or click to choose",
+    "bfr_drop_sub": "Any file type · processed in your browser",
+    "bfr_privacy": "Files never leave your device — everything runs in your browser.",
+    "bfr_ext_filter": "Extensions to rename",
+    "bfr_files_n": "{n} files",
+    "bfr_kept": "kept",
+    "bfr_zipping": "Building zip…",
+    "bfr_cta": "Download {n} renamed files (zip)",
     "rx_title": "Remove EXIF & metadata",
     "rx_subtitle": "Strip GPS location, camera and date from photos — quality untouched.",
     "rx_mode": "What to remove",
@@ -7099,6 +7114,7 @@
     ]
   },
   "toolNames": {
+    "bulk-file-renamer": "Bulk File Renamer",
     "remove-exif": "Remove EXIF",
     "area-converter": "Area Converter (㎡/sq ft)",
     "pdf-annotator": "PDF Annotator",
@@ -7257,6 +7273,7 @@
     }
   },
   "toolTitles": {
+    "bulk-file-renamer": "Bulk rename files — batch rename any file type",
     "remove-exif": "Remove EXIF / metadata — strip photo location (GPS)",
     "area-converter": "Area Converter — m² to sq ft & Pyeong",
     "pdf-annotator": "PDF Annotator — Annotate, Highlight & View PDF Online",

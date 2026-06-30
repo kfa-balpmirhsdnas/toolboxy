@@ -66,6 +66,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'bulk-file-renamer',category:'file',added:'2026-06-30',phase:1,isPro:false,isNew:true,tags:['bulk rename files','batch rename','rename files','file renamer','rename multiple files','파일명 일괄 변경','파일 이름 한번에 바꾸기','파일 이름 일괄 변경','파일명 변경','ファイル名 一括変更','ファイル 一括リネーム','名前 一括変更'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'remove-exif',category:'image',added:'2026-06-30',phase:1,isPro:false,isNew:true,tags:['remove exif','strip metadata','remove photo location','remove gps from photo','clear exif','사진 위치정보 삭제','EXIF 제거','메타데이터 삭제','사진 GPS 삭제','위치정보 제거','Exif 削除','写真 位置情報 削除','メタデータ 削除'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'area-converter',category:'utility',added:'2026-06-29',phase:1,isPro:false,isNew:true,tags:['평 제곱미터 변환','평수 계산','부동산 면적','평 ㎡','坪 平米 変換','坪数計算','square meters to sqft','sqm to sqft','area converter','real estate area'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'pdf-annotator',category:'pdf',added:'2026-06-29',phase:1,isPro:false,isNew:true,tags:['pdf annotator','annotate pdf','highlight pdf','pdf viewer','PDF 뷰어','PDF 주석','PDF에 메모','PDF 注釈','PDF 書き込み','PDFビューア'],maxFileSizeMB:{free:100,pro:100} },
