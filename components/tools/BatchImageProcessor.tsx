@@ -109,6 +109,9 @@ interface Props {
   /** Hide the built-in "files never leave your device" badge — for tools that show their
    *  own privacy notice elsewhere. Default false. */
   hidePrivacyBadge?: boolean
+  /** Show the file list ABOVE the drop zone, and keep it visible (as a placeholder) even
+   *  before any file is loaded. Default false (list below, shown only when files exist). */
+  listFirst?: boolean
 }
 
 let _seq = 0
@@ -142,7 +145,7 @@ function dedupeName(name: string, used: Set<string>): string {
   return candidate
 }
 
-export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange, sizeUnit = 'bytes', rowExtra, aboveCta, newColumn, hideOrigColMobile, hidePrivacyBadge }: Props) {
+export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'images', accept = 'image/*', ctaLabel, previewName, initialFiles, onComplete, onFilesChange, sizeUnit = 'bytes', rowExtra, aboveCta, newColumn, hideOrigColMobile, hidePrivacyBadge, listFirst }: Props) {
   const t = useTranslations('toolui')
   const [items, setItems] = useState<InputItem[]>([])
   const [results, setResults] = useState<OutItem[]>([])
@@ -340,7 +343,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
   const origHide = hideOrigColMobile ? 'hidden sm:block ' : ''
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       {/* Drop zone */}
       <div
         className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors ${
@@ -365,9 +368,12 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
         </p>
       )}
 
-      {/* Input list */}
-      {items.length > 0 && (
-        <div className="space-y-3">
+      {/* Input list (listFirst → above the drop zone, shown even when empty) */}
+      {(items.length > 0 || listFirst) && (
+        <div className={'space-y-3' + (listFirst ? ' order-first' : '')}>
+          {items.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-gray-200 p-6 text-center text-sm text-gray-400">{t('bip_list_empty')}</div>
+          ) : (<>
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm font-semibold text-gray-700">{t('bip_files_n', { n: items.length })}</p>
             <div className="flex items-center gap-2">
@@ -469,6 +475,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
               {typeof ctaLabel === 'function' ? ctaLabel(items.length) : (ctaLabel || t('bip_process', { n: items.length }))}
             </button>
           )}
+          </>)}
         </div>
       )}
 
