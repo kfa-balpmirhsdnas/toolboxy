@@ -1964,6 +1964,9 @@
     "encoding-converter": "Open a text or CSV file saved in a legacy encoding (like Korean EUC-KR/CP949 or Japanese Shift_JIS) and convert it to UTF-8 — or the other way around. Pick the source encoding (or let it auto-detect), preview the decoded text to confirm it reads correctly, choose a target encoding and download the re-saved file. Choosing “UTF-8 + BOM” makes a CSV open without garbled characters in Excel. Everything is processed in your browser, so your files are never uploaded, and it is free with no install.",
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
+  "howtoIntro": {
+    "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
+  },
   "howto": {
     "bulk-file-renamer": ["Drop or choose your files (any type, many at once).","Turn on the rename rules you need and check the live preview.","Optionally pick which extensions to rename when types are mixed.","Download the renamed files as a zip."],
     "remove-exif": ["Drop or choose your photos (JPEG/PNG, one or many).","Check the detected metadata — a warning shows if a photo has GPS location.","Pick remove everything or location (GPS) only.","Process and download the cleaned images (a zip for multiple)."],

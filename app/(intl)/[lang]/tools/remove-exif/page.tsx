@@ -58,11 +58,7 @@ export default function RemoveExifPage({ params }: { params: { lang: string } })
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="max-w-xl mx-auto space-y-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('rx_title')}</h1>
-          <p className="text-gray-500 text-sm mt-1">{t('rx_subtitle')}</p>
-        </div>
-
+        {/* Tool name lives in ToolLayout's header; the description moved to the How-to section. */}
         {/* What gets removed */}
         <div>
           <p className="text-sm font-medium text-gray-700 mb-1.5">{t('rx_mode')}</p>

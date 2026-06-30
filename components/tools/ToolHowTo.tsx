@@ -24,6 +24,7 @@ interface HowtoMessages {
   howto?: { title?: string } & Record<string, unknown>
   toolNames?: Record<string, string>
   howtoNote?: Record<string, string>
+  howtoIntro?: Record<string, string>
 }
 
 /**
@@ -42,6 +43,7 @@ export default function ToolHowTo({ tool }: { tool: ToolMeta }) {
   if (steps.length === 0) return null
 
   const note = messages?.howtoNote?.[tool.slug]
+  const intro = messages?.howtoIntro?.[tool.slug]
   const name = messages?.toolNames?.[tool.slug] ?? slugToName(tool.slug)
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -54,6 +56,8 @@ export default function ToolHowTo({ tool }: { tool: ToolMeta }) {
     <section className="max-w-4xl mx-auto px-4 mt-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <h2 className="text-lg font-bold text-gray-900 mb-4">{title}</h2>
+      {/* Optional per-tool lead description (e.g. moved out of the tool card). */}
+      {intro && <p className="text-sm text-gray-600 leading-relaxed mb-4 -mt-1">{intro}</p>}
       <ol className="space-y-3">
         {steps.map((s, i) => (
           <li key={i} className="flex gap-3">
