@@ -83,7 +83,11 @@ export function buildNewName(originalName: string, index: number, r: RenameRules
     core = r.wsMode === 'remove' ? core.replace(/\s+/g, '') : core.replace(/\s+/g, r.wsMode === 'underscore' ? '_' : '-')
   }
   // strip illegal filename chars + non-ASCII (hangul, emoji, …)
-  if (r.stripOn) core = core.replace(/[\\/:*?"<>|]/g, '').replace(/[^\x20-\x7E]/g, '')
+  if (r.stripOn) {
+    core = core.replace(/[\\/:*?"<>|]/g, '').replace(/[^\x20-\x7E]/g, '')
+    // brackets whose contents were just stripped away (e.g. "(여행)" → "()") become empty — drop them too
+    core = core.replace(/\(\s*\)|\[\s*\]|\{\s*\}|<\s*>/g, '').replace(/\s{2,}/g, ' ').trim()
+  }
   // tidy separators created above (collapse "__" → "_", trim ends)
   if (r.wsOn && r.wsMode !== 'remove') core = tidySeparator(core, r.wsMode === 'underscore' ? '_' : '-')
   // case
