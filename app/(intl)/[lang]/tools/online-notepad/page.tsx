@@ -666,13 +666,19 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     <>
       <MenuSelect id="font" open={openMenu} setOpen={setOpenMenu} selCls={selCls} icon={ico(fontIcon)}
         label={t('np_font_' + (fontList.includes(fam) ? fam : 'sans'))}
-        options={fontList.map((v) => ({ value: v, label: t('np_font_' + v) }))}
+        options={fontList.map((v) => ({ value: v, label: <span style={{ fontFamily: ALLFONTS[v]?.css }}>{t('np_font_' + v)}</span> }))}
         value={fontList.includes(fam) ? fam : 'sans'} onPick={(v) => patchDoc(activeId, { fam: v })} />
       <MenuSelect id="size" open={openMenu} setOpen={setOpenMenu} selCls={selCls} icon={ico('↕')}
-        label={t('np_' + size)} options={(['xs', 'sm', 'md', 'lg', 'xl'] as const).map((v) => ({ value: v, label: t('np_' + v) }))}
+        label={t('np_' + size)} options={(['xs', 'sm', 'md', 'lg', 'xl'] as const).map((v) => ({ value: v, label: <span className={SIZE_CLS[v]}>{t('np_' + v)}</span> }))}
         value={size} onPick={(v) => patchDoc(activeId, { size: v as SizeLvl })} />
       <MenuSelect id="lh" open={openMenu} setOpen={setOpenMenu} selCls={selCls} icon={ico('≡')}
-        label={t('np_' + lh)} options={(['sm', 'md', 'lg'] as const).map((v) => ({ value: v, label: t('np_' + v) }))}
+        label={t('np_' + lh)}
+        options={(['sm', 'md', 'lg'] as const).map((v) => ({ value: v, label: (
+          <span className="flex items-center gap-2">
+            <span className="inline-flex flex-col w-3.5 shrink-0" style={{ gap: v === 'sm' ? '1px' : v === 'md' ? '3px' : '5px' }}><span className="h-px bg-gray-400" /><span className="h-px bg-gray-400" /><span className="h-px bg-gray-400" /></span>
+            {t('np_' + v)}
+          </span>
+        ) }))}
         value={lh} onPick={(v) => patchDoc(activeId, { lh: v as Lvl })} />
       {/* List bullet — custom dropdown (leading marker 1./● + dimmed example markers) */}
       <div className="relative flex-1 min-w-0 sm:flex-none" title={t('np_list')}>

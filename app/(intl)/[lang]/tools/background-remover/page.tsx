@@ -27,6 +27,7 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
   const [outUrl, setOutUrl] = useState('')
   const [busy, setBusy] = useState(false)
   const [prog, setProg] = useState(0)
+  const [finishing, setFinishing] = useState(false) // past the download → inference (no % → indeterminate)
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -49,11 +50,22 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
 
   async function removeBg() {
     if (!file) return
-    setBusy(true); setOutUrl(''); setError(''); setProg(0)
+    setBusy(true); setOutUrl(''); setError(''); setProg(0); setFinishing(false)
+    // The library reports the (first-run) model download 0→100, then runs inference which
+    // restarts the counter at 0. Showing that raw reset looks like a failure — so once the
+    // first phase has clearly finished and the counter drops back, switch to an indeterminate
+    // "working" state instead of jumping to 0%.
+    let peak = 0, doneDownloading = false
     try {
       const mod = await loadImgly()
       const blob: Blob = await mod.removeBackground(file, {
-        progress: (_key: string, current: number, total: number) => { if (total) setProg(Math.min(99, Math.round((current / total) * 100))) },
+        progress: (_key: string, current: number, total: number) => {
+          if (doneDownloading || !total) return
+          const pct = Math.round((current / total) * 100)
+          if (peak > 50 && pct + 20 < peak) { doneDownloading = true; setFinishing(true); return }
+          peak = Math.max(peak, pct)
+          setProg(Math.min(99, pct))
+        },
       })
       setOutUrl(URL.createObjectURL(blob))
       trackToolDownload('background-remover', 'png')
@@ -92,17 +104,22 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
                 <img src={outUrl} alt="result" className="w-full max-h-80 object-contain" />
               </div>
             )}
-            {busy && (
-              <div className="space-y-1">
-                <p className="text-sm text-brand-600 text-center">{t('md_processing')} {prog}%</p>
-                <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden"><div className="h-full bg-brand-500 transition-all" style={{ width: prog + '%' }} /></div>
-              </div>
-            )}
+            {busy && (() => {
+              const indeterminate = finishing || prog === 0
+              return (
+                <div className="space-y-1">
+                  <p className="text-sm text-brand-600 text-center">{t('md_processing')}{!indeterminate && ` ${prog}%`}</p>
+                  <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                    <div className={'h-full bg-brand-500 ' + (indeterminate ? 'w-full animate-pulse' : 'transition-all')} style={indeterminate ? undefined : { width: prog + '%' }} />
+                  </div>
+                </div>
+              )
+            })()}
             {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl p-3">{error}</p>}
             <div className="flex gap-2">
               {!outUrl ? (
                 <button onClick={removeBg} disabled={busy}
-                  className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40">{busy ? `${t('md_processing')} ${prog}%` : t('br_remove')}</button>
+                  className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40">{busy ? t('md_processing') : t('br_remove')}</button>
               ) : (
                 <button onClick={download} className="px-6 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700">{t('md_download')} (PNG)</button>
               )}
@@ -111,7 +128,11 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
             {!outUrl && !busy && <p className="text-xs text-gray-400 text-center">{t('br_note_first')}</p>}
           </>
         )}
-        <p className="text-xs text-gray-400 text-center">{t('md_note_local')}</p>
+        {/* Privacy banner — unified with the other image tools */}
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+          <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+          <span><b>{t('im_privacy_title')}</b> {t('im_privacy')}</span>
+        </div>
       </div>
     </ToolLayout>
   )
