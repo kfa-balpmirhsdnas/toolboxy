@@ -80,7 +80,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-2 sm:gap-4">
         <Link href={`/${lang}`} className="font-bold text-xl text-brand-600 shrink-0 whitespace-nowrap">Tool<span className="text-gray-900">Boxy</span></Link>
         <nav className="flex items-center gap-5 text-sm font-medium text-gray-400 flex-1">
-          <span className="hidden sm:inline">{th('hero_title')}</span>
+          <span className="hidden sm:inline">{th('header_tagline')}</span>
         </nav>
         {/* Desktop: segmented control with native names. Equal-width columns
             (grid) so spacing stays uniform regardless of which item is active. */}
