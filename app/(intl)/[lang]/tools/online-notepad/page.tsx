@@ -101,6 +101,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [docs, setDocs] = useState<Doc[]>([first])
   const [activeId, setActiveId] = useState(first.id)
   const [savedAt, setSavedAt] = useState('')
+  const [savingVisible, setSavingVisible] = useState(false) // "saving…" auto-hides after 3s
   const [copied, setCopied] = useState(false)
   const [renaming, setRenaming] = useState<string | null>(null)
   const [showFind, setShowFind] = useState(false)
@@ -267,6 +268,14 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
       }
     } catch { /* ignore */ }
   }
+  // "Saving…" shows while a save is pending, but auto-hides after 3s so a slow/stuck save
+  // never leaves the label up indefinitely. The saved "✓" state (savedAt set) is unaffected.
+  useEffect(() => {
+    if (savedAt) return
+    setSavingVisible(true)
+    const id = setTimeout(() => setSavingVisible(false), 3000)
+    return () => clearTimeout(id)
+  }, [savedAt])
   useEffect(() => {
     // Blur the editor first so an in-progress IME composition (the last char) is
     // committed into textarea.value before we read & save it — otherwise that last
@@ -693,8 +702,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0 min-h-7">
-            {/* Only show the save status once the tab actually has content (a fresh empty tab has nothing saved). */}
-            {text && (
+            {/* Show the save status only when the tab has content; "saving…" auto-hides after 3s. */}
+            {text && (savedAt || savingVisible) && (
               <span className={'text-xs font-medium transition-colors ' + (savedAt ? 'text-green-600' : 'text-gray-400')}>
                 {savedAt ? `✓ ${t('np_autosaved')} ${savedAt}` : t('np_saving')}
               </span>
