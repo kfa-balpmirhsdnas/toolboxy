@@ -871,7 +871,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                       <span className={'flex-1 truncate ' + (on ? 'text-brand-600 font-semibold' : 'text-gray-700')}>{d.name}</span>
                       {d.text.trim() && <span className="shrink-0 text-[10px] text-gray-300 tabular-nums">{d.text.trim().length}</span>}
                       <button onClick={(e) => { e.stopPropagation(); closeDoc(d.id) }} aria-label={t('np_closetab')}
-                        className="shrink-0 text-gray-300 hover:text-red-500 text-base leading-none opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                        className="shrink-0 text-gray-300 hover:text-red-500 text-base leading-none transition-colors">×</button>
                     </div>
                   )
                 })}
@@ -933,7 +933,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m14 4 1.2 2.8L18 8l-2.8 1.2L14 12l-1.2-2.8L10 8l2.8-1.2L14 4Z" /><path d="M5 19 13 11" /><path d="M19 15v4M17 17h4" /></svg>
                 </button>
                 {openMenu === 'auto' && (
-                  <div className="absolute z-30 mt-1 left-0 w-60 bg-white border border-gray-200 rounded-lg shadow-lg py-1.5 text-sm">
+                  <div className="absolute z-30 mt-1 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 w-60 max-w-[calc(100vw-1.5rem)] bg-white border border-gray-200 rounded-lg shadow-lg py-1.5 text-sm">
                     <p className="px-3 py-1 text-xs font-medium text-gray-400">{t('np_autoconvert')}</p>
                     {([
                       ['symbol', t('np_ac_symbol'), '--- === -> <-'],
