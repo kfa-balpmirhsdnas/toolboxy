@@ -158,6 +158,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
   const [view, setView] = useState<'list' | 'thumbnails'>('list')
   const [zipping, setZipping] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const dirRef = useRef<HTMLInputElement>(null)
 
   // Always call the latest processFn even if a run started before options changed.
   const processRef = useRef(processFn)
@@ -356,11 +357,15 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
       >
         <input ref={inputRef} type="file" accept={accept} multiple className="hidden"
           onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <input ref={dirRef} type="file" className="hidden" {...({ webkitdirectory: '', directory: '' } as any)}
+          onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
         <div className="text-4xl mb-2">🖼️</div>
         <p className="font-semibold text-gray-700">{t('bip_drop')}</p>
         <p className="text-sm text-gray-400 mt-1">{t('bip_supports')}</p>
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center gap-2 mt-4">
           <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">{t('ui_pick_folder')}</button>
         </div>
       </div>
 
