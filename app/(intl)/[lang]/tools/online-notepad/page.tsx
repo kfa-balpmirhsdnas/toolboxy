@@ -346,15 +346,22 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
       const ae = document.activeElement
       if (ae && ae !== document.body && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA') && ae !== taRef.current) return
       const ta = taRef.current; if (!ta) return
-      // Re-assert the saved value (an IME cancel may have left the DOM value short) and restore the
-      // caret via the pendingSel layout effect.
-      pendingSel.current = { s: caretRef.current.s, e: caretRef.current.e }
-      force((n) => n + 1)
-      ta.focus()
-      // Keep the shorter-value guard alive briefly: re-focusing here makes the IME cancel the
-      // pending composition and re-fire the TRUNCATED value on the next tick (e.g. 합격 → 합), which
-      // would otherwise slip through after this handler. Clear it once that settles.
-      setTimeout(() => { leaveValRef.current = '' }, 800)
+      ta.focus(); try { ta.setSelectionRange(caretRef.current.s, caretRef.current.e) } catch { /* ignore */ }
+      // Re-focusing makes the IME cancel the pending composition and drop the last glyph a tick
+      // later (안녕하세요 → 안녕하세, 합격 → 합). Rather than fight every keystroke, just repair once:
+      // shortly after return, if the text is now a shorter prefix of what we saved on leave, put the
+      // saved value back.
+      const target = leaveValRef.current
+      if (target) {
+        setTimeout(() => {
+          const cur = docsRef.current.find((d) => d.id === activeIdRef.current)
+          if (cur && target.length > cur.text.length && target.startsWith(cur.text)) {
+            pendingSel.current = { s: caretRef.current.s, e: caretRef.current.e }
+            setDocText(activeIdRef.current, target)
+          }
+          leaveValRef.current = ''
+        }, 250)
+      }
     }
     const onVis = () => { if (document.visibilityState === 'hidden') onLeave(); else onShow() }
     window.addEventListener('blur', onLeave)
@@ -380,12 +387,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     h.idx = h.hist.length - 1; force((n) => n + 1)
   }
   function onChange(v: string) {
-    // Drop the shorter value the IME emits when it cancels a composition on background (it would
-    // erase the last glyph we just saved on leave).
-    if (leaveValRef.current) {
-      if (v.length < leaveValRef.current.length && leaveValRef.current.startsWith(v)) return
-      leaveValRef.current = ''
-    }
     setDocText(activeId, v)
     if (commitTimer.current) clearTimeout(commitTimer.current)
     commitTimer.current = setTimeout(() => commit(v), 500)
