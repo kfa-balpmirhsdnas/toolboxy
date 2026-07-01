@@ -347,11 +347,14 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
       if (ae && ae !== document.body && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA') && ae !== taRef.current) return
       const ta = taRef.current; if (!ta) return
       // Re-assert the saved value (an IME cancel may have left the DOM value short) and restore the
-      // caret via the pendingSel layout effect, then clear the guard so normal editing resumes.
-      leaveValRef.current = ''
+      // caret via the pendingSel layout effect.
       pendingSel.current = { s: caretRef.current.s, e: caretRef.current.e }
       force((n) => n + 1)
       ta.focus()
+      // Keep the shorter-value guard alive briefly: re-focusing here makes the IME cancel the
+      // pending composition and re-fire the TRUNCATED value on the next tick (e.g. 합격 → 합), which
+      // would otherwise slip through after this handler. Clear it once that settles.
+      setTimeout(() => { leaveValRef.current = '' }, 800)
     }
     const onVis = () => { if (document.visibilityState === 'hidden') onLeave(); else onShow() }
     window.addEventListener('blur', onLeave)
