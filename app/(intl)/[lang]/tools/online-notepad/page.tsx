@@ -824,11 +824,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
         <div className="flex items-center gap-2 flex-wrap">
           <button onClick={download} disabled={!text} aria-label={t('np_download')} title={t('np_download')}
             className="inline-flex items-center justify-center gap-1.5 px-5 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            <ToolIcon name="download" className="w-4 h-4" /><span className="hidden sm:inline">{t('np_download')}</span>
+            <ToolIcon name="download" className="w-4 h-4" /><span className="sm:hidden">.txt</span><span className="hidden sm:inline">{t('np_download')}</span>
           </button>
           <button onClick={zipDownload} disabled={docs.every((d) => !d.text)} aria-label={t('np_zip')} title={t('np_zip')}
             className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl border border-brand-200 text-brand-700 bg-brand-50 hover:bg-brand-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            <ToolIcon name="archive" className="w-4 h-4" /><span className="hidden sm:inline">{t('np_zip')}</span>
+            <ToolIcon name="archive" className="w-4 h-4" /><span className="sm:hidden">ZIP</span><span className="hidden sm:inline">{t('np_zip')}</span>
           </button>
           <button onClick={copy} disabled={!text}
             className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
@@ -856,7 +856,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           </button>
         </div>
 
-        <p className="text-xs text-gray-400 text-center pt-2">{t('np_note')}</p>
+        {/* Privacy banner — unified with the other tools */}
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+          <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+          <span>{t('np_note')}</span>
+        </div>
       </div>
     </ToolLayout>
   )

@@ -113,19 +113,25 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
           <p className="text-4xl mb-2">📦</p><p className="text-sm font-medium text-gray-600">{name || t('uz_drop')}</p>
         </div>
 
+        {/* Privacy banner — unified with the other file tools */}
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+          <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+          <span>{t('bfr_privacy')}</span>
+        </div>
+
         {error && <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-3">{error}</p>}
 
         {entries.length > 0 && (
           <>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <p className="text-xs text-gray-400">{!showAll && entries.length > LIMIT ? t('uz_entries_some', { shown: LIMIT, total: entries.length }) : t('uz_entries', { n: entries.length })}</p>
-              <button onClick={extractAll} className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700 inline-flex items-center justify-center gap-1.5"><ToolIcon name="folder" className="w-4 h-4" />{t('uz_downloadall')}</button>
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+                <input type="checkbox" checked={makeFolder} onChange={(e) => setMakeFolder(e.target.checked)} className="w-4 h-4 accent-brand-600" />
+                {t('uz_makefolder')}
+              </label>
             </div>
 
-            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
-              <input type="checkbox" checked={makeFolder} onChange={(e) => setMakeFolder(e.target.checked)} className="w-4 h-4 accent-brand-600" />
-              {t('uz_makefolder')}
-            </label>
+            <button onClick={extractAll} className="w-full py-3 text-base font-semibold bg-brand-600 text-white rounded-xl hover:bg-brand-700 inline-flex items-center justify-center gap-2"><ToolIcon name="folder" className="w-5 h-5" />{t('uz_downloadall')}</button>
 
             {done && <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-xl p-3">{t('uz_extracted', { folder: done.folder, n: done.n })}</p>}
             <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-72 overflow-auto">
@@ -144,11 +150,6 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
             )}
           </>
         )}
-        {/* Privacy banner — unified with the other file tools */}
-        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
-          <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
-          <span>{t('bfr_privacy')}</span>
-        </div>
       </div>
     </ToolLayout>
   )
