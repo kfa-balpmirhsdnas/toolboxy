@@ -29,10 +29,12 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
   const [quality, setQuality] = useState('85')
   const [adjustQuality, setAdjustQuality] = useState(true) // false = keep original (no recompression)
   const [imgDims, setImgDims] = useState<{ w: number; h: number } | null>(null) // first selected image's size
+  const [hasFiles, setHasFiles] = useState(false) // top options stay disabled until images load
 
   // Capture the first selected image's size, and prefill W/H (해상도 mode).
   const filledRef = useRef(false)
   const onFilesChange = useCallback((files: File[]) => {
+    setHasFiles(files.length > 0)
     if (!files.length) { filledRef.current = false; setImgDims(null); return }
     if (filledRef.current) return
     filledRef.current = true
@@ -73,8 +75,9 @@ export default function BatchImageResizerPage({ params }: { params: { lang: stri
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-6">
-        {/* PC: 크기 left, 품질 right (equal height). Mobile: stacked. */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        {/* PC: 크기 left, 품질 right (equal height). Mobile: stacked.
+            Options stay dimmed + non-interactive until at least one image is loaded. */}
+        <div className={'flex flex-col sm:flex-row gap-4 transition-opacity ' + (hasFiles ? '' : 'opacity-50 pointer-events-none select-none')} aria-disabled={!hasFiles}>
           {/* Size box */}
           <div className="bg-white border border-gray-200 rounded-2xl p-5 space-y-4 sm:flex-1">
             <div className="flex items-baseline gap-2 flex-wrap">
