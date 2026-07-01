@@ -581,17 +581,22 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   function spaceConvert(): boolean {
     const ta = taRef.current; if (!ta) return false
     const pos = ta.selectionStart; if (pos !== ta.selectionEnd) return false
-    const before = text.slice(0, pos)
+    const val = ta.value // read the live DOM value (React state can lag one keystroke)
+    const before = val.slice(0, pos)
     if (autoConv.symbol) {
-      if (before.endsWith('->')) { applyText(text.slice(0, pos - 2) + '→ ' + text.slice(pos), pos); return true }
-      if (before.endsWith('<-')) { applyText(text.slice(0, pos - 2) + '← ' + text.slice(pos), pos); return true }
+      if (before.endsWith('->')) { applyText(val.slice(0, pos - 2) + '→ ' + val.slice(pos), pos); return true }
+      if (before.endsWith('<-')) { applyText(val.slice(0, pos - 2) + '← ' + val.slice(pos), pos); return true }
     }
     if (autoConv.link) {
-      const m = before.match(/(?:https?:\/\/|www\.)[^\s()[\]]+$/i)
-      if (m && !/\]\([^)]*$/.test(before.slice(0, before.length - m[0].length))) { // not already inside a markdown link
-        const url = m[0]; const href = /^https?:\/\//i.test(url) ? url : 'https://' + url
-        const md = `[${url}](${href})`; const start = pos - url.length
-        applyText(text.slice(0, start) + md + ' ' + text.slice(pos), start + md.length + 1); return true
+      // Match http(s)://… / www.… OR a bare domain.tld (TLD whitelist avoids linkifying "3.14",
+      // "file.txt", "e.g.", etc.). The link ends at the caret (a space is about to be typed).
+      const TLD = 'com|net|org|io|dev|app|ai|co|kr|jp|cn|us|uk|de|fr|it|es|ru|nl|se|no|pl|tr|br|in|au|ca|me|tv|info|biz|xyz|gg|edu|gov|shop|store|site|online|blog'
+      const seg = before.match(/(?:https?:\/\/|www\.)[^\s()[\]<>]+$/i)?.[0]
+        ?? before.match(new RegExp(`(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+(?:${TLD})(?:/[^\\s()[\\]<>]*)?$`, 'i'))?.[0]
+      if (seg && !before.slice(0, before.length - seg.length).endsWith('](')) { // not already inside a markdown link
+        const href = /^https?:\/\//i.test(seg) ? seg : 'https://' + seg
+        const md = `[${seg}](${href})`; const start = pos - seg.length
+        applyText(val.slice(0, start) + md + ' ' + val.slice(pos), start + md.length + 1); return true
       }
     }
     return false
