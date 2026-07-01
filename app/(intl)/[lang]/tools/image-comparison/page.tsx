@@ -32,8 +32,6 @@ export default function ImageComparisonPage({ params }: { params: { lang: string
   const [opacity, setOpacity] = useState(50) // overlay %
   const [zoom, setZoom] = useState(1)
   const [pan, setPan] = useState({ x: 0, y: 0 })
-  const [labelA, setLabelA] = useState('')
-  const [labelB, setLabelB] = useState('')
   const [saving, setSaving] = useState(false)
 
   const refA = useRef<HTMLInputElement>(null)
@@ -42,8 +40,6 @@ export default function ImageComparisonPage({ params }: { params: { lang: string
   const sliderDrag = useRef(false)
   const panDrag = useRef<{ x: number; y: number; px: number; py: number } | null>(null)
 
-  const la = labelA || t('ic_before')
-  const lb = labelB || t('ic_after')
   const both = a && b
   const resetView = useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }) }, [])
 
@@ -57,7 +53,7 @@ export default function ImageComparisonPage({ params }: { params: { lang: string
   }, [])
 
   function clearAll() { if (a) URL.revokeObjectURL(a.url); if (b) URL.revokeObjectURL(b.url); setA(null); setB(null); resetView(); setPos(50) }
-  function swap() { setA(b); setB(a); const l = labelA; setLabelA(labelB); setLabelB(l) }
+  function swap() { setA(b); setB(a) }
 
   // Slider drag (pointer = mouse + touch).
   const sliderFromEvent = (clientX: number) => {
@@ -89,11 +85,12 @@ export default function ImageComparisonPage({ params }: { params: { lang: string
       const cv = document.createElement('canvas')
       const ctx = (() => { cv.width = mode === 'side' || mode === 'sync' ? W * 2 : W; cv.height = H; return cv.getContext('2d')! })()
       ctx.fillStyle = '#111827'; ctx.fillRect(0, 0, cv.width, cv.height)
+      // A is always the left/top image, B the right/bottom (matches the on-screen layout).
       if (mode === 'side' || mode === 'sync') { drawContain(ctx, ia, 0, 0, W, H); drawContain(ctx, ib, W, 0, W, H) }
-      else if (mode === 'overlay') { drawContain(ctx, ia, 0, 0, W, H); ctx.globalAlpha = opacity / 100; drawContain(ctx, ib, 0, 0, W, H); ctx.globalAlpha = 1 }
-      else { // slider
-        drawContain(ctx, ia, 0, 0, W, H)
-        ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W * (pos / 100), H); ctx.clip(); drawContain(ctx, ib, 0, 0, W, H); ctx.restore()
+      else if (mode === 'overlay') { drawContain(ctx, ib, 0, 0, W, H); ctx.globalAlpha = opacity / 100; drawContain(ctx, ia, 0, 0, W, H); ctx.globalAlpha = 1 }
+      else { // slider: B underneath, A clipped to the left up to the divider
+        drawContain(ctx, ib, 0, 0, W, H)
+        ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W * (pos / 100), H); ctx.clip(); drawContain(ctx, ia, 0, 0, W, H); ctx.restore()
         ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(2, W / 500); ctx.beginPath(); ctx.moveTo(W * (pos / 100), 0); ctx.lineTo(W * (pos / 100), H); ctx.stroke()
       }
       cv.toBlob((blob) => { if (!blob) return; const u = URL.createObjectURL(blob); const el = document.createElement('a'); el.href = u; el.download = 'comparison.png'; el.click(); setTimeout(() => URL.revokeObjectURL(u), 2000); trackToolDownload('image-comparison', 'png') }, 'image/png')
@@ -106,15 +103,17 @@ export default function ImageComparisonPage({ params }: { params: { lang: string
   const dropZone = (which: 'a' | 'b', img: Img | null, ref: React.RefObject<HTMLInputElement>, label: string) => (
     <div onClick={() => ref.current?.click()}
       onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0], which) }} onDragOver={(e) => e.preventDefault()}
-      className="border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-      <input ref={ref} type="file" accept="image/*" className="hidden" onChange={(e) => { e.target.files?.[0] && load(e.target.files[0], which); e.target.value = '' }} />
+      className="flex flex-col items-center justify-center gap-2 min-h-[11rem] border-2 border-dashed border-gray-300 rounded-2xl p-4 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
+      <input ref={ref} type="file" accept="image/*" className="hidden" onClick={(e) => e.stopPropagation()} onChange={(e) => { e.target.files?.[0] && load(e.target.files[0], which); e.target.value = '' }} />
       {img ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={img.url} alt={img.name} className="max-h-40 mx-auto rounded-lg" />
+        <img src={img.url} alt={img.name} className="max-h-28 rounded-lg" />
       ) : (
-        <><p className="text-4xl mb-2">🖼️</p><p className="text-sm font-medium text-gray-600">{label}</p></>
+        <><p className="text-4xl">🖼️</p><p className="text-sm font-medium text-gray-600">{label}</p></>
       )}
-      <p className="text-xs text-brand-600 mt-2">{img ? t('ic_change') : t('ui_pick_files')}</p>
+      {img
+        ? <button type="button" onClick={(e) => { e.stopPropagation(); ref.current?.click() }} className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">{t('ic_change')}</button>
+        : <button type="button" onClick={(e) => { e.stopPropagation(); ref.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>}
     </div>
   )
 
@@ -151,16 +150,10 @@ export default function ImageComparisonPage({ params }: { params: { lang: string
               </div>
             </div>
 
-            {/* Editable labels */}
-            <div className="flex items-center gap-2 text-xs">
-              <input value={labelA} onChange={(e) => setLabelA(e.target.value)} placeholder={t('ic_before')} className="flex-1 min-w-0 rounded-lg border border-gray-200 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-brand-400" />
-              <input value={labelB} onChange={(e) => setLabelB(e.target.value)} placeholder={t('ic_after')} className="flex-1 min-w-0 rounded-lg border border-gray-200 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-brand-400" />
-            </div>
-
             {/* Stage */}
             {mode === 'side' || mode === 'sync' ? (
               <div className="grid grid-cols-2 gap-1">
-                {[{ img: a, lbl: la }, { img: b, lbl: lb }].map((p, i) => (
+                {[{ img: a, lbl: 'A' }, { img: b, lbl: 'B' }].map((p, i) => (
                   <div key={i}
                     onWheel={onWheel}
                     onPointerDown={onStagePointerDown} onPointerMove={onStagePointerMove} onPointerUp={onStagePointerUp} onPointerLeave={onStagePointerUp}
@@ -178,12 +171,12 @@ export default function ImageComparisonPage({ params }: { params: { lang: string
                 onPointerDown={onStagePointerDown} onPointerMove={onStagePointerMove} onPointerUp={onStagePointerUp} onPointerLeave={onStagePointerUp}
                 style={{ touchAction: mode === 'slider' ? 'none' : undefined }}
                 className={'relative overflow-hidden rounded-xl bg-gray-900 h-[58vh] select-none ' + (mode === 'slider' ? 'cursor-ew-resize' : zoom > 1 ? 'cursor-grab active:cursor-grabbing' : '')}>
-                {/* bottom = A */}
+                {/* bottom = B */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={a.url} alt={la} draggable={false} style={{ transform: tf }} className="absolute inset-0 m-auto max-w-full max-h-full object-contain" />
-                {/* top = B (clipped for slider, opacity for overlay) */}
+                <img src={b.url} alt="B" draggable={false} style={{ transform: tf }} className="absolute inset-0 m-auto max-w-full max-h-full object-contain" />
+                {/* top = A (clipped to the left for slider, opacity for overlay) */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={b.url} alt={lb} draggable={false}
+                <img src={a.url} alt="A" draggable={false}
                   style={{ transform: tf, ...(mode === 'slider' ? { clipPath: `inset(0 ${100 - pos}% 0 0)` } : { opacity: opacity / 100 }) }}
                   className="absolute inset-0 m-auto max-w-full max-h-full object-contain" />
                 {mode === 'slider' && (
@@ -192,8 +185,8 @@ export default function ImageComparisonPage({ params }: { params: { lang: string
                     <div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 shadow flex items-center justify-center text-gray-700"><ToolIcon name="chevron-left" className="w-3.5 h-3.5" /><ToolIcon name="chevron-right" className="w-3.5 h-3.5" /></div>
                   </div>
                 )}
-                <Chip text={mode === 'slider' ? lb : la} side="l" />
-                <Chip text={mode === 'slider' ? la : lb} side="r" />
+                <Chip text="A" side="l" />
+                <Chip text="B" side="r" />
               </div>
             )}
 
@@ -219,13 +212,12 @@ export default function ImageComparisonPage({ params }: { params: { lang: string
           <span><b>{t('im_privacy_title')}</b> {t('im_privacy')}</span>
         </div>
 
-        {/* Cross-links to the tools whose results people compare */}
-        <p className="text-xs text-gray-400">
-          {t('ic_related')}{' '}
-          <Link href={`/${lang}/tools/image-compress`} className="text-brand-600 hover:underline">{toolNames['image-compress'] || 'Image Compress'}</Link>
-          {' · '}
-          <Link href={`/${lang}/tools/image-resizer`} className="text-brand-600 hover:underline">{toolNames['image-resizer'] || 'Image Resizer'}</Link>
-        </p>
+        {/* Cross-links to the tools whose results people compare — always buttons */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-gray-400">{t('ic_related')}</span>
+          <Link href={`/${lang}/tools/image-compress`} className="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-brand-300 text-sm font-medium transition-colors">{toolNames['image-compress'] || 'Image Compress'}</Link>
+          <Link href={`/${lang}/tools/image-resizer`} className="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-brand-300 text-sm font-medium transition-colors">{toolNames['image-resizer'] || 'Image Resizer'}</Link>
+        </div>
       </div>
     </ToolLayout>
   )

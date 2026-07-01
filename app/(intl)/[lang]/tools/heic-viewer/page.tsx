@@ -79,6 +79,10 @@ export default function HeicViewerPage({ params }: { params: { lang: string } })
 
   function clearAll() { items.forEach((i) => URL.revokeObjectURL(i.url)); setItems([]); setIdx(0); resetView() }
 
+  // Preview the most-recently-added image (the last one in the list) whenever new files load.
+  const prevLen = useRef(0)
+  useEffect(() => { if (items.length > prevLen.current) setIdx(items.length - 1); prevLen.current = items.length }, [items.length])
+
   // Keep active thumbnail in view.
   useEffect(() => { thumbRef.current?.querySelector(`[data-i="${idx}"]`)?.scrollIntoView({ inline: 'center', block: 'nearest' }) }, [idx])
 
@@ -220,12 +224,12 @@ export default function HeicViewerPage({ params }: { params: { lang: string } })
               {prog && <div className="absolute bottom-2 right-2 rounded-lg bg-black/70 text-white text-xs px-3 py-1.5">{t('hv_decoding', { n: prog.done, t: prog.total })}</div>}
             </div>
 
-            {/* Thumbnails */}
+            {/* Thumbnail grid — same style as remove-exif */}
             {items.length > 1 && (
-              <div ref={thumbRef} className="flex gap-1.5 overflow-x-auto py-1">
+              <div ref={thumbRef} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                 {items.map((im, i) => (
                   <button key={im.url} data-i={i} onClick={() => { setIdx(i); resetView() }}
-                    className={'shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ' + (i === idx ? 'border-brand-500' : 'border-transparent opacity-60 hover:opacity-100')}>
+                    className={'relative aspect-square rounded-xl overflow-hidden border-2 bg-gray-50 transition-colors ' + (i === idx ? 'border-brand-500' : 'border-gray-200 opacity-70 hover:opacity-100')}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={im.url} alt={im.name} className="w-full h-full object-cover" />
                   </button>
@@ -246,10 +250,11 @@ export default function HeicViewerPage({ params }: { params: { lang: string } })
         )}
         <input ref={fileRef} type="file" accept=".heic,.heif,image/heic,image/heif" multiple className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
 
-        {/* Cross-link to the converter (distinct keyword: convert vs view) */}
-        <p className="text-xs text-gray-400">
-          {t('hv_related')} <Link href={`/${lang}/tools/heic-to-jpg`} className="text-brand-600 hover:underline">HEIC → JPG</Link>
-        </p>
+        {/* Cross-link to the converter (distinct keyword: convert vs view) — always a button */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-gray-400">{t('hv_related')}</span>
+          <Link href={`/${lang}/tools/heic-to-jpg`} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-brand-300 text-sm font-medium transition-colors">HEIC → JPG</Link>
+        </div>
       </div>
     </ToolLayout>
   )

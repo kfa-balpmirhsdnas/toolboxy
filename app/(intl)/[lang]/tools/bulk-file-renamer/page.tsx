@@ -33,6 +33,7 @@ export default function BulkFileRenamerPage({ params }: { params: { lang: string
   const [busy, setBusy] = useState(false)
   const [showAll, setShowAll] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const dirRef = useRef<HTMLInputElement>(null)
   const LIMIT = 12
 
   function add(list: FileList | File[] | null) {
@@ -89,12 +90,15 @@ export default function BulkFileRenamerPage({ params }: { params: { lang: string
         {/* Drop zone */}
         <div onClick={() => inputRef.current?.click()} onDrop={(e) => { e.preventDefault(); add(e.dataTransfer.files) }} onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-          <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => { add(e.target.files); e.target.value = '' }} />
+          <input ref={inputRef} type="file" multiple className="hidden" onClick={(e) => e.stopPropagation()} onChange={(e) => { add(e.target.files); e.target.value = '' }} />
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          <input ref={dirRef} type="file" className="hidden" {...({ webkitdirectory: '', directory: '' } as any)} onClick={(e) => e.stopPropagation()} onChange={(e) => { add(e.target.files); e.target.value = '' }} />
           <p className="text-4xl mb-2">📁</p>
           <p className="text-sm font-medium text-gray-600">{t('bfr_drop')}</p>
           <p className="text-xs text-gray-400 mt-1">{t('bfr_drop_sub')}</p>
-          <div className="flex justify-center mt-4">
+          <div className="flex justify-center gap-2 mt-4">
             <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+            <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">{t('ui_pick_folder')}</button>
           </div>
         </div>
 
