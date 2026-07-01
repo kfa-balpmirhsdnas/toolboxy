@@ -1,11 +1,10 @@
 'use client'
 
-import { createContext, useContext, useCallback, useEffect, useState } from 'react'
+import { createContext, useContext, useCallback, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { onAuthStateChanged, type User } from 'firebase/auth'
 import { useTranslations } from 'next-intl'
-import { auth } from '@/lib/firebase/client'
+import { useAuthUser } from '@/lib/hooks/useAuthUser'
 import { loginHref, signupHref } from '@/lib/auth/redirect'
 import Modal from '@/components/Modal'
 
@@ -43,10 +42,8 @@ export default function SignupGateProvider({ children }: { children: React.React
   const lang = getLang(pathname)
   const t = useTranslations('gate')
 
-  const [user, setUser] = useState<User | null | 'loading'>('loading')
+  const user = useAuthUser()
   const [pendingHref, setPendingHref] = useState<string | null>(null)
-
-  useEffect(() => onAuthStateChanged(auth, (u) => setUser(u)), [])
 
   const guard = useCallback(
     (href: string): boolean => {

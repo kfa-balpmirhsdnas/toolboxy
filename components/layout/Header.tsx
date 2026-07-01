@@ -3,9 +3,10 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { onAuthStateChanged, signOut, type User } from 'firebase/auth'
+import { signOut, type User } from 'firebase/auth'
 import { useTranslations } from 'next-intl'
 import { auth } from '@/lib/firebase/client'
+import { useAuthUser } from '@/lib/hooks/useAuthUser'
 import { loginHref, signupHref } from '@/lib/auth/redirect'
 
 // Native language names (endonyms) — each shown in its own language so any
@@ -47,13 +48,11 @@ export default function Header() {
   const authBack = /\/(login|signup)(\/|$)/.test(pathname) ? undefined : pathname
   const t = useTranslations('nav')
   const th = useTranslations('home')
-  const [user, setUser] = useState<User | null | 'loading'>('loading')
+  const user = useAuthUser()
   const [menuOpen, setMenuOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const langRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => onAuthStateChanged(auth, (u) => setUser(u)), [])
 
   useEffect(() => {
     const h = (e: MouseEvent) => {

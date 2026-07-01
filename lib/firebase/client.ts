@@ -1,7 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
 import { getAnalytics, isSupported } from 'firebase/analytics'
 
 const firebaseConfig = {
@@ -17,11 +15,13 @@ const firebaseConfig = {
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig)
 
 export const auth = getAuth(app)
-export const db = getFirestore(app)
-export const storage = getStorage(app)
 
-export const analytics = isSupported().then((yes) =>
-  yes ? getAnalytics(app) : null
-)
+// Firestore & Storage are accessed only server-side (firebase-admin), so the client SDKs for them
+// are intentionally NOT initialized here — that keeps them out of the client bundle.
+
+// Firebase Analytics is initialized lazily (only in the browser, when supported) so it doesn't add
+// a synchronous init to every page load. Awaited by callers that need it.
+export const analytics =
+  typeof window === 'undefined' ? Promise.resolve(null) : isSupported().then((yes) => (yes ? getAnalytics(app) : null))
 
 export default app
