@@ -39,6 +39,18 @@ const SYM_TO_GLYPH: Record<string, string> = { '*': '●', o: '○', '@': '■',
 const NUM_MARK = /^(\d+)([.)>]) /  // "1. " / "1) " / "1> "
 const SYM_MARK = /^([*o@\-▶●○■]) /  // shortcuts (* o @ -) or glyphs (● ○ ■ ▶) + space
 
+// True if `short` is `full` with one contiguous chunk removed (the composing glyph the IME drops
+// on a tab transition). Generalises a prefix check so it also catches edits made in the MIDDLE of
+// the document (the removed glyph isn't at the end): compare the shared prefix + shared suffix.
+function isTruncationOf(full: string, short: string): boolean {
+  if (short.length >= full.length) return false
+  let p = 0
+  while (p < short.length && full[p] === short[p]) p++
+  let s = 0
+  while (s < short.length - p && full[full.length - 1 - s] === short[short.length - 1 - s]) s++
+  return p + s === short.length
+}
+
 const SIZE_CLS: Record<SizeLvl, string> = { xs: 'text-[11px]', sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[18px]', xl: 'text-[22px]' }
 const LH_CLS: Record<Lvl, string> = { sm: 'leading-snug', md: 'leading-relaxed', lg: 'leading-loose' }
 // A system default plus per-language webfonts (Google Fonts). System fonts only
@@ -387,7 +399,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     // cancels a composition (it would erase the last glyph we just saved). The window self-expires,
     // so a genuine deletion made later still goes through.
     if (leaveValRef.current && Date.now() - leaveAtRef.current < GUARD_MS
-      && v.length < leaveValRef.current.length && leaveValRef.current.startsWith(v)) return
+      && isTruncationOf(leaveValRef.current, v)) return
     leaveValRef.current = ''
     setDocText(activeId, v)
     if (commitTimer.current) clearTimeout(commitTimer.current)
