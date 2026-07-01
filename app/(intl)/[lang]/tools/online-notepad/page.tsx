@@ -151,6 +151,14 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [showChars, setShowChars] = useState(false) // special-character palette
   const [showSettings, setShowSettings] = useState(false) // mobile: font/size/spacing hidden behind a gear
   const [openMenu, setOpenMenu] = useState<string | null>(null) // which format dropdown is open
+  // Auto-convert toggles (symbols --- === -> <- / URL links / list markers). Persisted, default on.
+  const [autoConv, setAutoConv] = useState({ symbol: true, link: true, bullet: true })
+  useEffect(() => {
+    try { const s = localStorage.getItem('toolboxy-notepad-ac'); if (s) setAutoConv((p) => ({ ...p, ...JSON.parse(s) })) } catch { /* ignore */ }
+  }, [])
+  useEffect(() => {
+    try { localStorage.setItem('toolboxy-notepad-ac', JSON.stringify(autoConv)) } catch { /* ignore */ }
+  }, [autoConv])
   const [findQ, setFindQ] = useState('')
   const [replaceQ, setReplaceQ] = useState('')
   const [matchInfo, setMatchInfo] = useState('')
@@ -474,10 +482,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const nl = text.indexOf('\n', pos); const le = nl === -1 ? text.length : nl
     const line = text.slice(ls, le)
     const dm = line.trim().match(/^([-=])\1{2,4}$/) // 3–5 of - or = + Enter → a 50-char divider (a longer line is left alone, so Enter works normally on the divider itself)
-    if (dm) {
+    if (autoConv.symbol && dm) {
       const divider = dm[1].repeat(50)
       applyText(text.slice(0, ls) + divider + '\n' + text.slice(le), ls + divider.length + 1); return true
     }
+    if (!autoConv.bullet) return false
     const num = line.match(NUM_MARK); const sym = line.match(SYM_MARK)
     if (!num && !sym) return false
     const marker = (num ?? sym)![0]
@@ -538,12 +547,34 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     if (nt !== full) applyText(nt, nc)
   }
 
+  // Typing SPACE after a trigger converts it in place: -> → →, <- → ←, and a bare URL → a
+  // [url](href) markdown link. Gated by the auto-convert toggles.
+  function spaceConvert(): boolean {
+    const ta = taRef.current; if (!ta) return false
+    const pos = ta.selectionStart; if (pos !== ta.selectionEnd) return false
+    const before = text.slice(0, pos)
+    if (autoConv.symbol) {
+      if (before.endsWith('->')) { applyText(text.slice(0, pos - 2) + '→ ' + text.slice(pos), pos); return true }
+      if (before.endsWith('<-')) { applyText(text.slice(0, pos - 2) + '← ' + text.slice(pos), pos); return true }
+    }
+    if (autoConv.link) {
+      const m = before.match(/(?:https?:\/\/|www\.)[^\s()[\]]+$/i)
+      if (m && !/\]\([^)]*$/.test(before.slice(0, before.length - m[0].length))) { // not already inside a markdown link
+        const url = m[0]; const href = /^https?:\/\//i.test(url) ? url : 'https://' + url
+        const md = `[${url}](${href})`; const start = pos - url.length
+        applyText(text.slice(0, start) + md + ' ' + text.slice(pos), start + md.length + 1); return true
+      }
+    }
+    return false
+  }
+
   function onKeyDown(e: React.KeyboardEvent) {
     const mod = e.ctrlKey || e.metaKey; const k = e.key.toLowerCase()
     if (mod && k === 'z' && !e.shiftKey) { e.preventDefault(); undo() }
     else if (mod && (k === 'y' || (k === 'z' && e.shiftKey))) { e.preventDefault(); redo() }
     else if (mod && k === 'f') { e.preventDefault(); setShowFind(true); setShowChars(false); setShowSettings(false) }
     else if (!mod && !e.nativeEvent.isComposing && e.key === 'Enter' && !e.shiftKey) { if (listEnter()) e.preventDefault() }
+    else if (!mod && !e.nativeEvent.isComposing && e.key === ' ') { if (spaceConvert()) e.preventDefault() }
     else if (!mod && !e.nativeEvent.isComposing && (e.key === 'Backspace' || e.key === 'Delete')) { requestAnimationFrame(renumberAfterDelete) }
   }
 
@@ -800,6 +831,31 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               <button onClick={() => { setShowChars((s) => !s); setShowFind(false); setShowSettings(false) }} title={t('np_symbols')} aria-label={t('np_symbols')} aria-pressed={showChars} className={iconBtn + (showChars ? ' bg-brand-50 text-brand-600' : '')}>
                 <span className="block w-4 h-4 text-base leading-4 text-center">※</span>
               </button>
+              {/* Auto-convert toggles — custom dropdown with checkboxes */}
+              <div className="relative">
+                {openMenu === 'auto' && <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />}
+                <button type="button" onClick={() => setOpenMenu(openMenu === 'auto' ? null : 'auto')} title={t('np_autoconvert')} aria-label={t('np_autoconvert')} aria-pressed={openMenu === 'auto'} className={'relative z-20 ' + iconBtn + (openMenu === 'auto' ? ' bg-brand-50 text-brand-600' : '')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m14 4 1.2 2.8L18 8l-2.8 1.2L14 12l-1.2-2.8L10 8l2.8-1.2L14 4Z" /><path d="M5 19 13 11" /><path d="M19 15v4M17 17h4" /></svg>
+                </button>
+                {openMenu === 'auto' && (
+                  <div className="absolute z-30 mt-1 left-0 w-60 bg-white border border-gray-200 rounded-lg shadow-lg py-1.5 text-sm">
+                    <p className="px-3 py-1 text-xs font-medium text-gray-400">{t('np_autoconvert')}</p>
+                    {([
+                      ['symbol', t('np_ac_symbol'), '--- === -> <-'],
+                      ['link', t('np_ac_link'), 'www.a.com → [ ]( )'],
+                      ['bullet', t('np_ac_bullet'), '1. 1> * @'],
+                    ] as const).map(([key, label, hint]) => (
+                      <label key={key} className="flex items-start gap-2 px-3 py-1.5 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" checked={autoConv[key]} onChange={(e) => setAutoConv((p) => ({ ...p, [key]: e.target.checked }))} className="mt-0.5 w-4 h-4 accent-brand-600 shrink-0" />
+                        <span className="min-w-0">
+                          <span className="text-gray-700">{label}</span>
+                          <span className="block text-[11px] text-gray-400 font-mono truncate">{hint}</span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <span className="w-px h-5 bg-gray-200" />
             {/* Mobile-only gear: the display settings are hidden until tapped. */}
