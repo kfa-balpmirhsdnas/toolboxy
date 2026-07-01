@@ -60,8 +60,9 @@ const LINK_RE = new RegExp(
   `|((?:https?:\\/\\/|www\\.)[^\\s()<>]+|(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+(?:${LINK_TLD})(?:\\/[^\\s()<>]*)?)`, // bare url
   'gi',
 )
-function renderPreview(raw: string): string {
+function renderPreview(raw: string, doLinkify: boolean): string {
   const esc = raw.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  if (!doLinkify) return esc
   return esc.replace(LINK_RE, (_m, mdText: string, mdUrl: string, bareUrl: string) => {
     const url = mdUrl || bareUrl
     const label = mdText || bareUrl
@@ -596,9 +597,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     if (nt !== full) applyText(nt, nc)
   }
 
-  // Committing with SPACE or ENTER after a trigger converts it in place: -> → →, <- → ←, and a
-  // bare URL → a [url](href) markdown link, then re-adds the committing char (`trailing`). Gated by
-  // the auto-convert toggles. Returns true if it converted (caller should preventDefault).
+  // Committing with SPACE or ENTER after an arrow trigger converts it in place: -> → →, <- → ←,
+  // re-adding the committing char (`trailing`). URLs are left as plain text — the Preview view is
+  // what turns them into clickable links (no [ ]( ) markdown is inserted). Returns true if it
+  // converted (caller should preventDefault).
   function convertBeforeCaret(trailing: string): boolean {
     const ta = taRef.current; if (!ta) return false
     const pos = ta.selectionStart; if (pos !== ta.selectionEnd) return false
@@ -607,18 +609,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     if (autoConv.symbol) {
       if (before.endsWith('->')) { applyText(val.slice(0, pos - 2) + '→' + trailing + val.slice(pos), pos - 1 + trailing.length); return true }
       if (before.endsWith('<-')) { applyText(val.slice(0, pos - 2) + '←' + trailing + val.slice(pos), pos - 1 + trailing.length); return true }
-    }
-    if (autoConv.link) {
-      // Match http(s)://… / www.… OR a bare domain.tld (TLD whitelist avoids linkifying "3.14",
-      // "file.txt", "e.g.", etc.). The link ends at the caret (space/enter is about to be typed).
-      const TLD = 'com|net|org|io|dev|app|ai|co|kr|jp|cn|us|uk|de|fr|it|es|ru|nl|se|no|pl|tr|br|in|au|ca|me|tv|info|biz|xyz|gg|edu|gov|shop|store|site|online|blog'
-      const seg = before.match(/(?:https?:\/\/|www\.)[^\s()[\]<>]+$/i)?.[0]
-        ?? before.match(new RegExp(`(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+(?:${TLD})(?:/[^\\s()[\\]<>]*)?$`, 'i'))?.[0]
-      if (seg && !before.slice(0, before.length - seg.length).endsWith('](')) { // not already inside a markdown link
-        const href = /^https?:\/\//i.test(seg) ? seg : 'https://' + seg
-        const md = `[${seg}](${href})`; const start = pos - seg.length
-        applyText(val.slice(0, start) + md + trailing + val.slice(pos), start + md.length + trailing.length); return true
-      }
     }
     return false
   }
@@ -899,7 +889,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                     <p className="px-3 py-1 text-xs font-medium text-gray-400">{t('np_autoconvert')}</p>
                     {([
                       ['symbol', t('np_ac_symbol'), '--- === -> <-'],
-                      ['link', t('np_ac_link'), 'www.a.com → [ ]( )'],
+                      ['link', t('np_ac_link'), 'www.a.com → 🔗'],
                       ['bullet', t('np_ac_bullet'), '1. 1> * @'],
                     ] as const).map(([key, label, hint]) => (
                       <label key={key} className="flex items-start gap-2 px-3 py-1.5 hover:bg-gray-50 cursor-pointer">
@@ -913,12 +903,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                   </div>
                 )}
               </div>
-              {/* Edit ↔ preview: preview renders links as clickable anchors */}
-              <button type="button" onClick={() => setPreview((p) => !p)} title={preview ? t('np_edit') : t('np_preview')} aria-label={preview ? t('np_edit') : t('np_preview')} aria-pressed={preview} className={iconBtn + (preview ? ' bg-brand-50 text-brand-600' : '')}>
-                {preview
-                  ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
-                  : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>}
-              </button>
             </div>
             <span className="w-px h-5 bg-gray-200" />
             {/* Mobile-only gear: the display settings are hidden until tapped. */}
@@ -970,13 +954,23 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           </div>
         )}
 
+        {/* Edit ↔ Preview switch — labelled so it's easy to find (preview makes links clickable) */}
+        <div className="flex justify-end">
+          <div className="inline-flex rounded-lg bg-gray-100 p-0.5 text-xs font-medium">
+            <button type="button" onClick={() => setPreview(false)} aria-pressed={!preview}
+              className={'px-3 py-1 rounded-md transition-colors ' + (!preview ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>{t('np_edit')}</button>
+            <button type="button" onClick={() => setPreview(true)} aria-pressed={preview}
+              className={'px-3 py-1 rounded-md transition-colors ' + (preview ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>{t('np_preview')}</button>
+          </div>
+        </div>
+
         {preview ? (
           <div
             style={{ fontFamily: FAM_CSS(fam) }}
             className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 overflow-auto whitespace-pre-wrap break-words ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
             // Read-only rendered view — links become clickable anchors. renderPreview escapes the
             // text first (XSS-safe). Toggle back to editing with the toolbar button.
-            dangerouslySetInnerHTML={{ __html: renderPreview(text) || `<span class="text-gray-400">${t('np_placeholder')}</span>` }}
+            dangerouslySetInnerHTML={{ __html: renderPreview(text, autoConv.link) || `<span class="text-gray-400">${t('np_placeholder')}</span>` }}
           />
         ) : (
           <textarea
