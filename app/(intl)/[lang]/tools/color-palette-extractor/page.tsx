@@ -113,14 +113,14 @@ export default function ColorPaletteExtractorPage({ params }: { params: { lang: 
             <img src={preview} alt="" className="max-h-40 mx-auto rounded-xl object-contain" />
           ) : (
             <div className="text-gray-400">
-                <div className="flex justify-center mt-4">
-                  <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('pal-file-input')?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
-                </div>
               <div className="text-3xl mb-2">\uD83C\uDFA8</div>
               <p className="text-sm">{t('cpe_drop')}</p>
               <p className="text-xs mt-1">PNG, JPG, WebP, GIF</p>
             </div>
           )}
+          <div className="flex justify-center mt-4">
+            <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('pal-file-input')?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+          </div>
         </div>
         {loading && <p className="text-sm text-gray-500 text-center">{t('cpe_extracting')}</p>}
         {palette.length > 0 && (

@@ -53,14 +53,14 @@ export default function ImageResizerPage() {
               <div className="text-left text-sm text-gray-600">
                 <p className="font-semibold">{origW} x {origH}px</p>
                 <p className="text-xs text-gray-400">{t('ir_change')}</p>
-                <div className="flex justify-center mt-4">
-                  <button type="button" onClick={(e) => { e.stopPropagation(); fileRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
-                </div>
               </div>
             </div>
           ):(
             <div><p className="text-3xl mb-2">🖼️</p><p className="text-gray-600 font-medium">{t('ir_drop')}</p></div>
           )}
+          <div className="flex justify-center mt-4">
+            <button type="button" onClick={(e) => { e.stopPropagation(); fileRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+          </div>
         </div>
         {src&&(
           <>

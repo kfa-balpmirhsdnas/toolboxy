@@ -537,14 +537,14 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
           <div onClick={() => fileInput.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && openFile(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-              <div className="flex justify-center mt-4">
-                <button type="button" onClick={(e) => { e.stopPropagation(); fileInput.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
-              </div>
             <div className="text-4xl mb-3">📄✍️</div>
             <p className="font-medium text-gray-700">{t('pa_open')}</p>
             <p className="text-sm text-gray-400 mt-1">{t('pa_drop')}</p>
             {status === 'loading' && <p className="text-sm text-brand-600 mt-3 animate-pulse">{t('pa_loading')}</p>}
             {status === 'error' && <p className="text-sm text-red-500 mt-3">{t('pa_error')}</p>}
+            <div className="flex justify-center mt-4">
+              <button type="button" onClick={(e) => { e.stopPropagation(); fileInput.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+            </div>
           </div>
         )}
 

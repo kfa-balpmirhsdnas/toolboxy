@@ -105,12 +105,12 @@ export default function PdfToTextPage({ params }: { params: { lang: string } }) 
         onClick={() => inputRef.current?.click()}
       >
         <input ref={inputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileInput} />
-          <div className="flex justify-center mt-4">
-            <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
-          </div>
         <div className="text-4xl mb-3">📄</div>
         <p className="font-semibold text-gray-700">{t('ptt_drop')}</p>
         <p className="text-sm text-gray-400 mt-1">{t('ptt_supports')}</p>
+        <div className="flex justify-center mt-4">
+          <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+        </div>
       </div>
 
       {/* Loading */}

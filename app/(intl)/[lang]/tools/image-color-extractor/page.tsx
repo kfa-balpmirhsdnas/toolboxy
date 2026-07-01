@@ -62,11 +62,11 @@ export default function ImageColorExtractorPage() {
               <p className="text-3xl">🖼️</p>
               <p className="text-gray-600 font-medium">{t('ati_drop')}</p>
               <p className="text-xs text-gray-400">{t('ice_formats')}</p>
-              <div className="flex justify-center mt-4">
-                <button type="button" onClick={(e) => { e.stopPropagation(); fileRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
-              </div>
             </div>
           )}
+          <div className="flex justify-center mt-4">
+            <button type="button" onClick={(e) => { e.stopPropagation(); fileRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+          </div>
         </div>
         {loading&&<p className="text-center text-gray-500 animate-pulse">{t('ice_extracting')}</p>}
         {colors.length>0&&(
