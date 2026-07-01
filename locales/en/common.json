@@ -103,6 +103,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "image-comparison": "Free image comparison tool — slider, side-by-side, overlay (opacity) and synced zoom. Compare before/after edits, compression, or A/B designs. No upload, all in-browser.",
     "heic-viewer": "Free HEIC viewer — open and view iPhone HEIC/HEIF photos right in your PC browser (Windows can’t by default). Flip through multiple, zoom, rotate, read EXIF. No upload, all in-browser.",
     "period-tracker": "Free period tracker — log each cycle to get your average cycle length, next-period prediction with a D-day, ovulation & fertile window, and a calendar. All records stay on your device; nothing is uploaded. Export/import for backup.",
     "bulk-file-renamer": "Bulk file renamer — batch rename any files (PDF, docs, archives, images…) by rules: prefix, numbering, find-replace and more. Free, in your browser, download as a renamed zip.",
@@ -834,6 +835,7 @@
     "continue": "Continue without signing up"
   },
   "langTools": {
+    "image-comparison": {"faq":[{"q":"Do the two images need to be the same size?","a":"No. Images of different sizes are centered and fit to each pane, so you can compare them as-is."},{"q":"What is it used for?","a":"Before/after edits, compression quality, A/B designs, resize results — any time you want to hold two images side by side."},{"q":"Does it work on mobile?","a":"Yes. The slider moves with touch, and every mode works on mobile."},{"q":"Are my images uploaded?","a":"No. Everything runs in your browser; your images are never sent to a server."}]},
     "heic-viewer": {"faq":[{"q":"What is HEIC?","a":"HEIC (HEIF) is Apple’s high-efficiency image format, the default for iPhone photos since iOS 11. It stores the same quality in a smaller file than JPG."},{"q":"Why won’t it open on Windows?","a":"Windows, Chrome and most PC setups don’t support HEIC out of the box and need an extra codec. This viewer decodes HEIC inside your browser, so it just opens — no install."},{"q":"Can I save as JPG?","a":"Yes. Save the current photo as JPG or PNG while viewing, or download all loaded photos at once as JPG (zip)."},{"q":"Are my photos uploaded?","a":"No. All decoding and conversion happen entirely in your browser; your photos are never sent to a server."}]},
     "period-tracker": {"faq":[{"q":"Are my records saved to a server?","a":"No. Every record is stored only in your browser (local storage) and is never uploaded. Use Export to back them up to a file."},{"q":"How accurate are the predictions?","a":"They are estimates based on your average cycle length and are for reference only. Real cycles vary month to month, so treat the dates as approximate."},{"q":"How is this different from an ovulation calculator?","a":"An ovulation calculator gives a one-off estimate from a single date. Period Tracker keeps a running log of your cycles, learns your average, and tracks regularity over time on a calendar."},{"q":"Can I use this for birth control?","a":"No. Do not rely on these predictions for contraception or to plan or avoid pregnancy. For those decisions, consult a healthcare professional."}]},
     "bulk-file-renamer": {"faq":[{"q":"Does it change my original file names?","a":"No. Browsers can't rename your files in place, so the tool bundles renamed copies into a zip you download. Your original files stay exactly as they are."},{"q":"Can I rename any file type?","a":"Yes — PDFs, Office documents, archives (zip), images, text, anything. Only the names change; the file contents are untouched."},{"q":"Are my files uploaded to a server?","a":"No. Everything runs locally in your browser. Your files never leave your device."},{"q":"What if I mix different file types?","a":"You can use the extension filter to rename only certain types (e.g. only PDFs). Files of other types keep their original names in the zip."}]},
@@ -1970,6 +1972,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howtoIntro": {
+    "image-comparison": "Upload two images and pick a comparison mode. Drag the slider left/right to reveal before vs after instantly.",
     "heic-viewer": "Drop or pick HEIC/HEIF files and they render right in the browser. Use ←→ to flip through multiple, and save any as JPG/PNG when you need to.",
     "zip-files": "Pick several files or a whole folder and bundle them into one ZIP, downloaded automatically.",
     "unzip": "Lists the files inside a ZIP. \"Extract all\" creates a folder named after the zip and extracts everything into it (on supported browsers; otherwise files download individually). Password-protected ZIPs aren’t supported.",
@@ -1978,6 +1981,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "image-comparison": ["Add the two images to compare (drag or pick each side).","Choose a mode: slider, side-by-side, overlay, or synced zoom.","Drag the slider or adjust opacity/zoom to spot differences; save the comparison as an image if you like."],
     "heic-viewer": ["Drop HEIC/HEIF files or use “Choose files” (multiple supported).","Flip with ←→ or the thumbnails; zoom, rotate, and go fullscreen.","Save the current photo as JPG/PNG, or download all at once as JPG (zip)."],
     "period-tracker": ["Enter your period start date and how many days it lasted, then add the record.","Add a record each month — the more cycles you log, the better the average.","See your average cycle, next-period prediction (D-day), ovulation and fertile window.","Check the calendar and cycle-length chart; export your records to back them up."],
     "bulk-file-renamer": ["Drop or choose your files (any type, many at once).","Turn on the rename rules you need and check the live preview.","Optionally pick which extensions to rename when types are mixed.","Download the renamed files as a zip."],
@@ -3780,6 +3784,20 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "ic_related": "Related:",
+    "ic_saving": "Saving…",
+    "ic_save": "Save comparison",
+    "ic_swap": "Swap",
+    "ic_opacity": "Top opacity",
+    "ic_after": "After",
+    "ic_before": "Before",
+    "ic_mode_sync": "Sync zoom",
+    "ic_mode_overlay": "Overlay",
+    "ic_mode_side": "Side by side",
+    "ic_mode_slider": "Slider",
+    "ic_change": "Change",
+    "ic_second": "Second image",
+    "ic_first": "First image",
     "hv_related": "Just need to convert to JPG?",
     "hv_zipping": "Zipping…",
     "hv_download_all": "All as JPG (zip)",
@@ -7185,6 +7203,7 @@
     ]
   },
   "toolNames": {
+    "image-comparison": "Image Comparison",
     "heic-viewer": "HEIC Viewer",
     "period-tracker": "Period Tracker",
     "bulk-file-renamer": "Bulk File Renamer",
@@ -7346,6 +7365,7 @@
     }
   },
   "toolTitles": {
+    "image-comparison": "Image Comparison Slider — Before / After, Compare Images",
     "heic-viewer": "HEIC Viewer — Open & View HEIC on Windows / PC",
     "period-tracker": "Period Tracker — menstrual cycle calculator & calendar",
     "batch-image-rename": "Bulk Image Renamer — batch rename images",

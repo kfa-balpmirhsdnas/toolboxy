@@ -159,6 +159,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'pdf-to-jpg',category:'pdf',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['pdf to jpg','pdf to image','convert pdf','pdf image convert','PDF to JPG jp'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'watermark-pdf',category:'pdf',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['watermark pdf','add watermark','pdf watermark','PDF watermark jp'],maxFileSizeMB:{free:50,pro:200} },
   {slug:'pdf-page-numbers',category:'pdf',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['pdf page numbers','number pages','pdf page number','PDF page number jp'],maxFileSizeMB:{free:50,pro:200} },
+  {slug:'image-comparison',category:'image',added:'2026-07-02',phase:1,isPro:false,isNew:true,tags:['이미지 비교','사진 전후 비교','before after','image comparison slider','before after image','compare images','画像 比較','ビフォーアフター'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'heic-viewer',category:'image',added:'2026-07-02',phase:1,isPro:false,isNew:true,tags:['HEIC 뷰어','HEIC 열기','아이폰 사진 PC에서 보기','heic viewer','open heic','view heic on windows','HEIC ビューア','HEIC 開く'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'heic-to-jpg',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['heic to jpg','heic converter','iphone photo','heic convert','HEIC jp'],maxFileSizeMB:{free:30,pro:120} },
   {slug:'rotate-image',category:'image',added:'2026-06-24',phase:1,isPro:false,isNew:true,tags:['rotate image','flip image','image rotate','image flip','image rotate jp'],maxFileSizeMB:{free:30,pro:120} },
