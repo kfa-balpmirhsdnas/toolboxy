@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
 import DynamicManifest from '@/components/DynamicManifest'
+import AdSense from '@/components/AdSense'
 import { Analytics } from '@vercel/analytics/react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -14,6 +15,7 @@ export default function RootHtml({ lang, children }: { lang: string; children: R
     <html lang={lang} suppressHydrationWarning className={inter.className}>
       <body className="bg-white text-gray-900 antialiased">
         {children}
+        <AdSense />
         <DynamicManifest />
         <ServiceWorkerRegister />
         <Analytics />
