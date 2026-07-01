@@ -103,6 +103,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "video-player": "Free in-browser video player that captures any moment as an image (PNG/JPG) and loops an A–B section on repeat. No upload, all local — perfect for language and instrument practice.",
     "image-comparison": "Free image comparison tool — slider, side-by-side, overlay (opacity) and synced zoom. Compare before/after edits, compression, or A/B designs. No upload, all in-browser.",
     "heic-viewer": "Free HEIC viewer — open and view iPhone HEIC/HEIF photos right in your PC browser (Windows can’t by default). Flip through multiple, zoom, rotate, read EXIF. No upload, all in-browser.",
     "period-tracker": "Free period tracker — log each cycle to get your average cycle length, next-period prediction with a D-day, ovulation & fertile window, and a calendar. All records stay on your device; nothing is uploaded. Export/import for backup.",
@@ -835,6 +836,7 @@
     "continue": "Continue without signing up"
   },
   "langTools": {
+    "video-player": {"faq":[{"q":"Is my video uploaded?","a":"No. The file is opened only in your browser; playback, frame capture and A–B looping all run locally and are never sent to a server."},{"q":"What image format are frames saved in?","a":"The full-resolution frame at the current position is saved as PNG or JPG. It extracts the actual video frame (not a screenshot), so there is no quality loss."},{"q":"How does A–B repeat work?","a":"Press A at the start and B at the end of the section, then enable Repeat. Whenever playback reaches B it jumps back to A and loops — great for dictation or practicing a passage."},{"q":"Can I change the playback speed?","a":"Yes, from 0.25× to 2×, so you can slow down fast sections or speed through others."},{"q":"Which video formats are supported?","a":"Any format your browser can play (MP4/H.264, WebM, etc.). Some codecs may not play depending on the browser."}]},
     "image-comparison": {"faq":[{"q":"Do the two images need to be the same size?","a":"No. Images of different sizes are centered and fit to each pane, so you can compare them as-is."},{"q":"What is it used for?","a":"Before/after edits, compression quality, A/B designs, resize results — any time you want to hold two images side by side."},{"q":"Does it work on mobile?","a":"Yes. The slider moves with touch, and every mode works on mobile."},{"q":"Are my images uploaded?","a":"No. Everything runs in your browser; your images are never sent to a server."}]},
     "heic-viewer": {"faq":[{"q":"What is HEIC?","a":"HEIC (HEIF) is Apple’s high-efficiency image format, the default for iPhone photos since iOS 11. It stores the same quality in a smaller file than JPG."},{"q":"Why won’t it open on Windows?","a":"Windows, Chrome and most PC setups don’t support HEIC out of the box and need an extra codec. This viewer decodes HEIC inside your browser, so it just opens — no install."},{"q":"Can I save as JPG?","a":"Yes. Save the current photo as JPG or PNG while viewing, or download all loaded photos at once as JPG (zip)."},{"q":"Are my photos uploaded?","a":"No. All decoding and conversion happen entirely in your browser; your photos are never sent to a server."}]},
     "period-tracker": {"faq":[{"q":"Are my records saved to a server?","a":"No. Every record is stored only in your browser (local storage) and is never uploaded. Use Export to back them up to a file."},{"q":"How accurate are the predictions?","a":"They are estimates based on your average cycle length and are for reference only. Real cycles vary month to month, so treat the dates as approximate."},{"q":"How is this different from an ovulation calculator?","a":"An ovulation calculator gives a one-off estimate from a single date. Period Tracker keeps a running log of your cycles, learns your average, and tracks regularity over time on a calendar."},{"q":"Can I use this for birth control?","a":"No. Do not rely on these predictions for contraception or to plan or avoid pregnancy. For those decisions, consult a healthcare professional."}]},
@@ -1972,6 +1974,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howtoIntro": {
+    "video-player": "Drop a video and it plays instantly. Capture a frame at any moment, or mark A and B points to loop a section.",
     "image-comparison": "Upload two images and pick a comparison mode. Drag the slider left/right to reveal before vs after instantly.",
     "heic-viewer": "Drop or pick HEIC/HEIF files and they render right in the browser. Use ←→ to flip through multiple, and save any as JPG/PNG when you need to.",
     "zip-files": "Pick several files or a whole folder and bundle them into one ZIP, downloaded automatically.",
@@ -1981,6 +1984,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "video-player": ["Drag or pick a video file to play (nothing is uploaded).","Press \"Capture frame\" at any moment to save it as an image (PNG/JPG).","Mark A at the start and B at the end of a section, then turn on Repeat to loop A–B.","Adjust playback speed (0.25×–2×) for language or instrument practice."],
     "image-comparison": ["Add the two images to compare (drag or pick each side).","Choose a mode: slider, side-by-side, overlay, or synced zoom.","Drag the slider or adjust opacity/zoom to spot differences; save the comparison as an image if you like."],
     "heic-viewer": ["Drop HEIC/HEIF files or use “Choose files” (multiple supported).","Flip with ←→ or the thumbnails; zoom, rotate, and go fullscreen.","Save the current photo as JPG/PNG, or download all at once as JPG (zip)."],
     "period-tracker": ["Enter your period start date and how many days it lasted, then add the record.","Add a record each month — the more cycles you log, the better the average.","See your average cycle, next-period prediction (D-day), ovulation and fertile window.","Check the calendar and cycle-length chart; export your records to back them up."],
@@ -3784,6 +3788,20 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "vp_related": "Related:",
+    "vp_privacy": "Your video is never uploaded — playback, capture and looping all happen in your browser.",
+    "vp_clear": "Clear",
+    "vp_repeat": "Repeat",
+    "vp_set_b": "Set B",
+    "vp_set_a": "Set A",
+    "vp_ab_hint": "Loops the A→B section during playback",
+    "vp_ab": "A–B repeat",
+    "vp_captured": "Frame saved",
+    "vp_capture": "Capture frame",
+    "vp_frame": "Frame capture",
+    "vp_speed": "Speed",
+    "vp_drop_sub": "Plays in your browser · no upload",
+    "vp_drop": "Drop a video here",
     "ic_related": "Related:",
     "ic_saving": "Saving…",
     "ic_save": "Save comparison",
@@ -7204,6 +7222,7 @@
     ]
   },
   "toolNames": {
+    "video-player": "Video Player",
     "image-comparison": "Image Comparison",
     "heic-viewer": "HEIC Viewer",
     "period-tracker": "Period Tracker",
@@ -7366,6 +7385,7 @@
     }
   },
   "toolTitles": {
+    "video-player": "Video Player — Frame Capture & A-B Loop Repeat",
     "image-comparison": "Image Comparison Slider — Before / After, Compare Images",
     "heic-viewer": "HEIC Viewer — Open & View HEIC on Windows / PC",
     "period-tracker": "Period Tracker — menstrual cycle calculator & calendar",

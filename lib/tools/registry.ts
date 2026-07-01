@@ -66,6 +66,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'video-player',category:'video',added:'2026-07-02',phase:1,isPro:false,isNew:true,tags:['비디오 플레이어','동영상 플레이어','영상 프레임 추출','동영상 스틸컷 캡처','영상 특정 순간 이미지','구간 반복 재생','AB 반복','어학 반복 재생','video player','extract video frame','video frame capture','video screenshot','AB repeat','loop video section','動画プレーヤー','フレーム抽出','ABリピート','区間リピート'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'period-tracker',category:'health',added:'2026-06-30',phase:1,isPro:false,isNew:true,tags:['period tracker','menstrual cycle calculator','cycle tracking','period calendar','생리주기 계산','생리 예정일','주기 트래킹','생리 기록','생리주기 트래커','生理周期 計算','生理 予定日','生理周期 トラッカー'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'bulk-file-renamer',category:'file',added:'2026-06-30',phase:1,isPro:false,isNew:true,tags:['bulk file renamer','batch rename files','bulk rename files','rename files','file renamer','파일 이름 일괄 변경','파일명 일괄 변경','파일 이름 한번에 바꾸기','ファイル名 一括変更','ファイル リネーム'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'remove-exif',category:'image',added:'2026-06-30',phase:1,isPro:false,isNew:true,tags:['remove exif','strip metadata','remove photo location','remove gps from photo','clear exif','사진 위치정보 삭제','EXIF 제거','메타데이터 삭제','사진 GPS 삭제','위치정보 제거','Exif 削除','写真 位置情報 削除','メタデータ 削除'],maxFileSizeMB:{free:0,pro:0} },
