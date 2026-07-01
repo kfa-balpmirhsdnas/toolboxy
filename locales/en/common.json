@@ -4470,6 +4470,7 @@
     "uz_subtitle": "Open a ZIP file and pull out the files inside.",
     "uz_drop": "Drop a ZIP file or click to upload",
     "uz_pick": "Choose file",
+    "ui_pick_files": "Choose files",
     "uz_entries": "{n} files",
     "uz_downloadall": "Extract all",
     "uz_error": "Couldn't extract. Please check it's a valid ZIP file.",

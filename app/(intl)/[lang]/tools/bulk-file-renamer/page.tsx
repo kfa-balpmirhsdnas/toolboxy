@@ -93,6 +93,9 @@ export default function BulkFileRenamerPage({ params }: { params: { lang: string
           <p className="text-4xl mb-2">📁</p>
           <p className="text-sm font-medium text-gray-600">{t('bfr_drop')}</p>
           <p className="text-xs text-gray-400 mt-1">{t('bfr_drop_sub')}</p>
+          <div className="flex justify-center mt-4">
+            <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+          </div>
         </div>
 
         <p className="text-xs text-center text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg py-1.5">🔒 {t('bfr_privacy')}</p>
