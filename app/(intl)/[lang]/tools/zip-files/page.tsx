@@ -125,9 +125,9 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
       <div className="max-w-lg mx-auto space-y-4">
         <div onClick={() => inputRef.current?.click()} onDrop={onDrop} onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
-          <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => { add(e.target.files); e.target.value = '' }} />
+          <input ref={inputRef} type="file" multiple className="hidden" onClick={(e) => e.stopPropagation()} onChange={(e) => { add(e.target.files); e.target.value = '' }} />
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <input ref={dirRef} type="file" className="hidden" {...({ webkitdirectory: '', directory: '' } as any)} onChange={(e) => { add(e.target.files); e.target.value = '' }} />
+          <input ref={dirRef} type="file" className="hidden" {...({ webkitdirectory: '', directory: '' } as any)} onClick={(e) => e.stopPropagation()} onChange={(e) => { add(e.target.files); e.target.value = '' }} />
           <p className="text-4xl mb-2">🗂️</p><p className="text-sm font-medium text-gray-600">{t('zf_drop')}</p>
           <div className="flex justify-center gap-2 mt-4">
             <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>

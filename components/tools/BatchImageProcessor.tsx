@@ -356,9 +356,11 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
         onClick={() => inputRef.current?.click()}
       >
         <input ref={inputRef} type="file" accept={accept} multiple className="hidden"
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <input ref={dirRef} type="file" className="hidden" {...({ webkitdirectory: '', directory: '' } as any)}
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
         <div className="text-4xl mb-2">🖼️</div>
         <p className="font-semibold text-gray-700">{t('bip_drop')}</p>
