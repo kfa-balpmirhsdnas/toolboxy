@@ -153,6 +153,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   // textarea.value before our leave handler reads it — this ref preserves it as a fallback.
   const liveRef = useRef('')
   const composingRef = useRef(false) // true while an IME composition is in progress
+  // Value we saved on leave. The IME can cancel an active composition when the tab is backgrounded
+  // and re-fire a SHORTER value; while this is set we drop such a change so it can't clobber the
+  // just-saved last glyph. Cleared on return / next genuine edit.
+  const leaveValRef = useRef('')
   const wrapRef = useRef<HTMLDivElement>(null)
   const tabBarRef = useRef<HTMLDivElement>(null)
   const histories = useRef<Record<string, { hist: string[]; idx: number }>>({ [first.id]: { hist: [''], idx: 0 } })
@@ -328,7 +332,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
       // Only fall back to liveRef mid-composition (the exact case the OS can drop the glyph) so we
       // never resurrect stale text after a tab switch, undo, or cross-tab sync.
       const live = composingRef.current && liveRef.current.length > domVal.length ? liveRef.current : domVal
-      el?.blur()
+      // Do NOT blur: on Windows the Korean IME cancels the active composition on blur and re-fires a
+      // shorter value that clobbers the glyph. We already captured the full value above; the
+      // onChange guard drops any shorter follow-up until we return.
+      leaveValRef.current = live
       flushNow(live)
     }
     // PC only: when the window/tab comes back, refocus the editor and restore the caret —
@@ -339,7 +346,12 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
       const ae = document.activeElement
       if (ae && ae !== document.body && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA') && ae !== taRef.current) return
       const ta = taRef.current; if (!ta) return
-      ta.focus(); try { ta.setSelectionRange(caretRef.current.s, caretRef.current.e) } catch { /* ignore */ }
+      // Re-assert the saved value (an IME cancel may have left the DOM value short) and restore the
+      // caret via the pendingSel layout effect, then clear the guard so normal editing resumes.
+      leaveValRef.current = ''
+      pendingSel.current = { s: caretRef.current.s, e: caretRef.current.e }
+      force((n) => n + 1)
+      ta.focus()
     }
     const onVis = () => { if (document.visibilityState === 'hidden') onLeave(); else onShow() }
     window.addEventListener('blur', onLeave)
@@ -365,6 +377,12 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     h.idx = h.hist.length - 1; force((n) => n + 1)
   }
   function onChange(v: string) {
+    // Drop the shorter value the IME emits when it cancels a composition on background (it would
+    // erase the last glyph we just saved on leave).
+    if (leaveValRef.current) {
+      if (v.length < leaveValRef.current.length && leaveValRef.current.startsWith(v)) return
+      leaveValRef.current = ''
+    }
     setDocText(activeId, v)
     if (commitTimer.current) clearTimeout(commitTimer.current)
     commitTimer.current = setTimeout(() => commit(v), 500)
