@@ -7030,6 +7030,7 @@
     "sc_ed_color": "Color",
     "np_default_name": "Note",
     "np_newtab": "New note",
+    "np_tablist": "Tab list",
     "np_closetab": "Close",
     "np_close_confirm": "Close this note? Its saved content will be lost.",
     "np_font": "Font",

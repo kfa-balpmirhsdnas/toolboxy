@@ -7419,6 +7419,7 @@
     "sc_ed_color": "色",
     "np_default_name": "メモ",
     "np_newtab": "新規メモ",
+    "np_tablist": "タブ一覧",
     "np_closetab": "閉じる",
     "np_close_confirm": "このメモを閉じますか？保存された内容は失われます。",
     "np_font": "フォント",

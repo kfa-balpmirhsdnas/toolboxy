@@ -7446,6 +7446,7 @@
     "sc_ed_color": "색상",
     "np_default_name": "메모",
     "np_newtab": "새 메모",
+    "np_tablist": "탭 목록",
     "np_closetab": "닫기",
     "np_close_confirm": "이 메모를 닫을까요? 저장된 내용이 사라집니다.",
     "np_font": "글꼴",

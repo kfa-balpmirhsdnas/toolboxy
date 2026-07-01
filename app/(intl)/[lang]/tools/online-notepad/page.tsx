@@ -842,10 +842,48 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div ref={wrapRef} className="space-y-3 scroll-mt-20">
-        {/* Tabs — one document per tab (auto-named by date).
+        {/* Tabs — one document per tab (auto-named by date). A leftmost list button opens a
+            dropdown of every tab (handy when many tabs overflow the bar).
             overflow-y-hidden stops the phantom 1px vertical scrollbar that
             overflow-x-auto otherwise spawns (its up/down arrows). */}
-        <div ref={tabBarRef} className="flex items-stretch gap-1 overflow-x-auto overflow-y-hidden border-b border-gray-200">
+        <div className="relative flex items-stretch gap-1 border-b border-gray-200">
+          {/* Tab-list dropdown (custom select) — sits OUTSIDE the horizontal scroll area so its
+              popup is never clipped by the bar's overflow. */}
+          <div className="relative shrink-0 flex items-stretch">
+            {openMenu === 'tablist' && <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />}
+            <button type="button" onClick={() => setOpenMenu(openMenu === 'tablist' ? null : 'tablist')}
+              title={t('np_tablist')} aria-label={t('np_tablist')} aria-pressed={openMenu === 'tablist'}
+              className={'relative z-20 shrink-0 px-2 flex items-center gap-1 hover:text-brand-600 transition-colors ' + (openMenu === 'tablist' ? 'text-brand-600' : 'text-gray-400')}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
+                <line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" />
+                <circle cx="4.5" cy="6" r="1.2" /><circle cx="4.5" cy="12" r="1.2" /><circle cx="4.5" cy="18" r="1.2" />
+              </svg>
+              <span className="text-[9px] shrink-0">▾</span>
+            </button>
+            {openMenu === 'tablist' && (
+              <div className="absolute z-30 top-full left-0 mt-1 w-56 max-w-[80vw] bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-sm max-h-72 overflow-y-auto">
+                <p className="px-3 py-1 text-xs font-medium text-gray-400">{t('np_tablist')} · {docs.length}</p>
+                {docs.map((d) => {
+                  const on = d.id === activeId
+                  return (
+                    <div key={d.id} onClick={() => { setActiveId(d.id); setOpenMenu(null) }}
+                      className={'group flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-gray-50 ' + (on ? 'bg-brand-50' : '')}>
+                      <span className={'flex-1 truncate ' + (on ? 'text-brand-600 font-semibold' : 'text-gray-700')}>{d.name}</span>
+                      {d.text.trim() && <span className="shrink-0 text-[10px] text-gray-300 tabular-nums">{d.text.trim().length}</span>}
+                      <button onClick={(e) => { e.stopPropagation(); closeDoc(d.id) }} aria-label={t('np_closetab')}
+                        className="shrink-0 text-gray-300 hover:text-red-500 text-base leading-none opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                    </div>
+                  )
+                })}
+                <button type="button" onClick={() => { addDoc(); setOpenMenu(null) }}
+                  className="flex items-center gap-2 w-full px-3 py-1.5 mt-1 text-left text-brand-600 hover:bg-gray-50 border-t border-gray-100">
+                  <span className="text-base leading-none">+</span>{t('np_newtab')}
+                </button>
+              </div>
+            )}
+          </div>
+          {/* The scrollable tab strip. */}
+          <div ref={tabBarRef} className="flex items-stretch gap-1 overflow-x-auto overflow-y-hidden flex-1 min-w-0">
           {docs.map((d) => {
             const on = d.id === activeId
             return (
@@ -870,6 +908,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           })}
           <button onClick={addDoc} title={t('np_newtab')} aria-label={t('np_newtab')}
             className="shrink-0 px-2.5 py-1.5 text-gray-400 hover:text-brand-600 text-lg leading-none">+</button>
+          </div>
         </div>
 
         <div className="flex items-start justify-between gap-3">
