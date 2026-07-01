@@ -459,6 +459,15 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     if (leaveValRef.current && Date.now() - leaveAtRef.current < GUARD_MS
       && isTruncationOf(leaveValRef.current, v)) return
     leaveValRef.current = ''
+    // Arrow auto-convert on the just-typed SPACE. Mobile soft keyboards don't fire a reliable ' '
+    // keydown (key is often 'Unidentified'), so we catch it here from the input value. On PC the
+    // keydown path already converted, so v won't contain "-> " and this is a no-op.
+    if (autoConv.symbol) {
+      const pos = taRef.current?.selectionStart ?? v.length
+      const b = v.slice(0, pos)
+      if (b.endsWith('-> ')) { applyText(v.slice(0, pos - 3) + '→ ' + v.slice(pos), pos - 1); return }
+      if (b.endsWith('<- ')) { applyText(v.slice(0, pos - 3) + '← ' + v.slice(pos), pos - 1); return }
+    }
     setDocText(activeId, v)
     if (commitTimer.current) clearTimeout(commitTimer.current)
     commitTimer.current = setTimeout(() => commit(v), 500)
