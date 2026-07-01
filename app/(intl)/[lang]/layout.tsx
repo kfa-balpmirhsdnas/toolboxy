@@ -53,7 +53,9 @@ export async function generateMetadata({ params }: { params: { lang: string } })
     },
     twitter: { card: 'summary_large_image', title, description },
     // We ship our own en/ja/ko, so tell Chrome/Google not to offer machine translation.
-    other: { google: 'notranslate' },
+    // 'mobile-web-app-capable' is the standard replacement for the deprecated apple- meta
+    // (appleWebApp above still emits the apple one for iOS Safari).
+    other: { google: 'notranslate', 'mobile-web-app-capable': 'yes' },
   }
 }
 

@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.toolboxy.net'),
   manifest: '/api/manifest?start=/en',
   appleWebApp: { capable: true, title: 'ToolBoxy', statusBarStyle: 'default' },
+  // Standard replacement for the deprecated apple-mobile-web-app-capable (still emitted for iOS).
+  other: { 'mobile-web-app-capable': 'yes' },
   icons: { icon: '/icon.svg', apple: '/icon.svg' },
   openGraph: {
     type: 'website',
