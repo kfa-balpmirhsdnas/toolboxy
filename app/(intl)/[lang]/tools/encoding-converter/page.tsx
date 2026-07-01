@@ -69,6 +69,9 @@ export default function EncodingConverterPage({ params }: { params: { lang: stri
           className="border-2 border-dashed border-gray-300 rounded-xl p-7 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
           <input id="ec-file" type="file" accept=".txt,.csv,.srt,.json,.xml,.html,.md,text/*" className="hidden" onChange={(e) => { load(e.target.files?.[0]); e.target.value = '' }} />
           <p className="text-3xl mb-1">📄</p><p className="text-sm font-medium text-gray-600">{file ? file.name : t('ec_drop')}</p>
+          <div className="flex justify-center mt-4">
+            <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('ec-file')?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+          </div>
         </div>
 
         {file && (

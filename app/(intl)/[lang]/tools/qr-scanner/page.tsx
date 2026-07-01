@@ -52,6 +52,9 @@ export default function QrScannerPage({ params }: { params: { lang: string } }) 
           <p className="text-4xl mb-2">🔳</p>
           <p className="text-sm font-medium text-gray-600">{t('qs_drop')}</p>
           <p className="text-xs text-gray-400 mt-1">{t('qs_sub')}</p>
+          <div className="flex justify-center mt-4">
+            <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+          </div>
         </div>
 
         {preview && <img src={preview} alt="QR" className="max-h-40 rounded-xl border border-gray-200 object-contain mx-auto" />}

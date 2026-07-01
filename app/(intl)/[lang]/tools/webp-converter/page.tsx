@@ -70,6 +70,9 @@ export default function WebpConverterPage({ params }: { params: { lang: string }
           <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
           {file ? <p className="text-sm font-medium text-gray-700">{file.name} <span className="text-gray-400">({fmtBytes(file.size)})</span></p>
             : <><p className="text-4xl mb-2">🖼</p><p className="text-sm font-medium text-gray-600">{t('wc_drop')}</p></>}
+          <div className="flex justify-center mt-4">
+            <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+          </div>
         </div>
 
         {preview && <img src={preview} alt="preview" className="max-h-44 rounded-xl border border-gray-200 object-contain mx-auto bg-gray-100" />}

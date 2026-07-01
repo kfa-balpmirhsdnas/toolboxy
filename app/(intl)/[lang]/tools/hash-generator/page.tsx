@@ -53,6 +53,9 @@ export default function HashGeneratorPage() {
           <input id="hash-file" type="file" className="hidden" onChange={(e) => fromFile(e.target.files?.[0])} />
           <p className="text-2xl mb-1">🔑</p>
           <p className="text-sm text-gray-600">{source || t('hg_drop')}</p>
+          <div className="flex justify-center mt-4">
+            <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('hash-file')?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+          </div>
         </div>
 
         {loading && <p className="text-sm text-gray-500">{t('hg_computing')}</p>}

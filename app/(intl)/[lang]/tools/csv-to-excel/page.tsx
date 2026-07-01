@@ -52,6 +52,9 @@ export default function CsvToExcelPage({ params }: { params: { lang: string } })
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
           <input id="cx-file" type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={(e) => { pick(e.target.files?.[0]); e.target.value = '' }} />
           <p className="text-4xl mb-2">📊</p><p className="text-sm font-medium text-gray-600">{file ? file.name : t('cx_drop')}</p>
+          <div className="flex justify-center mt-4">
+            <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('cx-file')?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+          </div>
         </div>
 
         {file && (

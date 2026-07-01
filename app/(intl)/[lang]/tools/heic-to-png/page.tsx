@@ -50,6 +50,9 @@ export default function HeicToPngPage({ params }: { params: { lang: string } }) 
           <p className="text-4xl mb-2">🍏</p>
           <p className="text-sm font-medium text-gray-600">{file ? file.name : t('hj_drop')}</p>
           <p className="text-xs text-gray-400 mt-1">{t('hp_sub')}</p>
+          <div className="flex justify-center mt-4">
+            <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+          </div>
         </div>
 
         {loading && <p className="text-sm text-gray-500 text-center">{t('hj_converting')}</p>}

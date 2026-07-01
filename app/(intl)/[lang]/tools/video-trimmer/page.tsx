@@ -65,6 +65,9 @@ export default function VideoTrimmerPage({ params }: { params: { lang: string } 
             <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
             <p className="text-4xl mb-2">🎬</p>
             <p className="text-sm font-medium text-gray-600">{t('md_drop_video')}</p>
+            <div className="flex justify-center mt-4">
+              <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+            </div>
           </div>
         ) : (
           <>

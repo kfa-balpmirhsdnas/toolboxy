@@ -100,6 +100,9 @@ export default function AddTextToImagePage({ params }: { params: { lang: string 
             className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
             <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
             <p className="text-4xl mb-2">✍️</p><p className="text-sm font-medium text-gray-600">{t('ati_drop')}</p>
+            <div className="flex justify-center mt-4">
+              <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+            </div>
           </div>
         ) : (
           <>
