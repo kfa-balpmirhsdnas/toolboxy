@@ -596,27 +596,28 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     if (nt !== full) applyText(nt, nc)
   }
 
-  // Typing SPACE after a trigger converts it in place: -> → →, <- → ←, and a bare URL → a
-  // [url](href) markdown link. Gated by the auto-convert toggles.
-  function spaceConvert(): boolean {
+  // Committing with SPACE or ENTER after a trigger converts it in place: -> → →, <- → ←, and a
+  // bare URL → a [url](href) markdown link, then re-adds the committing char (`trailing`). Gated by
+  // the auto-convert toggles. Returns true if it converted (caller should preventDefault).
+  function convertBeforeCaret(trailing: string): boolean {
     const ta = taRef.current; if (!ta) return false
     const pos = ta.selectionStart; if (pos !== ta.selectionEnd) return false
     const val = ta.value // read the live DOM value (React state can lag one keystroke)
     const before = val.slice(0, pos)
     if (autoConv.symbol) {
-      if (before.endsWith('->')) { applyText(val.slice(0, pos - 2) + '→ ' + val.slice(pos), pos); return true }
-      if (before.endsWith('<-')) { applyText(val.slice(0, pos - 2) + '← ' + val.slice(pos), pos); return true }
+      if (before.endsWith('->')) { applyText(val.slice(0, pos - 2) + '→' + trailing + val.slice(pos), pos - 1 + trailing.length); return true }
+      if (before.endsWith('<-')) { applyText(val.slice(0, pos - 2) + '←' + trailing + val.slice(pos), pos - 1 + trailing.length); return true }
     }
     if (autoConv.link) {
       // Match http(s)://… / www.… OR a bare domain.tld (TLD whitelist avoids linkifying "3.14",
-      // "file.txt", "e.g.", etc.). The link ends at the caret (a space is about to be typed).
+      // "file.txt", "e.g.", etc.). The link ends at the caret (space/enter is about to be typed).
       const TLD = 'com|net|org|io|dev|app|ai|co|kr|jp|cn|us|uk|de|fr|it|es|ru|nl|se|no|pl|tr|br|in|au|ca|me|tv|info|biz|xyz|gg|edu|gov|shop|store|site|online|blog'
       const seg = before.match(/(?:https?:\/\/|www\.)[^\s()[\]<>]+$/i)?.[0]
         ?? before.match(new RegExp(`(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+(?:${TLD})(?:/[^\\s()[\\]<>]*)?$`, 'i'))?.[0]
       if (seg && !before.slice(0, before.length - seg.length).endsWith('](')) { // not already inside a markdown link
         const href = /^https?:\/\//i.test(seg) ? seg : 'https://' + seg
         const md = `[${seg}](${href})`; const start = pos - seg.length
-        applyText(val.slice(0, start) + md + ' ' + val.slice(pos), start + md.length + 1); return true
+        applyText(val.slice(0, start) + md + trailing + val.slice(pos), start + md.length + trailing.length); return true
       }
     }
     return false
@@ -627,8 +628,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     if (mod && k === 'z' && !e.shiftKey) { e.preventDefault(); undo() }
     else if (mod && (k === 'y' || (k === 'z' && e.shiftKey))) { e.preventDefault(); redo() }
     else if (mod && k === 'f') { e.preventDefault(); setShowFind(true); setShowChars(false); setShowSettings(false) }
-    else if (!mod && !e.nativeEvent.isComposing && e.key === 'Enter' && !e.shiftKey) { if (listEnter()) e.preventDefault() }
-    else if (!mod && !e.nativeEvent.isComposing && e.key === ' ') { if (spaceConvert()) e.preventDefault() }
+    // Enter: convert an arrow/URL right before the caret first (adds the newline itself); otherwise
+    // continue a list.
+    else if (!mod && !e.nativeEvent.isComposing && e.key === 'Enter' && !e.shiftKey) { if (convertBeforeCaret('\n') || listEnter()) e.preventDefault() }
+    else if (!mod && !e.nativeEvent.isComposing && e.key === ' ') { if (convertBeforeCaret(' ')) e.preventDefault() }
     else if (!mod && !e.nativeEvent.isComposing && (e.key === 'Backspace' || e.key === 'Delete')) { requestAnimationFrame(renumberAfterDelete) }
   }
 
