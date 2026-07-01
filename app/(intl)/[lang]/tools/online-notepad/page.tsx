@@ -106,7 +106,7 @@ function MenuSelect({ id, open, setOpen, selCls, icon, label, options, value, on
   return (
     <div className="relative flex-1 min-w-0 sm:flex-none">
       {isOpen && <div className="fixed inset-0 z-10" onClick={() => setOpen(null)} />}
-      <button type="button" onClick={() => setOpen(isOpen ? null : id)} className={selCls + ' flex items-center gap-1 w-full'}>
+      <button type="button" onClick={() => setOpen(isOpen ? null : id)} className={selCls + ' relative z-20 flex items-center gap-1 w-full'}>
         {icon}
         <span className="truncate flex-1 text-left">{label}</span>
         <span className="shrink-0 text-gray-400 text-[9px]">▾</span>
@@ -562,14 +562,16 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     let timer: ReturnType<typeof setTimeout>
     const apply = () => {
       const kbOpen = window.innerHeight - vv.height > 120 // soft keyboard is up
-      if (!kbOpen) { ta.style.height = ''; return }       // restore the CSS height
+      if (!kbOpen) { ta.style.height = ''; ta.style.minHeight = ''; return } // restore the CSS height
       const top = ta.getBoundingClientRect().top - vv.offsetTop // textarea top within the visible area
-      const avail = vv.height - top - 12
-      if (avail > 120) ta.style.height = avail + 'px'
+      const avail = vv.height - top - 16
+      // Drop min-h-72 while the keyboard is up: on short screens the CSS min-height (288px) is
+      // taller than the space above the keyboard, so the last line stays hidden behind it.
+      if (avail > 80) { ta.style.minHeight = '0px'; ta.style.height = avail + 'px' }
     }
     const onResize = () => { clearTimeout(timer); timer = setTimeout(apply, 200) } // let keyboard + focus-scroll settle
     vv.addEventListener('resize', onResize)
-    return () => { vv.removeEventListener('resize', onResize); clearTimeout(timer); ta.style.height = '' }
+    return () => { vv.removeEventListener('resize', onResize); clearTimeout(timer); ta.style.height = ''; ta.style.minHeight = '' }
   }, [])
   // Keep the active tab visible & symmetric: a latter-half tab scrolls the bar to its
   // right end (so the "+ new tab" button shows); a first-half tab scrolls to the left
@@ -683,7 +685,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
       {/* List bullet — custom dropdown (leading marker 1./● + dimmed example markers) */}
       <div className="relative flex-1 min-w-0 sm:flex-none" title={t('np_list')}>
         {openMenu === 'list' && <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />}
-        <button type="button" onClick={() => setOpenMenu(openMenu === 'list' ? null : 'list')} aria-label={t('np_list')} className={selCls + ' flex items-center gap-1 w-full'}>
+        <button type="button" onClick={() => setOpenMenu(openMenu === 'list' ? null : 'list')} aria-label={t('np_list')} className={selCls + ' relative z-20 flex items-center gap-1 w-full'}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0 text-gray-400" aria-hidden="true">
             <line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" />
             <circle cx="4.5" cy="6" r="1.2" /><circle cx="4.5" cy="12" r="1.2" /><circle cx="4.5" cy="18" r="1.2" />
