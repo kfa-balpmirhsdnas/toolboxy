@@ -23,6 +23,7 @@ export default function HeicViewerPage({ params }: { params: { lang: string } })
   const lang = params.lang
   const [items, setItems] = useState<Item[]>([])
   const [idx, setIdx] = useState(0)
+  const [view, setView] = useState<'list' | 'thumbnails'>('list') // bottom list layout — matches remove-exif
   const [zoom, setZoom] = useState(1)
   const [rot, setRot] = useState(0)
   const [showInfo, setShowInfo] = useState(true)
@@ -224,16 +225,54 @@ export default function HeicViewerPage({ params }: { params: { lang: string } })
               {prog && <div className="absolute bottom-2 right-2 rounded-lg bg-black/70 text-white text-xs px-3 py-1.5">{t('hv_decoding', { n: prog.done, t: prog.total })}</div>}
             </div>
 
-            {/* Thumbnail grid — same style as remove-exif */}
+            {/* Bottom image list — same chrome as remove-exif: count + list/thumbnails toggle,
+                a bordered list (default) or a thumbnail grid. Click an entry to view it. */}
             {items.length > 1 && (
-              <div ref={thumbRef} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                {items.map((im, i) => (
-                  <button key={im.url} data-i={i} onClick={() => { setIdx(i); resetView() }}
-                    className={'relative aspect-square rounded-xl overflow-hidden border-2 bg-gray-50 transition-colors ' + (i === idx ? 'border-brand-500' : 'border-gray-200 opacity-70 hover:opacity-100')}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={im.url} alt={im.name} className="w-full h-full object-cover" />
-                  </button>
-                ))}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-semibold text-gray-700">{t('bip_files_n', { n: items.length })}</p>
+                  <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
+                    {(['list', 'thumbnails'] as const).map((v) => (
+                      <button key={v} onClick={() => setView(v)}
+                        className={'flex items-center gap-1 whitespace-nowrap px-2.5 py-1 rounded-md font-medium transition-colors ' + (view === v ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>
+                        <ToolIcon name={v === 'list' ? 'list' : 'grid'} className="w-3.5 h-3.5" />
+                        {v === 'list' ? t('bip_view_list') : t('bip_view_thumb')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {view === 'thumbnails' ? (
+                  <div ref={thumbRef} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                    {items.map((im, i) => (
+                      <button key={im.url} data-i={i} onClick={() => { setIdx(i); resetView() }}
+                        className={'relative aspect-square rounded-xl overflow-hidden border-2 bg-gray-50 transition-colors ' + (i === idx ? 'border-brand-500' : 'border-gray-200 opacity-70 hover:opacity-100')}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={im.url} alt={im.name} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div ref={thumbRef} className="border border-gray-200 rounded-xl overflow-hidden text-sm">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 text-xs font-medium text-gray-500">
+                      <span className="flex-1 min-w-0">{t('bip_col_name')}</span>
+                      <span className="w-20 text-right shrink-0">{t('iv_res')}</span>
+                      <span className="w-16 text-right shrink-0">{t('iv_size')}</span>
+                    </div>
+                    <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+                      {items.map((im, i) => (
+                        <button key={im.url} data-i={i} onClick={() => { setIdx(i); resetView() }}
+                          className={'flex items-center gap-2 px-3 py-2 w-full text-left transition-colors ' + (i === idx ? 'bg-brand-50' : 'hover:bg-gray-50')}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={im.url} alt={im.name} className="w-10 h-10 rounded object-cover border border-gray-200 shrink-0" />
+                          <span className={'flex-1 min-w-0 truncate ' + (i === idx ? 'text-brand-700 font-medium' : 'text-gray-800')}>{im.name}</span>
+                          <span className="w-20 text-right shrink-0 text-gray-400 text-xs tabular-nums">{im.dims.w ? `${im.dims.w}×${im.dims.h}` : '—'}</span>
+                          <span className="w-16 text-right shrink-0 text-gray-500 text-xs tabular-nums">{fmtBytes(im.size)}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
