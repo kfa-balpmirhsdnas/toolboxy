@@ -114,6 +114,9 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
           <input ref={inputRef} type="file" accept=".zip" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
           <p className="text-4xl mb-2">📦</p><p className="text-sm font-medium text-gray-600">{name || t('uz_drop')}</p>
+          <div className="flex justify-center mt-4">
+            <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('uz_pick')}</button>
+          </div>
         </div>
 
         {/* Privacy banner — unified with the other file tools */}

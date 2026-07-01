@@ -4883,6 +4883,7 @@
     "uz_title": "압축 풀기 (ZIP 해제)",
     "uz_subtitle": "ZIP 파일을 열어 안의 파일을 꺼냅니다.",
     "uz_drop": "ZIP 파일을 끌어다 놓거나 클릭해서 올리세요",
+    "uz_pick": "파일 선택",
     "uz_entries": "파일 {n}개",
     "uz_downloadall": "전체 압축 풀기",
     "uz_error": "압축을 풀 수 없습니다. 올바른 ZIP 파일인지 확인해 주세요.",
