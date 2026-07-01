@@ -1968,6 +1968,7 @@
     "csv-to-excel": "Drop a CSV file to get a proper Excel .xlsx workbook, or drop an .xlsx/.xls file to export it back to CSV. Conversion direction is detected from the file you drop. The CSV export includes a UTF-8 BOM so Korean and other non-ASCII text open cleanly in Excel. Handy for spreadsheets, data exports and re-importing. Everything runs in your browser — files are never uploaded — and it is free with no install."
   },
   "howtoIntro": {
+    "zip-files": "Pick several files or a whole folder and bundle them into one ZIP, downloaded automatically.",
     "unzip": "Lists the files inside a ZIP. \"Extract all\" creates a folder named after the zip and extracts everything into it (on supported browsers; otherwise files download individually). Password-protected ZIPs aren’t supported.",
     "batch-image-editor": "Resize, convert, compress, watermark, and rename — all in one pass.",
     "period-tracker": "Log each cycle to predict your next period, ovulation and fertile window — privately, on your device.",
@@ -3950,7 +3951,7 @@
     "lt_disclaimer": "Just for fun. It only picks random numbers — it does not guarantee a win or improve your odds.",
     "br_drop": "Upload or drag in a photo",
     "br_remove": "Remove background",
-    "br_open": "Open",
+    "br_open": "New file",
     "br_save": "Save",
     "br_note_first": "The first run downloads the AI model once (may take a moment). After that it’s fast.",
     "md_note_local": "Everything is processed in your browser — files never leave your device.",
@@ -3993,7 +3994,7 @@
     "iv_info": "Image info",
     "iv_fullscreen": "Fullscreen",
     "iv_format": "Save format",
-    "iv_save": "Save current image",
+    "iv_save": "Save image",
     "iv_save_title": "Save as",
     "iv_reset": "Reset view",
     "iv_thumb_size": "Thumbnail size",

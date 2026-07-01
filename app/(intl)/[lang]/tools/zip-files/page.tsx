@@ -122,11 +122,6 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="max-w-lg mx-auto space-y-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('zf_title')}</h1>
-          <p className="text-gray-500 text-sm mt-1">{t('zf_subtitle')}</p>
-        </div>
-
         <div onClick={() => inputRef.current?.click()} onDrop={onDrop} onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
           <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => { add(e.target.files); e.target.value = '' }} />
@@ -183,7 +178,11 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
             <button onClick={() => downloadUrl(out.url, out.name)} className="shrink-0 self-start sm:self-auto px-4 py-1.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 inline-flex items-center justify-center gap-1.5"><ToolIcon name="download" className="w-4 h-4" />{t('zf_download')}</button>
           </div>
         )}
-        <p className="text-xs text-gray-400">{t('zf_note')}</p>
+        {/* Privacy banner — unified with the other file tools */}
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+          <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+          <span>{t('bfr_privacy')}</span>
+        </div>
       </div>
     </ToolLayout>
   )

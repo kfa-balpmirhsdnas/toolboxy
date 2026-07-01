@@ -107,11 +107,6 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="max-w-lg mx-auto space-y-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('uz_title')}</h1>
-          <p className="text-gray-500 text-sm mt-1">{t('uz_subtitle')}</p>
-        </div>
-
         <div onClick={() => inputRef.current?.click()} onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
           <input ref={inputRef} type="file" accept=".zip,application/zip,application/x-zip-compressed,multipart/x-zip" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />

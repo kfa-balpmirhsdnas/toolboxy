@@ -37,8 +37,9 @@ export default function ToolbarBar({
       // Toggle only when the bar itself (empty space) is clicked, not a child button.
       onClick={(e) => { if (e.target === e.currentTarget) setDark((d) => !d) }}
       className={
-        'flex items-center gap-1 flex-wrap rounded-xl px-2 py-1.5 cursor-pointer transition-colors ' +
-        (dark ? 'bg-gray-800' : 'bg-gray-100 border border-gray-200') +
+        // Border is always present (transparent in dark) so toggling theme never changes the box size.
+        'flex items-center gap-1 flex-wrap rounded-xl px-2 py-1.5 cursor-pointer transition-colors border ' +
+        (dark ? 'bg-gray-800 border-transparent' : 'bg-gray-100 border-gray-200') +
         (disabled ? ' opacity-50 pointer-events-none' : '') +
         (className ? ' ' + className : '')
       }

@@ -489,7 +489,7 @@ export default function BatchImageProcessor({ slug, processFn, zipBaseName = 'im
                 {t('bip_processing', { c: progress.current, t: progress.total })}
               </div>
               <div className="w-full h-1.5 bg-gray-200 rounded-full">
-                <div className="h-1.5 bg-brand-500 rounded-full transition-all"
+                <div className="h-1.5 bg-brand-500 rounded-full transition-all duration-500 ease-out"
                   style={{ width: progress.total ? `${(progress.current / progress.total) * 100}%` : '0%' }} />
               </div>
             </div>
