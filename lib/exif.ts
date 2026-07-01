@@ -7,20 +7,10 @@ export type Exif = {
   flash?: boolean; wb?: 'auto' | 'manual'; gps?: string
 }
 
-// JPEG EXIF reader — camera/lens, exposure settings, colour space, GPS (best effort).
-export async function readExif(file: File): Promise<Exif> {
+// Parse a TIFF/Exif block (shared by the JPEG and HEIC readers). `tiff` is the byte offset of the
+// TIFF header ('II'/'MM') within the DataView.
+function parseTiff(dv: DataView, tiff: number): Exif {
   try {
-    if (!/jpe?g/i.test(file.type) && !/\.jpe?g$/i.test(file.name)) return {}
-    const dv = new DataView(await file.slice(0, 262144).arrayBuffer())
-    if (dv.getUint16(0) !== 0xffd8) return {}
-    let off = 2
-    while (off + 4 < dv.byteLength) {
-      const marker = dv.getUint16(off)
-      if ((marker & 0xff00) !== 0xff00) break
-      if (marker === 0xffe1) {
-        const seg = off + 4
-        if (dv.getUint32(seg) !== 0x45786966) return {} // 'Exif'
-        const tiff = seg + 6
         const le = dv.getUint16(tiff) === 0x4949
         const u16 = (o: number) => dv.getUint16(o, le)
         const u32 = (o: number) => dv.getUint32(o, le)
@@ -56,8 +46,44 @@ export async function readExif(file: File): Promise<Exif> {
           if (lat !== undefined && lon !== undefined) ex.gps = `${lat.toFixed(6)}, ${lon.toFixed(6)}`
         }
         return ex
+  } catch { /* ignore */ }
+  return {}
+}
+
+// JPEG EXIF reader — camera/lens, exposure settings, colour space, GPS (best effort).
+export async function readExif(file: File): Promise<Exif> {
+  try {
+    if (!/jpe?g/i.test(file.type) && !/\.jpe?g$/i.test(file.name)) return {}
+    const dv = new DataView(await file.slice(0, 262144).arrayBuffer())
+    if (dv.getUint16(0) !== 0xffd8) return {}
+    let off = 2
+    while (off + 4 < dv.byteLength) {
+      const marker = dv.getUint16(off)
+      if ((marker & 0xff00) !== 0xff00) break
+      if (marker === 0xffe1) {
+        const seg = off + 4
+        if (dv.getUint32(seg) !== 0x45786966) return {} // 'Exif'
+        return parseTiff(dv, seg + 6)
       }
       off += 2 + dv.getUint16(off + 2)
+    }
+  } catch { /* ignore */ }
+  return {}
+}
+
+// HEIC/HEIF EXIF reader. heic2any drops EXIF on conversion, so we read the original file and scan
+// the head for the embedded "Exif\0\0" + TIFF block (in the HEIF meta/mdat), then parse it.
+export async function readHeicExif(file: File): Promise<Exif> {
+  try {
+    const buf = new Uint8Array(await file.slice(0, 2_000_000).arrayBuffer())
+    const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength)
+    for (let i = 0; i + 8 < buf.length; i++) {
+      // "Exif\0\0"
+      if (buf[i] === 0x45 && buf[i + 1] === 0x78 && buf[i + 2] === 0x69 && buf[i + 3] === 0x66 && buf[i + 4] === 0 && buf[i + 5] === 0) {
+        const tiff = i + 6
+        const bo = dv.getUint16(tiff)
+        if (bo === 0x4949 || bo === 0x4d4d) return parseTiff(dv, tiff)
+      }
     }
   } catch { /* ignore */ }
   return {}
