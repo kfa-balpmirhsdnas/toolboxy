@@ -153,10 +153,14 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   // textarea.value before our leave handler reads it — this ref preserves it as a fallback.
   const liveRef = useRef('')
   const composingRef = useRef(false) // true while an IME composition is in progress
-  // Value we saved on leave. The IME can cancel an active composition when the tab is backgrounded
-  // and re-fire a SHORTER value; while this is set we drop such a change so it can't clobber the
-  // just-saved last glyph. Cleared on return / next genuine edit.
+  // Value we saved on leave + when. The IME can cancel an active composition around a tab
+  // background/foreground and re-fire a SHORTER value; for a short window after each transition we
+  // drop such a change so it can't clobber the just-saved last glyph. The window self-expires (time
+  // based) so it never blocks genuine editing, and no forced re-render is needed — React restores
+  // the controlled value in the DOM when we ignore a change.
   const leaveValRef = useRef('')
+  const leaveAtRef = useRef(0)
+  const GUARD_MS = 700
   const wrapRef = useRef<HTMLDivElement>(null)
   const tabBarRef = useRef<HTMLDivElement>(null)
   const histories = useRef<Record<string, { hist: string[]; idx: number }>>({ [first.id]: { hist: [''], idx: 0 } })
@@ -334,24 +338,26 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
       const live = composingRef.current && liveRef.current.length > domVal.length ? liveRef.current : domVal
       // Do NOT blur: on Windows the Korean IME cancels the active composition on blur and re-fires a
       // shorter value that clobbers the glyph. We already captured the full value above; the
-      // onChange guard drops any shorter follow-up until we return.
+      // time-boxed onChange guard drops any shorter follow-up around the transition.
       leaveValRef.current = live
+      leaveAtRef.current = Date.now()
       flushNow(live)
     }
     // PC only: when the window/tab comes back, refocus the editor and restore the caret —
     // unless the user is in another field (tab rename / find). Mobile is skipped to avoid
     // popping up the on-screen keyboard.
     const onShow = () => {
+      // Extend the guard window: re-focusing can make the IME cancel the composition and re-fire the
+      // truncated value a tick later, so keep dropping shorter values briefly after return too.
+      if (leaveValRef.current) leaveAtRef.current = Date.now()
       if (!pc) return
       const ae = document.activeElement
       if (ae && ae !== document.body && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA') && ae !== taRef.current) return
       const ta = taRef.current; if (!ta) return
-      // Re-assert the saved value (an IME cancel may have left the DOM value short) and restore the
-      // caret via the pendingSel layout effect, then clear the guard so normal editing resumes.
-      leaveValRef.current = ''
-      pendingSel.current = { s: caretRef.current.s, e: caretRef.current.e }
-      force((n) => n + 1)
-      ta.focus()
+      // Restore focus + caret on PC. No forced re-render — that used to break a still-active
+      // composition (the missing 요 case); the guard + React's own controlled-value restore keep the
+      // DOM correct.
+      ta.focus(); try { ta.setSelectionRange(caretRef.current.s, caretRef.current.e) } catch { /* ignore */ }
     }
     const onVis = () => { if (document.visibilityState === 'hidden') onLeave(); else onShow() }
     window.addEventListener('blur', onLeave)
@@ -377,12 +383,12 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     h.idx = h.hist.length - 1; force((n) => n + 1)
   }
   function onChange(v: string) {
-    // Drop the shorter value the IME emits when it cancels a composition on background (it would
-    // erase the last glyph we just saved on leave).
-    if (leaveValRef.current) {
-      if (v.length < leaveValRef.current.length && leaveValRef.current.startsWith(v)) return
-      leaveValRef.current = ''
-    }
+    // Within the guard window after a tab transition, drop the shorter value the IME emits when it
+    // cancels a composition (it would erase the last glyph we just saved). The window self-expires,
+    // so a genuine deletion made later still goes through.
+    if (leaveValRef.current && Date.now() - leaveAtRef.current < GUARD_MS
+      && v.length < leaveValRef.current.length && leaveValRef.current.startsWith(v)) return
+    leaveValRef.current = ''
     setDocText(activeId, v)
     if (commitTimer.current) clearTimeout(commitTimer.current)
     commitTimer.current = setTimeout(() => commit(v), 500)
