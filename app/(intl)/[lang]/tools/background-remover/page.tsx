@@ -26,7 +26,6 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
   const [url, setUrl] = useState('')
   const [outUrl, setOutUrl] = useState('')
   const [busy, setBusy] = useState(false)
-  const [prog, setProg] = useState(0)
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -49,21 +48,19 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
 
   async function removeBg() {
     if (!file) return
-    setBusy(true); setOutUrl(''); setError(''); setProg(1)
-    // The library's own counter restarts between the model download and inference, which looked
-    // like a failure. Instead drive a smooth simulated bar that eases toward ~95% and snaps to
-    // 100% on completion — so it always reads 1 → 100 without resetting.
-    const timer = setInterval(() => setProg((p) => (p >= 95 ? 95 : p + Math.max(0.4, (95 - p) * 0.035))), 150)
+    setBusy(true); setOutUrl(''); setError('')
+    // Inference runs synchronously on the main thread, so a JS-driven counter freezes mid-way and
+    // then jumps. The progress bar below is animated purely with a CSS `transform` (compositor
+    // thread), so it keeps gliding even while the main thread is blocked; when done, the busy UI is
+    // replaced by the result — no stall, no jump.
     try {
       const mod = await loadImgly()
       const blob: Blob = await mod.removeBackground(file)
-      setProg(100)
       setOutUrl(URL.createObjectURL(blob))
       trackToolDownload('background-remover', 'png')
     } catch (e) {
       console.error(e); setError(t('md_error'))
     } finally {
-      clearInterval(timer)
       setBusy(false)
     }
   }
@@ -76,12 +73,13 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-lg mx-auto space-y-4">
+      <div className="max-w-3xl mx-auto space-y-4">
+        {/* File input — always mounted so the drop zone AND the "new file" button can open it. */}
+        <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
             <p className="text-5xl mb-2">🪄</p>
             <p className="text-sm font-medium text-gray-600">{t('br_drop')}</p>
           </div>
@@ -89,17 +87,21 @@ export default function BackgroundRemoverPage({ params }: { params: { lang: stri
           <>
             {!outUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={url} alt="input" className="w-full max-h-80 object-contain rounded-xl border border-gray-200 bg-gray-50" />
+              <img src={url} alt="input" className="w-full max-h-[70vh] object-contain rounded-xl border border-gray-200 bg-gray-50" />
             ) : (
               <div className="rounded-xl border border-gray-200 overflow-hidden" style={CHECKER}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={outUrl} alt="result" className="w-full max-h-80 object-contain" />
+                <img src={outUrl} alt="result" className="w-full max-h-[70vh] object-contain" />
               </div>
             )}
             {busy && (
-              <div className="space-y-1">
-                <p className="text-sm text-brand-600 text-center">{t('md_processing')} {Math.round(prog)}%</p>
-                <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden"><div className="h-full bg-brand-500 transition-all duration-200" style={{ width: prog + '%' }} /></div>
+              <div className="space-y-1.5">
+                <p className="text-sm text-brand-600 text-center">{t('md_processing')}</p>
+                <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                  {/* transform-based fill (compositor thread) keeps moving even while inference blocks the main thread */}
+                  <div className="h-full bg-brand-500 rounded-full origin-left" style={{ animation: 'brProg 24s cubic-bezier(.05,.6,.1,1) forwards' }} />
+                </div>
+                <style>{'@keyframes brProg{from{transform:scaleX(.03)}to{transform:scaleX(.94)}}'}</style>
               </div>
             )}
             {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl p-3">{error}</p>}

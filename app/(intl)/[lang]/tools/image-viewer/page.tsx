@@ -368,12 +368,12 @@ export default function ImageViewerPage() {
               <span className={toolbarDivider(dark)} />
               <button className={toolbarBtn(dark, showInfo)} title={t('iv_info')} onClick={() => setShowInfo((s) => !s)}><ToolIcon name="info" /></button>
               <button className={toolbarBtn(dark)} title={t('iv_fullscreen')} onClick={toggleFs}><ToolIcon name={fs ? 'minimize' : 'maximize'} /></button>
-              <span className={toolbarDivider(dark) + ' hidden md:inline-block'} />
-              {/* Zoom — desktop toolbar only; on mobile these live in the bottom bar */}
-              <button className={toolbarBtn(dark) + ' hidden md:inline-flex'} title={t('iv_zoom_out')} onClick={() => setZoom((z) => Math.max(1, z - 0.25))}><ToolIcon name="zoom-out" /></button>
-              <span className={'hidden md:inline-block text-xs w-12 text-center tabular-nums ' + (dark ? 'text-gray-300' : 'text-gray-500')}>{Math.round(zoom * 100)}%</span>
-              <button className={toolbarBtn(dark) + ' hidden md:inline-flex'} title={t('iv_zoom_in')} onClick={() => setZoom((z) => Math.min(8, z + 0.25))}><ToolIcon name="zoom-in" /></button>
-              <button className={toolbarBtn(dark) + ' hidden md:inline-flex'} title={t('iv_fit')} onClick={resetView}><ToolIcon name="fit" /></button>
+              <span className={toolbarDivider(dark)} />
+              {/* Zoom */}
+              <button className={toolbarBtn(dark)} title={t('iv_zoom_out')} onClick={() => setZoom((z) => Math.max(1, z - 0.25))}><ToolIcon name="zoom-out" /></button>
+              <span className={'text-xs w-12 text-center tabular-nums ' + (dark ? 'text-gray-300' : 'text-gray-500')}>{Math.round(zoom * 100)}%</span>
+              <button className={toolbarBtn(dark)} title={t('iv_zoom_in')} onClick={() => setZoom((z) => Math.min(8, z + 0.25))}><ToolIcon name="zoom-in" /></button>
+              <button className={toolbarBtn(dark)} title={t('iv_fit')} onClick={resetView}><ToolIcon name="fit" /></button>
             </>)}
           </ToolbarBar>
 
@@ -436,7 +436,7 @@ export default function ImageViewerPage() {
 
           {/* Bottom bar — slideshow + image count (moved out of the toolbar) */}
           {images.length > 0 && (
-            <div className={'flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm ' + (fs ? 'text-gray-300' : 'text-gray-600')}>
+            <div className={'flex items-center justify-center gap-3 text-sm ' + (fs ? 'text-gray-300' : 'text-gray-600')}>
               <button onClick={() => setPlaying((p) => !p)} title={t('iv_slideshow')} aria-label={t('iv_slideshow')}
                 className={'inline-flex items-center justify-center w-9 h-9 rounded-lg border transition-colors ' + (playing ? 'border-brand-500 bg-brand-50 text-brand-600' : 'border-gray-300 text-gray-600 bg-white hover:bg-gray-50')}><ToolIcon name={playing ? 'pause' : 'play'} /></button>
               <select value={interval} onChange={(e) => setIntervalSec(Number(e.target.value))} aria-label={t('iv_slideshow')}
@@ -444,13 +444,6 @@ export default function ImageViewerPage() {
                 {INTERVALS.map((s) => <option key={s} value={s}>{t('iv_sec', { n: s })}</option>)}
               </select>
               <span className="tabular-nums text-gray-400">{idx + 1} / {images.length}</span>
-              {/* Zoom — mobile only (on desktop it lives in the toolbar) */}
-              <div className="md:hidden flex items-center gap-1">
-                <button onClick={() => setZoom((z) => Math.max(1, z - 0.25))} title={t('iv_zoom_out')} aria-label={t('iv_zoom_out')} className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 text-gray-600 bg-white hover:bg-gray-50"><ToolIcon name="zoom-out" /></button>
-                <span className="text-xs w-10 text-center tabular-nums text-gray-500">{Math.round(zoom * 100)}%</span>
-                <button onClick={() => setZoom((z) => Math.min(8, z + 0.25))} title={t('iv_zoom_in')} aria-label={t('iv_zoom_in')} className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 text-gray-600 bg-white hover:bg-gray-50"><ToolIcon name="zoom-in" /></button>
-                <button onClick={resetView} title={t('iv_fit')} aria-label={t('iv_fit')} className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 text-gray-600 bg-white hover:bg-gray-50"><ToolIcon name="fit" /></button>
-              </div>
             </div>
           )}
         </div>
