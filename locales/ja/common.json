@@ -5001,6 +5001,8 @@
     "cmp_region": "地域",
     "cmp_dial": "国番号",
     "cmp_pop": "人口",
+    "cmp_plug": "コンセント",
+    "cmp_volt": "電圧",
     "cmp_note": "人口は概算値です。",
     "cd_title": "2都市間の距離計算機",
     "cd_subtitle": "2か国の首都間の直線（大圏）距離を計算します。",

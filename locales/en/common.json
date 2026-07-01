@@ -4614,6 +4614,8 @@
     "cmp_region": "Region",
     "cmp_dial": "Calling code",
     "cmp_pop": "Population",
+    "cmp_plug": "Plug type",
+    "cmp_volt": "Voltage",
     "cmp_note": "Population figures are approximate.",
     "cd_title": "Distance Between Cities",
     "cd_subtitle": "Calculate the straight-line (great-circle) distance between two capitals.",

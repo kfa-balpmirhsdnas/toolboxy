@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { COUNTRIES, flag, cName, capName, regionName, type Country } from '@/lib/countries'
+import { EXTRA } from '@/lib/country-extra'
 
 const tool = getToolBySlug('country-compare')!
 
@@ -27,6 +28,8 @@ export default function CountryComparePage({ params }: { params: { lang: string 
     ['cmp_region', (c) => regionName(c.region, lang)],
     ['cmp_dial', (c) => c.dial],
     ['cmp_pop', (c) => c.pop.toLocaleString()],
+    ['cmp_plug', (c) => EXTRA[c.code] ? EXTRA[c.code].plugs.join(' · ') : '—'],
+    ['cmp_volt', (c) => EXTRA[c.code] ? `${EXTRA[c.code].volt} · ${EXTRA[c.code].freq}` : '—'],
   ]
 
   return (

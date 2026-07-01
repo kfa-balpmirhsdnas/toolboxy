@@ -5028,6 +5028,8 @@
     "cmp_region": "지역",
     "cmp_dial": "국가번호",
     "cmp_pop": "인구",
+    "cmp_plug": "콘센트·플러그",
+    "cmp_volt": "전압·주파수",
     "cmp_note": "인구는 근삿값입니다.",
     "cd_title": "두 도시 거리 계산기",
     "cd_subtitle": "두 나라 수도 사이의 직선(대권) 거리를 계산합니다.",

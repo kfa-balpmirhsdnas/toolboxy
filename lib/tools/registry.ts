@@ -251,7 +251,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'online-alarm',category:'time',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['온라인 알람','알람 맞추기','online alarm','alarm clock','set alarm'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'dday-calculator',category:'time',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['디데이','디데이 계산기','d-day calculator','days until','남은 날짜'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'man-age-calculator',category:'time',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['만 나이','만 나이 계산기','korean age','만나이 계산','age in korea'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'world-clock',category:'time',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['세계 시계','월드클락','world clock','time zones','도시 시간'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'world-clock',category:'time',also:['world'],added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['세계 시계','월드클락','world clock','time zones','도시 시간'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'metronome',category:'time',added:'2026-06-26',phase:1,isPro:false,isNew:true,tags:['메트로놈','온라인 메트로놈','metronome','bpm','tempo'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'roman-numeral-converter',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['roman','numeral','convert','number','latin'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'morse-code-translator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['morse','code','translate','audio','signal'],maxFileSizeMB:{free:0,pro:0} },
