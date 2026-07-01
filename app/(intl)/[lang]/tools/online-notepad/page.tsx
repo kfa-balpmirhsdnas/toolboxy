@@ -51,6 +51,25 @@ function isTruncationOf(full: string, short: string): boolean {
   return p + s === short.length
 }
 
+// Preview renderer: HTML-escape the text (XSS-safe), then turn markdown links [text](url) and bare
+// URLs into clickable anchors. No markdown library — links only. The forced http(s) scheme + the
+// escaping mean a crafted [x](javascript:…) can't produce a live link or break out of the tag.
+const LINK_TLD = 'com|net|org|io|dev|app|ai|co|kr|jp|cn|us|uk|de|fr|it|es|ru|nl|se|no|pl|tr|br|in|au|ca|me|tv|info|biz|xyz|gg|edu|gov|shop|store|site|online|blog'
+const LINK_RE = new RegExp(
+  `\\[([^\\]]+)\\]\\(((?:https?:\\/\\/|www\\.)[^\\s()<>]+|(?:[a-z0-9-]+\\.)+(?:${LINK_TLD})[^\\s()<>]*)\\)` + // [text](url)
+  `|((?:https?:\\/\\/|www\\.)[^\\s()<>]+|(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+(?:${LINK_TLD})(?:\\/[^\\s()<>]*)?)`, // bare url
+  'gi',
+)
+function renderPreview(raw: string): string {
+  const esc = raw.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  return esc.replace(LINK_RE, (_m, mdText: string, mdUrl: string, bareUrl: string) => {
+    const url = mdUrl || bareUrl
+    const label = mdText || bareUrl
+    const href = /^https?:/i.test(url) ? url : 'https://' + url
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-brand-600 underline break-all">${label}</a>`
+  })
+}
+
 const SIZE_CLS: Record<SizeLvl, string> = { xs: 'text-[11px]', sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[18px]', xl: 'text-[22px]' }
 const LH_CLS: Record<Lvl, string> = { sm: 'leading-snug', md: 'leading-relaxed', lg: 'leading-loose' }
 // A system default plus per-language webfonts (Google Fonts). System fonts only
@@ -151,6 +170,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [showChars, setShowChars] = useState(false) // special-character palette
   const [showSettings, setShowSettings] = useState(false) // mobile: font/size/spacing hidden behind a gear
   const [openMenu, setOpenMenu] = useState<string | null>(null) // which format dropdown is open
+  const [preview, setPreview] = useState(false) // edit ↔ preview (renders links clickable)
   // Auto-convert toggles (symbols --- === -> <- / URL links / list markers). Persisted, default on.
   const [autoConv, setAutoConv] = useState({ symbol: true, link: true, bullet: true })
   useEffect(() => {
@@ -890,6 +910,12 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                   </div>
                 )}
               </div>
+              {/* Edit ↔ preview: preview renders links as clickable anchors */}
+              <button type="button" onClick={() => setPreview((p) => !p)} title={preview ? t('np_edit') : t('np_preview')} aria-label={preview ? t('np_edit') : t('np_preview')} aria-pressed={preview} className={iconBtn + (preview ? ' bg-brand-50 text-brand-600' : '')}>
+                {preview
+                  ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+                  : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>}
+              </button>
             </div>
             <span className="w-px h-5 bg-gray-200" />
             {/* Mobile-only gear: the display settings are hidden until tapped. */}
@@ -941,24 +967,34 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           </div>
         )}
 
-        <textarea
-          ref={taRef}
-          data-no-autoselect
-          data-no-scroll-focus
-          value={text}
-          onInput={(e) => { liveRef.current = e.currentTarget.value }}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={onKeyDown}
-          onCompositionStart={() => { composingRef.current = true }}
-          onCompositionEnd={() => { composingRef.current = false; flushNow() }}
-          // Clicking/tapping into the editor closes the symbol palette. PointerDown (not
-          // focus) so inserting a symbol — which programmatically refocuses — keeps it open.
-          onPointerDown={() => { if (showChars) setShowChars(false) }}
-          placeholder={t('np_placeholder')}
-          spellCheck={false}
-          style={{ fontFamily: FAM_CSS(fam) }}
-          className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
-        />
+        {preview ? (
+          <div
+            style={{ fontFamily: FAM_CSS(fam) }}
+            className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 overflow-auto whitespace-pre-wrap break-words ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
+            // Read-only rendered view — links become clickable anchors. renderPreview escapes the
+            // text first (XSS-safe). Toggle back to editing with the toolbar button.
+            dangerouslySetInnerHTML={{ __html: renderPreview(text) || `<span class="text-gray-400">${t('np_placeholder')}</span>` }}
+          />
+        ) : (
+          <textarea
+            ref={taRef}
+            data-no-autoselect
+            data-no-scroll-focus
+            value={text}
+            onInput={(e) => { liveRef.current = e.currentTarget.value }}
+            onChange={(e) => onChange(e.target.value)}
+            onKeyDown={onKeyDown}
+            onCompositionStart={() => { composingRef.current = true }}
+            onCompositionEnd={() => { composingRef.current = false; flushNow() }}
+            // Clicking/tapping into the editor closes the symbol palette. PointerDown (not
+            // focus) so inserting a symbol — which programmatically refocuses — keeps it open.
+            onPointerDown={() => { if (showChars) setShowChars(false) }}
+            placeholder={t('np_placeholder')}
+            spellCheck={false}
+            style={{ fontFamily: FAM_CSS(fam) }}
+            className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
+          />
+        )}
 
         <div className="flex items-center gap-2 flex-wrap">
           <button onClick={download} disabled={!text} aria-label={t('np_download')} title={t('np_download')}

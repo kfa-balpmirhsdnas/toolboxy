@@ -7216,6 +7216,8 @@
     "np_clearconfirm": "すべての文字を消去しますか？元に戻せません。",
     "np_note": "メモはこのブラウザ（localStorage）にのみ保存され、アップロードされません。",
     "np_autoconvert": "自動変換",
+    "np_preview": "プレビュー",
+    "np_edit": "編集",
     "np_ac_symbol": "記号",
     "np_ac_link": "URLリンク",
     "np_ac_bullet": "リスト",

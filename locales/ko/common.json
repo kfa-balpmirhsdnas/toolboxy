@@ -7243,6 +7243,8 @@
     "np_clearconfirm": "모든 내용을 지울까요? 되돌릴 수 없습니다.",
     "np_note": "메모는 이 브라우저(localStorage)에만 저장되며 업로드되지 않습니다.",
     "np_autoconvert": "자동 변환",
+    "np_preview": "미리보기",
+    "np_edit": "편집",
     "np_ac_symbol": "기호",
     "np_ac_link": "URL 링크",
     "np_ac_bullet": "글머리",

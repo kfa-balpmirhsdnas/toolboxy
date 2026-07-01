@@ -6829,6 +6829,8 @@
     "np_clearconfirm": "Clear all text? This cannot be undone.",
     "np_note": "Your notes are saved only in this browser (localStorage) — nothing is uploaded.",
     "np_autoconvert": "Auto-convert",
+    "np_preview": "Preview",
+    "np_edit": "Edit",
     "np_ac_symbol": "Symbols",
     "np_ac_link": "URL links",
     "np_ac_bullet": "List markers",
