@@ -1,6 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { getAnalytics, isSupported } from 'firebase/analytics'
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,12 +15,8 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig)
 
 export const auth = getAuth(app)
 
-// Firestore & Storage are accessed only server-side (firebase-admin), so the client SDKs for them
-// are intentionally NOT initialized here — that keeps them out of the client bundle.
-
-// Firebase Analytics is initialized lazily (only in the browser, when supported) so it doesn't add
-// a synchronous init to every page load. Awaited by callers that need it.
-export const analytics =
-  typeof window === 'undefined' ? Promise.resolve(null) : isSupported().then((yes) => (yes ? getAnalytics(app) : null))
+// Firestore & Storage are accessed only server-side (firebase-admin), and analytics is handled by
+// gtag (GoogleAnalytics component / lib/gtag). So none of those client SDKs are initialized here —
+// that keeps them out of the client bundle and avoids double-counting page views.
 
 export default app
