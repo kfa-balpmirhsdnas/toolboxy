@@ -148,6 +148,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const taRef = useRef<HTMLTextAreaElement>(null)
   const pendingSel = useRef<{ s: number; e: number } | null>(null) // caret/range to restore after a programmatic text change commits
   const caretRef = useRef({ s: 0, e: 0 }) // caret saved on leave, restored when the window/tab returns (PC)
+  // Latest textarea value seen on ANY input event (composition included). When the tab is
+  // backgrounded mid-composition, the OS/IME can strip the still-composing Korean glyph from
+  // textarea.value before our leave handler reads it — this ref preserves it as a fallback.
+  const liveRef = useRef('')
+  const composingRef = useRef(false) // true while an IME composition is in progress
   const wrapRef = useRef<HTMLDivElement>(null)
   const tabBarRef = useRef<HTMLDivElement>(null)
   const histories = useRef<Record<string, { hist: string[]; idx: number }>>({ [first.id]: { hist: [''], idx: 0 } })
@@ -316,7 +321,13 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     const onLeave = () => {
       const el = taRef.current
       if (el) caretRef.current = { s: el.selectionStart, e: el.selectionEnd } // save caret before blur
-      const live = el?.value // capture the value BEFORE blur (keeps the composing last char)
+      // Capture the value BEFORE blur. Prefer whichever is longer between the DOM value and the
+      // last value seen on input: backgrounding can already have dropped the composing glyph from
+      // el.value, but liveRef still holds it.
+      const domVal = el?.value ?? ''
+      // Only fall back to liveRef mid-composition (the exact case the OS can drop the glyph) so we
+      // never resurrect stale text after a tab switch, undo, or cross-tab sync.
+      const live = composingRef.current && liveRef.current.length > domVal.length ? liveRef.current : domVal
       el?.blur()
       flushNow(live)
     }
@@ -562,16 +573,14 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     let timer: ReturnType<typeof setTimeout>
     const apply = () => {
       const kbOpen = window.innerHeight - vv.height > 120 // soft keyboard is up
-      if (!kbOpen) { ta.style.height = ''; ta.style.minHeight = ''; return } // restore the CSS height
+      if (!kbOpen) { ta.style.height = ''; return }       // restore the CSS height
       const top = ta.getBoundingClientRect().top - vv.offsetTop // textarea top within the visible area
-      const avail = vv.height - top - 16
-      // Drop min-h-72 while the keyboard is up: on short screens the CSS min-height (288px) is
-      // taller than the space above the keyboard, so the last line stays hidden behind it.
-      if (avail > 80) { ta.style.minHeight = '0px'; ta.style.height = avail + 'px' }
+      const avail = vv.height - top - 12
+      if (avail > 120) ta.style.height = avail + 'px'
     }
     const onResize = () => { clearTimeout(timer); timer = setTimeout(apply, 200) } // let keyboard + focus-scroll settle
     vv.addEventListener('resize', onResize)
-    return () => { vv.removeEventListener('resize', onResize); clearTimeout(timer); ta.style.height = ''; ta.style.minHeight = '' }
+    return () => { vv.removeEventListener('resize', onResize); clearTimeout(timer); ta.style.height = '' }
   }, [])
   // Keep the active tab visible & symmetric: a latter-half tab scrolls the bar to its
   // right end (so the "+ new tab" button shows); a first-half tab scrolls to the left
@@ -811,9 +820,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           data-no-autoselect
           data-no-scroll-focus
           value={text}
+          onInput={(e) => { liveRef.current = e.currentTarget.value }}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
-          onCompositionEnd={() => flushNow()}
+          onCompositionStart={() => { composingRef.current = true }}
+          onCompositionEnd={() => { composingRef.current = false; flushNow() }}
           // Clicking/tapping into the editor closes the symbol palette. PointerDown (not
           // focus) so inserting a symbol — which programmatically refocuses — keeps it open.
           onPointerDown={() => { if (showChars) setShowChars(false) }}
