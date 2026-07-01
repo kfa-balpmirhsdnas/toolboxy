@@ -24,7 +24,10 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
   const LIMIT = 10
 
   async function load(f: File) {
-    setName(f.name); setError(''); setEntries([]); setShowAll(false); setDone(null); trackToolUsed('unzip')
+    setName(f.name); setError(''); setEntries([]); setShowAll(false); setDone(null)
+    // Only ZIP archives — reject anything else up front (drag-drop can bypass the picker filter).
+    if (!/\.zip$/i.test(f.name) && !/zip/i.test(f.type)) { setError(t('uz_error')); return }
+    trackToolUsed('unzip')
     try {
       const { unzipSync } = await import('fflate')
       const buf = new Uint8Array(await f.arrayBuffer())
@@ -109,7 +112,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
       <div className="max-w-lg mx-auto space-y-4">
         <div onClick={() => inputRef.current?.click()} onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
-          <input ref={inputRef} type="file" accept=".zip,application/zip,application/x-zip-compressed,multipart/x-zip" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+          <input ref={inputRef} type="file" accept=".zip" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
           <p className="text-4xl mb-2">📦</p><p className="text-sm font-medium text-gray-600">{name || t('uz_drop')}</p>
         </div>
 
