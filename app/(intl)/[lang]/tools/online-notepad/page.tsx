@@ -963,16 +963,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           </div>
         )}
 
-        {/* Edit ↔ Preview switch — labelled so it's easy to find (preview makes links clickable) */}
-        <div className="flex justify-end">
-          <div className="inline-flex rounded-lg bg-gray-100 p-0.5 text-xs font-medium">
-            <button type="button" onClick={() => setPreview(false)} aria-pressed={!preview}
-              className={'px-3 py-1 rounded-md transition-colors ' + (!preview ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>{t('np_edit')}</button>
-            <button type="button" onClick={() => setPreview(true)} aria-pressed={preview}
-              className={'px-3 py-1 rounded-md transition-colors ' + (preview ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>{t('np_preview')}</button>
-          </div>
-        </div>
-
+        <div>
         {preview ? (
           <div
             style={{ fontFamily: FAM_CSS(fam) }}
@@ -998,9 +989,24 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             placeholder={t('np_placeholder')}
             spellCheck={false}
             style={{ fontFamily: FAM_CSS(fam) }}
-            className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
+            className={`block w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
           />
         )}
+
+        {/* Edit / Preview tabs — hang off the bottom edge of the editor box (preview = clickable links) */}
+        <div className="flex gap-1 pl-3 -mt-px">
+          {([[false, t('np_edit')], [true, t('np_preview')]] as const).map(([val, label]) => {
+            const on = preview === val
+            return (
+              <button key={label} type="button" onClick={() => setPreview(val)} aria-pressed={on}
+                className={'px-3.5 py-1 text-xs rounded-b-lg border border-t-0 transition-colors ' +
+                  (on ? 'bg-white border-gray-200 text-brand-600 font-semibold' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100')}>
+                {label}
+              </button>
+            )
+          })}
+        </div>
+        </div>
 
         <div className="flex items-center gap-2 flex-wrap">
           <button onClick={download} disabled={!text} aria-label={t('np_download')} title={t('np_download')}
