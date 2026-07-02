@@ -123,6 +123,42 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="max-w-lg mx-auto space-y-4">
+        {/* File list — moved to the TOP; dimmed + non-interactive until files load. Column titles above. */}
+        <div className={'space-y-2 transition-opacity ' + (files.length ? '' : 'opacity-50 pointer-events-none select-none')} aria-disabled={!files.length}>
+          <div className="rounded-xl border border-gray-100 overflow-hidden">
+            {/* Column titles */}
+            <div className={'flex items-center gap-2 px-4 py-2 bg-gray-50 text-xs font-medium text-gray-500' + (files.length > 0 ? ' border-b border-gray-100' : '')}>
+              <span className="flex-1 min-w-0">{t('zf_col_name')}</span>
+              <span className="shrink-0 w-16 text-right">{t('zf_col_size')}</span>
+              <span className="shrink-0 w-8 text-center">{t('zf_col_exclude')}</span>
+            </div>
+            {files.length > 0 && (
+              <div className="divide-y divide-gray-100 max-h-72 overflow-auto">
+                {shown.map((f, i) => (
+                  <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
+                    <span className="flex-1 truncate text-gray-700">{relPath(f)}</span>
+                    <span className="shrink-0 w-16 text-right text-gray-400">{fmt(f.size)}</span>
+                    <span className="shrink-0 w-8 flex justify-center">
+                      <button onClick={() => removeAt(i)} className="text-gray-300 hover:text-rose-500 inline-flex items-center justify-center" aria-label={t('zf_col_exclude')}><ToolIcon name="x" className="w-4 h-4" /></button>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          {files.length > LIMIT && (
+            <button onClick={() => setShowAll((v) => !v)} className="w-full text-center text-xs text-brand-600 hover:underline py-0.5">
+              {showAll ? t('uz_less') : t('uz_more', { n: files.length - LIMIT })}
+            </button>
+          )}
+          {files.length > 0 && (
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs text-gray-400">{!showAll && files.length > LIMIT ? t('uz_entries_some', { shown: LIMIT, total: files.length }) : t('zf_files', { n: files.length })} · {fmt(totalSize)}</p>
+              <button onClick={clearAll} className="text-xs text-gray-500 hover:text-rose-600">{t('zf_clear')}</button>
+            </div>
+          )}
+        </div>
+
         <div onClick={() => inputRef.current?.click()} onDrop={onDrop} onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
           <input ref={inputRef} type="file" multiple className="hidden" onClick={(e) => e.stopPropagation()} onChange={(e) => { add(e.target.files); e.target.value = '' }} />
@@ -137,45 +173,29 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
 
         {files.length > 0 && (
           <>
-            <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-72 overflow-auto">
-              {shown.map((f, i) => (
-                <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
-                  <span className="flex-1 truncate text-gray-700">{relPath(f)}</span>
-                  <span className="text-gray-400 shrink-0">{fmt(f.size)}</span>
-                  <button onClick={() => removeAt(i)} className="text-gray-300 hover:text-rose-500 shrink-0 inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button>
+            {/* PC: zip name + compression method share one row. */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="sm:flex-1">
+                <label className="block text-xs text-gray-500 mb-1">{t('zf_name')}</label>
+                <div className="flex items-center gap-1">
+                  <input value={zipName} onChange={(e) => setZipName(e.target.value)} placeholder="archive" type="text"
+                    className="flex-1 min-w-0 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                  <span className="text-sm text-gray-400">.zip</span>
                 </div>
-              ))}
-            </div>
-            {files.length > LIMIT && (
-              <button onClick={() => setShowAll((v) => !v)} className="w-full text-center text-xs text-brand-600 hover:underline py-0.5">
-                {showAll ? t('uz_less') : t('uz_more', { n: files.length - LIMIT })}
-              </button>
-            )}
-            <p className="text-xs text-gray-400">{!showAll && files.length > LIMIT ? t('uz_entries_some', { shown: LIMIT, total: files.length }) : t('zf_files', { n: files.length })} · {fmt(totalSize)}</p>
-
-            <div>
-              <label className="block text-xs text-gray-500 mb-1">{t('zf_name')}</label>
-              <div className="flex items-center gap-1">
-                <input value={zipName} onChange={(e) => setZipName(e.target.value)} placeholder="archive" type="text"
-                  className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-                <span className="text-sm text-gray-400">.zip</span>
+              </div>
+              <div className="sm:flex-1">
+                <label className="block text-xs text-gray-500 mb-1">{t('zf_method')}</label>
+                <select value={level} onChange={(e) => setLevel(Number(e.target.value))}
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                  <option value={6}>{t('zf_method_normal')}</option>
+                  <option value={9}>{t('zf_method_max')}</option>
+                  <option value={0}>{t('zf_method_min')}</option>
+                </select>
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs text-gray-500 mb-1">{t('zf_method')}</label>
-              <select value={level} onChange={(e) => setLevel(Number(e.target.value))}
-                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
-                <option value={6}>{t('zf_method_normal')}</option>
-                <option value={9}>{t('zf_method_max')}</option>
-                <option value={0}>{t('zf_method_min')}</option>
-              </select>
-            </div>
-
-            <div className="flex gap-2">
-              <button onClick={make} disabled={busy} className="px-5 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50">{busy ? t('zf_making') : t('zf_make')}</button>
-              <button onClick={clearAll} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">{t('zf_clear')}</button>
-            </div>
+            {/* Make button — full width, prefixed with the file count. */}
+            <button onClick={make} disabled={busy} className="w-full py-3 bg-brand-600 text-white text-base font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 transition-colors">{busy ? t('zf_making') : t('zf_make_n', { n: files.length })}</button>
           </>
         )}
 
