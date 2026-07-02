@@ -864,7 +864,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                     <div key={d.id} onClick={() => { setActiveId(d.id); setOpenMenu(null) }}
                       className={'group flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-gray-50 ' + (on ? 'bg-brand-50' : '')}>
                       <span className={'flex-1 truncate ' + (on ? 'text-brand-600 font-semibold' : 'text-gray-700')}>{d.name}</span>
-                      <span className="shrink-0 text-[10px] text-gray-300 tabular-nums">{d.text.trim() ? d.text.trim().length + ' · ' : ''}{fmtDate(d.createdAt)}</span>
+                      <span className="shrink-0 text-[10px] text-gray-500 tabular-nums">{d.text.trim() ? d.text.trim().length + ' · ' : ''}{fmtDate(d.createdAt)}</span>
                       <button onClick={(e) => { e.stopPropagation(); closeDoc(d.id) }} aria-label={t('np_closetab')}
                         className={'shrink-0 hover:text-red-500 text-base leading-none transition-colors ' + (d.text.trim() ? 'text-gray-300' : 'text-red-300')}>×</button>
                     </div>
