@@ -856,7 +856,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               <span className="text-[9px] shrink-0">▾</span>
             </button>
             {openMenu === 'tablist' && (
-              <div className="absolute z-30 top-full left-0 mt-1 w-56 max-w-[80vw] bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-sm max-h-72 overflow-y-auto">
+              <div className="absolute z-30 top-full left-0 mt-1 w-72 max-w-[85vw] bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-sm max-h-72 overflow-y-auto">
                 <p className="px-3 py-1 text-xs font-medium text-gray-400">{t('np_tablist')} · {docs.length}</p>
                 {docs.map((d) => {
                   const on = d.id === activeId
