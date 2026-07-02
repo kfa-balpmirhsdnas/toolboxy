@@ -34,6 +34,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [capFmt, setCapFmt] = useState<'png' | 'jpg'>('png')
   const [captured, setCaptured] = useState(false)
   const [pipSupported, setPipSupported] = useState(false)
+  const [pipErr, setPipErr] = useState('') // surfaced so mobile failures are diagnosable
   const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -55,14 +56,19 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     }) | null
     if (!v) return
     try {
+      setPipErr('')
       // iOS Safari: non-standard presentation-mode API.
       if (typeof v.webkitSetPresentationMode === 'function' && !document.pictureInPictureElement) {
         v.webkitSetPresentationMode(v.webkitPresentationMode === 'picture-in-picture' ? 'inline' : 'picture-in-picture')
         return
       }
+      if (typeof v.requestPictureInPicture !== 'function') { setPipErr('unsupported: no requestPictureInPicture'); return }
       if (document.pictureInPictureElement) await document.exitPictureInPicture()
       else await v.requestPictureInPicture()
-    } catch { /* unsupported or user-dismissed */ }
+    } catch (e) {
+      // Surface the real reason (e.g. NotSupportedError on Android Chrome) instead of failing silently.
+      setPipErr(((e as Error)?.name || 'Error') + ': ' + ((e as Error)?.message || String(e)))
+    }
   }
 
   const load = useCallback((f: File) => {
@@ -164,6 +170,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 </button>
               )}
             </div>
+
+            {/* PiP diagnostic — shows the real failure reason (e.g. Android Chrome's NotSupportedError). */}
+            {pipErr && <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 break-all">PiP: {pipErr}</p>}
 
             {/* Frame capture */}
             <div className="rounded-2xl border border-gray-200 p-4 space-y-3">
