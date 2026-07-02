@@ -37,13 +37,26 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Picture-in-Picture support (Chromium/Safari desktop; not iOS/Firefox web). The button
-  // is the durable entry point — never rely on the browser's native controls menu, which
-  // varies and can hide the PiP item. Keep the video WITHOUT disablePictureInPicture.
-  useEffect(() => { setPipSupported(typeof document !== 'undefined' && !!document.pictureInPictureEnabled) }, [])
+  // Picture-in-Picture support — this button is the DURABLE entry point; never rely on the
+  // browser's native controls menu, which varies and auto-hides during playback. Detect both
+  // the standard API (Chromium/desktop Safari) AND the iOS Safari webkit presentation mode.
+  // Keep the video WITHOUT disablePictureInPicture so the native item stays too.
+  useEffect(() => {
+    const std = typeof document !== 'undefined' && !!document.pictureInPictureEnabled
+    const webkit = typeof HTMLVideoElement !== 'undefined' && 'webkitSupportsPresentationMode' in HTMLVideoElement.prototype
+    setPipSupported(std || webkit)
+  }, [])
   async function togglePip() {
-    const v = videoRef.current; if (!v) return
+    const v = videoRef.current as (HTMLVideoElement & {
+      webkitSetPresentationMode?: (m: string) => void; webkitPresentationMode?: string
+    }) | null
+    if (!v) return
     try {
+      // iOS Safari: non-standard presentation-mode API.
+      if (typeof v.webkitSetPresentationMode === 'function' && !document.pictureInPictureElement) {
+        v.webkitSetPresentationMode(v.webkitPresentationMode === 'picture-in-picture' ? 'inline' : 'picture-in-picture')
+        return
+      }
       if (document.pictureInPictureElement) await document.exitPictureInPicture()
       else await v.requestPictureInPicture()
     } catch { /* unsupported or user-dismissed */ }
@@ -138,6 +151,16 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               }}
               onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
 
+            {/* Picture-in-Picture — prominent, right under the video (native controls auto-hide
+                during playback, so this is the reliable way to pop the video out). */}
+            {pipSupported && (
+              <button onClick={togglePip} title={t('vp_pip')} aria-label={t('vp_pip')}
+                className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold text-brand-700 bg-brand-50 border border-brand-200 rounded-xl hover:bg-brand-100 transition-colors">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
+                {t('vp_pip_btn')}
+              </button>
+            )}
+
             {/* Frame capture */}
             <div className="rounded-2xl border border-gray-200 p-4 space-y-3">
               <div className="flex items-center gap-2">
@@ -191,17 +214,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     className={'px-2.5 py-1 rounded-lg text-xs font-medium tabular-nums transition-colors ' + (speed === s ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>{s}×</button>
                 ))}
               </div>
-              <div className="ml-auto flex items-center gap-2">
-                {pipSupported && (
-                  <button onClick={togglePip} title={t('vp_pip')} aria-label={t('vp_pip')} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-brand-600 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-brand-300 transition-colors">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
-                    PiP
-                  </button>
-                )}
-                <button onClick={() => { setUrl(''); setA(null); setB(null); setRepeat(false) }} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                  <ToolIcon name="refresh" className="w-4 h-4" />{t('ui_clear')}
-                </button>
-              </div>
+              <button onClick={() => { setUrl(''); setA(null); setB(null); setRepeat(false) }} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <ToolIcon name="refresh" className="w-4 h-4" />{t('ui_clear')}
+              </button>
             </div>
           </>
         )}
