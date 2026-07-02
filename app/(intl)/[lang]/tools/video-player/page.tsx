@@ -33,47 +33,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [repeat, setRepeat] = useState(false)
   const [capFmt, setCapFmt] = useState<'png' | 'jpg'>('png')
   const [captured, setCaptured] = useState(false)
-  const [pipSupported, setPipSupported] = useState(false)
-  const [isTouch, setIsTouch] = useState(false)
-  const [pipErr, setPipErr] = useState('') // surfaced so mobile failures are diagnosable
   const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-
-  // Picture-in-Picture support — this button is the DURABLE entry point; never rely on the
-  // browser's native controls menu, which varies and auto-hides during playback. Detect both
-  // the standard API (Chromium/desktop Safari) AND the iOS Safari webkit presentation mode.
-  // Keep the video WITHOUT disablePictureInPicture so the native item stays too.
-  useEffect(() => {
-    // Show the button ONLY where element-PiP actually works: document.pictureInPictureEnabled is
-    // true on desktop Chromium/Safari but FALSE on Android Chrome (where requestPictureInPicture
-    // exists yet throws NotSupportedError). iOS Safari uses the webkit presentation-mode API.
-    const proto = typeof HTMLVideoElement !== 'undefined' ? HTMLVideoElement.prototype : null
-    const std = typeof document !== 'undefined' && !!document.pictureInPictureEnabled
-    const webkit = !!proto && 'webkitSupportsPresentationMode' in proto
-    setPipSupported(std || webkit)
-    // Touch devices with no in-page PiP (Android) get an auto-PiP hint instead of a dead button.
-    setIsTouch(typeof navigator !== 'undefined' && (navigator.maxTouchPoints > 0 || (typeof window !== 'undefined' && !!window.matchMedia?.('(pointer: coarse)').matches)))
-  }, [])
-  async function togglePip() {
-    const v = videoRef.current as (HTMLVideoElement & {
-      webkitSetPresentationMode?: (m: string) => void; webkitPresentationMode?: string
-    }) | null
-    if (!v) return
-    try {
-      setPipErr('')
-      // iOS Safari: non-standard presentation-mode API.
-      if (typeof v.webkitSetPresentationMode === 'function' && !document.pictureInPictureElement) {
-        v.webkitSetPresentationMode(v.webkitPresentationMode === 'picture-in-picture' ? 'inline' : 'picture-in-picture')
-        return
-      }
-      if (typeof v.requestPictureInPicture !== 'function') { setPipErr('unsupported: no requestPictureInPicture'); return }
-      if (document.pictureInPictureElement) await document.exitPictureInPicture()
-      else await v.requestPictureInPicture()
-    } catch (e) {
-      // Surface the real reason (e.g. NotSupportedError on Android Chrome) instead of failing silently.
-      setPipErr(((e as Error)?.name || 'Error') + ': ' + ((e as Error)?.message || String(e)))
-    }
-  }
 
   const load = useCallback((f: File) => {
     if (!f.type.startsWith('video/')) return
@@ -150,31 +111,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           </div>
         ) : (
           <>
-            <div className="relative">
-              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <video ref={videoRef} src={url} controls playsInline className="block w-full max-h-[60vh] rounded-xl bg-black"
-                onLoadedMetadata={(e) => { setDur(e.currentTarget.duration); e.currentTarget.playbackRate = speed }}
-                onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
-              {/* Circular PiP pill pinned over the video — always reachable on mobile, where the
-                  native controls (and their PiP menu item) auto-hide during playback. */}
-              {pipSupported && (
-                <button onClick={togglePip} title={t('vp_pip')} aria-label={t('vp_pip')}
-                  className="absolute top-2 right-2 z-10 inline-flex items-center gap-1.5 h-9 pl-2.5 pr-3 rounded-full bg-black/60 text-white text-xs font-semibold hover:bg-black/80 backdrop-blur transition-colors">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
-                  {t('vp_pip_btn')}
-                </button>
-              )}
-            </div>
-
-            {/* PiP diagnostic — shows the real failure reason (e.g. Android Chrome's NotSupportedError). */}
-            {pipErr && <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 break-all">PiP: {pipErr}</p>}
-
-            {/* Touch devices without in-page PiP (Android Chrome) — tell them how to get auto-PiP. */}
-            {!pipSupported && isTouch && (
-              <p className="flex items-start gap-1.5 text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-                <span>📱</span><span>{t('vp_pip_mobile_hint')}</span>
-              </p>
-            )}
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+            <video ref={videoRef} src={url} controls playsInline className="w-full max-h-[60vh] rounded-xl bg-black"
+              onLoadedMetadata={(e) => { setDur(e.currentTarget.duration); e.currentTarget.playbackRate = speed }}
+              onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
 
             {/* Frame capture */}
             <div className="rounded-2xl border border-gray-200 p-4 space-y-3">
