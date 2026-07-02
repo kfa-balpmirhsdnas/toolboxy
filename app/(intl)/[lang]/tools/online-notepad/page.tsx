@@ -926,6 +926,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                   </div>
                 )}
               </div>
+              <span className="w-px h-5 bg-gray-200 mx-0.5" />
               <button onClick={undo} disabled={!canUndo} title={t('np_undo')} aria-label={t('np_undo')} className={iconBtn}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 14 4 9l5-5" /><path d="M4 9h11a5 5 0 0 1 0 10h-1" /></svg>
               </button>
@@ -1056,7 +1057,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             return (
               <button key={label} type="button" onClick={() => setPreview(val)} aria-pressed={on}
                 className={'shrink-0 whitespace-nowrap px-3 py-1 text-xs rounded-b-lg border border-t-0 transition-colors group-focus-within:border-brand-400 ' +
-                  (on ? 'bg-white border-gray-200 text-brand-600 font-semibold' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100')}>
+                  (on ? (val ? 'bg-amber-50' : 'bg-white') + ' border-gray-200 text-brand-600 font-semibold' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100')}>
                 {label}
               </button>
             )
