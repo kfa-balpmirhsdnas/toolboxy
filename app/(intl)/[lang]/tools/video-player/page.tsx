@@ -37,14 +37,50 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [optTab, setOptTab] = useState<'frame' | 'ab' | 'speed'>('frame') // combined options tabs
   const [history, setHistory] = useState<{ name: string; size: number; file: File }[]>([]) // played videos (session)
   const [curFile, setCurFile] = useState<File | null>(null)
+  // Overlay controls (on top of the video; the tab controls below stay as-is).
+  const [rot, setRot] = useState(0)            // display rotation 0/90/180/270
+  const [loopAll, setLoopAll] = useState(false) // whole-video loop
+  const [sleepMin, setSleepMin] = useState(0)   // sleep-timer minutes (0 = off)
+  const [sleepLeft, setSleepLeft] = useState(0) // seconds remaining
+  const sleepRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Whole-video loop mirrors the <video>.loop flag.
+  useEffect(() => { if (videoRef.current) videoRef.current.loop = loopAll }, [loopAll, url])
+
+  // Sleep timer — pause the video after N minutes; tick down for the badge.
+  useEffect(() => {
+    if (sleepRef.current) { clearInterval(sleepRef.current); sleepRef.current = null }
+    if (!sleepMin) { setSleepLeft(0); return }
+    let left = sleepMin * 60; setSleepLeft(left)
+    sleepRef.current = setInterval(() => {
+      left -= 1; setSleepLeft(left)
+      if (left <= 0) { videoRef.current?.pause(); if (sleepRef.current) clearInterval(sleepRef.current); sleepRef.current = null; setSleepMin(0) }
+    }, 1000)
+    return () => { if (sleepRef.current) clearInterval(sleepRef.current) }
+  }, [sleepMin])
+
+  const cycleSpeed = () => { const i = SPEEDS.indexOf(speed); setSpeed(SPEEDS[(i + 1) % SPEEDS.length]) }
+  const cycleSleep = () => { const o = [0, 15, 30, 60]; setSleepMin(o[(o.indexOf(sleepMin) + 1) % o.length]) }
+  // Picture-in-Picture (background play) — standard API + iOS webkit fallback; no-op where unsupported.
+  async function togglePip() {
+    const v = videoRef.current as (HTMLVideoElement & { webkitSetPresentationMode?: (m: string) => void; webkitPresentationMode?: string }) | null
+    if (!v) return
+    try {
+      if (typeof v.webkitSetPresentationMode === 'function' && !document.pictureInPictureElement) {
+        v.webkitSetPresentationMode(v.webkitPresentationMode === 'picture-in-picture' ? 'inline' : 'picture-in-picture'); return
+      }
+      if (document.pictureInPictureElement) await document.exitPictureInPicture()
+      else if (typeof v.requestPictureInPicture === 'function') await v.requestPictureInPicture()
+    } catch { /* unsupported / dismissed */ }
+  }
 
   const load = useCallback((f: File) => {
     if (!f.type.startsWith('video/')) return
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || 'frame')
-    setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0)
+    setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0); setRot(0)
     setCurFile(f)
     // Keep a session history of played videos (newest first, de-duped, capped).
     setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 12))
@@ -100,6 +136,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   }
 
   const chipBtn = 'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors'
+  const ovBtn = 'pointer-events-auto inline-flex items-center gap-1 h-8 px-2.5 rounded-full text-white text-xs font-semibold backdrop-blur transition-colors'
 
   return (
     <ToolLayout tool={tool} lang={lang}>
@@ -118,20 +155,54 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           </div>
         ) : (
           <>
-            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-            <video ref={videoRef} src={url} controls playsInline className="w-full max-h-[60vh] rounded-xl bg-black"
-              onLoadedMetadata={(e) => {
-                const v = e.currentTarget
-                setDur(v.duration); v.playbackRate = speed
-                // Auto-play as soon as the file loads (Q2). Selecting the file is a user gesture, so
-                // playback with sound is normally allowed; if a browser blocks it, fall back to muted
-                // autoplay (always permitted). Reset muted each load so a one-off fallback doesn't
-                // silence later videos. (Unrelated to the native PiP menu — that depends on the
-                // Android Chrome "Picture-in-picture" permission, not on our code.)
-                v.muted = false
-                v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
-              }}
-              onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
+            <div className="relative overflow-hidden rounded-xl bg-black">
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <video ref={videoRef} src={url} controls playsInline
+                style={{ transform: rot ? `rotate(${rot}deg)` : undefined }}
+                className="block w-full max-h-[60vh] transition-transform"
+                onLoadedMetadata={(e) => {
+                  const v = e.currentTarget
+                  setDur(v.duration); v.playbackRate = speed; v.loop = loopAll
+                  // Auto-play as soon as the file loads (Q2). Selecting the file is a user gesture, so
+                  // playback with sound is normally allowed; if a browser blocks it, fall back to muted
+                  // autoplay (always permitted). Reset muted each load so a one-off fallback doesn't
+                  // silence later videos. (Unrelated to the native PiP menu — that depends on the
+                  // Android Chrome "Picture-in-picture" permission, not on our code.)
+                  v.muted = false
+                  v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
+                }}
+                onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
+              {/* Overlay quick controls — the container passes taps through (pointer-events-none);
+                  only the buttons capture, so native play/pause + controls still work. The same
+                  actions also live in the tabs below. */}
+              <div className="absolute top-2 inset-x-0 flex flex-wrap items-center justify-center gap-1.5 px-2 pointer-events-none">
+                <button onClick={cycleSleep} title={t('vp_timer')} aria-label={t('vp_timer')}
+                  className={ovBtn + (sleepMin ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /></svg>
+                  {sleepMin ? Math.ceil(sleepLeft / 60) : null}
+                </button>
+                <button onClick={() => setLoopAll((v) => !v)} title={t('vp_repeat')} aria-label={t('vp_repeat')}
+                  className={ovBtn + (loopAll ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>
+                </button>
+                <button onClick={cycleSpeed} title={t('vp_speed')} aria-label={t('vp_speed')}
+                  className={ovBtn + ' tabular-nums' + (speed !== 1 ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
+                  {speed}×
+                </button>
+                <button onClick={capture} title={t('vp_capture')} aria-label={t('vp_capture')}
+                  className={ovBtn + ' bg-black/55 hover:bg-black/75'}>
+                  <ToolIcon name={captured ? 'check' : 'camera'} className="w-4 h-4" />
+                </button>
+                <button onClick={() => setRot((r) => (r + 90) % 360)} title={t('vp_rotate')} aria-label={t('vp_rotate')}
+                  className={ovBtn + (rot ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
+                  <ToolIcon name="rotate-cw" className="w-4 h-4" />
+                </button>
+                <button onClick={togglePip} title={t('vp_bg')} aria-label={t('vp_bg')}
+                  className={ovBtn + ' bg-black/55 hover:bg-black/75'}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
+                </button>
+              </div>
+            </div>
 
             {/* Options — frame capture / A–B repeat / speed combined into tabs. */}
             <div className="rounded-2xl border border-gray-200 overflow-hidden">
