@@ -136,7 +136,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   }
 
   const chipBtn = 'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors'
-  const ovBtn = 'pointer-events-auto inline-flex items-center gap-1 h-8 px-2.5 rounded-full text-white text-xs font-semibold backdrop-blur transition-colors'
+  const ovBtn = 'pointer-events-auto inline-flex items-center justify-center gap-1 h-9 px-3 rounded-b-xl text-white text-xs font-semibold backdrop-blur transition-colors'
 
   return (
     <ToolLayout tool={tool} lang={lang}>
@@ -175,7 +175,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               {/* Overlay quick controls — the container passes taps through (pointer-events-none);
                   only the buttons capture, so native play/pause + controls still work. The same
                   actions also live in the tabs below. */}
-              <div className="absolute top-2 inset-x-0 flex flex-wrap items-center justify-center gap-1.5 px-2 pointer-events-none">
+              <div className="absolute top-0 inset-x-0 flex items-start justify-center gap-1 pointer-events-none">
                 <button onClick={cycleSleep} title={t('vp_timer')} aria-label={t('vp_timer')}
                   className={ovBtn + (sleepMin ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /></svg>
