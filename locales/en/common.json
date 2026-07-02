@@ -4516,6 +4516,7 @@
     "uz_title": "Unzip (Extract ZIP)",
     "uz_subtitle": "Open a ZIP file and pull out the files inside.",
     "uz_drop": "Drop a ZIP file or click to upload",
+    "uz_list_placeholder": "The file list appears here once you load a ZIP",
     "uz_pick": "Choose file",
     "ui_pick_files": "Choose files",
     "ui_pick_folder": "Choose folder",

@@ -110,6 +110,37 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="max-w-lg mx-auto space-y-4">
+        {/* File list — moved to the TOP; stays dimmed + non-interactive until a ZIP loads. */}
+        <div className={'space-y-4 transition-opacity ' + (entries.length ? '' : 'opacity-50 pointer-events-none select-none')} aria-disabled={!entries.length}>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs text-gray-400">{entries.length ? (!showAll && entries.length > LIMIT ? t('uz_entries_some', { shown: LIMIT, total: entries.length }) : t('uz_entries', { n: entries.length })) : t('uz_list_placeholder')}</p>
+            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+              <input type="checkbox" checked={makeFolder} onChange={(e) => setMakeFolder(e.target.checked)} disabled={!entries.length} className="w-4 h-4 accent-brand-600" />
+              {t('uz_makefolder')}
+            </label>
+          </div>
+
+          <button onClick={extractAll} disabled={!entries.length} className="w-full py-3 text-base font-semibold bg-brand-600 text-white rounded-xl hover:bg-brand-700 disabled:opacity-100 inline-flex items-center justify-center gap-2"><ToolIcon name="folder" className="w-5 h-5" />{t('uz_downloadall')}</button>
+
+          {done && <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-xl p-3">{t('uz_extracted', { folder: done.folder, n: done.n })}</p>}
+          <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-72 min-h-[3.25rem] overflow-auto">
+            {entries.length > 0 ? (showAll ? entries : entries.slice(0, LIMIT)).map((e, i) => (
+              <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
+                <span className="flex-1 truncate text-gray-700">{makeFolder && <span className="text-gray-400">{(name.replace(/\.zip$/i, '') || 'extracted')}/</span>}{e.name}</span>
+                <span className="text-gray-400 shrink-0">{fmt(e.size)}</span>
+                <button onClick={() => download(e)} aria-label="download" className="shrink-0 inline-flex items-center justify-center px-2.5 py-1 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"><ToolIcon name="download" className="w-3.5 h-3.5" /></button>
+              </div>
+            )) : (
+              <div className="px-4 py-4 text-center text-sm text-gray-300">{t('uz_list_placeholder')}</div>
+            )}
+          </div>
+          {entries.length > LIMIT && (
+            <button onClick={() => setShowAll((v) => !v)} className="w-full text-center text-xs text-brand-600 hover:underline py-1">
+              {showAll ? t('uz_less') : t('uz_more', { n: entries.length - LIMIT })}
+            </button>
+          )}
+        </div>
+
         <div onClick={() => inputRef.current?.click()} onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
           <input ref={inputRef} type="file" accept=".zip" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
@@ -119,43 +150,13 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
           </div>
         </div>
 
+        {error && <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-3">{error}</p>}
+
         {/* Privacy banner — unified with the other file tools */}
         <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
           <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
           <span>{t('bfr_privacy')}</span>
         </div>
-
-        {error && <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-3">{error}</p>}
-
-        {entries.length > 0 && (
-          <>
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-xs text-gray-400">{!showAll && entries.length > LIMIT ? t('uz_entries_some', { shown: LIMIT, total: entries.length }) : t('uz_entries', { n: entries.length })}</p>
-              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
-                <input type="checkbox" checked={makeFolder} onChange={(e) => setMakeFolder(e.target.checked)} className="w-4 h-4 accent-brand-600" />
-                {t('uz_makefolder')}
-              </label>
-            </div>
-
-            <button onClick={extractAll} className="w-full py-3 text-base font-semibold bg-brand-600 text-white rounded-xl hover:bg-brand-700 inline-flex items-center justify-center gap-2"><ToolIcon name="folder" className="w-5 h-5" />{t('uz_downloadall')}</button>
-
-            {done && <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-xl p-3">{t('uz_extracted', { folder: done.folder, n: done.n })}</p>}
-            <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 max-h-72 overflow-auto">
-              {(showAll ? entries : entries.slice(0, LIMIT)).map((e, i) => (
-                <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
-                  <span className="flex-1 truncate text-gray-700">{makeFolder && <span className="text-gray-400">{(name.replace(/\.zip$/i, '') || 'extracted')}/</span>}{e.name}</span>
-                  <span className="text-gray-400 shrink-0">{fmt(e.size)}</span>
-                  <button onClick={() => download(e)} aria-label="download" className="shrink-0 inline-flex items-center justify-center px-2.5 py-1 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"><ToolIcon name="download" className="w-3.5 h-3.5" /></button>
-                </div>
-              ))}
-            </div>
-            {entries.length > LIMIT && (
-              <button onClick={() => setShowAll((v) => !v)} className="w-full text-center text-xs text-brand-600 hover:underline py-1">
-                {showAll ? t('uz_less') : t('uz_more', { n: entries.length - LIMIT })}
-              </button>
-            )}
-          </>
-        )}
       </div>
     </ToolLayout>
   )
