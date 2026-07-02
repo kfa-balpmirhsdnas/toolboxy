@@ -1026,7 +1026,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
         {preview ? (
           <div
             style={{ fontFamily: FAM_CSS(fam) }}
-            className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 overflow-auto whitespace-pre-wrap break-words ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
+            className={`w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 bg-amber-50 overflow-auto whitespace-pre-wrap break-words ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
             // Read-only rendered view — links become clickable anchors. renderPreview escapes the
             // text first (XSS-safe). Toggle back to editing with the toolbar button.
             dangerouslySetInnerHTML={{ __html: renderPreview(text, autoConv.link) || `<span class="text-gray-400">${t('np_placeholder')}</span>` }}
