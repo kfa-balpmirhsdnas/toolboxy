@@ -131,7 +131,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
               <span className="shrink-0 w-14 text-center">{t('uz_col_download')}</span>
             </div>
             <div className="divide-y divide-gray-100 max-h-72 min-h-[3rem] overflow-auto">
-              {entries.length > 0 && (showAll ? entries : entries.slice(0, LIMIT)).map((e, i) => (
+              {entries.length > 0 ? (showAll ? entries : entries.slice(0, LIMIT)).map((e, i) => (
                 <div key={i} className="flex items-center gap-2 px-4 py-2 text-sm">
                   <span className="flex-1 truncate text-gray-700">{makeFolder && <span className="text-gray-400">{(name.replace(/\.zip$/i, '') || 'extracted')}/</span>}{e.name}</span>
                   <span className="shrink-0 w-16 text-right text-gray-400">{fmt(e.size)}</span>
@@ -139,7 +139,9 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
                     <button onClick={() => download(e)} aria-label={t('uz_col_download')} className="inline-flex items-center justify-center px-2.5 py-1 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"><ToolIcon name="download" className="w-3.5 h-3.5" /></button>
                   </span>
                 </div>
-              ))}
+              )) : (
+                <div className="px-4 py-6 text-center text-sm text-gray-300">{t('uz_list_placeholder')}</div>
+              )}
             </div>
           </div>
           {entries.length > LIMIT && (
