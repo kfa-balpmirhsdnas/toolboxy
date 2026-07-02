@@ -33,8 +33,21 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [repeat, setRepeat] = useState(false)
   const [capFmt, setCapFmt] = useState<'png' | 'jpg'>('png')
   const [captured, setCaptured] = useState(false)
+  const [pipSupported, setPipSupported] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Picture-in-Picture support (Chromium/Safari desktop; not iOS/Firefox web). The button
+  // is the durable entry point — never rely on the browser's native controls menu, which
+  // varies and can hide the PiP item. Keep the video WITHOUT disablePictureInPicture.
+  useEffect(() => { setPipSupported(typeof document !== 'undefined' && !!document.pictureInPictureEnabled) }, [])
+  async function togglePip() {
+    const v = videoRef.current; if (!v) return
+    try {
+      if (document.pictureInPictureElement) await document.exitPictureInPicture()
+      else await v.requestPictureInPicture()
+    } catch { /* unsupported or user-dismissed */ }
+  }
 
   const load = useCallback((f: File) => {
     if (!f.type.startsWith('video/')) return
@@ -178,9 +191,17 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     className={'px-2.5 py-1 rounded-lg text-xs font-medium tabular-nums transition-colors ' + (speed === s ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>{s}×</button>
                 ))}
               </div>
-              <button onClick={() => { setUrl(''); setA(null); setB(null); setRepeat(false) }} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <ToolIcon name="refresh" className="w-4 h-4" />{t('ui_clear')}
-              </button>
+              <div className="ml-auto flex items-center gap-2">
+                {pipSupported && (
+                  <button onClick={togglePip} title={t('vp_pip')} aria-label={t('vp_pip')} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-brand-600 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-brand-300 transition-colors">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
+                    PiP
+                  </button>
+                )}
+                <button onClick={() => { setUrl(''); setA(null); setB(null); setRepeat(false) }} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                  <ToolIcon name="refresh" className="w-4 h-4" />{t('ui_clear')}
+                </button>
+              </div>
             </div>
           </>
         )}

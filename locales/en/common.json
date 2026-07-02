@@ -3801,6 +3801,7 @@
     "vp_capture": "Capture frame",
     "vp_frame": "Frame capture",
     "vp_speed": "Speed",
+    "vp_pip": "Picture-in-Picture (keep playing over other screens)",
     "vp_drop_sub": "Plays in your browser · no upload",
     "vp_drop": "Drop a video here",
     "ic_related": "Related:",
