@@ -3789,7 +3789,8 @@
   },
   "toolui": {
     "vp_related": "Related:",
-    "vp_privacy": "Your video is never uploaded — playback, capture and looping all happen in your browser.",
+    "vp_privacy_title": "Your video never leaves your device.",
+    "vp_privacy": "Playback, capture and looping all happen in your browser.",
     "vp_clear": "Clear",
     "vp_repeat": "Repeat",
     "vp_set_b": "Set B",
