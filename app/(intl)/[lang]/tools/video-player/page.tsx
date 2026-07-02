@@ -42,9 +42,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // the standard API (Chromium/desktop Safari) AND the iOS Safari webkit presentation mode.
   // Keep the video WITHOUT disablePictureInPicture so the native item stays too.
   useEffect(() => {
+    // Detect by METHOD existence, not just document.pictureInPictureEnabled — the latter is
+    // false on Android Chrome even where requestPictureInPicture works, which hid the button.
+    const proto = typeof HTMLVideoElement !== 'undefined' ? HTMLVideoElement.prototype : null
     const std = typeof document !== 'undefined' && !!document.pictureInPictureEnabled
-    const webkit = typeof HTMLVideoElement !== 'undefined' && 'webkitSupportsPresentationMode' in HTMLVideoElement.prototype
-    setPipSupported(std || webkit)
+    const el = !!proto && ('requestPictureInPicture' in proto || 'webkitSupportsPresentationMode' in proto)
+    setPipSupported(std || el)
   }, [])
   async function togglePip() {
     const v = videoRef.current as (HTMLVideoElement & {
@@ -137,29 +140,30 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           </div>
         ) : (
           <>
-            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-            <video ref={videoRef} src={url} controls playsInline className="w-full max-h-[60vh] rounded-xl bg-black"
-              onLoadedMetadata={(e) => {
-                const v = e.currentTarget
-                setDur(v.duration); v.playbackRate = speed
-                // Auto-play as soon as the file loads. Selecting the file is a user gesture,
-                // so playback with sound is normally allowed; if a browser still blocks it,
-                // fall back to muted autoplay (always permitted). Reset muted each load so a
-                // one-off fallback doesn't silence every later video.
-                v.muted = false
-                v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
-              }}
-              onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
-
-            {/* Picture-in-Picture — prominent, right under the video (native controls auto-hide
-                during playback, so this is the reliable way to pop the video out). */}
-            {pipSupported && (
-              <button onClick={togglePip} title={t('vp_pip')} aria-label={t('vp_pip')}
-                className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold text-brand-700 bg-brand-50 border border-brand-200 rounded-xl hover:bg-brand-100 transition-colors">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
-                {t('vp_pip_btn')}
-              </button>
-            )}
+            <div className="relative">
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <video ref={videoRef} src={url} controls playsInline className="block w-full max-h-[60vh] rounded-xl bg-black"
+                onLoadedMetadata={(e) => {
+                  const v = e.currentTarget
+                  setDur(v.duration); v.playbackRate = speed
+                  // Auto-play as soon as the file loads. Selecting the file is a user gesture,
+                  // so playback with sound is normally allowed; if a browser still blocks it,
+                  // fall back to muted autoplay (always permitted). Reset muted each load so a
+                  // one-off fallback doesn't silence every later video.
+                  v.muted = false
+                  v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
+                }}
+                onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
+              {/* Circular PiP pill pinned over the video — always reachable on mobile, where the
+                  native controls (and their PiP menu item) auto-hide during playback. */}
+              {pipSupported && (
+                <button onClick={togglePip} title={t('vp_pip')} aria-label={t('vp_pip')}
+                  className="absolute top-2 right-2 z-10 inline-flex items-center gap-1.5 h-9 pl-2.5 pr-3 rounded-full bg-black/60 text-white text-xs font-semibold hover:bg-black/80 backdrop-blur transition-colors">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
+                  {t('vp_pip_btn')}
+                </button>
+              )}
+            </div>
 
             {/* Frame capture */}
             <div className="rounded-2xl border border-gray-200 p-4 space-y-3">
