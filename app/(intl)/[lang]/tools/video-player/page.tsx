@@ -113,7 +113,16 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           <>
             {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
             <video ref={videoRef} src={url} controls playsInline className="w-full max-h-[60vh] rounded-xl bg-black"
-              onLoadedMetadata={(e) => { setDur(e.currentTarget.duration); e.currentTarget.playbackRate = speed }}
+              onLoadedMetadata={(e) => {
+                const v = e.currentTarget
+                setDur(v.duration); v.playbackRate = speed
+                // Auto-play as soon as the file loads. Selecting the file is a user gesture,
+                // so playback with sound is normally allowed; if a browser still blocks it,
+                // fall back to muted autoplay (always permitted). Reset muted each load so a
+                // one-off fallback doesn't silence every later video.
+                v.muted = false
+                v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
+              }}
               onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
 
             {/* Frame capture */}
