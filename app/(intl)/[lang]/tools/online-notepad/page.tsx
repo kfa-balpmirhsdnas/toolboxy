@@ -774,11 +774,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     if (!text) return
     navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500)
   }
-  function clear() {
-    if (!text) return
-    if (!window.confirm(t('np_clearconfirm'))) return
-    setDocText(activeId, ''); commit('')
-  }
 
   const chars = text.length
   const lines = text ? text.split(/\n/).length : 0
@@ -1048,14 +1043,14 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             placeholder={t('np_placeholder')}
             spellCheck={false}
             style={{ fontFamily: FAM_CSS(fam) }}
-            className={`block w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 bg-amber-50 resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
+            className={`block w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
           />
         )}
 
         {/* Bottom tabs hanging off the editor: edit/preview. (Save/copy moved to the top toolbar.)
             When the editor is focused, the whole box shows a brand ring — carry that onto the tabs
             too so they don't look like they cut into the ring (group-focus-within). */}
-        <div className="flex gap-1 px-3 -mt-px">
+        <div className="flex items-center gap-1 px-3 -mt-px">
           {([[false, t('np_edit')], [true, t('np_preview')]] as const).map(([val, label]) => {
             const on = preview === val
             return (
@@ -1066,12 +1061,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               </button>
             )
           })}
-        </div>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* char/line counts + creation date — icon + number only, just left of Clear */}
-          <span className="ml-auto flex items-center gap-x-3 gap-y-0.5 flex-wrap text-xs text-gray-400 tabular-nums">
+          {/* char/line counts + creation date — right-aligned in the same row as the tabs */}
+          <span className="ml-auto flex items-center gap-x-3 gap-y-0.5 flex-wrap justify-end text-xs text-gray-400 tabular-nums pr-1">
             <span className="inline-flex items-center gap-1" title={t('np_chars_label')}>
               <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7" /><line x1="9" x2="15" y1="20" y2="20" /><line x1="12" x2="12" y1="4" y2="20" /></svg>
               {chars.toLocaleString()}
@@ -1085,11 +1076,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               {fmtDate(active.createdAt)}
             </span>
           </span>
-          <button onClick={clear} disabled={!text}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded-xl border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
-            {t('ui_clear')}
-          </button>
+        </div>
         </div>
 
         {/* Privacy banner — unified with the other tools */}
