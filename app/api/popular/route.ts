@@ -8,12 +8,19 @@ import { adminDb } from '@/lib/firebase-admin'
 
 export const dynamic = 'force-dynamic'
 
+// How many popular tools the home page shows (after subtracting admin-hidden ones).
+const SHOW_N = 20
+
 export async function GET() {
   let slugs: string[] = []
   try {
-    const snap = await adminDb.collection('config').doc('popularTools').get()
-    const data = snap.data() as { slugs?: string[] } | undefined
-    if (Array.isArray(data?.slugs)) slugs = data!.slugs
+    const [rankSnap, hiddenSnap] = await Promise.all([
+      adminDb.collection('config').doc('popularTools').get(),
+      adminDb.collection('config').doc('popularHidden').get(),
+    ])
+    const ranked = (rankSnap.data() as { slugs?: string[] } | undefined)?.slugs
+    const hidden = new Set((hiddenSnap.data() as { slugs?: string[] } | undefined)?.slugs ?? [])
+    if (Array.isArray(ranked)) slugs = ranked.filter((s) => !hidden.has(s)).slice(0, SHOW_N)
   } catch (e) {
     console.error('[api/popular]', e)
   }

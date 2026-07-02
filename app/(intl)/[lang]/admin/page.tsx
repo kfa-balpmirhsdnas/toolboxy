@@ -84,6 +84,13 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
   const [featMsg, setFeatMsg] = useState('')
   const [featSearch, setFeatSearch] = useState('')
 
+  // 인기 도구 관리 — admin-hidden slugs subtracted from the auto popular ranking (config/popularHidden).
+  const [hiddenPop, setHiddenPop] = useState<string[]>([])
+  const [savedHiddenPop, setSavedHiddenPop] = useState<string[]>([])
+  const [popLoaded, setPopLoaded] = useState(false)
+  const [popSaving, setPopSaving] = useState(false)
+  const [popMsg, setPopMsg] = useState('')
+
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       if (!user) { setAuthed('denied'); return }
@@ -116,6 +123,16 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
       } catch { /* leave empty */ } finally {
         setFeatLoaded(true)
       }
+
+      // Load the admin-hidden popular slugs.
+      try {
+        const token = await user.getIdToken()
+        const res = await fetch('/api/admin/popular-hidden', { headers: { Authorization: 'Bearer ' + token } })
+        const data = await res.json()
+        if (res.ok) { setHiddenPop(data.slugs ?? []); setSavedHiddenPop(data.slugs ?? []) }
+      } catch { /* leave empty */ } finally {
+        setPopLoaded(true)
+      }
     })
   }, [])
 
@@ -140,6 +157,25 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
       if (res.ok) { setFeatured(data.slugs); setSavedFeatured(data.slugs); setFeatMsg('저장됨 ' + new Date().toLocaleTimeString('ko-KR')) }
       else setFeatMsg('오류: ' + (data.error ?? '저장 실패'))
     } catch { setFeatMsg('오류: 저장 실패') } finally { setFeatSaving(false) }
+  }
+
+  // 인기 도구 — hide/show toggle + save (order-independent set).
+  const popDirty = JSON.stringify([...hiddenPop].sort()) !== JSON.stringify([...savedHiddenPop].sort())
+  const hiddenPopSet = useMemo(() => new Set(hiddenPop), [hiddenPop])
+  const toggleHidePop = (slug: string) => setHiddenPop((p) => (p.includes(slug) ? p.filter((s) => s !== slug) : [...p, slug]))
+  async function saveHiddenPop() {
+    setPopSaving(true); setPopMsg('')
+    try {
+      const token = await auth.currentUser?.getIdToken()
+      const res = await fetch('/api/admin/popular-hidden', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slugs: hiddenPop }),
+      })
+      const data = await res.json()
+      if (res.ok) { setHiddenPop(data.slugs); setSavedHiddenPop(data.slugs); setPopMsg('저장됨 ' + new Date().toLocaleTimeString('ko-KR')) }
+      else setPopMsg('오류: ' + (data.error ?? '저장 실패'))
+    } catch { setPopMsg('오류: 저장 실패') } finally { setPopSaving(false) }
   }
 
   // Tools available to add (not already featured), filtered by the search box.
@@ -282,6 +318,63 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
         </div>
       </div>
 
+      {/* 인기 도구 설정 — hide tools from the auto popular ranking */}
+      <div>
+        <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
+          <h2 className="text-lg font-semibold text-gray-800">🔥 인기 도구 설정</h2>
+          <div className="flex items-center gap-3">
+            {popMsg && <span className="text-xs text-gray-500">{popMsg}</span>}
+            {popDirty && <span className="text-xs text-amber-600">● 저장 안 됨</span>}
+            <button onClick={saveHiddenPop} disabled={popSaving || !popDirty}
+              className={'px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors ' + (popSaving || !popDirty ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-brand-600 text-white hover:bg-brand-700')}>
+              {popSaving ? '저장 중…' : '저장'}
+            </button>
+          </div>
+        </div>
+        <p className="text-xs text-gray-400 mb-4">클릭수 순 인기 도구. <b>가리기</b>한 항목은 메인 🔥 인기 도구 섹션에서 제외되고, 가리지 않은 <b>상위 20개</b>가 노출됩니다. 저장 위치: Firestore <code className="font-mono">config/popularHidden</code> · 반영까지 최대 1시간(CDN 캐시).</p>
+
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+          {!stats || !popLoaded ? (
+            <p className="px-4 py-8 text-center text-gray-400 text-sm">불러오는 중…</p>
+          ) : stats.topViewed.length === 0 ? (
+            <p className="px-4 py-8 text-center text-gray-400 text-sm">아직 클릭 데이터가 없습니다.</p>
+          ) : (
+            <ul className="divide-y divide-gray-100 max-h-[36rem] overflow-y-auto">
+              {(() => {
+                let visibleRank = 0
+                const rows = stats.topViewed.map((tv, i) => {
+                  const hidden = hiddenPopSet.has(tv.slug)
+                  if (!hidden) visibleRank++
+                  const onMain = !hidden && visibleRank <= 20
+                  return (
+                    <li key={tv.slug} className={'flex items-center gap-2 px-3 py-2 ' + (hidden ? 'bg-gray-50 opacity-60' : 'hover:bg-gray-50')}>
+                      <span className="w-7 text-center text-xs font-bold text-gray-400">{i + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <a href={'/' + params.lang + '/tools/' + tv.slug} target="_blank" rel="noopener noreferrer" className="font-mono text-sm text-gray-700 hover:text-brand-600 hover:underline truncate block">{tv.slug}</a>
+                        <p className="text-xs text-gray-400">{tv.category} · {tv.views.toLocaleString()} 클릭{onMain && <span className="ml-1 text-emerald-600 font-medium">· 메인 노출</span>}</p>
+                      </div>
+                      <button onClick={() => toggleHidePop(tv.slug)}
+                        className={'px-2.5 py-1 rounded-md text-xs font-semibold ' + (hidden ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-red-50 text-red-600 hover:bg-red-100')}>
+                        {hidden ? '보이기' : '가리기'}</button>
+                    </li>
+                  )
+                })
+                // Hidden slugs that dropped out of the top-50 view — keep them un-hideable here.
+                const shown = new Set(stats.topViewed.map((x) => x.slug))
+                hiddenPop.filter((s) => !shown.has(s)).forEach((slug) => rows.push(
+                  <li key={'orphan-' + slug} className="flex items-center gap-2 px-3 py-2 bg-gray-50 opacity-60">
+                    <span className="w-7 text-center text-xs text-gray-300">—</span>
+                    <div className="flex-1 min-w-0"><p className="font-mono text-sm text-gray-700 truncate">{slug}</p><p className="text-xs text-gray-400">가려짐 · 현재 상위 50위 밖</p></div>
+                    <button onClick={() => toggleHidePop(slug)} className="px-2.5 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">보이기</button>
+                  </li>
+                ))
+                return rows
+              })()}
+            </ul>
+          )}
+        </div>
+      </div>
+
       <div>
         <h2 className="text-lg font-semibold text-gray-800 mb-4">빠른 링크</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -308,7 +401,7 @@ export default function AdminPage({ params }: { params: { lang: string } }) {
         return (
           <div>
             <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
-              <h2 className="text-lg font-semibold text-gray-800">인기 툴 Top 30 — 클릭수 (게스트 포함)</h2>
+              <h2 className="text-lg font-semibold text-gray-800">인기 툴 랭킹 — 클릭수 (게스트 포함)</h2>
               <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
                 {(['all', 'week', 'today'] as Period[]).map((p) => (
                   <button key={p} onClick={() => setPeriod(p)}

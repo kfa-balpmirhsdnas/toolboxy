@@ -10,7 +10,9 @@ import { getToolBySlug } from '@/lib/tools/registry'
 // also callable manually with the same header to bootstrap the doc.
 
 export const dynamic = 'force-dynamic'
-const TOP_N = 20
+// Store a buffer of 50 so /api/popular can subtract admin-hidden tools and still
+// return a full top-20 to the home page.
+const TOP_N = 50
 
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET

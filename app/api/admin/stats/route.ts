@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
       })
       .sort((a, b) => b.views - a.views)
     totalViews = all.reduce((s, t) => s + t.views, 0)
-    topViewed = all.slice(0, 30)
+    topViewed = all.slice(0, 50)
   } catch (e) {
     console.error('[admin/stats toolStats]', e)
   }
