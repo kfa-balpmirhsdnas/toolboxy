@@ -33,8 +33,20 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [repeat, setRepeat] = useState(false)
   const [capFmt, setCapFmt] = useState<'png' | 'jpg'>('png')
   const [captured, setCaptured] = useState(false)
+  const [pipDiag, setPipDiag] = useState('') // TEMP: report the device's actual PiP capability
   const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // TEMP diagnostic — surface why the native ⋮ PiP item may be missing (device-side, not page code).
+  useEffect(() => {
+    const proto = typeof HTMLVideoElement !== 'undefined' ? HTMLVideoElement.prototype : null
+    setPipDiag(
+      'enabled=' + (typeof document !== 'undefined' ? String(!!document.pictureInPictureEnabled) : '?') +
+      ' · reqPiP=' + String(!!proto && 'requestPictureInPicture' in proto) +
+      ' · webkit=' + String(!!proto && 'webkitSupportsPresentationMode' in proto) +
+      ' · UA=' + (typeof navigator !== 'undefined' ? navigator.userAgent : '?'),
+    )
+  }, [])
 
   const load = useCallback((f: File) => {
     if (!f.type.startsWith('video/')) return
@@ -115,6 +127,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             <video ref={videoRef} src={url} controls playsInline className="w-full max-h-[60vh] rounded-xl bg-black"
               onLoadedMetadata={(e) => { setDur(e.currentTarget.duration); e.currentTarget.playbackRate = speed }}
               onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
+
+            {/* TEMP PiP diagnostic — tells us the device's real PiP capability. Remove once resolved. */}
+            {pipDiag && <p className="text-[11px] text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 break-all">PiP diag — {pipDiag}</p>}
 
             {/* Frame capture */}
             <div className="rounded-2xl border border-gray-200 p-4 space-y-3">
