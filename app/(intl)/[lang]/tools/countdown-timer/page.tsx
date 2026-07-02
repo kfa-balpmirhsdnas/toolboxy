@@ -16,17 +16,33 @@ export default function Page(){
   const [running,setRunning]=useState(false)
   const [done,setDone]=useState(false)
   const ref=useRef<ReturnType<typeof setInterval>|null>(null)
+  // Audio must be unlocked by a user gesture (the Start/preset click) to be allowed to
+  // play later when the timer ends. Generate the beep with the Web Audio API (no asset).
+  const ctxRef=useRef<AudioContext|null>(null)
+  const beepRef=useRef<ReturnType<typeof setInterval>|null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ensureAudio=()=>{if(!ctxRef.current)ctxRef.current=new (window.AudioContext||(window as any).webkitAudioContext)();ctxRef.current.resume()}
+  const beep=()=>{const ctx=ctxRef.current;if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=880;o.connect(g);g.connect(ctx.destination);const now=ctx.currentTime;g.gain.setValueAtTime(0.001,now);g.gain.exponentialRampToValueAtTime(0.4,now+0.02);g.gain.exponentialRampToValueAtTime(0.001,now+0.4);o.start(now);o.stop(now+0.42)}
   useEffect(()=>{
     if(!running)return
     if(left<=0){setRunning(false);setDone(true);return}
     ref.current=setInterval(()=>setLeft(l=>{if(l<=1){clearInterval(ref.current!);setRunning(false);setDone(true);return 0}return l-1}),1000)
     return()=>clearInterval(ref.current!)
   },[running])
-  const start=()=>{const total=h*3600+m*60+s;if(total>0){setLeft(total);setDone(false);setRunning(true)}}
-  const preset=(min:number)=>{setH(Math.floor(min/60));setM(min%60);setS(0);setLeft(min*60);setDone(false);setRunning(true)}
+  // Ring when finished — repeats until reset/start, auto-stops after 30s so it can't ring forever.
+  useEffect(()=>{
+    if(!done)return
+    beep()
+    beepRef.current=setInterval(beep,800)
+    const stopAt=setTimeout(()=>{if(beepRef.current){clearInterval(beepRef.current);beepRef.current=null}},30000)
+    return()=>{if(beepRef.current)clearInterval(beepRef.current);clearTimeout(stopAt)}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[done])
+  const start=()=>{ensureAudio();const total=h*3600+m*60+s;if(total>0){setLeft(total);setDone(false);setRunning(true)}}
+  const preset=(min:number)=>{ensureAudio();setH(Math.floor(min/60));setM(min%60);setS(0);setLeft(min*60);setDone(false);setRunning(true)}
   const fmt=(n:number)=>String(n).padStart(2,'0')
   const lh=Math.floor(left/3600),lm=Math.floor((left%3600)/60),ls=left%60
-  const tool=TOOLS.find(t=>t.slug==='countdown-timer')
+  const tool=TOOLS.find(t=>t.slug==='countdown-timer')!
   const label=(min:number)=>min>=60?t('ct_hour',{n:min/60}):t('ct_min',{n:min})
   return (
     <ToolLayout tool={tool}>
