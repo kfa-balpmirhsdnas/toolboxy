@@ -565,7 +565,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   // line (numbered 1,2,3… or symbol), keeping the block selected; with no selection it marks
   // the current line (numbered then merges/renumbers with an adjacent numbered block).
   const STRIP_MARK = /^(?:[*o@\-▶●○■] |\d+[.)>] )/
-  function applyBullet(kind: 'sym' | 'num') {
+  type BulletSpec = { kind: 'num'; delim: '.' | ')' | '>' } | { kind: 'sym'; ch: string }
+  function applyBullet(spec: BulletSpec) {
     const ta = taRef.current; if (!ta) return
     // A textarea keeps its selectionStart/End even after the toolbar steals focus, so the
     // drag range is still here when this runs.
@@ -581,7 +582,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
       const block = lines.map((ln) => {
         const st = ln.replace(STRIP_MARK, '')
         if (st.trim() === '') return st // leave blank lines alone (and don't number them)
-        return (kind === 'sym' ? '● ' : `${n++}. `) + st
+        return (spec.kind === 'sym' ? spec.ch + ' ' : `${n++}${spec.delim} `) + st
       }).join('\n')
       const nt = text.slice(0, blockStart) + block + text.slice(blockEnd)
       applyText(nt, blockStart, blockStart + block.length) // keep the whole block selected
@@ -589,10 +590,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     }
 
     const stripped = lines[0].replace(STRIP_MARK, '')
-    const marker = kind === 'sym' ? '● ' : '1. '
+    const marker = spec.kind === 'sym' ? spec.ch + ' ' : `1${spec.delim} `
     let nt = text.slice(0, blockStart) + marker + stripped + text.slice(blockEnd)
     let caret = blockStart + marker.length + stripped.length
-    if (kind === 'num') ({ text: nt, caret } = renumberAt(nt, caret, '.'))
+    if (spec.kind === 'num') ({ text: nt, caret } = renumberAt(nt, caret, spec.delim))
     applyText(nt, caret)
   }
   // After a delete, re-sequence the numbered block at the caret (auto-decrement).
@@ -821,13 +822,19 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           <span className="shrink-0 text-gray-400 text-[9px]">▾</span>
         </button>
         {openMenu === 'list' && (
-          <div className="absolute z-30 mt-1 right-0 bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-xs whitespace-nowrap">
-            <button type="button" onClick={() => { applyBullet('num'); setOpenMenu(null) }} className="flex items-center gap-3 w-full px-3 py-1.5 hover:bg-gray-50 text-left">
-              <span className="text-gray-700">1. {t('np_list_num')}</span><span className="text-gray-300 ml-auto">1. 1) 1&gt;</span>
-            </button>
-            <button type="button" onClick={() => { applyBullet('sym'); setOpenMenu(null) }} className="flex items-center gap-3 w-full px-3 py-1.5 hover:bg-gray-50 text-left">
-              <span className="text-gray-700">● {t('np_list_sym')}</span><span className="text-gray-300 ml-auto">* @ o</span>
-            </button>
+          <div className="absolute z-30 mt-1 right-0 bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-sm whitespace-nowrap">
+            {([
+              { spec: { kind: 'num', delim: '.' }, ex: '1. 2. 3.' },
+              { spec: { kind: 'num', delim: ')' }, ex: '1) 2) 3)' },
+              { spec: { kind: 'num', delim: '>' }, ex: '1> 2> 3>' },
+              { spec: { kind: 'sym', ch: '●' }, ex: '●' },
+              { spec: { kind: 'sym', ch: '▶' }, ex: '▶' },
+              { spec: { kind: 'sym', ch: '■' }, ex: '■' },
+              { spec: { kind: 'sym', ch: '○' }, ex: '○' },
+            ] as const).map((o, i) => (
+              <button key={i} type="button" onClick={() => { applyBullet(o.spec); setOpenMenu(null) }}
+                className="block w-full px-3 py-1.5 text-left font-mono text-gray-700 hover:bg-gray-50">{o.ex}</button>
+            ))}
           </div>
         )}
       </div>
