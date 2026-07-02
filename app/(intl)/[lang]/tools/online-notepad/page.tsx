@@ -871,7 +871,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                       <span className={'flex-1 truncate ' + (on ? 'text-brand-600 font-semibold' : 'text-gray-700')}>{d.name}</span>
                       {d.text.trim() && <span className="shrink-0 text-[10px] text-gray-300 tabular-nums">{d.text.trim().length}</span>}
                       <button onClick={(e) => { e.stopPropagation(); closeDoc(d.id) }} aria-label={t('np_closetab')}
-                        className="shrink-0 text-gray-300 hover:text-red-500 text-base leading-none transition-colors">×</button>
+                        className={'shrink-0 hover:text-red-500 text-base leading-none transition-colors ' + (d.text.trim() ? 'text-gray-300' : 'text-red-300')}>×</button>
                     </div>
                   )
                 })}
@@ -914,11 +914,31 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-x-3 gap-y-2 flex-wrap sm:flex-nowrap min-w-0">
             <div className="flex items-center gap-0.5">
+              {/* Save — custom dropdown (.txt for this tab / ZIP for all tabs) */}
+              <div className="relative">
+                {openMenu === 'save' && <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />}
+                <button type="button" onClick={() => setOpenMenu(openMenu === 'save' ? null : 'save')} title={t('np_save')} aria-label={t('np_save')} aria-pressed={openMenu === 'save'} className={'relative z-20 ' + iconBtn + (openMenu === 'save' ? ' bg-brand-50 text-brand-600' : '')}>
+                  <ToolIcon name="download" className="w-4 h-4" />
+                </button>
+                {openMenu === 'save' && (
+                  <div className="absolute z-30 mt-1 left-0 w-52 max-w-[calc(100vw-1.5rem)] bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-sm">
+                    <button type="button" onClick={() => { download(); setOpenMenu(null) }} disabled={!text}
+                      className="flex items-center gap-2 w-full px-3 py-1.5 text-left hover:bg-gray-50 disabled:opacity-40 text-gray-700">
+                      <ToolIcon name="download" className="w-4 h-4 text-brand-600 shrink-0" />{t('np_save_txt')}</button>
+                    <button type="button" onClick={() => { zipDownload(); setOpenMenu(null) }} disabled={docs.every((d) => !d.text)}
+                      className="flex items-center gap-2 w-full px-3 py-1.5 text-left hover:bg-gray-50 disabled:opacity-40 text-gray-700">
+                      <ToolIcon name="archive" className="w-4 h-4 text-gray-500 shrink-0" />{t('np_save_zip')}</button>
+                  </div>
+                )}
+              </div>
               <button onClick={undo} disabled={!canUndo} title={t('np_undo')} aria-label={t('np_undo')} className={iconBtn}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 14 4 9l5-5" /><path d="M4 9h11a5 5 0 0 1 0 10h-1" /></svg>
               </button>
               <button onClick={redo} disabled={!canRedo} title={t('np_redo')} aria-label={t('np_redo')} className={iconBtn}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M15 14l5-5-5-5" /><path d="M20 9H9a5 5 0 0 0 0 10h1" /></svg>
+              </button>
+              <button onClick={copy} disabled={!text} title={t('ui_copy')} aria-label={t('ui_copy')} className={iconBtn}>
+                <ToolIcon name={copied ? 'check' : 'copy'} className="w-4 h-4" />
               </button>
               <button onClick={() => { setShowFind((s) => !s); setShowChars(false); setShowSettings(false) }} title={t('np_findreplace')} aria-label={t('np_findreplace')} aria-pressed={showFind} className={iconBtn + (showFind ? ' bg-brand-50 text-brand-600' : '')}>
                 <ToolIcon name="search" className="w-4 h-4" />
@@ -1032,9 +1052,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           />
         )}
 
-        {/* Bottom tabs hanging off the editor: edit/preview (left) + txt/zip/copy (right). When the
-            editor is focused, the whole box shows a brand ring — carry that onto the tabs too so
-            they don't look like they cut into the ring (group-focus-within). */}
+        {/* Bottom tabs hanging off the editor: edit/preview. (Save/copy moved to the top toolbar.)
+            When the editor is focused, the whole box shows a brand ring — carry that onto the tabs
+            too so they don't look like they cut into the ring (group-focus-within). */}
         <div className="flex gap-1 px-3 -mt-px">
           {([[false, t('np_edit')], [true, t('np_preview')]] as const).map(([val, label]) => {
             const on = preview === val
@@ -1046,18 +1066,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               </button>
             )
           })}
-          {/* txt / zip / copy as tabs on the right. Icons show on desktop (room); mobile stays text-only. */}
-          <div className="flex gap-1 ml-auto">
-            <button onClick={download} disabled={!text} aria-label={t('np_download')}
-              className="shrink-0 whitespace-nowrap inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-b-lg border border-t-0 border-brand-200 bg-brand-50 text-brand-700 hover:bg-brand-100 disabled:opacity-40 transition-colors group-focus-within:border-brand-400">
-              <ToolIcon name="download" className="hidden sm:inline-block w-3.5 h-3.5" />.txt</button>
-            <button onClick={zipDownload} disabled={docs.every((d) => !d.text)} aria-label={t('np_zip')}
-              className="shrink-0 whitespace-nowrap inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-b-lg border border-t-0 border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition-colors group-focus-within:border-brand-400">
-              <ToolIcon name="archive" className="hidden sm:inline-block w-3.5 h-3.5" />ZIP</button>
-            <button onClick={copy} disabled={!text} aria-label={t('ui_copy')}
-              className="shrink-0 whitespace-nowrap inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-b-lg border border-t-0 border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition-colors group-focus-within:border-brand-400">
-              <ToolIcon name={copied ? 'check' : 'copy'} className="hidden sm:inline-block w-3.5 h-3.5" />{t('ui_copy')}</button>
-          </div>
         </div>
         </div>
 
