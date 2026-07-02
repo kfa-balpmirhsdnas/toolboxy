@@ -34,6 +34,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [capFmt, setCapFmt] = useState<'png' | 'jpg'>('png')
   const [captured, setCaptured] = useState(false)
   const [pipSupported, setPipSupported] = useState(false)
+  const [isTouch, setIsTouch] = useState(false)
   const [pipErr, setPipErr] = useState('') // surfaced so mobile failures are diagnosable
   const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -43,12 +44,15 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // the standard API (Chromium/desktop Safari) AND the iOS Safari webkit presentation mode.
   // Keep the video WITHOUT disablePictureInPicture so the native item stays too.
   useEffect(() => {
-    // Detect by METHOD existence, not just document.pictureInPictureEnabled — the latter is
-    // false on Android Chrome even where requestPictureInPicture works, which hid the button.
+    // Show the button ONLY where element-PiP actually works: document.pictureInPictureEnabled is
+    // true on desktop Chromium/Safari but FALSE on Android Chrome (where requestPictureInPicture
+    // exists yet throws NotSupportedError). iOS Safari uses the webkit presentation-mode API.
     const proto = typeof HTMLVideoElement !== 'undefined' ? HTMLVideoElement.prototype : null
     const std = typeof document !== 'undefined' && !!document.pictureInPictureEnabled
-    const el = !!proto && ('requestPictureInPicture' in proto || 'webkitSupportsPresentationMode' in proto)
-    setPipSupported(std || el)
+    const webkit = !!proto && 'webkitSupportsPresentationMode' in proto
+    setPipSupported(std || webkit)
+    // Touch devices with no in-page PiP (Android) get an auto-PiP hint instead of a dead button.
+    setIsTouch(typeof navigator !== 'undefined' && (navigator.maxTouchPoints > 0 || (typeof window !== 'undefined' && !!window.matchMedia?.('(pointer: coarse)').matches)))
   }, [])
   async function togglePip() {
     const v = videoRef.current as (HTMLVideoElement & {
@@ -173,6 +177,13 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
 
             {/* PiP diagnostic — shows the real failure reason (e.g. Android Chrome's NotSupportedError). */}
             {pipErr && <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 break-all">PiP: {pipErr}</p>}
+
+            {/* Touch devices without in-page PiP (Android Chrome) — tell them how to get auto-PiP. */}
+            {!pipSupported && isTouch && (
+              <p className="flex items-start gap-1.5 text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                <span>📱</span><span>{t('vp_pip_mobile_hint')}</span>
+              </p>
+            )}
 
             {/* Frame capture */}
             <div className="rounded-2xl border border-gray-200 p-4 space-y-3">
