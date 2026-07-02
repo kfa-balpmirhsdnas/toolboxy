@@ -159,6 +159,35 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
           )}
         </div>
 
+        {/* Zip name + compression method — only once files are loaded (PC: one row). */}
+        {files.length > 0 && (
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="sm:flex-1">
+              <label className="block text-xs text-gray-500 mb-1">{t('zf_name')}</label>
+              <div className="flex items-center gap-1">
+                <input value={zipName} onChange={(e) => setZipName(e.target.value)} placeholder="archive" type="text"
+                  className="flex-1 min-w-0 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                <span className="text-sm text-gray-400">.zip</span>
+              </div>
+            </div>
+            <div className="sm:flex-1">
+              <label className="block text-xs text-gray-500 mb-1">{t('zf_method')}</label>
+              <select value={level} onChange={(e) => setLevel(Number(e.target.value))}
+                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                <option value={6}>{t('zf_method_normal')}</option>
+                <option value={9}>{t('zf_method_max')}</option>
+                <option value={0}>{t('zf_method_min')}</option>
+              </select>
+            </div>
+          </div>
+        )}
+
+        {/* Make button — always visible (disabled until files load); icon sits left of the label. */}
+        <button onClick={make} disabled={busy || !files.length} className="inline-flex items-center justify-center gap-2 w-full py-3 bg-brand-600 text-white text-base font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 transition-colors">
+          <ToolIcon name="archive" className="w-5 h-5" />
+          {busy ? t('zf_making') : files.length ? t('zf_make_n', { n: files.length }) : t('zf_make')}
+        </button>
+
         <div onClick={() => inputRef.current?.click()} onDrop={onDrop} onDragOver={(e) => e.preventDefault()}
           className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50">
           <input ref={inputRef} type="file" multiple className="hidden" onClick={(e) => e.stopPropagation()} onChange={(e) => { add(e.target.files); e.target.value = '' }} />
@@ -170,37 +199,6 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
             <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">{t('ui_pick_folder')}</button>
           </div>
         </div>
-
-        {files.length > 0 && (
-          <>
-            {/* PC: zip name + compression method share one row. */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="sm:flex-1">
-                <label className="block text-xs text-gray-500 mb-1">{t('zf_name')}</label>
-                <div className="flex items-center gap-1">
-                  <input value={zipName} onChange={(e) => setZipName(e.target.value)} placeholder="archive" type="text"
-                    className="flex-1 min-w-0 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-                  <span className="text-sm text-gray-400">.zip</span>
-                </div>
-              </div>
-              <div className="sm:flex-1">
-                <label className="block text-xs text-gray-500 mb-1">{t('zf_method')}</label>
-                <select value={level} onChange={(e) => setLevel(Number(e.target.value))}
-                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
-                  <option value={6}>{t('zf_method_normal')}</option>
-                  <option value={9}>{t('zf_method_max')}</option>
-                  <option value={0}>{t('zf_method_min')}</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Make button — full width, icon pinned left, count-prefixed label centered. */}
-            <button onClick={make} disabled={busy} className="relative w-full py-3 bg-brand-600 text-white text-base font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 transition-colors">
-              <ToolIcon name="archive" className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" />
-              {busy ? t('zf_making') : t('zf_make_n', { n: files.length })}
-            </button>
-          </>
-        )}
 
         {out && (
           <div className="rounded-xl border-2 border-green-200 bg-green-50 p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
