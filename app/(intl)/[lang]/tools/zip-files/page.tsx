@@ -194,8 +194,11 @@ export default function ZipFilesPage({ params }: { params: { lang: string } }) {
               </div>
             </div>
 
-            {/* Make button — full width, prefixed with the file count. */}
-            <button onClick={make} disabled={busy} className="w-full py-3 bg-brand-600 text-white text-base font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 transition-colors">{busy ? t('zf_making') : t('zf_make_n', { n: files.length })}</button>
+            {/* Make button — full width, icon pinned left, count-prefixed label centered. */}
+            <button onClick={make} disabled={busy} className="relative w-full py-3 bg-brand-600 text-white text-base font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50 transition-colors">
+              <ToolIcon name="archive" className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" />
+              {busy ? t('zf_making') : t('zf_make_n', { n: files.length })}
+            </button>
           </>
         )}
 
