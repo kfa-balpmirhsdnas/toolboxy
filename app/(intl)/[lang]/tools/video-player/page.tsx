@@ -195,19 +195,25 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           </>
         )}
 
-        {/* Play history — videos opened this session; click to replay. */}
+        {/* Play history — videos opened this session; click to replay. Uses the standard list style. */}
         {history.length > 0 && (
           <div className="space-y-2">
             <p className="text-sm font-semibold text-gray-700">{t('vp_history')}</p>
-            <div className="rounded-xl border border-gray-200 divide-y divide-gray-100 max-h-60 overflow-auto">
-              {history.map((h, i) => (
-                <button key={i} onClick={() => load(h.file)}
-                  className={'flex items-center gap-2 w-full px-3 py-2 text-left text-sm transition-colors ' + (h.file === curFile ? 'bg-brand-50' : 'hover:bg-gray-50')}>
-                  <svg viewBox="0 0 24 24" fill="currentColor" className={'w-4 h-4 shrink-0 ' + (h.file === curFile ? 'text-brand-600' : 'text-gray-300')}><path d="M8 5v14l11-7z" /></svg>
-                  <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{h.name}</span>
-                  <span className="shrink-0 text-xs text-gray-400 tabular-nums">{fmtSize(h.size)}</span>
-                </button>
-              ))}
+            <div className="rounded-xl border border-gray-100 overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100">
+                <span className="flex-1 min-w-0">{t('vp_col_name')}</span>
+                <span className="shrink-0 w-16 text-right">{t('vp_col_size')}</span>
+              </div>
+              <div className="divide-y divide-gray-100 max-h-72 overflow-auto">
+                {history.map((h, i) => (
+                  <button key={i} onClick={() => load(h.file)}
+                    className={'flex items-center gap-2 w-full px-4 py-2 text-left text-sm transition-colors ' + (h.file === curFile ? 'bg-brand-50' : 'hover:bg-gray-50')}>
+                    <svg viewBox="0 0 24 24" fill="currentColor" className={'w-4 h-4 shrink-0 ' + (h.file === curFile ? 'text-brand-600' : 'text-gray-300')}><path d="M8 5v14l11-7z" /></svg>
+                    <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{h.name}</span>
+                    <span className="shrink-0 w-16 text-right text-gray-400 tabular-nums">{fmtSize(h.size)}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}

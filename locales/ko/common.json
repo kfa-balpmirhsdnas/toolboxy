@@ -4207,6 +4207,8 @@
   "toolui": {
     "vp_related": "관련 도구:",
     "vp_history": "재생 기록",
+    "vp_col_name": "파일명",
+    "vp_col_size": "크기",
     "vp_privacy_title": "동영상은 서버에 올라가지 않습니다.",
     "vp_privacy": "재생·캡처·반복 모두 브라우저 안에서 처리됩니다.",
     "vp_clear": "해제",

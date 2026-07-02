@@ -3790,6 +3790,8 @@
   "toolui": {
     "vp_related": "Related:",
     "vp_history": "Play history",
+    "vp_col_name": "Name",
+    "vp_col_size": "Size",
     "vp_privacy_title": "Your video never leaves your device.",
     "vp_privacy": "Playback, capture and looping all happen in your browser.",
     "vp_clear": "Clear",

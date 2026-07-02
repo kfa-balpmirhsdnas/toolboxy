@@ -4180,6 +4180,8 @@
   "toolui": {
     "vp_related": "関連ツール：",
     "vp_history": "再生履歴",
+    "vp_col_name": "ファイル名",
+    "vp_col_size": "サイズ",
     "vp_privacy_title": "動画はサーバーにアップロードされません。",
     "vp_privacy": "再生・保存・リピートはすべてブラウザ内で処理されます。",
     "vp_clear": "解除",
