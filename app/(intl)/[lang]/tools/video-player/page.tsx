@@ -18,6 +18,7 @@ const fmt = (s: number) => {
 }
 // Filename-safe timestamp, e.g. 1m03s4.
 const fmtFile = (s: number) => `${Math.floor(s / 60)}m${String(Math.floor(s % 60)).padStart(2, '0')}s${Math.floor((s * 10) % 10)}`
+const fmtSize = (b: number) => (b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(1) + ' MB')
 
 export default function VideoPlayerPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
@@ -33,6 +34,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [repeat, setRepeat] = useState(false)
   const [capFmt, setCapFmt] = useState<'png' | 'jpg'>('png')
   const [captured, setCaptured] = useState(false)
+  const [optTab, setOptTab] = useState<'frame' | 'ab' | 'speed'>('frame') // combined options tabs
+  const [history, setHistory] = useState<{ name: string; size: number; file: File }[]>([]) // played videos (session)
+  const [curFile, setCurFile] = useState<File | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -41,6 +45,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || 'frame')
     setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0)
+    setCurFile(f)
+    // Keep a session history of played videos (newest first, de-duped, capped).
+    setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 12))
     trackToolUsed('video-player')
   }, [])
 
@@ -126,64 +133,83 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               }}
               onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
 
-            {/* Frame capture */}
-            <div className="rounded-2xl border border-gray-200 p-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <ToolIcon name="camera" className="w-4 h-4 text-brand-600" />
-                <p className="text-sm font-semibold text-gray-700">{t('vp_frame')}</p>
-                <span className="ml-auto text-xs text-gray-400 tabular-nums font-mono">{fmt(cur)} / {fmt(dur)}</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
-                  {(['png', 'jpg'] as const).map((f) => (
-                    <button key={f} onClick={() => setCapFmt(f)}
-                      className={'px-3 py-1 rounded-md font-semibold uppercase transition-colors ' + (capFmt === f ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>{f}</button>
-                  ))}
-                </div>
-                <button onClick={capture} className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">
-                  <ToolIcon name={captured ? 'check' : 'save'} className="w-4 h-4" />{captured ? t('vp_captured') : t('vp_capture')}
+            {/* Options — frame capture / A–B repeat / speed combined into tabs. */}
+            <div className="rounded-2xl border border-gray-200 overflow-hidden">
+              <div className="flex items-center gap-1 border-b border-gray-200 bg-gray-50 px-2">
+                {([['frame', t('vp_frame')], ['ab', t('vp_ab')], ['speed', t('vp_speed')]] as const).map(([id, label]) => (
+                  <button key={id} onClick={() => setOptTab(id)}
+                    className={'px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (optTab === id ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>
+                    {label}
+                  </button>
+                ))}
+                <button onClick={() => { setUrl(''); setA(null); setB(null); setRepeat(false); setCurFile(null) }} title={t('ui_clear')} aria-label={t('ui_clear')}
+                  className="ml-auto inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 hover:text-gray-700">
+                  <ToolIcon name="refresh" className="w-4 h-4" />{t('ui_clear')}
                 </button>
               </div>
-            </div>
-
-            {/* A–B repeat */}
-            <div className="rounded-2xl border border-gray-200 p-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <ToolIcon name="refresh" className="w-4 h-4 text-brand-600" />
-                <p className="text-sm font-semibold text-gray-700">{t('vp_ab')}</p>
-                <span className="ml-auto text-xs text-gray-400">{t('vp_ab_hint')}</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <button onClick={() => setA(cur)} className={chipBtn + ' bg-gray-100 text-gray-700 hover:bg-gray-200'}>{t('vp_set_a')}</button>
-                <button onClick={() => (a != null && seek(a))} disabled={a == null}
-                  className="px-2.5 py-1.5 rounded-lg text-sm font-mono tabular-nums bg-brand-50 text-brand-700 border border-brand-200 disabled:opacity-40 hover:bg-brand-100">A {a != null ? fmt(a) : '—'}</button>
-                <button onClick={() => setB(cur)} className={chipBtn + ' bg-gray-100 text-gray-700 hover:bg-gray-200'}>{t('vp_set_b')}</button>
-                <button onClick={() => (b != null && seek(b))} disabled={b == null}
-                  className="px-2.5 py-1.5 rounded-lg text-sm font-mono tabular-nums bg-brand-50 text-brand-700 border border-brand-200 disabled:opacity-40 hover:bg-brand-100">B {b != null ? fmt(b) : '—'}</button>
-                <button onClick={() => setRepeat((r) => !r)} disabled={a == null || b == null || b <= a}
-                  className={chipBtn + ' inline-flex items-center gap-1.5 disabled:opacity-40 ' + (repeat ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
-                  <ToolIcon name="refresh" className="w-3.5 h-3.5" />{t('vp_repeat')}
-                </button>
-                {(a != null || b != null) && (
-                  <button onClick={() => { setA(null); setB(null); setRepeat(false) }} className="px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 transition-colors">{t('vp_clear')}</button>
+              <div className="p-4">
+                {optTab === 'frame' && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
+                      {(['png', 'jpg'] as const).map((f) => (
+                        <button key={f} onClick={() => setCapFmt(f)}
+                          className={'px-3 py-1 rounded-md font-semibold uppercase transition-colors ' + (capFmt === f ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>{f}</button>
+                      ))}
+                    </div>
+                    <button onClick={capture} className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">
+                      <ToolIcon name={captured ? 'check' : 'save'} className="w-4 h-4" />{captured ? t('vp_captured') : t('vp_capture')}
+                    </button>
+                    <span className="ml-auto text-xs text-gray-400 tabular-nums font-mono">{fmt(cur)} / {fmt(dur)}</span>
+                  </div>
+                )}
+                {optTab === 'ab' && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-gray-400">{t('vp_ab_hint')}</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button onClick={() => setA(cur)} className={chipBtn + ' bg-gray-100 text-gray-700 hover:bg-gray-200'}>{t('vp_set_a')}</button>
+                      <button onClick={() => (a != null && seek(a))} disabled={a == null}
+                        className="px-2.5 py-1.5 rounded-lg text-sm font-mono tabular-nums bg-brand-50 text-brand-700 border border-brand-200 disabled:opacity-40 hover:bg-brand-100">A {a != null ? fmt(a) : '—'}</button>
+                      <button onClick={() => setB(cur)} className={chipBtn + ' bg-gray-100 text-gray-700 hover:bg-gray-200'}>{t('vp_set_b')}</button>
+                      <button onClick={() => (b != null && seek(b))} disabled={b == null}
+                        className="px-2.5 py-1.5 rounded-lg text-sm font-mono tabular-nums bg-brand-50 text-brand-700 border border-brand-200 disabled:opacity-40 hover:bg-brand-100">B {b != null ? fmt(b) : '—'}</button>
+                      <button onClick={() => setRepeat((r) => !r)} disabled={a == null || b == null || b <= a}
+                        className={chipBtn + ' inline-flex items-center gap-1.5 disabled:opacity-40 ' + (repeat ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
+                        <ToolIcon name="refresh" className="w-3.5 h-3.5" />{t('vp_repeat')}
+                      </button>
+                      {(a != null || b != null) && (
+                        <button onClick={() => { setA(null); setB(null); setRepeat(false) }} className="px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 transition-colors">{t('vp_clear')}</button>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {optTab === 'speed' && (
+                  <div className="flex flex-wrap gap-1">
+                    {SPEEDS.map((s) => (
+                      <button key={s} onClick={() => setSpeed(s)}
+                        className={'px-3 py-1.5 rounded-lg text-sm font-medium tabular-nums transition-colors ' + (speed === s ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>{s}×</button>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
-
-            {/* Playback speed + reset */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-gray-600">{t('vp_speed')}</span>
-              <div className="flex flex-wrap gap-1">
-                {SPEEDS.map((s) => (
-                  <button key={s} onClick={() => setSpeed(s)}
-                    className={'px-2.5 py-1 rounded-lg text-xs font-medium tabular-nums transition-colors ' + (speed === s ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>{s}×</button>
-                ))}
-              </div>
-              <button onClick={() => { setUrl(''); setA(null); setB(null); setRepeat(false) }} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <ToolIcon name="refresh" className="w-4 h-4" />{t('ui_clear')}
-              </button>
-            </div>
           </>
+        )}
+
+        {/* Play history — videos opened this session; click to replay. */}
+        {history.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-gray-700">{t('vp_history')}</p>
+            <div className="rounded-xl border border-gray-200 divide-y divide-gray-100 max-h-60 overflow-auto">
+              {history.map((h, i) => (
+                <button key={i} onClick={() => load(h.file)}
+                  className={'flex items-center gap-2 w-full px-3 py-2 text-left text-sm transition-colors ' + (h.file === curFile ? 'bg-brand-50' : 'hover:bg-gray-50')}>
+                  <svg viewBox="0 0 24 24" fill="currentColor" className={'w-4 h-4 shrink-0 ' + (h.file === curFile ? 'text-brand-600' : 'text-gray-300')}><path d="M8 5v14l11-7z" /></svg>
+                  <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{h.name}</span>
+                  <span className="shrink-0 text-xs text-gray-400 tabular-nums">{fmtSize(h.size)}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Privacy banner — video never leaves the browser */}
