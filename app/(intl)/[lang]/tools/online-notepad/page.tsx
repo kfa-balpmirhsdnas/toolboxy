@@ -1048,7 +1048,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             placeholder={t('np_placeholder')}
             spellCheck={false}
             style={{ fontFamily: FAM_CSS(fam) }}
-            className={`block w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
+            className={`block w-full h-[56vh] min-h-72 p-4 border border-gray-200 rounded-xl text-gray-800 bg-amber-50 resize-y focus:outline-none focus:ring-2 focus:ring-brand-400 ${SIZE_CLS[size]} ${LH_CLS[lh]}`}
           />
         )}
 
