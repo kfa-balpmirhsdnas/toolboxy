@@ -864,7 +864,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                     <div key={d.id} onClick={() => { setActiveId(d.id); setOpenMenu(null) }}
                       className={'group flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-gray-50 ' + (on ? 'bg-brand-50' : '')}>
                       <span className={'flex-1 truncate ' + (on ? 'text-brand-600 font-semibold' : 'text-gray-700')}>{d.name}</span>
-                      {d.text.trim() && <span className="shrink-0 text-[10px] text-gray-300 tabular-nums">{d.text.trim().length}</span>}
+                      <span className="shrink-0 text-[10px] text-gray-300 tabular-nums">{d.text.trim() ? d.text.trim().length + ' · ' : ''}{fmtDate(d.createdAt)}</span>
                       <button onClick={(e) => { e.stopPropagation(); closeDoc(d.id) }} aria-label={t('np_closetab')}
                         className={'shrink-0 hover:text-red-500 text-base leading-none transition-colors ' + (d.text.trim() ? 'text-gray-300' : 'text-red-300')}>×</button>
                     </div>
@@ -1062,8 +1062,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               </button>
             )
           })}
-          {/* char/line counts + creation date — right-aligned in the same row as the tabs */}
-          <span className="ml-auto flex items-center gap-x-3 gap-y-0.5 flex-wrap justify-end text-xs text-gray-400 tabular-nums pr-1">
+          {/* char/line counts — right-aligned (creation date moved to the tab-list dropdown) */}
+          <span className="ml-auto flex items-center gap-x-3 gap-y-0.5 flex-wrap justify-end text-xs text-gray-400 tabular-nums">
             <span className="inline-flex items-center gap-1" title={t('np_chars_label')}>
               <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7" /><line x1="9" x2="15" y1="20" y2="20" /><line x1="12" x2="12" y1="4" y2="20" /></svg>
               {chars.toLocaleString()}
@@ -1072,11 +1072,12 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" x2="3" y1="6" y2="6" /><line x1="15" x2="3" y1="12" y2="12" /><line x1="17" x2="3" y1="18" y2="18" /></svg>
               {lines.toLocaleString()}
             </span>
-            <span className="inline-flex items-center gap-1" title={t('np_created')}>
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></svg>
-              {fmtDate(active.createdAt)}
-            </span>
           </span>
+          {/* Copy tab — copies the whole current note (where the creation date used to sit) */}
+          <button onClick={copy} disabled={!text} aria-label={t('ui_copy')} title={t('ui_copy')}
+            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-b-lg border border-t-0 border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition-colors group-focus-within:border-brand-400">
+            <ToolIcon name={copied ? 'check' : 'copy'} className="w-3.5 h-3.5" />{t('ui_copy')}
+          </button>
         </div>
         </div>
 
