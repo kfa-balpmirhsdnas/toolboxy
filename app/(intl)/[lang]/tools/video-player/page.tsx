@@ -76,9 +76,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [audioMode, setAudioMode] = useState(false)  // "listen only" — hide the frame behind the poster; audio keeps playing (screen off) via MediaSession
   const videoRef = useRef<HTMLVideoElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)   // video picker (single category → no Android app chooser)
-  const audioRef = useRef<HTMLInputElement>(null)   // audio picker (single category → no Android app chooser)
-  const dirRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)   // video picker (opens gallery straight — no capture chooser)
+  const dirRef = useRef<HTMLInputElement>(null)     // folder picker (dir picker; also reaches audio files)
 
   // Whole-video loop mirrors the <video>.loop flag.
   useEffect(() => { if (videoRef.current) videoRef.current.loop = loopAll }, [loopAll, url])
@@ -316,13 +315,13 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // when inline (always visible), and as a bottom overlay in fullscreen (where there is no "below").
   const bottomBar = (
     <>
-      {/* Open file — left: separate video / audio pickers (single category → no Android app chooser) */}
+      {/* Open — left: video picker (straight to gallery) + folder picker (dir picker; also lists audio, no capture chooser) */}
       <div className="flex items-end gap-1">
         <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('vp_pick_video')} title={t('vp_pick_video')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
           <ToolIcon name="camera" className="w-4 h-4" /><span className="hidden sm:inline">{t('vp_pick_video')}</span>
         </button>
-        <button onClick={(e) => { e.stopPropagation(); audioRef.current?.click() }} aria-label={t('vp_pick_audio')} title={t('vp_pick_audio')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg><span className="hidden sm:inline">{t('vp_pick_audio')}</span>
+        <button onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} aria-label={t('ui_pick_folder')} title={t('ui_pick_folder')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+          <ToolIcon name="folder" className="w-4 h-4" /><span className="hidden sm:inline">{t('ui_pick_folder')}</span>
         </button>
       </div>
       {/* Controls — right */}
@@ -373,28 +372,22 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   return (
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4">
-        {/* Always-mounted file input so the in-player "open file" button works too (the drop zone unmounts once a video loads). */}
-        {/* Separate single-category pickers (video/* and audio/*) so Android opens the file picker directly
-            instead of the camera/recorder "작업 선택" chooser that a mixed video+audio accept triggers. */}
+        {/* Always-mounted inputs so the in-player buttons work too (the drop zone unmounts once a video loads).
+            Video (video/*) opens the gallery straight; the folder picker is a directory picker — neither
+            triggers Android's camera/recorder capture chooser. Audio files are opened via the folder. */}
         <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
-        {/* Audio: any audio-typed accept makes Android show its Sound Recorder (capture). A generic accept
-            opens the file browser directly with no recorder/camera; isMedia rejects non-media on load. */}
-        <input ref={audioRef} type="file" accept="*/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <input ref={dirRef} type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onChange={(e) => { addFolder(e.target.files); e.target.value = '' }} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            <input ref={dirRef} type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onClick={(e) => e.stopPropagation()} onChange={(e) => { addFolder(e.target.files); e.target.value = '' }} />
             <p className="text-5xl mb-3">🎞️</p>
             <p className="text-base font-medium text-gray-700">{t('vp_drop')}</p>
             <p className="text-xs text-gray-400 mt-1">{t('vp_drop_sub')}</p>
             <div className="flex flex-wrap justify-center gap-2 mt-4">
               <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">
                 <ToolIcon name="camera" className="w-4 h-4" />{t('vp_pick_video')}
-              </button>
-              <button type="button" onClick={(e) => { e.stopPropagation(); audioRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>{t('vp_pick_audio')}
               </button>
               <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">
                 <ToolIcon name="folder" className="w-4 h-4" />{t('ui_pick_folder')}
