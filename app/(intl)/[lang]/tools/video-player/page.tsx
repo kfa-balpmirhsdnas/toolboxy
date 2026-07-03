@@ -76,6 +76,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [showVol, setShowVol] = useState(false)
   const [volume, setVolume] = useState(1)
   const [audioOnly, setAudioOnly] = useState(false) // no video track — show a music poster so the box isn't 0-height
+  const [audioMode, setAudioMode] = useState(false)  // "listen only" — hide the frame behind the poster; audio keeps playing (screen off) via MediaSession
   // Android → explicit extensions (skips the camera/recorder chooser); iOS/desktop → wildcards (keeps the
   // Photos-library / native media picker). Starts as extensions (safe everywhere) and relaxes after mount.
   const [acceptAttr, setAcceptAttr] = useState(MEDIA_ACCEPT_EXT)
@@ -237,6 +238,28 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // Keep the <video> playbackRate in sync with the chosen speed.
   useEffect(() => { if (videoRef.current) videoRef.current.playbackRate = speed }, [speed, url])
 
+  // MediaSession — lock-screen controls + background audio (keeps playing with the screen off on Android).
+  useEffect(() => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const nav = typeof navigator !== 'undefined' ? (navigator as any) : null
+    const ms = nav?.mediaSession
+    if (!ms) return
+    if (!url) { try { ms.metadata = null } catch { /* ignore */ } return }
+    try {
+      const MM = (window as any).MediaMetadata
+      if (MM) ms.metadata = new MM({ title: base, artist: 'ToolBoxy', artwork: [{ src: '/icons/video-player.png', sizes: '512x512', type: 'image/png' }] })
+    } catch { /* ignore */ }
+    const v = () => videoRef.current
+    const set = (action: string, handler: any) => { try { ms.setActionHandler(action, handler) } catch { /* unsupported action */ } }
+    set('play', () => v()?.play().catch(() => {}))
+    set('pause', () => v()?.pause())
+    set('seekbackward', (d: any) => { const el = v(); if (el) el.currentTime = Math.max(0, el.currentTime - (d?.seekOffset || 10)) })
+    set('seekforward', (d: any) => { const el = v(); if (el) el.currentTime = Math.min(el.duration || 0, el.currentTime + (d?.seekOffset || 10)) })
+    set('seekto', (d: any) => { const el = v(); if (el && d?.seekTime != null) el.currentTime = d.seekTime })
+    return () => { ['play', 'pause', 'seekbackward', 'seekforward', 'seekto'].forEach((a) => set(a, null)) }
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+  }, [url, base])
+
   // Accept a video dropped anywhere on the page.
   useEffect(() => {
     const over = (e: DragEvent) => { if (e.dataTransfer?.types?.includes('Files')) e.preventDefault() }
@@ -320,7 +343,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             <div ref={wrapperRef} onClick={toggleOverlay} className={'scroll-mt-16 ' + (fs ? 'fixed inset-0 z-50 flex items-center justify-center bg-black' : '')}>
               {/* Inner box sizes to the video so the overlays hug the VIDEO (not the fullscreen screen);
                   in fullscreen the outer flex centers this box vertically. */}
-              <div className={'relative overflow-hidden bg-black w-full ' + (audioOnly ? 'min-h-[220px] ' : '') + (fs ? '' : 'rounded-xl')}>
+              <div className={'relative overflow-hidden bg-black w-full ' + (audioOnly || audioMode ? 'min-h-[220px] ' : '') + (fs ? '' : 'rounded-xl')}>
               {/* Native controls hidden — the top tabs + center cluster + bottom bar below are our own. */}
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video ref={videoRef} src={url} playsInline
@@ -334,12 +357,18 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   v.muted = false
                   v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
                 }}
-                onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
+                onPlay={() => { setPlaying(true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'playing' } catch { /* ignore */ } }}
+                onPause={() => { setPlaying(false); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
                 onVolumeChange={(e) => { setMuted(e.currentTarget.muted); setVolume(e.currentTarget.volume) }}
-                onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
-              {/* Audio-only poster — the <video> box collapses with no video track, so fill it with a music mark + filename. */}
-              {audioOnly && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/80 pointer-events-none">
+                onTimeUpdate={(e) => {
+                  const v = e.currentTarget; setCur(v.currentTime)
+                  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+                  const ms = (navigator as any).mediaSession
+                  if (ms?.setPositionState && v.duration && isFinite(v.duration)) { try { ms.setPositionState({ duration: v.duration, position: Math.min(v.currentTime, v.duration), playbackRate: v.playbackRate || 1 }) } catch { /* ignore */ } }
+                }} />
+              {/* Music poster — for audio-only files, and for "audio mode" where we hide the video frame but keep audio playing. */}
+              {(audioOnly || audioMode) && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black text-white/80 pointer-events-none">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-14 h-14 opacity-90"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
                   <span className="max-w-[80%] truncate text-sm font-medium">{base}</span>
                 </div>
@@ -506,6 +535,11 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                       {fs
                         ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" /><path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" /></svg>
                         : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /></svg>}
+                    </button>
+                    {/* Audio (listen-only) mode — hides the frame, keeps audio playing with the screen off (MediaSession) */}
+                    <button onClick={() => { setAudioMode((m) => !m); showOverlay() }} aria-label={t('vp_audio_mode')} title={t('vp_audio_mode')}
+                      className={ovBtnB + (audioMode ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a1 1 0 0 1-1-1v-8a9 9 0 0 1 18 0v8a1 1 0 0 1-1 1h-2a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" /></svg>
                     </button>
                     {/* Background play (PiP) — far right */}
                     <button onClick={() => { togglePip(); showOverlay() }} aria-label={t('vp_bg')} title={t('vp_bg')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
