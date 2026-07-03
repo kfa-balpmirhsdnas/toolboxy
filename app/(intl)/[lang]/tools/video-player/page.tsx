@@ -227,12 +227,15 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           </div>
         ) : (
           <>
-            <div ref={wrapperRef} onClick={showOverlay} className="relative overflow-hidden rounded-xl bg-black">
+            <div ref={wrapperRef} onClick={showOverlay} className={fs ? 'fixed inset-0 z-50 flex items-center justify-center bg-black' : ''}>
+              {/* Inner box sizes to the video so the overlays hug the VIDEO (not the fullscreen screen);
+                  in fullscreen the outer flex centers this box vertically. */}
+              <div className={'relative overflow-hidden bg-black w-full ' + (fs ? '' : 'rounded-xl')}>
               {/* Native controls hidden — the top tabs + center cluster + bottom bar below are our own. */}
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video ref={videoRef} src={url} playsInline
                 style={{ transform: rot ? `rotate(${rot}deg)` : undefined }}
-                className="block w-full max-h-[60vh] transition-transform"
+                className={'block w-full transition-transform ' + (fs ? 'max-h-screen' : 'max-h-[60vh]')}
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget
                   setDur(v.duration); v.playbackRate = speed; v.loop = loopAll; showOverlay()
@@ -396,6 +399,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   </div>
                 </div>
               )}
+              </div>
             </div>
 
             {/* Options — frame capture / A–B repeat / speed combined into tabs. */}
