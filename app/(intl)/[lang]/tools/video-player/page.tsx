@@ -80,6 +80,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const dirRef = useRef<HTMLInputElement>(null)     // folder picker (dir picker; also reaches audio files)
   const audioElRef = useRef<HTMLAudioElement>(null) // background player used in audio mode / for audio-only files
   const pipPlayingRef = useRef(true)                // play state sampled while in PiP, to restore it on exit
+  const switchPosRef = useRef(0)                    // playback position carried across audio↔video element switches
+  const pendingVideoSeekRef = useRef(0)             // seek the <video> here once it reloads (leaving audio mode)
 
   // In "audio mode" (and for audio-only files) playback runs through the <audio> element — browsers keep
   // audio elements playing when the screen turns off, whereas a <video> gets paused in the background.
@@ -188,6 +190,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || 'frame')
     setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0); setRot(0); setAudioMode(false); setAudioOnly(false)
+    switchPosRef.current = 0; pendingVideoSeekRef.current = 0
     setCurFile(f)
     // Keep a session history of played videos (newest first, de-duped, capped).
     setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 60)) // eslint-disable-line
@@ -260,21 +263,23 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   useEffect(() => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) el.playbackRate = speed }) }, [speed, url])
 
   // Transfer playback between the <video> and <audio> elements when audio mode / audio-only flips.
+  // The <video> src is dropped in audio mode (binding below) so the page holds NO video-track element —
+  // that's what lets the browser treat playback as pure audio and keep it alive with the screen off.
   useEffect(() => {
     const v = videoRef.current, aEl = audioElRef.current
-    if (!v || !aEl || !url) return
+    if (!aEl || !url) return
+    const at = switchPosRef.current
     if (useAudioEl) {
-      aEl.playbackRate = speed; aEl.volume = v.volume; aEl.muted = v.muted
-      const at = v.currentTime
+      aEl.playbackRate = speed; aEl.volume = v?.volume ?? volume; aEl.muted = v?.muted ?? muted
       try { aEl.currentTime = at } catch { /* not seekable yet */ }
-      v.pause()
+      v?.pause()
       // Entering audio mode always starts playback (even if it was paused) — otherwise "audio mode" is pointless.
       aEl.play().then(() => { try { if (Math.abs(aEl.currentTime - at) > 0.4) aEl.currentTime = at } catch { /* ignore */ } }).catch(() => {})
     } else {
-      const wasPlaying = !aEl.paused
-      try { v.currentTime = aEl.currentTime } catch { /* ignore */ }
       aEl.pause()
-      if (wasPlaying) v.play().catch(() => {})
+      // The <video> src is being restored by the binding; seek+resume once it has reloaded (onLoadedMetadata).
+      pendingVideoSeekRef.current = at
+      if (v && v.readyState > 0) { try { v.currentTime = at } catch { /* ignore */ }; v.play().catch(() => {}) }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [useAudioEl])
@@ -387,7 +392,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /></svg>}
         </button>
         {/* Audio (listen-only) mode — hides the frame, keeps audio playing with the screen off (MediaSession) */}
-        <button onClick={() => { setAudioMode((m) => !m); showOverlay() }} aria-label={t('vp_audio_mode')} title={t('vp_audio_mode')}
+        <button onClick={() => { const el = media(); if (el) switchPosRef.current = el.currentTime; setAudioMode((m) => !m); showOverlay() }} aria-label={t('vp_audio_mode')} title={t('vp_audio_mode')}
           className={ovBtnB + (audioMode ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a1 1 0 0 1-1-1v-8a9 9 0 0 1 18 0v8a1 1 0 0 1-1 1h-2a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" /></svg>
         </button>
@@ -465,12 +470,14 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 + ((audioOnly || audioMode) ? 'min-h-[50vh] sm:min-h-[260px] ' : (fs ? '' : 'min-h-[50vh] sm:min-h-0 '))}>
               {/* Native controls hidden — the top tabs + center cluster + bottom bar below are our own. */}
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <video ref={videoRef} src={url} playsInline
+              <video ref={videoRef} src={useAudioEl ? undefined : url} playsInline
                 style={{ transform: rot ? `rotate(${rot}deg)` : undefined }}
                 className={'block max-w-full object-contain transition-transform ' + (fs ? 'max-h-screen w-full' : 'w-full max-h-[50vh] sm:max-h-[60vh]')}
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget
                   setDur(v.duration); v.playbackRate = speed; v.loop = loopAll; setAudioOnly(!v.videoWidth); showOverlay()
+                  // Restore the position when the video reloads after leaving audio mode.
+                  if (pendingVideoSeekRef.current) { try { v.currentTime = pendingVideoSeekRef.current } catch { /* ignore */ } pendingVideoSeekRef.current = 0 }
                   // Auto-play as soon as the file loads (Q2): selecting the file is a user gesture, so
                   // sound is normally allowed; if a browser blocks it, fall back to muted autoplay.
                   v.muted = false
