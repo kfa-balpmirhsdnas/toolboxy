@@ -163,6 +163,14 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const setVol = (val: number) => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) { el.volume = val; el.muted = val === 0 } }); setVolume(val); setMuted(val === 0); showOverlay() }
   const toggleFs = () => { const el = wrapperRef.current; if (!el) return; if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else el.requestFullscreen?.().catch(() => {}); showOverlay() }
   useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener('fullscreenchange', h); return () => document.removeEventListener('fullscreenchange', h) }, [])
+  // Returning from PiP resumes inline playback (some browsers pause the video when the PiP window closes).
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    const onLeave = () => { if (!useAudioEl) v.play().catch(() => {}) }
+    v.addEventListener('leavepictureinpicture', onLeave)
+    return () => v.removeEventListener('leavepictureinpicture', onLeave)
+  }, [url, useAudioEl])
 
   const load = useCallback((f: File) => {
     if (!isMedia(f)) return
@@ -246,10 +254,11 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     if (!v || !aEl || !url) return
     if (useAudioEl) {
       aEl.playbackRate = speed; aEl.volume = v.volume; aEl.muted = v.muted
-      const wasPlaying = !v.paused
-      try { aEl.currentTime = v.currentTime } catch { /* not seekable yet */ }
+      const at = v.currentTime
+      try { aEl.currentTime = at } catch { /* not seekable yet */ }
       v.pause()
-      if (wasPlaying) aEl.play().then(() => { try { if (Math.abs(aEl.currentTime - v.currentTime) > 0.4) aEl.currentTime = v.currentTime } catch { /* ignore */ } }).catch(() => {})
+      // Entering audio mode always starts playback (even if it was paused) — otherwise "audio mode" is pointless.
+      aEl.play().then(() => { try { if (Math.abs(aEl.currentTime - at) > 0.4) aEl.currentTime = at } catch { /* ignore */ } }).catch(() => {})
     } else {
       const wasPlaying = !aEl.paused
       try { v.currentTime = aEl.currentTime } catch { /* ignore */ }
