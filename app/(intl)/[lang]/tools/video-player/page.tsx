@@ -300,9 +300,6 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // Bottom-bar variant of the top tab style — same look, but rounded on top so tabs hang up from the bottom edge.
   const ovBtnB = 'pointer-events-auto inline-flex items-center justify-center gap-1 h-9 px-3 rounded-t-xl text-white text-xs font-semibold backdrop-blur transition-colors'
   const subMenu = 'absolute top-full left-1/2 -translate-x-1/2 mt-0.5 min-w-[9rem] pointer-events-auto rounded-lg bg-black/85 backdrop-blur text-white text-xs py-1 shadow-lg z-20 flex flex-col overflow-hidden'
-  // Slide-out row to the LEFT of a bottom-bar button (speed choices / volume gauge), same height as the tab.
-  const subMenuLeft = 'absolute right-full top-0 mr-1 h-9 flex flex-row items-center pointer-events-auto rounded-lg bg-black/85 backdrop-blur text-white text-xs shadow-lg z-20 overflow-hidden'
-  const subCellH = 'h-full flex items-center px-2.5 hover:bg-white/15 transition-colors tabular-nums'
   const subRow = 'w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left hover:bg-white/15 transition-colors tabular-nums'
   const subCell = 'w-full flex items-center justify-center px-3 py-1.5 hover:bg-white/15 transition-colors tabular-nums'
   // History filtered by the 전체 / 보관 tab.
@@ -320,36 +317,21 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
         <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('vp_pick_video')} title={t('vp_pick_video')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
           <ToolIcon name="camera" className="w-4 h-4" /><span className="hidden sm:inline">{t('vp_pick_video')}</span>
         </button>
-        <button onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} aria-label={t('ui_pick_folder')} title={t('ui_pick_folder')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
-          <ToolIcon name="folder" className="w-4 h-4" /><span className="hidden sm:inline">{t('ui_pick_folder')}</span>
+        <button onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} aria-label={t('vp_pick_folder')} title={t('vp_pick_folder')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+          <ToolIcon name="folder" className="w-4 h-4" /><span className="hidden sm:inline">{t('vp_pick_folder')}</span>
         </button>
       </div>
       {/* Controls — right */}
       <div className="flex items-end gap-1">
-        {/* Speed — a single row that slides out to the LEFT */}
-        <div className="relative">
-          <button onClick={() => { setOpenMenu((m) => m === 'speed' ? null : 'speed'); showOverlay() }} aria-label={t('vp_speed')} title={t('vp_speed')}
-            className={ovBtnB + ' tabular-nums' + (speed !== 1 ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>{speed}×</button>
-          {openMenu === 'speed' && (
-            <div className={subMenuLeft}>
-              {SPEED_MENU.map((s) => (<button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCellH + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>))}
-            </div>
-          )}
-        </div>
-        {/* Volume — tap shows a gauge sliding out to the LEFT */}
-        <div className="relative">
-          <button onClick={() => { setShowVol((s) => !s); showOverlay() }} aria-label="volume" className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
-            {(muted || volume === 0)
-              ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
-              : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
-          </button>
-          {showVol && (
-            <div className="absolute right-full top-0 mr-1 h-9 px-3 flex items-center gap-2 rounded-lg bg-black/85 backdrop-blur pointer-events-auto z-20">
-              <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume level" className="w-24 h-1 accent-white cursor-pointer" />
-              <span className="text-[10px] tabular-nums text-white/80 w-6 text-right">{Math.round(volume * 100)}</span>
-            </div>
-          )}
-        </div>
+        {/* Speed — options appear as a horizontal row above the bar (rendered at bar level below) */}
+        <button onClick={() => { setOpenMenu((m) => m === 'speed' ? null : 'speed'); setShowVol(false); showOverlay() }} aria-label={t('vp_speed')} title={t('vp_speed')}
+          className={ovBtnB + ' tabular-nums' + (speed !== 1 ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>{speed}×</button>
+        {/* Volume — gauge appears as a horizontal slider above the bar (rendered at bar level below) */}
+        <button onClick={() => { setShowVol((s) => !s); setOpenMenu(null); showOverlay() }} aria-label="volume" className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+          {(muted || volume === 0)
+            ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
+            : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
+        </button>
         {/* Fullscreen */}
         <button onClick={toggleFs} aria-label="fullscreen" className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
           {fs
@@ -366,6 +348,22 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
         </button>
       </div>
+      {/* Speed / volume appear as a horizontal row ABOVE the bar (spans the bar width, so it stays on-screen). */}
+      {openMenu === 'speed' && (
+        <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
+          <div className="pointer-events-auto flex flex-row items-center rounded-lg bg-black/90 backdrop-blur text-white text-xs shadow-lg overflow-hidden">
+            {SPEED_MENU.map((s) => (<button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={'px-2.5 h-9 flex items-center hover:bg-white/15 tabular-nums transition-colors' + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>))}
+          </div>
+        </div>
+      )}
+      {showVol && (
+        <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
+          <div className="pointer-events-auto flex items-center gap-2 px-3 h-9 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
+            <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume level" className="w-40 h-1 accent-white cursor-pointer" />
+            <span className="text-[10px] tabular-nums text-white/80 w-6 text-right">{Math.round(volume * 100)}</span>
+          </div>
+        </div>
+      )}
     </>
   )
 
@@ -390,7 +388,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 <ToolIcon name="camera" className="w-4 h-4" />{t('vp_pick_video')}
               </button>
               <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">
-                <ToolIcon name="folder" className="w-4 h-4" />{t('ui_pick_folder')}
+                <ToolIcon name="folder" className="w-4 h-4" />{t('vp_pick_folder')}
               </button>
             </div>
           </div>
@@ -567,7 +565,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             </div>
             {/* Inline: the control bar sits below the video as a persistent black toolbar (always visible). */}
             {!fs && (
-              <div className="mt-2 flex items-end justify-between gap-1 rounded-xl bg-black px-1.5 pt-1.5">
+              <div className="relative mt-2 flex items-end justify-between gap-1 rounded-xl bg-black px-1.5 pt-1.5">
                 {bottomBar}
               </div>
             )}
