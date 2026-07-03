@@ -119,6 +119,10 @@ const SINGLE = {
 }
 // Object-type tools: a unified white lucide pictogram (lucide-react v0.408 paths).
 const VECTOR = {
+  'video-player': [ // circle-play
+    ['circle', { cx: '12', cy: '12', r: '10' }],
+    ['path', { d: 'm10 8 6 4-6 4V8z' }],
+  ],
   'batch-image-editor': [ // image-plus
     ['path', { d: 'M16 5h6' }], ['path', { d: 'M19 2v6' }],
     ['path', { d: 'M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5' }],

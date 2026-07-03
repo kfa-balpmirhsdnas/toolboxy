@@ -56,6 +56,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(false)
   const [fs, setFs] = useState(false)
+  const [showVol, setShowVol] = useState(false)
+  const [volume, setVolume] = useState(1)
   const videoRef = useRef<HTMLVideoElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -80,7 +82,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const showOverlay = useCallback(() => {
     setOvVisible(true)
     if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null }
-    if (!locked) hideRef.current = setTimeout(() => { setOvVisible(false); setOpenMenu(null) }, 3000)
+    if (!locked) hideRef.current = setTimeout(() => { setOvVisible(false); setOpenMenu(null); setShowVol(false) }, 3000)
   }, [locked])
   useEffect(() => {
     if (locked) { if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null } setOvVisible(true) }
@@ -124,6 +126,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // Custom bottom bar (native controls are hidden): scrub, mute, fullscreen.
   const seekTo = (time: number) => { const v = videoRef.current; if (v) v.currentTime = time; showOverlay() }
   const toggleMute = () => { const v = videoRef.current; if (!v) return; v.muted = !v.muted; setMuted(v.muted); showOverlay() }
+  const setVol = (val: number) => { const v = videoRef.current; if (!v) return; v.volume = val; v.muted = val === 0; setVolume(val); setMuted(val === 0); showOverlay() }
   const toggleFs = () => { const el = wrapperRef.current; if (!el) return; if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else el.requestFullscreen?.().catch(() => {}); showOverlay() }
   useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener('fullscreenchange', h); return () => document.removeEventListener('fullscreenchange', h) }, [])
 
@@ -151,6 +154,18 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     })
     setHistView('thumbnails')
     trackToolUsed('video-player')
+  }, [])
+
+  // Open with: play the video file the OS launched the installed app with (File Handling API).
+  useEffect(() => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const lq = (window as any).launchQueue
+    if (!lq?.setConsumer) return
+    lq.setConsumer(async (p: any) => {
+      for (const h of p?.files || []) { try { load(await h.getFile()); break } catch { /* skip */ } }
+    })
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Revoke the object URL on unmount.
@@ -204,6 +219,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const chipBtn = 'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors'
   const ovBtn = 'pointer-events-auto inline-flex items-center justify-center gap-1 h-9 px-3 rounded-b-xl text-white text-xs font-semibold backdrop-blur transition-colors'
   const subMenu = 'absolute top-full left-1/2 -translate-x-1/2 mt-0.5 min-w-[9rem] pointer-events-auto rounded-lg bg-black/85 backdrop-blur text-white text-xs py-1 shadow-lg z-20 flex flex-col overflow-hidden'
+  const subMenuUp = 'absolute bottom-full left-1/2 -translate-x-1/2 mb-0.5 min-w-[9rem] pointer-events-auto rounded-lg bg-black/85 backdrop-blur text-white text-xs py-1 shadow-lg z-20 flex flex-col overflow-hidden'
   const subRow = 'w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left hover:bg-white/15 transition-colors tabular-nums'
   const subCell = 'w-full flex items-center justify-center px-3 py-1.5 hover:bg-white/15 transition-colors tabular-nums'
 
@@ -246,7 +262,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
                 }}
                 onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
-                onVolumeChange={(e) => setMuted(e.currentTarget.muted)}
+                onVolumeChange={(e) => { setMuted(e.currentTarget.muted); setVolume(e.currentTarget.volume) }}
                 onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
               {/* Overlay tab controls — container passes taps through; only buttons/menus capture.
                   Auto-hides 5s after the last interaction unless locked. Each tab opens a submenu below it. */}
@@ -307,32 +323,6 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     )}
                   </div>
 
-                  {/* Speed */}
-                  <div className="relative">
-                    <button onClick={() => { setOpenMenu((m) => m === 'speed' ? null : 'speed'); showOverlay() }} title={t('vp_speed')} aria-label={t('vp_speed')}
-                      className={ovBtn + ' tabular-nums' + (speed !== 1 ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
-                      {speed}×
-                    </button>
-                    {openMenu === 'speed' && (
-                      <div className={subMenu + ' min-w-[11rem]'}>
-                        {/* 2 columns: slow (<1×) on the left, 1× and up on the right — fits without vertical cutoff on mobile. */}
-                        <div className="flex">
-                          <div className="flex flex-col flex-1">
-                            {SPEED_MENU.filter((s) => s < 1).map((s) => (
-                              <button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCell + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>
-                            ))}
-                          </div>
-                          <div className="flex flex-col flex-1 border-l border-white/10">
-                            {SPEED_MENU.filter((s) => s >= 1).map((s) => (
-                              <button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCell + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>
-                            ))}
-                          </div>
-                        </div>
-                        <button onClick={() => { setSpeed(1); setOpenMenu(null); showOverlay() }} className={subCell + ' border-t border-white/10 text-white/80'}>{t('vp_orig_speed')}</button>
-                      </div>
-                    )}
-                  </div>
-
                   {/* Capture */}
                   <div className="relative">
                     <button onClick={() => { setOpenMenu((m) => m === 'capture' ? null : 'capture'); showOverlay() }} title={t('vp_capture')} aria-label={t('vp_capture')}
@@ -364,11 +354,6 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     )}
                   </div>
 
-                  {/* Background play (PiP) — no submenu, triggers directly */}
-                  <button onClick={() => { togglePip(); showOverlay() }} title={t('vp_bg')} aria-label={t('vp_bg')}
-                    className={ovBtn + ' bg-black/55 hover:bg-black/75'}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
-                  </button>
                 </div>
               )}
               {/* Center controls — skip/play cluster with the time gauge right below it (same width). */}
@@ -409,16 +394,48 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('ui_pick_files')} title={t('ui_pick_files')} className="pointer-events-auto inline-flex items-center gap-1 h-9 px-3 rounded-full bg-black/55 text-white text-xs font-semibold hover:bg-black/75 backdrop-blur transition-colors">
                     <ToolIcon name="folder" className="w-4 h-4" /><span className="hidden sm:inline">{t('ui_pick_files')}</span>
                   </button>
-                  <div className="pointer-events-auto flex items-center gap-0.5 h-9 px-1.5 rounded-full bg-black/55 backdrop-blur text-white">
-                    <button onClick={toggleMute} aria-label="mute" className="p-1.5 hover:text-white/70">
-                      {muted
-                        ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
-                        : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
-                    </button>
+                  <div className="pointer-events-auto flex items-center gap-1 h-9 px-1.5 rounded-full bg-black/55 backdrop-blur text-white">
+                    {/* Speed — moved from the top; submenu opens upward */}
+                    <div className="relative">
+                      <button onClick={() => { setOpenMenu((m) => m === 'speed' ? null : 'speed'); showOverlay() }} aria-label={t('vp_speed')} title={t('vp_speed')}
+                        className={'px-2 h-7 rounded-full text-xs font-bold tabular-nums transition-colors ' + (speed !== 1 ? 'bg-brand-600 text-white' : 'hover:text-white/70')}>{speed}×</button>
+                      {openMenu === 'speed' && (
+                        <div className={subMenuUp + ' min-w-[11rem]'}>
+                          <div className="flex">
+                            <div className="flex flex-col flex-1">
+                              {SPEED_MENU.filter((s) => s < 1).map((s) => (<button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCell + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>))}
+                            </div>
+                            <div className="flex flex-col flex-1 border-l border-white/10">
+                              {SPEED_MENU.filter((s) => s >= 1).map((s) => (<button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCell + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>))}
+                            </div>
+                          </div>
+                          <button onClick={() => { setSpeed(1); setOpenMenu(null); showOverlay() }} className={subCell + ' border-t border-white/10 text-white/80'}>{t('vp_orig_speed')}</button>
+                        </div>
+                      )}
+                    </div>
+                    {/* Volume — tap shows a vertical gauge above */}
+                    <div className="relative">
+                      <button onClick={() => { setShowVol((s) => !s); showOverlay() }} aria-label="volume" className="p-1.5 hover:text-white/70">
+                        {(muted || volume === 0)
+                          ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
+                          : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
+                      </button>
+                      {showVol && (
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 p-2 rounded-lg bg-black/85 backdrop-blur flex flex-col items-center gap-1 pointer-events-auto z-20">
+                          <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume level" className="h-24 accent-white cursor-pointer" style={{ writingMode: 'vertical-lr', direction: 'rtl' }} />
+                          <span className="text-[10px] tabular-nums text-white/80">{Math.round(volume * 100)}</span>
+                        </div>
+                      )}
+                    </div>
+                    {/* Fullscreen */}
                     <button onClick={toggleFs} aria-label="fullscreen" className="p-1.5 hover:text-white/70">
                       {fs
                         ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" /><path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" /></svg>
                         : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /></svg>}
+                    </button>
+                    {/* Background play (PiP) — far right */}
+                    <button onClick={() => { togglePip(); showOverlay() }} aria-label={t('vp_bg')} title={t('vp_bg')} className="p-1.5 hover:text-white/70">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
                     </button>
                   </div>
                 </div>
