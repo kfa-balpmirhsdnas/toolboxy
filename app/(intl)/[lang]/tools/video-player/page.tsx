@@ -35,6 +35,8 @@ const fmt = (s: number) => {
 // Filename-safe timestamp, e.g. 1m03s4.
 const fmtFile = (s: number) => `${Math.floor(s / 60)}m${String(Math.floor(s % 60)).padStart(2, '0')}s${Math.floor((s * 10) % 10)}`
 const fmtSize = (b: number) => (b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(1) + ' MB')
+// Compact size for narrow mobile columns — round UP, drop decimals, MB→M / KB→K (e.g. 3K, 12M).
+const fmtSizeShort = (b: number) => (b < 1024 * 1024 ? Math.ceil(b / 1024) + 'K' : Math.ceil(b / 1024 / 1024) + 'M')
 
 export default function VideoPlayerPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
@@ -518,12 +520,21 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             {/* Options — frame capture / A–B repeat / speed combined into tabs. Collapsed by default. */}
             <div className="rounded-2xl border border-gray-200 overflow-hidden">
               <div className={'flex items-center gap-1 bg-gray-50 px-2 ' + (optOpen ? 'border-b border-gray-200' : '')}>
-                {([['frame', t('vp_frame')], ['ab', t('vp_ab')], ['speed', t('vp_speed')]] as const).map(([id, label]) => (
-                  <button key={id} onClick={() => { setOptTab(id); setOptOpen(true) }}
-                    className={'px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (optOpen && optTab === id ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>
-                    {label}
-                  </button>
-                ))}
+                {(['frame', 'ab', 'speed'] as const).map((id) => {
+                  const label = id === 'frame' ? t('vp_frame') : id === 'ab' ? t('vp_ab') : t('vp_speed')
+                  const icon = id === 'frame'
+                    ? <ToolIcon name="camera" className="w-4 h-4" />
+                    : id === 'ab'
+                      ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>
+                      : <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
+                  return (
+                    <button key={id} onClick={() => { setOptTab(id); setOptOpen(true) }} title={label} aria-label={label}
+                      className={'inline-flex items-center gap-1.5 px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (optOpen && optTab === id ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>
+                      <span className="sm:hidden">{icon}</span>
+                      <span className="hidden sm:inline">{label}</span>
+                    </button>
+                  )
+                })}
                 <button onClick={() => setOptOpen((o) => !o)} aria-label={optOpen ? t('ui_collapse') : t('ui_expand')} title={optOpen ? t('ui_collapse') : t('ui_expand')}
                   className="ml-auto inline-flex items-center px-2.5 py-2 text-gray-400 hover:text-gray-600">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={'w-4 h-4 transition-transform ' + (optOpen ? 'rotate-180' : '')}><path d="m6 9 6 6 6-6" /></svg>
@@ -588,7 +599,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 {([['all', t('vp_tab_all')], ['saved', t('vp_tab_saved')]] as const).map(([id, label]) => (
                   <button key={id} onClick={() => setHistTab(id)}
                     className={'px-3 py-1 rounded-md font-semibold transition-colors ' + (histTab === id ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>
-                    {label}{id === 'saved' && saved.size > 0 ? ` ${saved.size}` : ''}
+                    {label} {id === 'all' ? history.length : saved.size}
                   </button>
                 ))}
               </div>
@@ -646,10 +657,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                           {starSvg(key)}
                         </button>
                         <button onClick={() => playFromHistory(h.file)} className="flex items-center gap-2 flex-1 min-w-0 text-left">
-                          <svg viewBox="0 0 24 24" fill="currentColor" className={'w-4 h-4 shrink-0 ' + (h.file === curFile ? 'text-brand-600' : 'text-gray-300')}><path d="M8 5v14l11-7z" /></svg>
                           <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{h.name}</span>
                         </button>
-                        <span className="shrink-0 w-16 text-right text-gray-400 tabular-nums">{fmtSize(h.size)}</span>
+                        <span className="shrink-0 sm:w-16 text-right text-gray-400 tabular-nums whitespace-nowrap">
+                          <span className="sm:hidden">{fmtSizeShort(h.size)}</span>
+                          <span className="hidden sm:inline">{fmtSize(h.size)}</span>
+                        </span>
                       </div>
                     )
                   })}
