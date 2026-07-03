@@ -7,6 +7,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
+import { vhList, vhPut } from '@/lib/tools/videoHistory'
 
 const tool = getToolBySlug('video-player')!
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
@@ -88,6 +89,15 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     if (locked) { if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null } setOvVisible(true) }
     else showOverlay()
   }, [locked, showOverlay])
+  // Tap the video: toggle the overlay (show if hidden, hide if shown). Taps on a control
+  // (button/input) bubble here too, so ignore those — the control shows the overlay itself.
+  const toggleOverlay = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button,input,a')) return
+    if (!locked && ovVisible) {
+      setOvVisible(false); setOpenMenu(null); setShowVol(false)
+      if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null }
+    } else showOverlay()
+  }, [locked, ovVisible, showOverlay])
 
   // Video thumbnails for the history "thumbnails" view (grab a frame ~mid-clip).
   useEffect(() => {
@@ -138,8 +148,30 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     setCurFile(f)
     // Keep a session history of played videos (newest first, de-duped, capped).
     setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 60)) // eslint-disable-line
+    // Persist the clip so it survives a refresh (large files are skipped inside vhPut).
+    vhPut({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type, ts: Date.now(), blob: f })
     trackToolUsed('video-player')
   }, [])
+
+  // Restore persisted play-history (blobs kept in IndexedDB) on mount so it survives refreshes.
+  useEffect(() => {
+    let alive = true
+    vhList().then((items) => {
+      if (!alive || !items.length) return
+      const restored = items.map((it) => ({ name: it.name, size: it.size, file: new File([it.blob], it.name, { type: it.type }) }))
+      setHistory((h) => {
+        const seen = new Set(h.map((x) => x.name + '|' + x.size))
+        return [...h, ...restored.filter((r) => !seen.has(r.name + '|' + r.size))].slice(0, 60)
+      })
+    })
+    return () => { alive = false }
+  }, [])
+
+  // Play a clip from the history list, then scroll the player back up into view (the list sits below it).
+  const playFromHistory = useCallback((f: File) => {
+    load(f)
+    requestAnimationFrame(() => wrapperRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }, [load])
 
   // Open a folder: list only its video files into the history list (thumbnails view). Nothing is
   // played until you click one. Folder selection = webkitdirectory (desktop + Android Chrome; not iOS).
@@ -218,8 +250,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
 
   const chipBtn = 'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors'
   const ovBtn = 'pointer-events-auto inline-flex items-center justify-center gap-1 h-9 px-3 rounded-b-xl text-white text-xs font-semibold backdrop-blur transition-colors'
+  // Bottom-bar variant of the top tab style — same look, but rounded on top so tabs hang up from the bottom edge.
+  const ovBtnB = 'pointer-events-auto inline-flex items-center justify-center gap-1 h-9 px-3 rounded-t-xl text-white text-xs font-semibold backdrop-blur transition-colors'
   const subMenu = 'absolute top-full left-1/2 -translate-x-1/2 mt-0.5 min-w-[9rem] pointer-events-auto rounded-lg bg-black/85 backdrop-blur text-white text-xs py-1 shadow-lg z-20 flex flex-col overflow-hidden'
-  const subMenuUp = 'absolute bottom-full left-1/2 -translate-x-1/2 mb-0.5 min-w-[9rem] pointer-events-auto rounded-lg bg-black/85 backdrop-blur text-white text-xs py-1 shadow-lg z-20 flex flex-col overflow-hidden'
+  // Slide-out row to the LEFT of a bottom-bar button (speed choices / volume gauge), same height as the tab.
+  const subMenuLeft = 'absolute right-full top-0 mr-1 h-9 flex flex-row items-center pointer-events-auto rounded-lg bg-black/85 backdrop-blur text-white text-xs shadow-lg z-20 overflow-hidden'
+  const subCellH = 'h-full flex items-center px-2.5 hover:bg-white/15 transition-colors tabular-nums'
   const subRow = 'w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left hover:bg-white/15 transition-colors tabular-nums'
   const subCell = 'w-full flex items-center justify-center px-3 py-1.5 hover:bg-white/15 transition-colors tabular-nums'
 
@@ -244,7 +280,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           </div>
         ) : (
           <>
-            <div ref={wrapperRef} onClick={showOverlay} className={fs ? 'fixed inset-0 z-50 flex items-center justify-center bg-black' : ''}>
+            <div ref={wrapperRef} onClick={toggleOverlay} className={'scroll-mt-16 ' + (fs ? 'fixed inset-0 z-50 flex items-center justify-center bg-black' : '')}>
               {/* Inner box sizes to the video so the overlays hug the VIDEO (not the fullscreen screen);
                   in fullscreen the outer flex centers this box vertically. */}
               <div className={'relative overflow-hidden bg-black w-full ' + (fs ? '' : 'rounded-xl')}>
@@ -388,53 +424,47 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   </div>
                 </div>
               )}
-              {/* Bottom bar — open-file (left), mute + fullscreen (right). */}
+              {/* Bottom bar — same tab style as the top strip (individual tabs hanging up from the bottom edge). */}
               {(ovVisible || locked) && (
-                <div className="absolute bottom-0 inset-x-0 p-2 flex items-center justify-between pointer-events-none">
-                  <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('ui_pick_files')} title={t('ui_pick_files')} className="pointer-events-auto inline-flex items-center gap-1 h-9 px-3 rounded-full bg-black/55 text-white text-xs font-semibold hover:bg-black/75 backdrop-blur transition-colors">
+                <div className="absolute bottom-0 inset-x-0 flex items-end justify-between gap-1 pointer-events-none">
+                  {/* Open file — left */}
+                  <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('ui_pick_files')} title={t('ui_pick_files')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
                     <ToolIcon name="folder" className="w-4 h-4" /><span className="hidden sm:inline">{t('ui_pick_files')}</span>
                   </button>
-                  <div className="pointer-events-auto flex items-center gap-1 h-9 px-1.5 rounded-full bg-black/55 backdrop-blur text-white">
-                    {/* Speed — moved from the top; submenu opens upward */}
+                  {/* Controls — right */}
+                  <div className="flex items-end gap-1">
+                    {/* Speed — a single row that slides out to the LEFT */}
                     <div className="relative">
                       <button onClick={() => { setOpenMenu((m) => m === 'speed' ? null : 'speed'); showOverlay() }} aria-label={t('vp_speed')} title={t('vp_speed')}
-                        className={'px-2 h-7 rounded-full text-xs font-bold tabular-nums transition-colors ' + (speed !== 1 ? 'bg-brand-600 text-white' : 'hover:text-white/70')}>{speed}×</button>
+                        className={ovBtnB + ' tabular-nums' + (speed !== 1 ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>{speed}×</button>
                       {openMenu === 'speed' && (
-                        <div className={subMenuUp + ' min-w-[11rem]'}>
-                          <div className="flex">
-                            <div className="flex flex-col flex-1">
-                              {SPEED_MENU.filter((s) => s < 1).map((s) => (<button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCell + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>))}
-                            </div>
-                            <div className="flex flex-col flex-1 border-l border-white/10">
-                              {SPEED_MENU.filter((s) => s >= 1).map((s) => (<button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCell + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>))}
-                            </div>
-                          </div>
-                          <button onClick={() => { setSpeed(1); setOpenMenu(null); showOverlay() }} className={subCell + ' border-t border-white/10 text-white/80'}>{t('vp_orig_speed')}</button>
+                        <div className={subMenuLeft}>
+                          {SPEED_MENU.map((s) => (<button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCellH + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>))}
                         </div>
                       )}
                     </div>
                     {/* Volume — tap shows a vertical gauge above */}
                     <div className="relative">
-                      <button onClick={() => { setShowVol((s) => !s); showOverlay() }} aria-label="volume" className="p-1.5 hover:text-white/70">
+                      <button onClick={() => { setShowVol((s) => !s); showOverlay() }} aria-label="volume" className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
                         {(muted || volume === 0)
                           ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
                           : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
                       </button>
                       {showVol && (
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 p-2 rounded-lg bg-black/85 backdrop-blur flex flex-col items-center gap-1 pointer-events-auto z-20">
-                          <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume level" className="h-24 accent-white cursor-pointer" style={{ writingMode: 'vertical-lr', direction: 'rtl' }} />
-                          <span className="text-[10px] tabular-nums text-white/80">{Math.round(volume * 100)}</span>
+                        <div className="absolute right-full top-0 mr-1 h-9 px-3 flex items-center gap-2 rounded-lg bg-black/85 backdrop-blur pointer-events-auto z-20">
+                          <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume level" className="w-24 h-1 accent-white cursor-pointer" />
+                          <span className="text-[10px] tabular-nums text-white/80 w-6 text-right">{Math.round(volume * 100)}</span>
                         </div>
                       )}
                     </div>
                     {/* Fullscreen */}
-                    <button onClick={toggleFs} aria-label="fullscreen" className="p-1.5 hover:text-white/70">
+                    <button onClick={toggleFs} aria-label="fullscreen" className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
                       {fs
                         ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" /><path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" /></svg>
                         : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /></svg>}
                     </button>
                     {/* Background play (PiP) — far right */}
-                    <button onClick={() => { togglePip(); showOverlay() }} aria-label={t('vp_bg')} title={t('vp_bg')} className="p-1.5 hover:text-white/70">
+                    <button onClick={() => { togglePip(); showOverlay() }} aria-label={t('vp_bg')} title={t('vp_bg')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
                     </button>
                   </div>
@@ -525,7 +555,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 {history.map((h, i) => {
                   const key = h.name + '|' + h.size, on = h.file === curFile
                   return (
-                    <button key={i} onClick={() => load(h.file)} title={h.name}
+                    <button key={i} onClick={() => playFromHistory(h.file)} title={h.name}
                       className={'relative aspect-video rounded-xl overflow-hidden border-2 bg-gray-900 transition-colors ' + (on ? 'border-brand-500' : 'border-gray-200 hover:border-brand-300')}>
                       {thumbs[key]
                         /* eslint-disable-next-line @next/next/no-img-element */
@@ -544,7 +574,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 </div>
                 <div className="divide-y divide-gray-100 max-h-72 overflow-auto">
                   {history.map((h, i) => (
-                    <button key={i} onClick={() => load(h.file)}
+                    <button key={i} onClick={() => playFromHistory(h.file)}
                       className={'flex items-center gap-2 w-full px-4 py-2 text-left text-sm transition-colors ' + (h.file === curFile ? 'bg-brand-50' : 'hover:bg-gray-50')}>
                       <svg viewBox="0 0 24 24" fill="currentColor" className={'w-4 h-4 shrink-0 ' + (h.file === curFile ? 'text-brand-600' : 'text-gray-300')}><path d="M8 5v14l11-7z" /></svg>
                       <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{h.name}</span>
