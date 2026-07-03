@@ -15,6 +15,9 @@ const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
 const TIMER_MENU = [15, 30, 60, 120]
 const SPEED_MENU = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3]
 const ROTATE_MENU = [90, 180, 270, 350]
+// Some containers (.mkv/.ts/.flv…) come through with an empty MIME type, so accept by extension too.
+const MEDIA_EXT = /\.(mp4|m4v|mov|mkv|webm|avi|mpe?g|ogv|3gp|flv|ts|mp3|m4a|wav|flac|aac|ogg|oga|opus|wma)$/i
+const isMedia = (f: File) => f.type.startsWith('video/') || f.type.startsWith('audio/') || MEDIA_EXT.test(f.name)
 // mm:ss.d — a compact clock that also shows tenths (handy for A–B precision).
 const fmt = (s: number) => {
   if (!isFinite(s) || s < 0) s = 0
@@ -145,7 +148,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener('fullscreenchange', h); return () => document.removeEventListener('fullscreenchange', h) }, [])
 
   const load = useCallback((f: File) => {
-    if (!f.type.startsWith('video/') && !f.type.startsWith('audio/')) return
+    if (!isMedia(f)) return
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || 'frame')
     setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0); setRot(0)
@@ -191,7 +194,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // played until you click one. Folder selection = webkitdirectory (desktop + Android Chrome; not iOS).
   const addFolder = useCallback((list: FileList | null) => {
     if (!list) return
-    const vids = Array.from(list).filter((f) => f.type.startsWith('video/') || f.type.startsWith('audio/')).sort((a, b) => a.name.localeCompare(b.name))
+    const vids = Array.from(list).filter(isMedia).sort((a, b) => a.name.localeCompare(b.name))
     if (!vids.length) return
     setHistory((h) => {
       const seen = new Set(h.map((x) => x.name + '|' + x.size))
@@ -282,7 +285,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4">
         {/* Always-mounted file input so the in-player "open file" button works too (the drop zone unmounts once a video loads). */}
-        <input ref={inputRef} type="file" accept="video/*,audio/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+        {/* Explicit extensions (not video/*,audio/* wildcards) so Android opens the file picker directly
+            instead of the camera/recorder "작업 선택" intent chooser. */}
+        <input ref={inputRef} type="file" accept=".mp4,.m4v,.mov,.mkv,.webm,.avi,.mpeg,.mpg,.ogv,.3gp,.flv,.ts,.mp3,.m4a,.wav,.flac,.aac,.ogg,.oga,.opus,.wma" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
