@@ -80,7 +80,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const showOverlay = useCallback(() => {
     setOvVisible(true)
     if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null }
-    if (!locked) hideRef.current = setTimeout(() => { setOvVisible(false); setOpenMenu(null) }, 5000)
+    if (!locked) hideRef.current = setTimeout(() => { setOvVisible(false); setOpenMenu(null) }, 3000)
   }, [locked])
   useEffect(() => {
     if (locked) { if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null } setOvVisible(true) }
@@ -265,15 +265,28 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     <button onClick={() => { const open = openMenu !== 'timer'; setOpenMenu(open ? 'timer' : null); if (open && sleepMin === 0) setSleepMin(15); showOverlay() }} title={t('vp_timer')} aria-label={t('vp_timer')}
                       className={ovBtn + (sleepMin ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /></svg>
-                      {sleepMin ? Math.ceil(sleepLeft / 60) : null}
                     </button>
                     {openMenu === 'timer' && (
-                      <div className={subMenu}>
-                        {TIMER_MENU.map((min) => (
-                          <button key={min} onClick={() => { setSleepMin(min); setOpenMenu(null); showOverlay() }}
-                            className={subRow + (sleepMin === min ? ' bg-brand-600' : '')}>{t('ct_min', { n: min })}</button>
-                        ))}
-                        <button onClick={() => { setSleepMin(0); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}>{t('vp_timer_cancel')}</button>
+                      <div className={subMenu + ' min-w-[10rem]'}>
+                        {/* Remaining time on top */}
+                        <div className="w-full flex items-center justify-between gap-2 px-3 py-1.5 border-b border-white/10 text-white/80">
+                          <span>{t('vp_time_left')}</span>
+                          <span className="font-mono tabular-nums">{sleepMin ? `${Math.floor(sleepLeft / 60)}:${String(sleepLeft % 60).padStart(2, '0')}` : '—'}</span>
+                        </div>
+                        {/* 2 columns */}
+                        <div className="flex">
+                          <div className="flex flex-col flex-1">
+                            {TIMER_MENU.slice(0, 2).map((min) => (
+                              <button key={min} onClick={() => { setSleepMin(min); setOpenMenu(null); showOverlay() }} className={subCell + (sleepMin === min ? ' bg-brand-600' : '')}>{t('ct_min', { n: min })}</button>
+                            ))}
+                          </div>
+                          <div className="flex flex-col flex-1 border-l border-white/10">
+                            {TIMER_MENU.slice(2).map((min) => (
+                              <button key={min} onClick={() => { setSleepMin(min); setOpenMenu(null); showOverlay() }} className={subCell + (sleepMin === min ? ' bg-brand-600' : '')}>{t('ct_min', { n: min })}</button>
+                            ))}
+                          </div>
+                        </div>
+                        <button onClick={() => { setSleepMin(0); setOpenMenu(null); showOverlay() }} className={subCell + ' border-t border-white/10 text-white/80'}>{t('vp_timer_cancel')}</button>
                       </div>
                     )}
                   </div>
@@ -288,7 +301,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                       <div className={subMenu}>
                         <button onClick={() => { setA(cur); showOverlay() }} className={subRow}><span>{t('vp_start_time')}</span><span className="font-mono text-white/80">{a != null ? fmt(a) : '—'}</span></button>
                         <button onClick={() => { setB(cur); showOverlay() }} className={subRow}><span>{t('vp_end_time')}</span><span className="font-mono text-white/80">{b != null ? fmt(b) : '—'}</span></button>
-                        <button onClick={() => { if (a != null && b != null && b > a) { setRepeat(true); showOverlay() } }} className={subRow + (repeat ? ' bg-brand-600' : (a == null || b == null || b <= a ? ' opacity-40' : ''))}><span>{t('vp_repeat_start')}</span></button>
+                        <button onClick={() => { if (repeat) { setRepeat(false); showOverlay() } else if (a != null && b != null && b > a) { setRepeat(true); showOverlay() } }} className={subRow + (repeat ? ' bg-brand-600' : (a == null || b == null || b <= a ? ' opacity-40' : ''))}><span>{repeat ? t('vp_repeat_stop') : t('vp_repeat_start')}</span></button>
                         <button onClick={() => { setA(null); setB(null); setRepeat(false); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_repeat_cancel')}</span></button>
                       </div>
                     )}
@@ -394,7 +407,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               {(ovVisible || locked) && (
                 <div className="absolute bottom-0 inset-x-0 p-2 flex items-center justify-between pointer-events-none">
                   <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('ui_pick_files')} title={t('ui_pick_files')} className="pointer-events-auto inline-flex items-center gap-1 h-9 px-3 rounded-full bg-black/55 text-white text-xs font-semibold hover:bg-black/75 backdrop-blur transition-colors">
-                    <ToolIcon name="folder" className="w-4 h-4" />{t('ui_pick_files')}
+                    <ToolIcon name="folder" className="w-4 h-4" /><span className="hidden sm:inline">{t('ui_pick_files')}</span>
                   </button>
                   <div className="pointer-events-auto flex items-center gap-0.5 h-9 px-1.5 rounded-full bg-black/55 backdrop-blur text-white">
                     <button onClick={toggleMute} aria-label="mute" className="p-1.5 hover:text-white/70">

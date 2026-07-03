@@ -4218,6 +4218,8 @@
     "vp_reset": "초기화",
     "vp_timer_cancel": "타이머 취소",
     "vp_repeat_start": "반복 시작",
+    "vp_repeat_stop": "반복 멈춤",
+    "vp_time_left": "남은 시간",
     "vp_repeat_cancel": "반복 취소",
     "vp_rotate_cancel": "회전 취소",
     "vp_orig_speed": "원래 속도",

@@ -4191,6 +4191,8 @@
     "vp_reset": "リセット",
     "vp_timer_cancel": "タイマー解除",
     "vp_repeat_start": "リピート開始",
+    "vp_repeat_stop": "リピート停止",
+    "vp_time_left": "残り時間",
     "vp_repeat_cancel": "リピート解除",
     "vp_rotate_cancel": "回転解除",
     "vp_orig_speed": "元の速度",
