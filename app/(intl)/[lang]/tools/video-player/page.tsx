@@ -56,6 +56,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [playing, setPlaying] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const dirRef = useRef<HTMLInputElement>(null)
 
   // Whole-video loop mirrors the <video>.loop flag.
   useEffect(() => { if (videoRef.current) videoRef.current.loop = loopAll }, [loopAll, url])
@@ -125,7 +126,22 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0); setRot(0)
     setCurFile(f)
     // Keep a session history of played videos (newest first, de-duped, capped).
-    setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 12))
+    setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 60)) // eslint-disable-line
+    trackToolUsed('video-player')
+  }, [])
+
+  // Open a folder: list only its video files into the history list (thumbnails view). Nothing is
+  // played until you click one. Folder selection = webkitdirectory (desktop + Android Chrome; not iOS).
+  const addFolder = useCallback((list: FileList | null) => {
+    if (!list) return
+    const vids = Array.from(list).filter((f) => f.type.startsWith('video/')).sort((a, b) => a.name.localeCompare(b.name))
+    if (!vids.length) return
+    setHistory((h) => {
+      const seen = new Set(h.map((x) => x.name + '|' + x.size))
+      const add = vids.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f }))
+      return [...add, ...h].slice(0, 60)
+    })
+    setHistView('thumbnails')
     trackToolUsed('video-player')
   }, [])
 
@@ -190,12 +206,15 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-            <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+            <input ref={inputRef} type="file" accept="video/*" className="hidden" onClick={(e) => e.stopPropagation()} onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            <input ref={dirRef} type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onClick={(e) => e.stopPropagation()} onChange={(e) => { addFolder(e.target.files); e.target.value = '' }} />
             <p className="text-5xl mb-3">🎞️</p>
             <p className="text-base font-medium text-gray-700">{t('vp_drop')}</p>
             <p className="text-xs text-gray-400 mt-1">{t('vp_drop_sub')}</p>
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center gap-2 mt-4">
               <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
+              <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">{t('ui_pick_folder')}</button>
             </div>
           </div>
         ) : (
