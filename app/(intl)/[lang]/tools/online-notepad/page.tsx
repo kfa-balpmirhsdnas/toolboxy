@@ -660,7 +660,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     }
     setDocs(rest)
   }
-  function renameDoc(id: string, name: string) { patchDoc(id, { name: name || docs.find((d) => d.id === id)?.name || dateTag() }) }
+  function renameDoc(id: string, name: string) { patchDoc(id, { name: name.slice(0, 20) || docs.find((d) => d.id === id)?.name || dateTag() }) } // tab titles cap at 20 chars
 
   // On mobile, snap the editor box to just under the header on focus (the keyboard's
   // native scroll otherwise overshoots past it). Desktop scrolls immediately.
@@ -773,7 +773,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   }
   function copy() {
     if (!text) return
-    navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500)
+    navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000)
   }
 
   const chars = text.length
@@ -899,6 +899,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                     onClick={(e) => e.stopPropagation()}
                     onBlur={(e) => { renameDoc(d.id, e.target.value.trim()); setRenaming(null) }}
                     onKeyDown={(e) => { if (e.key === 'Enter') { renameDoc(d.id, (e.target as HTMLInputElement).value.trim()); setRenaming(null) } if (e.key === 'Escape') setRenaming(null) }}
+                    maxLength={20}
                     className="w-24 px-1 text-sm border border-brand-300 rounded outline-none" />
                 ) : (
                   <span className="max-w-[10rem] truncate">{d.name}</span>
@@ -1093,6 +1094,13 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
           <span>{t('np_note')}</span>
         </div>
+
+        {/* Copy toast — shows the confirmation text after the copy button copies the whole note. */}
+        {copied && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-900 text-white text-sm shadow-lg">
+            <ToolIcon name="check" className="w-4 h-4 text-green-400" />{t('np_copied_all')}
+          </div>
+        )}
       </div>
     </ToolLayout>
   )

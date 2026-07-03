@@ -7290,6 +7290,7 @@
     "np_lines": "{n}行",
     "np_download": ".txt をダウンロード",
     "np_save": "保存",
+    "np_copied_all": "メモ全体をクリップボードにコピーしました。",
     "np_save_txt": "このタブを .txt で保存",
     "np_save_zip": "全タブを ZIP で保存",
     "np_copied": "コピーしました",
