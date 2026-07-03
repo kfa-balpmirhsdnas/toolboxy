@@ -210,11 +210,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   return (
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4">
+        {/* Always-mounted file input so the in-player "open file" button works too (the drop zone unmounts once a video loads). */}
+        <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-            <input ref={inputRef} type="file" accept="video/*" className="hidden" onClick={(e) => e.stopPropagation()} onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             <input ref={dirRef} type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onClick={(e) => e.stopPropagation()} onChange={(e) => { addFolder(e.target.files); e.target.value = '' }} />
             <p className="text-5xl mb-3">🎞️</p>
@@ -357,41 +358,51 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   </button>
                 </div>
               )}
-              {/* Center controls — skip -10/-5, play/pause, +5/+10. Container passes taps through. */}
+              {/* Center controls — skip/play cluster with the time gauge right below it (same width). */}
               {(ovVisible || locked) && (
-                <div className="absolute inset-0 flex items-center justify-center gap-2 pointer-events-none">
-                  <button onClick={() => seekBy(-10)} aria-label="-10s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>10
-                  </button>
-                  <button onClick={() => seekBy(-5)} aria-label="-5s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>5
-                  </button>
-                  <button onClick={togglePlay} aria-label="play" className="pointer-events-auto inline-flex items-center justify-center w-12 h-12 rounded-full bg-black/60 text-white hover:bg-black/80 backdrop-blur transition-colors">
-                    {playing
-                      ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
-                      : <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M8 5v14l11-7z" /></svg>}
-                  </button>
-                  <button onClick={() => seekBy(5)} aria-label="+5s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
-                    5<svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
-                  </button>
-                  <button onClick={() => seekBy(10)} aria-label="+10s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
-                    10<svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
-                  </button>
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="inline-flex flex-col items-stretch gap-2">
+                    <div className="flex items-center justify-center gap-2">
+                      <button onClick={() => seekBy(-10)} aria-label="-10s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>10
+                      </button>
+                      <button onClick={() => seekBy(-5)} aria-label="-5s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>5
+                      </button>
+                      <button onClick={togglePlay} aria-label="play" className="pointer-events-auto inline-flex items-center justify-center w-12 h-12 rounded-full bg-black/60 text-white hover:bg-black/80 backdrop-blur transition-colors">
+                        {playing
+                          ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+                          : <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M8 5v14l11-7z" /></svg>}
+                      </button>
+                      <button onClick={() => seekBy(5)} aria-label="+5s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
+                        5<svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
+                      </button>
+                      <button onClick={() => seekBy(10)} aria-label="+10s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
+                        10<svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
+                      </button>
+                    </div>
+                    {/* Time gauge — same width as the 5 buttons above. */}
+                    <div className="pointer-events-auto flex items-center gap-2 px-3 h-8 rounded-full bg-black/60 backdrop-blur text-white text-[11px]">
+                      <span className="font-mono tabular-nums shrink-0">{fmt(cur)}</span>
+                      <input type="range" min={0} max={dur || 0} step={0.05} value={Math.min(cur, dur || 0)} onChange={(e) => seekTo(+e.target.value)} aria-label="seek" className="flex-1 h-1 accent-white cursor-pointer min-w-0" />
+                      <span className="font-mono tabular-nums shrink-0 text-white/70">{fmt(dur)}</span>
+                    </div>
+                  </div>
                 </div>
               )}
-              {/* Bottom bar — scrub / time / mute / fullscreen (replaces the hidden native bar). */}
+              {/* Bottom bar — open-file (left), mute + fullscreen (right). */}
               {(ovVisible || locked) && (
-                <div className="absolute bottom-0 inset-x-0 p-2 pointer-events-none">
-                  <div className="pointer-events-auto flex items-center gap-2 px-3 h-9 rounded-full bg-black/60 backdrop-blur text-white text-[11px]">
-                    <span className="font-mono tabular-nums shrink-0">{fmt(cur)}</span>
-                    <input type="range" min={0} max={dur || 0} step={0.05} value={Math.min(cur, dur || 0)} onChange={(e) => seekTo(+e.target.value)} aria-label="seek" className="flex-1 h-1 accent-white cursor-pointer" />
-                    <span className="font-mono tabular-nums shrink-0 text-white/70">{fmt(dur)}</span>
-                    <button onClick={toggleMute} aria-label="mute" className="shrink-0 p-1 hover:text-white/70">
+                <div className="absolute bottom-0 inset-x-0 p-2 flex items-center justify-between pointer-events-none">
+                  <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('ui_pick_files')} title={t('ui_pick_files')} className="pointer-events-auto inline-flex items-center gap-1 h-9 px-3 rounded-full bg-black/55 text-white text-xs font-semibold hover:bg-black/75 backdrop-blur transition-colors">
+                    <ToolIcon name="folder" className="w-4 h-4" />{t('ui_pick_files')}
+                  </button>
+                  <div className="pointer-events-auto flex items-center gap-0.5 h-9 px-1.5 rounded-full bg-black/55 backdrop-blur text-white">
+                    <button onClick={toggleMute} aria-label="mute" className="p-1.5 hover:text-white/70">
                       {muted
                         ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
                         : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
                     </button>
-                    <button onClick={toggleFs} aria-label="fullscreen" className="shrink-0 p-1 hover:text-white/70">
+                    <button onClick={toggleFs} aria-label="fullscreen" className="p-1.5 hover:text-white/70">
                       {fs
                         ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" /><path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" /></svg>
                         : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /></svg>}
