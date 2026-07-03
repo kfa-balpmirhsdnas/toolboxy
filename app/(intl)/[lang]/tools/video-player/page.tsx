@@ -177,6 +177,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const ovBtn = 'pointer-events-auto inline-flex items-center justify-center gap-1 h-9 px-3 rounded-b-xl text-white text-xs font-semibold backdrop-blur transition-colors'
   const subMenu = 'absolute top-full left-1/2 -translate-x-1/2 mt-0.5 min-w-[9rem] pointer-events-auto rounded-lg bg-black/85 backdrop-blur text-white text-xs py-1 shadow-lg z-20 flex flex-col overflow-hidden'
   const subRow = 'w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left hover:bg-white/15 transition-colors tabular-nums'
+  const subCell = 'w-full flex items-center justify-center px-3 py-1.5 hover:bg-white/15 transition-colors tabular-nums'
 
   return (
     <ToolLayout tool={tool} lang={lang}>
@@ -223,7 +224,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
 
                   {/* Timer */}
                   <div className="relative">
-                    <button onClick={() => { setOpenMenu((m) => m === 'timer' ? null : 'timer'); showOverlay() }} title={t('vp_timer')} aria-label={t('vp_timer')}
+                    <button onClick={() => { const open = openMenu !== 'timer'; setOpenMenu(open ? 'timer' : null); if (open && sleepMin === 0) setSleepMin(15); showOverlay() }} title={t('vp_timer')} aria-label={t('vp_timer')}
                       className={ovBtn + (sleepMin ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /></svg>
                       {sleepMin ? Math.ceil(sleepLeft / 60) : null}
@@ -232,24 +233,25 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                       <div className={subMenu}>
                         {TIMER_MENU.map((min) => (
                           <button key={min} onClick={() => { setSleepMin(min); setOpenMenu(null); showOverlay() }}
-                            className={subRow + ((sleepMin || 15) === min ? ' bg-brand-600' : '')}>{t('ct_min', { n: min })}</button>
+                            className={subRow + (sleepMin === min ? ' bg-brand-600' : '')}>{t('ct_min', { n: min })}</button>
                         ))}
+                        <button onClick={() => { setSleepMin(0); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}>{t('vp_timer_cancel')}</button>
                       </div>
                     )}
                   </div>
 
                   {/* A–B repeat */}
                   <div className="relative">
-                    <button onClick={() => { setOpenMenu((m) => m === 'ab' ? null : 'ab'); showOverlay() }} title={t('vp_ab')} aria-label={t('vp_ab')}
-                      className={ovBtn + (repeat ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
+                    <button onClick={() => { const open = openMenu !== 'ab'; setOpenMenu(open ? 'ab' : null); if (open && a === null) setA(cur); showOverlay() }} title={t('vp_ab')} aria-label={t('vp_ab')}
+                      className={ovBtn + ((a != null || repeat) ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>
                     </button>
                     {openMenu === 'ab' && (
                       <div className={subMenu}>
                         <button onClick={() => { setA(cur); showOverlay() }} className={subRow}><span>{t('vp_start_time')}</span><span className="font-mono text-white/80">{a != null ? fmt(a) : '—'}</span></button>
                         <button onClick={() => { setB(cur); showOverlay() }} className={subRow}><span>{t('vp_end_time')}</span><span className="font-mono text-white/80">{b != null ? fmt(b) : '—'}</span></button>
-                        <button onClick={() => { if (a != null && b != null && b > a) { setRepeat((r) => !r); showOverlay() } }} className={subRow + (repeat ? ' bg-brand-600' : (a == null || b == null || b <= a ? ' opacity-40' : ''))}><span>{t('vp_repeat')}</span></button>
-                        <button onClick={() => { setA(null); setB(null); setRepeat(false); showOverlay() }} className={subRow + ' text-white/70'}><span>{t('vp_reset')}</span></button>
+                        <button onClick={() => { if (a != null && b != null && b > a) { setRepeat(true); showOverlay() } }} className={subRow + (repeat ? ' bg-brand-600' : (a == null || b == null || b <= a ? ' opacity-40' : ''))}><span>{t('vp_repeat_start')}</span></button>
+                        <button onClick={() => { setA(null); setB(null); setRepeat(false); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_repeat_cancel')}</span></button>
                       </div>
                     )}
                   </div>
@@ -261,11 +263,21 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                       {speed}×
                     </button>
                     {openMenu === 'speed' && (
-                      <div className={subMenu}>
-                        {SPEED_MENU.map((s) => (
-                          <button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subRow + (speed === s ? ' bg-brand-600' : '')}><span>{s}×</span></button>
-                        ))}
-                        <button onClick={() => { setSpeed(1); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_orig_speed')}</span></button>
+                      <div className={subMenu + ' min-w-[11rem]'}>
+                        {/* 2 columns: slow (<1×) on the left, 1× and up on the right — fits without vertical cutoff on mobile. */}
+                        <div className="flex">
+                          <div className="flex flex-col flex-1">
+                            {SPEED_MENU.filter((s) => s < 1).map((s) => (
+                              <button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCell + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>
+                            ))}
+                          </div>
+                          <div className="flex flex-col flex-1 border-l border-white/10">
+                            {SPEED_MENU.filter((s) => s >= 1).map((s) => (
+                              <button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCell + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>
+                            ))}
+                          </div>
+                        </div>
+                        <button onClick={() => { setSpeed(1); setOpenMenu(null); showOverlay() }} className={subCell + ' border-t border-white/10 text-white/80'}>{t('vp_orig_speed')}</button>
                       </div>
                     )}
                   </div>
@@ -296,7 +308,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                         {ROTATE_MENU.map((deg) => (
                           <button key={deg} onClick={() => { setRot(deg); setOpenMenu(null); showOverlay() }} className={subRow + ((rot || 90) === deg ? ' bg-brand-600' : '')}><span>{deg}°</span></button>
                         ))}
-                        <button onClick={() => { setRot(0); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_reset')}</span></button>
+                        <button onClick={() => { setRot(0); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_rotate_cancel')}</span></button>
                       </div>
                     )}
                   </div>
