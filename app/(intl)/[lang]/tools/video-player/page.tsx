@@ -15,8 +15,16 @@ const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
 const TIMER_MENU = [15, 30, 60, 120]
 const SPEED_MENU = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3]
 const ROTATE_MENU = [90, 180, 270, 350]
-// Some containers (.mkv/.ts/.flv…) come through with an empty MIME type, so accept by extension too.
-const MEDIA_EXT = /\.(mp4|m4v|mov|mkv|webm|avi|mpe?g|ogv|3gp|flv|ts|mp3|m4a|wav|flac|aac|ogg|oga|opus|wma)$/i
+// Media extensions kept in one place so the picker filter and the drop/folder guard stay in sync.
+const MEDIA_EXTS = [
+  'mp4', 'm4v', 'mov', 'mkv', 'webm', 'avi', 'mpeg', 'mpg', 'ogv', '3gp', '3g2', 'flv', 'f4v', 'ts', 'mts', 'm2ts', 'wmv', 'asf', 'divx', 'vob', // video
+  'mp3', 'm4a', 'm4b', 'wav', 'flac', 'aac', 'ogg', 'oga', 'opus', 'wma', 'aiff', 'aif', 'amr', 'caf', // audio
+]
+// Explicit-extension accept (used on Android so it opens the file picker directly instead of the
+// camera/recorder "작업 선택" chooser that video/*,audio/* triggers).
+const MEDIA_ACCEPT_EXT = MEDIA_EXTS.map((e) => '.' + e).join(',')
+// Some containers (.mkv/.ts/.flv…) arrive with an empty MIME type, so accept by extension too.
+const MEDIA_EXT = new RegExp('\\.(' + MEDIA_EXTS.join('|') + ')$', 'i')
 const isMedia = (f: File) => f.type.startsWith('video/') || f.type.startsWith('audio/') || MEDIA_EXT.test(f.name)
 // mm:ss.d — a compact clock that also shows tenths (handy for A–B precision).
 const fmt = (s: number) => {
@@ -66,6 +74,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [showVol, setShowVol] = useState(false)
   const [volume, setVolume] = useState(1)
   const [audioOnly, setAudioOnly] = useState(false) // no video track — show a music poster so the box isn't 0-height
+  // Android → explicit extensions (skips the camera/recorder chooser); iOS/desktop → wildcards (keeps the
+  // Photos-library / native media picker). Starts as extensions (safe everywhere) and relaxes after mount.
+  const [acceptAttr, setAcceptAttr] = useState(MEDIA_ACCEPT_EXT)
+  useEffect(() => { if (typeof navigator !== 'undefined' && !/Android/i.test(navigator.userAgent)) setAcceptAttr('video/*,audio/*') }, [])
   const videoRef = useRef<HTMLVideoElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -285,9 +297,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4">
         {/* Always-mounted file input so the in-player "open file" button works too (the drop zone unmounts once a video loads). */}
-        {/* Explicit extensions (not video/*,audio/* wildcards) so Android opens the file picker directly
-            instead of the camera/recorder "작업 선택" intent chooser. */}
-        <input ref={inputRef} type="file" accept=".mp4,.m4v,.mov,.mkv,.webm,.avi,.mpeg,.mpg,.ogv,.3gp,.flv,.ts,.mp3,.m4a,.wav,.flac,.aac,.ogg,.oga,.opus,.wma" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+        {/* accept is platform-conditional (see acceptAttr): extensions on Android, wildcards elsewhere. */}
+        <input ref={inputRef} type="file" accept={acceptAttr} className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
