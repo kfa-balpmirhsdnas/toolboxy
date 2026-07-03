@@ -20,9 +20,6 @@ const MEDIA_EXTS = [
   'mp4', 'm4v', 'mov', 'mkv', 'webm', 'avi', 'mpeg', 'mpg', 'ogv', '3gp', '3g2', 'flv', 'f4v', 'ts', 'mts', 'm2ts', 'wmv', 'asf', 'divx', 'vob', // video
   'mp3', 'm4a', 'm4b', 'wav', 'flac', 'aac', 'ogg', 'oga', 'opus', 'wma', 'aiff', 'aif', 'amr', 'caf', // audio
 ]
-// Explicit-extension accept (used on Android so it opens the file picker directly instead of the
-// camera/recorder "작업 선택" chooser that video/*,audio/* triggers).
-const MEDIA_ACCEPT_EXT = MEDIA_EXTS.map((e) => '.' + e).join(',')
 // Some containers (.mkv/.ts/.flv…) arrive with an empty MIME type, so accept by extension too.
 const MEDIA_EXT = new RegExp('\\.(' + MEDIA_EXTS.join('|') + ')$', 'i')
 const isMedia = (f: File) => f.type.startsWith('video/') || f.type.startsWith('audio/') || MEDIA_EXT.test(f.name)
@@ -77,13 +74,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [volume, setVolume] = useState(1)
   const [audioOnly, setAudioOnly] = useState(false) // no video track — show a music poster so the box isn't 0-height
   const [audioMode, setAudioMode] = useState(false)  // "listen only" — hide the frame behind the poster; audio keeps playing (screen off) via MediaSession
-  // Android → explicit extensions (skips the camera/recorder chooser); iOS/desktop → wildcards (keeps the
-  // Photos-library / native media picker). Starts as extensions (safe everywhere) and relaxes after mount.
-  const [acceptAttr, setAcceptAttr] = useState(MEDIA_ACCEPT_EXT)
-  useEffect(() => { if (typeof navigator !== 'undefined' && !/Android/i.test(navigator.userAgent)) setAcceptAttr('video/*,audio/*') }, [])
   const videoRef = useRef<HTMLVideoElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)   // video picker (single category → no Android app chooser)
+  const audioRef = useRef<HTMLInputElement>(null)   // audio picker (single category → no Android app chooser)
   const dirRef = useRef<HTMLInputElement>(null)
 
   // Whole-video loop mirrors the <video>.loop flag.
@@ -322,8 +316,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4">
         {/* Always-mounted file input so the in-player "open file" button works too (the drop zone unmounts once a video loads). */}
-        {/* accept is platform-conditional (see acceptAttr): extensions on Android, wildcards elsewhere. */}
-        <input ref={inputRef} type="file" accept={acceptAttr} className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+        {/* Separate single-category pickers (video/* and audio/*) so Android opens the file picker directly
+            instead of the camera/recorder "작업 선택" chooser that a mixed video+audio accept triggers. */}
+        <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+        <input ref={audioRef} type="file" accept="audio/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
@@ -333,9 +329,16 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             <p className="text-5xl mb-3">🎞️</p>
             <p className="text-base font-medium text-gray-700">{t('vp_drop')}</p>
             <p className="text-xs text-gray-400 mt-1">{t('vp_drop_sub')}</p>
-            <div className="flex justify-center gap-2 mt-4">
-              <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">{t('ui_pick_files')}</button>
-              <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">{t('ui_pick_folder')}</button>
+            <div className="flex flex-wrap justify-center gap-2 mt-4">
+              <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">
+                <ToolIcon name="camera" className="w-4 h-4" />{t('vp_pick_video')}
+              </button>
+              <button type="button" onClick={(e) => { e.stopPropagation(); audioRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>{t('vp_pick_audio')}
+              </button>
+              <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">
+                <ToolIcon name="folder" className="w-4 h-4" />{t('ui_pick_folder')}
+              </button>
             </div>
           </div>
         ) : (
@@ -500,10 +503,15 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               {/* Bottom bar — same tab style as the top strip (individual tabs hanging up from the bottom edge). */}
               {(ovVisible || locked) && (
                 <div className="absolute bottom-0 inset-x-0 flex items-end justify-between gap-1 pointer-events-none">
-                  {/* Open file — left */}
-                  <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('ui_pick_files')} title={t('ui_pick_files')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
-                    <ToolIcon name="folder" className="w-4 h-4" /><span className="hidden sm:inline">{t('ui_pick_files')}</span>
-                  </button>
+                  {/* Open file — left: separate video / audio pickers (single category → no Android app chooser) */}
+                  <div className="flex items-end gap-1">
+                    <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('vp_pick_video')} title={t('vp_pick_video')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+                      <ToolIcon name="camera" className="w-4 h-4" /><span className="hidden sm:inline">{t('vp_pick_video')}</span>
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); audioRef.current?.click() }} aria-label={t('vp_pick_audio')} title={t('vp_pick_audio')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg><span className="hidden sm:inline">{t('vp_pick_audio')}</span>
+                    </button>
+                  </div>
                   {/* Controls — right */}
                   <div className="flex items-end gap-1">
                     {/* Speed — a single row that slides out to the LEFT */}
