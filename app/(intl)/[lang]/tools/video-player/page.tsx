@@ -78,9 +78,17 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const wrapperRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)   // video picker (opens gallery straight — no capture chooser)
   const dirRef = useRef<HTMLInputElement>(null)     // folder picker (dir picker; also reaches audio files)
+  const audioElRef = useRef<HTMLAudioElement>(null) // background player used in audio mode / for audio-only files
 
-  // Whole-video loop mirrors the <video>.loop flag.
-  useEffect(() => { if (videoRef.current) videoRef.current.loop = loopAll }, [loopAll, url])
+  // In "audio mode" (and for audio-only files) playback runs through the <audio> element — browsers keep
+  // audio elements playing when the screen turns off, whereas a <video> gets paused in the background.
+  const useAudioEl = audioMode || audioOnly
+  const activeRef = useRef<HTMLMediaElement | null>(null)
+  useEffect(() => { activeRef.current = useAudioEl ? audioElRef.current : videoRef.current }, [useAudioEl, url])
+  const media = (): HTMLMediaElement | null => (useAudioEl ? audioElRef.current : videoRef.current)
+
+  // Whole-video loop mirrors the .loop flag on both elements.
+  useEffect(() => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) el.loop = loopAll }) }, [loopAll, url])
 
   // Sleep timer — pause the video after N minutes; tick down for the badge.
   useEffect(() => {
@@ -145,13 +153,14 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       else if (typeof v.requestPictureInPicture === 'function') await v.requestPictureInPicture()
     } catch { /* unsupported / dismissed */ }
   }
-  // Center overlay controls: skip ±5/±10s and play/pause.
-  const seekBy = (delta: number) => { const v = videoRef.current; if (v) v.currentTime = Math.max(0, Math.min(v.duration || v.currentTime, v.currentTime + delta)); showOverlay() }
-  const togglePlay = () => { const v = videoRef.current; if (!v) return; if (v.paused) v.play().catch(() => {}); else v.pause(); showOverlay() }
+  // Center overlay controls: skip ±5/±10s and play/pause. These target the active element (video or audio).
+  const seekBy = (delta: number) => { const v = media(); if (v) v.currentTime = Math.max(0, Math.min(v.duration || v.currentTime, v.currentTime + delta)); showOverlay() }
+  const togglePlay = () => { const v = media(); if (!v) return; if (v.paused) v.play().catch(() => {}); else v.pause(); showOverlay() }
   // Custom bottom bar (native controls are hidden): scrub, mute, fullscreen.
-  const seekTo = (time: number) => { const v = videoRef.current; if (v) v.currentTime = time; showOverlay() }
-  const toggleMute = () => { const v = videoRef.current; if (!v) return; v.muted = !v.muted; setMuted(v.muted); showOverlay() }
-  const setVol = (val: number) => { const v = videoRef.current; if (!v) return; v.volume = val; v.muted = val === 0; setVolume(val); setMuted(val === 0); showOverlay() }
+  const seekTo = (time: number) => { const v = media(); if (v) v.currentTime = time; showOverlay() }
+  // Volume/mute apply to BOTH elements so the setting carries across audio↔video switches.
+  const toggleMute = () => { const v = media(); if (!v) return; const nm = !v.muted;[videoRef.current, audioElRef.current].forEach((el) => { if (el) el.muted = nm }); setMuted(nm); showOverlay() }
+  const setVol = (val: number) => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) { el.volume = val; el.muted = val === 0 } }); setVolume(val); setMuted(val === 0); showOverlay() }
   const toggleFs = () => { const el = wrapperRef.current; if (!el) return; if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else el.requestFullscreen?.().catch(() => {}); showOverlay() }
   useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener('fullscreenchange', h); return () => document.removeEventListener('fullscreenchange', h) }, [])
 
@@ -159,7 +168,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     if (!isMedia(f)) return
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || 'frame')
-    setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0); setRot(0)
+    setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0); setRot(0); setAudioMode(false); setAudioOnly(false)
     setCurFile(f)
     // Keep a session history of played videos (newest first, de-duped, capped).
     setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 60)) // eslint-disable-line
@@ -228,8 +237,27 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // Revoke the object URL on unmount.
   useEffect(() => () => { if (url) URL.revokeObjectURL(url) }, [url])
 
-  // Keep the <video> playbackRate in sync with the chosen speed.
-  useEffect(() => { if (videoRef.current) videoRef.current.playbackRate = speed }, [speed, url])
+  // Keep both elements' playbackRate in sync with the chosen speed.
+  useEffect(() => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) el.playbackRate = speed }) }, [speed, url])
+
+  // Transfer playback between the <video> and <audio> elements when audio mode / audio-only flips.
+  useEffect(() => {
+    const v = videoRef.current, aEl = audioElRef.current
+    if (!v || !aEl || !url) return
+    if (useAudioEl) {
+      aEl.playbackRate = speed; aEl.volume = v.volume; aEl.muted = v.muted
+      const wasPlaying = !v.paused
+      try { aEl.currentTime = v.currentTime } catch { /* not seekable yet */ }
+      v.pause()
+      if (wasPlaying) aEl.play().then(() => { try { if (Math.abs(aEl.currentTime - v.currentTime) > 0.4) aEl.currentTime = v.currentTime } catch { /* ignore */ } }).catch(() => {})
+    } else {
+      const wasPlaying = !aEl.paused
+      try { v.currentTime = aEl.currentTime } catch { /* ignore */ }
+      aEl.pause()
+      if (wasPlaying) v.play().catch(() => {})
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [useAudioEl])
 
   // MediaSession — lock-screen controls + background audio (keeps playing with the screen off on Android).
   useEffect(() => {
@@ -242,7 +270,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       const MM = (window as any).MediaMetadata
       if (MM) ms.metadata = new MM({ title: base, artist: 'ToolBoxy', artwork: [{ src: '/icons/video-player.png', sizes: '512x512', type: 'image/png' }] })
     } catch { /* ignore */ }
-    const v = () => videoRef.current
+    const v = () => activeRef.current || videoRef.current
     const set = (action: string, handler: any) => { try { ms.setActionHandler(action, handler) } catch { /* unsupported action */ } }
     set('play', () => v()?.play().catch(() => {}))
     set('pause', () => v()?.pause())
@@ -268,7 +296,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     if (!repeat || a == null || b == null || b <= a) return
     let raf = 0
     const tick = () => {
-      const v = videoRef.current
+      const v = (audioElRef.current && !audioElRef.current.paused) ? audioElRef.current : videoRef.current
       if (v && !v.paused && v.currentTime >= b - 0.02) v.currentTime = a
       raf = requestAnimationFrame(tick)
     }
@@ -376,6 +404,19 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
         <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <input ref={dirRef} type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onChange={(e) => { addFolder(e.target.files); e.target.value = '' }} />
+        {/* Background audio element — used in audio mode / for audio-only files (keeps playing screen-off). */}
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <audio ref={audioElRef} src={url || undefined} preload="metadata"
+          onPlay={() => { setPlaying(true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'playing' } catch { /* ignore */ } }}
+          onPause={() => { setPlaying(false); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
+          onVolumeChange={(e) => { setMuted(e.currentTarget.muted); setVolume(e.currentTarget.volume) }}
+          onTimeUpdate={(e) => {
+            if (!useAudioEl) return
+            const el = e.currentTarget; setCur(el.currentTime)
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+            const ms = (navigator as any).mediaSession
+            if (ms?.setPositionState && el.duration && isFinite(el.duration)) { try { ms.setPositionState({ duration: el.duration, position: Math.min(el.currentTime, el.duration), playbackRate: el.playbackRate || 1 }) } catch { /* ignore */ } }
+          }} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
@@ -419,6 +460,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 onPause={() => { setPlaying(false); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
                 onVolumeChange={(e) => { setMuted(e.currentTarget.muted); setVolume(e.currentTarget.volume) }}
                 onTimeUpdate={(e) => {
+                  if (useAudioEl) return
                   const v = e.currentTarget; setCur(v.currentTime)
                   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
                   const ms = (navigator as any).mediaSession
