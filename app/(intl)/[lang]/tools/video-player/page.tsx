@@ -312,6 +312,64 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     <svg viewBox="0 0 24 24" fill={saved.has(key) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" /></svg>
   )
 
+  // The player's control bar (file pickers + speed/volume/fullscreen/audio-mode/PiP). Rendered below the video
+  // when inline (always visible), and as a bottom overlay in fullscreen (where there is no "below").
+  const bottomBar = (
+    <>
+      {/* Open file — left: separate video / audio pickers (single category → no Android app chooser) */}
+      <div className="flex items-end gap-1">
+        <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('vp_pick_video')} title={t('vp_pick_video')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+          <ToolIcon name="camera" className="w-4 h-4" /><span className="hidden sm:inline">{t('vp_pick_video')}</span>
+        </button>
+        <button onClick={(e) => { e.stopPropagation(); audioRef.current?.click() }} aria-label={t('vp_pick_audio')} title={t('vp_pick_audio')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg><span className="hidden sm:inline">{t('vp_pick_audio')}</span>
+        </button>
+      </div>
+      {/* Controls — right */}
+      <div className="flex items-end gap-1">
+        {/* Speed — a single row that slides out to the LEFT */}
+        <div className="relative">
+          <button onClick={() => { setOpenMenu((m) => m === 'speed' ? null : 'speed'); showOverlay() }} aria-label={t('vp_speed')} title={t('vp_speed')}
+            className={ovBtnB + ' tabular-nums' + (speed !== 1 ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>{speed}×</button>
+          {openMenu === 'speed' && (
+            <div className={subMenuLeft}>
+              {SPEED_MENU.map((s) => (<button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCellH + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>))}
+            </div>
+          )}
+        </div>
+        {/* Volume — tap shows a gauge sliding out to the LEFT */}
+        <div className="relative">
+          <button onClick={() => { setShowVol((s) => !s); showOverlay() }} aria-label="volume" className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+            {(muted || volume === 0)
+              ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
+              : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
+          </button>
+          {showVol && (
+            <div className="absolute right-full top-0 mr-1 h-9 px-3 flex items-center gap-2 rounded-lg bg-black/85 backdrop-blur pointer-events-auto z-20">
+              <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume level" className="w-24 h-1 accent-white cursor-pointer" />
+              <span className="text-[10px] tabular-nums text-white/80 w-6 text-right">{Math.round(volume * 100)}</span>
+            </div>
+          )}
+        </div>
+        {/* Fullscreen */}
+        <button onClick={toggleFs} aria-label="fullscreen" className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+          {fs
+            ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" /><path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" /></svg>
+            : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /></svg>}
+        </button>
+        {/* Audio (listen-only) mode — hides the frame, keeps audio playing with the screen off (MediaSession) */}
+        <button onClick={() => { setAudioMode((m) => !m); showOverlay() }} aria-label={t('vp_audio_mode')} title={t('vp_audio_mode')}
+          className={ovBtnB + (audioMode ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a1 1 0 0 1-1-1v-8a9 9 0 0 1 18 0v8a1 1 0 0 1-1 1h-2a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" /></svg>
+        </button>
+        {/* Background play (PiP) — far right */}
+        <button onClick={() => { togglePip(); showOverlay() }} aria-label={t('vp_bg')} title={t('vp_bg')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
+        </button>
+      </div>
+    </>
+  )
+
   return (
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4">
@@ -346,12 +404,16 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             <div ref={wrapperRef} onClick={toggleOverlay} className={'scroll-mt-16 ' + (fs ? 'fixed inset-0 z-50 flex items-center justify-center bg-black' : '')}>
               {/* Inner box sizes to the video so the overlays hug the VIDEO (not the fullscreen screen);
                   in fullscreen the outer flex centers this box vertically. */}
-              <div className={'relative overflow-hidden bg-black w-full ' + (audioOnly || audioMode ? 'min-h-[220px] ' : '') + (fs ? '' : 'rounded-xl')}>
+              {/* Inline uses a min-height so short (landscape) clips are letterboxed — gives the top tabs + center
+                  cluster room instead of cramming into a thin box. object-contain centers the video in the black. */}
+              <div className={'relative overflow-hidden bg-black w-full flex items-center justify-center '
+                + (fs ? '' : 'rounded-xl ')
+                + ((audioOnly || audioMode) ? 'min-h-[50vh] sm:min-h-[260px] ' : (fs ? '' : 'min-h-[50vh] sm:min-h-0 '))}>
               {/* Native controls hidden — the top tabs + center cluster + bottom bar below are our own. */}
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video ref={videoRef} src={url} playsInline
                 style={{ transform: rot ? `rotate(${rot}deg)` : undefined }}
-                className={'block w-full transition-transform ' + (fs ? 'max-h-screen' : 'max-h-[60vh]')}
+                className={'block max-w-full object-contain transition-transform ' + (fs ? 'max-h-screen w-full' : 'w-full max-h-[50vh] sm:max-h-[60vh]')}
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget
                   setDur(v.duration); v.playbackRate = speed; v.loop = loopAll; setAudioOnly(!v.videoWidth); showOverlay()
@@ -500,64 +562,20 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   </div>
                 </div>
               )}
-              {/* Bottom bar — same tab style as the top strip (individual tabs hanging up from the bottom edge). */}
-              {(ovVisible || locked) && (
+              {/* Fullscreen: the control bar rides as a bottom overlay (there's no room "below" the video). */}
+              {fs && (ovVisible || locked) && (
                 <div className="absolute bottom-0 inset-x-0 flex items-end justify-between gap-1 pointer-events-none">
-                  {/* Open file — left: separate video / audio pickers (single category → no Android app chooser) */}
-                  <div className="flex items-end gap-1">
-                    <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('vp_pick_video')} title={t('vp_pick_video')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
-                      <ToolIcon name="camera" className="w-4 h-4" /><span className="hidden sm:inline">{t('vp_pick_video')}</span>
-                    </button>
-                    <button onClick={(e) => { e.stopPropagation(); audioRef.current?.click() }} aria-label={t('vp_pick_audio')} title={t('vp_pick_audio')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg><span className="hidden sm:inline">{t('vp_pick_audio')}</span>
-                    </button>
-                  </div>
-                  {/* Controls — right */}
-                  <div className="flex items-end gap-1">
-                    {/* Speed — a single row that slides out to the LEFT */}
-                    <div className="relative">
-                      <button onClick={() => { setOpenMenu((m) => m === 'speed' ? null : 'speed'); showOverlay() }} aria-label={t('vp_speed')} title={t('vp_speed')}
-                        className={ovBtnB + ' tabular-nums' + (speed !== 1 ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>{speed}×</button>
-                      {openMenu === 'speed' && (
-                        <div className={subMenuLeft}>
-                          {SPEED_MENU.map((s) => (<button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={subCellH + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>))}
-                        </div>
-                      )}
-                    </div>
-                    {/* Volume — tap shows a vertical gauge above */}
-                    <div className="relative">
-                      <button onClick={() => { setShowVol((s) => !s); showOverlay() }} aria-label="volume" className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
-                        {(muted || volume === 0)
-                          ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
-                          : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
-                      </button>
-                      {showVol && (
-                        <div className="absolute right-full top-0 mr-1 h-9 px-3 flex items-center gap-2 rounded-lg bg-black/85 backdrop-blur pointer-events-auto z-20">
-                          <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume level" className="w-24 h-1 accent-white cursor-pointer" />
-                          <span className="text-[10px] tabular-nums text-white/80 w-6 text-right">{Math.round(volume * 100)}</span>
-                        </div>
-                      )}
-                    </div>
-                    {/* Fullscreen */}
-                    <button onClick={toggleFs} aria-label="fullscreen" className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
-                      {fs
-                        ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" /><path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" /></svg>
-                        : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /></svg>}
-                    </button>
-                    {/* Audio (listen-only) mode — hides the frame, keeps audio playing with the screen off (MediaSession) */}
-                    <button onClick={() => { setAudioMode((m) => !m); showOverlay() }} aria-label={t('vp_audio_mode')} title={t('vp_audio_mode')}
-                      className={ovBtnB + (audioMode ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a1 1 0 0 1-1-1v-8a9 9 0 0 1 18 0v8a1 1 0 0 1-1 1h-2a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" /></svg>
-                    </button>
-                    {/* Background play (PiP) — far right */}
-                    <button onClick={() => { togglePip(); showOverlay() }} aria-label={t('vp_bg')} title={t('vp_bg')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
-                    </button>
-                  </div>
+                  {bottomBar}
                 </div>
               )}
               </div>
             </div>
+            {/* Inline: the control bar sits below the video as a persistent black toolbar (always visible). */}
+            {!fs && (
+              <div className="mt-2 flex items-end justify-between gap-1 rounded-xl bg-black px-1.5 pt-1.5">
+                {bottomBar}
+              </div>
+            )}
 
             {/* Options — frame capture / A–B repeat / speed combined into tabs. Collapsed by default. */}
             <div className="rounded-2xl border border-gray-200 overflow-hidden">
