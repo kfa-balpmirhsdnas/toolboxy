@@ -377,7 +377,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
         {/* Separate single-category pickers (video/* and audio/*) so Android opens the file picker directly
             instead of the camera/recorder "작업 선택" chooser that a mixed video+audio accept triggers. */}
         <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
-        <input ref={audioRef} type="file" accept="audio/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+        {/* Concrete audio extensions (not audio/*) so Android skips the Sound Recorder capture option and
+            opens the file picker directly. isMedia still covers empty-MIME audio on playback. */}
+        <input ref={audioRef} type="file" accept=".mp3,.m4a,.m4b,.wav,.flac,.aac,.ogg,.oga,.opus,.wma,.aiff,.aif,.amr,.caf" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
