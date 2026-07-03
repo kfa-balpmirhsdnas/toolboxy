@@ -79,6 +79,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const inputRef = useRef<HTMLInputElement>(null)   // video picker (opens gallery straight — no capture chooser)
   const dirRef = useRef<HTMLInputElement>(null)     // folder picker (dir picker; also reaches audio files)
   const audioElRef = useRef<HTMLAudioElement>(null) // background player used in audio mode / for audio-only files
+  const pipPlayingRef = useRef(true)                // play state sampled while in PiP, to restore it on exit
 
   // In "audio mode" (and for audio-only files) playback runs through the <audio> element — browsers keep
   // audio elements playing when the screen turns off, whereas a <video> gets paused in the background.
@@ -163,13 +164,23 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const setVol = (val: number) => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) { el.volume = val; el.muted = val === 0 } }); setVolume(val); setMuted(val === 0); showOverlay() }
   const toggleFs = () => { const el = wrapperRef.current; if (!el) return; if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else el.requestFullscreen?.().catch(() => {}); showOverlay() }
   useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener('fullscreenchange', h); return () => document.removeEventListener('fullscreenchange', h) }, [])
-  // Returning from PiP resumes inline playback (some browsers pause the video when the PiP window closes).
+  // Some browsers flip the play state when the PiP window closes. Sample the play state WHILE in PiP
+  // (stopping before the exit transition can corrupt it), then restore that exact state after exit.
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
-    const onLeave = () => { if (!useAudioEl) v.play().catch(() => {}) }
+    let poll = 0
+    const onEnter = () => { pipPlayingRef.current = !v.paused; poll = window.setInterval(() => { pipPlayingRef.current = !v.paused }, 200) }
+    const onLeave = () => {
+      if (poll) { clearInterval(poll); poll = 0 }
+      const want = pipPlayingRef.current
+      if (useAudioEl) return
+      // Enforce after the browser settles so our decision wins over its own pause/play on exit.
+      setTimeout(() => { const el = videoRef.current; if (!el) return; if (want && el.paused) el.play().catch(() => {}); else if (!want && !el.paused) el.pause() }, 120)
+    }
+    v.addEventListener('enterpictureinpicture', onEnter)
     v.addEventListener('leavepictureinpicture', onLeave)
-    return () => v.removeEventListener('leavepictureinpicture', onLeave)
+    return () => { v.removeEventListener('enterpictureinpicture', onEnter); v.removeEventListener('leavepictureinpicture', onLeave); if (poll) clearInterval(poll) }
   }, [url, useAudioEl])
 
   const load = useCallback((f: File) => {
