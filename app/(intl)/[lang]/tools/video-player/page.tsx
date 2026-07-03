@@ -53,12 +53,16 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [ovVisible, setOvVisible] = useState(true) // overlay shown (auto-hides 5s after last interaction when unlocked)
   const hideRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [histView, setHistView] = useState<'list' | 'thumbnails'>('list')
+  const [histTab, setHistTab] = useState<'all' | 'saved'>('all') // 전체 / 보관
+  const [saved, setSaved] = useState<Set<string>>(() => new Set()) // starred (kept) clip keys
+  const [optOpen, setOptOpen] = useState(false) // options box (frame/ab/speed) — collapsed by default
   const [thumbs, setThumbs] = useState<Record<string, string>>({})
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(false)
   const [fs, setFs] = useState(false)
   const [showVol, setShowVol] = useState(false)
   const [volume, setVolume] = useState(1)
+  const [audioOnly, setAudioOnly] = useState(false) // no video track — show a music poster so the box isn't 0-height
   const videoRef = useRef<HTMLVideoElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -141,7 +145,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener('fullscreenchange', h); return () => document.removeEventListener('fullscreenchange', h) }, [])
 
   const load = useCallback((f: File) => {
-    if (!f.type.startsWith('video/')) return
+    if (!f.type.startsWith('video/') && !f.type.startsWith('audio/')) return
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || 'frame')
     setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0); setRot(0)
@@ -167,6 +171,16 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     return () => { alive = false }
   }, [])
 
+  // "보관" (Saved) tab — starred clip keys, persisted so the shelf survives refreshes.
+  useEffect(() => { try { const s = localStorage.getItem('vp_saved_v1'); if (s) setSaved(new Set(JSON.parse(s))) } catch { /* ignore */ } }, [])
+  const toggleSaved = useCallback((key: string) => {
+    setSaved((prev) => {
+      const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key)
+      try { localStorage.setItem('vp_saved_v1', JSON.stringify(Array.from(n))) } catch { /* ignore */ }
+      return n
+    })
+  }, [])
+
   // Play a clip from the history list, then scroll the player back up into view (the list sits below it).
   const playFromHistory = useCallback((f: File) => {
     load(f)
@@ -177,7 +191,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // played until you click one. Folder selection = webkitdirectory (desktop + Android Chrome; not iOS).
   const addFolder = useCallback((list: FileList | null) => {
     if (!list) return
-    const vids = Array.from(list).filter((f) => f.type.startsWith('video/')).sort((a, b) => a.name.localeCompare(b.name))
+    const vids = Array.from(list).filter((f) => f.type.startsWith('video/') || f.type.startsWith('audio/')).sort((a, b) => a.name.localeCompare(b.name))
     if (!vids.length) return
     setHistory((h) => {
       const seen = new Set(h.map((x) => x.name + '|' + x.size))
@@ -258,12 +272,17 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const subCellH = 'h-full flex items-center px-2.5 hover:bg-white/15 transition-colors tabular-nums'
   const subRow = 'w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left hover:bg-white/15 transition-colors tabular-nums'
   const subCell = 'w-full flex items-center justify-center px-3 py-1.5 hover:bg-white/15 transition-colors tabular-nums'
+  // History filtered by the 전체 / 보관 tab.
+  const shownHistory = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
+  const starSvg = (key: string) => (
+    <svg viewBox="0 0 24 24" fill={saved.has(key) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" /></svg>
+  )
 
   return (
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4">
         {/* Always-mounted file input so the in-player "open file" button works too (the drop zone unmounts once a video loads). */}
-        <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+        <input ref={inputRef} type="file" accept="video/*,audio/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
@@ -283,7 +302,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             <div ref={wrapperRef} onClick={toggleOverlay} className={'scroll-mt-16 ' + (fs ? 'fixed inset-0 z-50 flex items-center justify-center bg-black' : '')}>
               {/* Inner box sizes to the video so the overlays hug the VIDEO (not the fullscreen screen);
                   in fullscreen the outer flex centers this box vertically. */}
-              <div className={'relative overflow-hidden bg-black w-full ' + (fs ? '' : 'rounded-xl')}>
+              <div className={'relative overflow-hidden bg-black w-full ' + (audioOnly ? 'min-h-[220px] ' : '') + (fs ? '' : 'rounded-xl')}>
               {/* Native controls hidden — the top tabs + center cluster + bottom bar below are our own. */}
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video ref={videoRef} src={url} playsInline
@@ -291,7 +310,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 className={'block w-full transition-transform ' + (fs ? 'max-h-screen' : 'max-h-[60vh]')}
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget
-                  setDur(v.duration); v.playbackRate = speed; v.loop = loopAll; showOverlay()
+                  setDur(v.duration); v.playbackRate = speed; v.loop = loopAll; setAudioOnly(!v.videoWidth); showOverlay()
                   // Auto-play as soon as the file loads (Q2): selecting the file is a user gesture, so
                   // sound is normally allowed; if a browser blocks it, fall back to muted autoplay.
                   v.muted = false
@@ -300,6 +319,13 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
                 onVolumeChange={(e) => { setMuted(e.currentTarget.muted); setVolume(e.currentTarget.volume) }}
                 onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
+              {/* Audio-only poster — the <video> box collapses with no video track, so fill it with a music mark + filename. */}
+              {audioOnly && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/80 pointer-events-none">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-14 h-14 opacity-90"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+                  <span className="max-w-[80%] truncate text-sm font-medium">{base}</span>
+                </div>
+              )}
               {/* Overlay tab controls — container passes taps through; only buttons/menus capture.
                   Auto-hides 5s after the last interaction unless locked. Each tab opens a submenu below it. */}
               {(ovVisible || locked) && (
@@ -354,7 +380,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                         <button onClick={() => { setA(cur); showOverlay() }} className={subRow}><span>{t('vp_start_time')}</span><span className="font-mono text-white/80">{a != null ? fmt(a) : '—'}</span></button>
                         <button onClick={() => { setB(cur); showOverlay() }} className={subRow}><span>{t('vp_end_time')}</span><span className="font-mono text-white/80">{b != null ? fmt(b) : '—'}</span></button>
                         <button onClick={() => { if (repeat) { setRepeat(false); showOverlay() } else if (a != null && b != null && b > a) { setRepeat(true); showOverlay() } }} className={subRow + (repeat ? ' bg-brand-600' : (a == null || b == null || b <= a ? ' opacity-40' : ''))}><span>{repeat ? t('vp_repeat_stop') : t('vp_repeat_start')}</span></button>
-                        <button onClick={() => { setA(null); setB(null); setRepeat(false); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_repeat_cancel')}</span></button>
+                        <button onClick={() => { setA(null); setB(null); setRepeat(false); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_repeat_cancel')}</span></button>
                       </div>
                     )}
                   </div>
@@ -473,20 +499,21 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               </div>
             </div>
 
-            {/* Options — frame capture / A–B repeat / speed combined into tabs. */}
+            {/* Options — frame capture / A–B repeat / speed combined into tabs. Collapsed by default. */}
             <div className="rounded-2xl border border-gray-200 overflow-hidden">
-              <div className="flex items-center gap-1 border-b border-gray-200 bg-gray-50 px-2">
+              <div className={'flex items-center gap-1 bg-gray-50 px-2 ' + (optOpen ? 'border-b border-gray-200' : '')}>
                 {([['frame', t('vp_frame')], ['ab', t('vp_ab')], ['speed', t('vp_speed')]] as const).map(([id, label]) => (
-                  <button key={id} onClick={() => setOptTab(id)}
-                    className={'px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (optTab === id ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>
+                  <button key={id} onClick={() => { setOptTab(id); setOptOpen(true) }}
+                    className={'px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (optOpen && optTab === id ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>
                     {label}
                   </button>
                 ))}
-                <button onClick={() => { setUrl(''); setA(null); setB(null); setRepeat(false); setCurFile(null) }} title={t('ui_clear')} aria-label={t('ui_clear')}
-                  className="ml-auto inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 hover:text-gray-700">
-                  <ToolIcon name="refresh" className="w-4 h-4" />{t('ui_clear')}
+                <button onClick={() => setOptOpen((o) => !o)} aria-label={optOpen ? t('ui_collapse') : t('ui_expand')} title={optOpen ? t('ui_collapse') : t('ui_expand')}
+                  className="ml-auto inline-flex items-center px-2.5 py-2 text-gray-400 hover:text-gray-600">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={'w-4 h-4 transition-transform ' + (optOpen ? 'rotate-180' : '')}><path d="m6 9 6 6 6-6" /></svg>
                 </button>
               </div>
+              {optOpen && (
               <div className="p-4">
                 {optTab === 'frame' && (
                   <div className="flex flex-wrap items-center gap-2">
@@ -514,10 +541,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                         className="px-2.5 py-1.5 rounded-lg text-sm font-mono tabular-nums bg-brand-50 text-brand-700 border border-brand-200 disabled:opacity-40 hover:bg-brand-100">B {b != null ? fmt(b) : '—'}</button>
                       <button onClick={() => setRepeat((r) => !r)} disabled={a == null || b == null || b <= a}
                         className={chipBtn + ' inline-flex items-center gap-1.5 disabled:opacity-40 ' + (repeat ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
-                        <ToolIcon name="refresh" className="w-3.5 h-3.5" />{t('vp_repeat')}
+                        <ToolIcon name="refresh" className="w-3.5 h-3.5" />{t('vp_repeat_start')}
                       </button>
                       {(a != null || b != null) && (
-                        <button onClick={() => { setA(null); setB(null); setRepeat(false) }} className="px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 transition-colors">{t('vp_clear')}</button>
+                        <button onClick={() => { setA(null); setB(null); setRepeat(false) }} className="px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 transition-colors">{t('vp_repeat_cancel')}</button>
                       )}
                     </div>
                   </div>
@@ -531,6 +558,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   </div>
                 )}
               </div>
+              )}
             </div>
           </>
         )}
@@ -539,7 +567,15 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
         {history.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-gray-700">{t('vp_history')}</p>
+              {/* 전체 / 보관 tabs (replaces the old "재생 기록" title) */}
+              <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
+                {([['all', t('vp_tab_all')], ['saved', t('vp_tab_saved')]] as const).map(([id, label]) => (
+                  <button key={id} onClick={() => setHistTab(id)}
+                    className={'px-3 py-1 rounded-md font-semibold transition-colors ' + (histTab === id ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>
+                    {label}{id === 'saved' && saved.size > 0 ? ` ${saved.size}` : ''}
+                  </button>
+                ))}
+              </div>
               <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
                 {(['list', 'thumbnails'] as const).map((v) => (
                   <button key={v} onClick={() => setHistView(v)}
@@ -550,37 +586,57 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 ))}
               </div>
             </div>
-            {histView === 'thumbnails' ? (
+            {shownHistory.length === 0 ? (
+              <p className="flex items-center justify-center gap-1.5 text-sm text-gray-400 text-center py-6">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" /></svg>
+                {t('vp_save')}
+              </p>
+            ) : histView === 'thumbnails' ? (
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                {history.map((h, i) => {
+                {shownHistory.map((h, i) => {
                   const key = h.name + '|' + h.size, on = h.file === curFile
                   return (
-                    <button key={i} onClick={() => playFromHistory(h.file)} title={h.name}
+                    <div key={i} title={h.name}
                       className={'relative aspect-video rounded-xl overflow-hidden border-2 bg-gray-900 transition-colors ' + (on ? 'border-brand-500' : 'border-gray-200 hover:border-brand-300')}>
-                      {thumbs[key]
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        ? <img src={thumbs[key]} alt={h.name} className="w-full h-full object-cover" />
-                        : <span className="absolute inset-0 flex items-center justify-center text-2xl">🎞️</span>}
-                      <span className="absolute bottom-0 inset-x-0 px-1.5 py-0.5 bg-black/60 text-white text-[10px] truncate text-left">{h.name}</span>
-                    </button>
+                      <button onClick={() => playFromHistory(h.file)} className="absolute inset-0 w-full h-full">
+                        {thumbs[key]
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          ? <img src={thumbs[key]} alt={h.name} className="w-full h-full object-cover" />
+                          : <span className="absolute inset-0 flex items-center justify-center text-2xl">🎞️</span>}
+                        <span className="absolute bottom-0 inset-x-0 px-1.5 py-0.5 bg-black/60 text-white text-[10px] truncate text-left">{h.name}</span>
+                      </button>
+                      <button onClick={() => toggleSaved(key)} aria-label={t('vp_save')} title={t('vp_save')}
+                        className={'absolute top-1 left-1 z-10 p-1 rounded-md bg-black/40 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-white/70 hover:text-amber-300')}>
+                        {starSvg(key)}
+                      </button>
+                    </div>
                   )
                 })}
               </div>
             ) : (
               <div className="rounded-xl border border-gray-100 overflow-hidden">
                 <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100">
+                  <span className="w-5 shrink-0" />
                   <span className="flex-1 min-w-0">{t('vp_col_name')}</span>
                   <span className="shrink-0 w-16 text-right">{t('vp_col_size')}</span>
                 </div>
                 <div className="divide-y divide-gray-100 max-h-72 overflow-auto">
-                  {history.map((h, i) => (
-                    <button key={i} onClick={() => playFromHistory(h.file)}
-                      className={'flex items-center gap-2 w-full px-4 py-2 text-left text-sm transition-colors ' + (h.file === curFile ? 'bg-brand-50' : 'hover:bg-gray-50')}>
-                      <svg viewBox="0 0 24 24" fill="currentColor" className={'w-4 h-4 shrink-0 ' + (h.file === curFile ? 'text-brand-600' : 'text-gray-300')}><path d="M8 5v14l11-7z" /></svg>
-                      <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{h.name}</span>
-                      <span className="shrink-0 w-16 text-right text-gray-400 tabular-nums">{fmtSize(h.size)}</span>
-                    </button>
-                  ))}
+                  {shownHistory.map((h, i) => {
+                    const key = h.name + '|' + h.size
+                    return (
+                      <div key={i} className={'flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors ' + (h.file === curFile ? 'bg-brand-50' : 'hover:bg-gray-50')}>
+                        <button onClick={() => toggleSaved(key)} aria-label={t('vp_save')} title={t('vp_save')}
+                          className={'shrink-0 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400')}>
+                          {starSvg(key)}
+                        </button>
+                        <button onClick={() => playFromHistory(h.file)} className="flex items-center gap-2 flex-1 min-w-0 text-left">
+                          <svg viewBox="0 0 24 24" fill="currentColor" className={'w-4 h-4 shrink-0 ' + (h.file === curFile ? 'text-brand-600' : 'text-gray-300')}><path d="M8 5v14l11-7z" /></svg>
+                          <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{h.name}</span>
+                        </button>
+                        <span className="shrink-0 w-16 text-right text-gray-400 tabular-nums">{fmtSize(h.size)}</span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}

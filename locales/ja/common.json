@@ -4180,6 +4180,9 @@
   "toolui": {
     "vp_related": "関連ツール：",
     "vp_history": "再生履歴",
+    "vp_tab_all": "すべて",
+    "vp_tab_saved": "保存",
+    "vp_save": "保存",
     "vp_col_name": "ファイル名",
     "vp_col_size": "サイズ",
     "vp_timer": "スリープタイマー（自動停止）",
@@ -5767,6 +5770,8 @@
     "stt_denied": "マイクへのアクセスが拒否されました。マイクを許可して再度お試しください。",
     "stt_transcript": "文字起こし",
     "ui_clear": "クリア",
+    "ui_collapse": "折りたたむ",
+    "ui_expand": "展開",
     "stt_ph": "音声がここに表示されます...",
     "stt_l_enus": "英語(米国)",
     "stt_l_engb": "英語(英国)",

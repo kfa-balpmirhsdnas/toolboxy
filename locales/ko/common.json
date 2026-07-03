@@ -4207,6 +4207,9 @@
   "toolui": {
     "vp_related": "관련 도구:",
     "vp_history": "재생 기록",
+    "vp_tab_all": "전체",
+    "vp_tab_saved": "보관",
+    "vp_save": "보관",
     "vp_col_name": "파일명",
     "vp_col_size": "크기",
     "vp_timer": "취침 타이머 (자동 정지)",
@@ -5794,6 +5797,8 @@
     "stt_denied": "마이크 접근이 거부되었습니다. 마이크 권한을 허용하고 다시 시도하세요.",
     "stt_transcript": "변환 텍스트",
     "ui_clear": "지우기",
+    "ui_collapse": "접기",
+    "ui_expand": "펼치기",
     "stt_ph": "음성이 여기에 표시됩니다...",
     "stt_l_enus": "영어(미국)",
     "stt_l_engb": "영어(영국)",
