@@ -54,11 +54,11 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [curFile, setCurFile] = useState<File | null>(null)
   // Overlay controls (on top of the video; the tab controls below stay as-is).
   const [rot, setRot] = useState(0)            // display rotation 0/90/180/270
-  const [loopAll, setLoopAll] = useState(false) // whole-video loop
+  const [repeatMode, setRepeatMode] = useState<'off' | 'one' | 'all'>('off') // 한곡 반복 / 전체 반복
   const [sleepMin, setSleepMin] = useState(0)   // sleep-timer minutes (0 = off)
   const [sleepLeft, setSleepLeft] = useState(0) // seconds remaining
   const sleepRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const [openMenu, setOpenMenu] = useState<null | 'timer' | 'ab' | 'speed' | 'capture' | 'rotate'>(null) // which overlay submenu is open
+  const [openMenu, setOpenMenu] = useState<null | 'timer' | 'ab' | 'speed' | 'capture' | 'rotate' | 'repeat'>(null) // which overlay submenu is open
   const [locked, setLocked] = useState(false)   // keep the overlay pinned open
   const [ovVisible, setOvVisible] = useState(true) // overlay shown (auto-hides 5s after last interaction when unlocked)
   const hideRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -91,7 +91,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const media = (): HTMLMediaElement | null => (useAudioEl ? audioElRef.current : videoRef.current)
 
   // Whole-video loop mirrors the .loop flag on both elements.
-  useEffect(() => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) el.loop = loopAll }) }, [loopAll, url])
+  useEffect(() => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) el.loop = repeatMode === 'one' }) }, [repeatMode, url])
 
   // Sleep timer — pause the video after N minutes; tick down for the badge.
   useEffect(() => {
@@ -185,19 +185,29 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     return () => { v.removeEventListener('enterpictureinpicture', onEnter); v.removeEventListener('leavepictureinpicture', onLeave); if (poll) clearInterval(poll) }
   }, [url, useAudioEl])
 
-  const load = useCallback((f: File) => {
+  // advance = playlist auto-advance (repeat-all): keep the history order stable so "next" cycles the whole list.
+  const load = useCallback((f: File, advance = false) => {
     if (!isMedia(f)) return
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || 'frame')
     setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0); setRot(0); setAudioMode(false); setAudioOnly(false)
     switchPosRef.current = 0; pendingVideoSeekRef.current = 0
     setCurFile(f)
-    // Keep a session history of played videos (newest first, de-duped, capped).
-    setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 60)) // eslint-disable-line
+    if (!advance) {
+      // Keep a session history of played videos (newest first, de-duped, capped).
+      setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 60)) // eslint-disable-line
+    }
     // Persist the clip so it survives a refresh (large files are skipped inside vhPut).
     vhPut({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type, ts: Date.now(), blob: f })
     trackToolUsed('video-player')
   }, [])
+  // Play the next clip in the history list (repeat-all), wrapping to the first.
+  function playNext() {
+    if (!history.length) return
+    const idx = curFile ? history.findIndex((x) => x.file === curFile) : -1
+    const next = history[(idx + 1) % history.length]
+    if (next) load(next.file, true)
+  }
 
   // Restore persisted play-history (blobs kept in IndexedDB) on mount so it survives refreshes.
   useEffect(() => {
@@ -223,8 +233,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     })
   }, [])
 
-  // Play a clip from the history list, then scroll the player back up into view (the list sits below it).
-  const playFromHistory = useCallback((f: File) => {
+  // Load a clip and scroll the player up into view — used for file pickers, drops, and history clicks.
+  const loadAndScroll = useCallback((f: File) => {
     load(f)
     requestAnimationFrame(() => wrapperRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   }, [load])
@@ -426,7 +436,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
         {/* Always-mounted inputs so the in-player buttons work too (the drop zone unmounts once a video loads).
             Video (video/*) opens the gallery straight; the folder picker is a directory picker — neither
             triggers Android's camera/recorder capture chooser. Audio files are opened via the folder. */}
-        <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+        <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && loadAndScroll(e.target.files[0])} />
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <input ref={dirRef} type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onChange={(e) => { addFolder(e.target.files); e.target.value = '' }} />
         {/* Background audio element — used in audio mode / for audio-only files (keeps playing screen-off). */}
@@ -434,6 +444,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
         <audio ref={audioElRef} src={url || undefined} preload="metadata"
           onPlay={() => { setPlaying(true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'playing' } catch { /* ignore */ } }}
           onPause={() => { setPlaying(false); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
+          onEnded={() => { if (repeatMode === 'all' && useAudioEl) playNext() }}
           onVolumeChange={(e) => { setMuted(e.currentTarget.muted); setVolume(e.currentTarget.volume) }}
           onTimeUpdate={(e) => {
             if (!useAudioEl) return
@@ -444,7 +455,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           }} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
-            onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && loadAndScroll(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
             <p className="text-5xl mb-3">🎞️</p>
             <p className="text-base font-medium text-gray-700">{t('vp_drop')}</p>
@@ -475,7 +486,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 className={'block max-w-full object-contain transition-transform ' + (fs ? 'max-h-screen w-full' : 'w-full max-h-[50vh] sm:max-h-[60vh]')}
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget
-                  setDur(v.duration); v.playbackRate = speed; v.loop = loopAll; setAudioOnly(!v.videoWidth); showOverlay()
+                  setDur(v.duration); v.playbackRate = speed; v.loop = repeatMode === 'one'; setAudioOnly(!v.videoWidth); showOverlay()
                   // Restore the position when the video reloads after leaving audio mode.
                   if (pendingVideoSeekRef.current) { try { v.currentTime = pendingVideoSeekRef.current } catch { /* ignore */ } pendingVideoSeekRef.current = 0 }
                   // Auto-play as soon as the file loads (Q2): selecting the file is a user gesture, so
@@ -485,6 +496,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 }}
                 onPlay={() => { setPlaying(true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'playing' } catch { /* ignore */ } }}
                 onPause={() => { setPlaying(false); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
+                onEnded={() => { if (repeatMode === 'all' && !useAudioEl) playNext() }}
                 onVolumeChange={(e) => { setMuted(e.currentTarget.muted); setVolume(e.currentTarget.volume) }}
                 onTimeUpdate={(e) => {
                   if (useAudioEl) return
@@ -578,7 +590,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   <div className="relative">
                     <button onClick={() => { setOpenMenu((m) => m === 'rotate' ? null : 'rotate'); showOverlay() }} title={t('vp_rotate')} aria-label={t('vp_rotate')}
                       className={ovBtn + (rot ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
-                      <ToolIcon name="rotate-cw" className="w-4 h-4" />
+                      {/* frame + corner arrow — clearly "rotate the picture", not refresh */}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="3" y="12" width="9" height="9" rx="2" /><path d="M8 12V8a4 4 0 0 1 4-4h5" /><path d="m14 1 3 3-3 3" /></svg>
                     </button>
                     {openMenu === 'rotate' && (
                       <div className={subMenu}>
@@ -586,6 +599,25 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                           <button key={deg} onClick={() => { setRot(deg); setOpenMenu(null); showOverlay() }} className={subRow + ((rot || 90) === deg ? ' bg-brand-600' : '')}><span>{deg}°</span></button>
                         ))}
                         <button onClick={() => { setRot(0); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_rotate_cancel')}</span></button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Repeat — 한곡 반복 / 전체 반복 */}
+                  <div className="relative">
+                    <button onClick={() => { setOpenMenu((m) => m === 'repeat' ? null : 'repeat'); showOverlay() }} title={t('vp_repeat')} aria-label={t('vp_repeat')}
+                      className={ovBtn + (repeatMode !== 'off' ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
+                      <span className="relative inline-flex">
+                        {/* circular loop — distinct from the A–B section-repeat icon */}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>
+                        {repeatMode === 'one' && <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold leading-none">1</span>}
+                      </span>
+                    </button>
+                    {openMenu === 'repeat' && (
+                      <div className={subMenu}>
+                        <button onClick={() => { setRepeatMode('one'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'one' ? ' bg-brand-600' : '')}><span>{t('vp_repeat_one')}</span></button>
+                        <button onClick={() => { setRepeatMode('all'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'all' ? ' bg-brand-600' : '')}><span>{t('vp_repeat_all')}</span></button>
+                        <button onClick={() => { setRepeatMode('off'); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_repeat_off')}</span></button>
                       </div>
                     )}
                   </div>
@@ -747,7 +779,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   return (
                     <div key={i} title={h.name}
                       className={'relative aspect-video rounded-xl overflow-hidden border-2 bg-gray-900 transition-colors ' + (on ? 'border-brand-500' : 'border-gray-200 hover:border-brand-300')}>
-                      <button onClick={() => playFromHistory(h.file)} className="absolute inset-0 w-full h-full">
+                      <button onClick={() => loadAndScroll(h.file)} className="absolute inset-0 w-full h-full">
                         {thumbs[key]
                           /* eslint-disable-next-line @next/next/no-img-element */
                           ? <img src={thumbs[key]} alt={h.name} className="w-full h-full object-cover" />
@@ -778,7 +810,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                           className={'shrink-0 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400')}>
                           {starSvg(key)}
                         </button>
-                        <button onClick={() => playFromHistory(h.file)} className="flex items-center gap-2 flex-1 min-w-0 text-left">
+                        <button onClick={() => loadAndScroll(h.file)} className="flex items-center gap-2 flex-1 min-w-0 text-left">
                           <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{h.name}</span>
                         </button>
                         <span className="shrink-0 sm:w-16 text-right text-gray-400 tabular-nums whitespace-nowrap">
