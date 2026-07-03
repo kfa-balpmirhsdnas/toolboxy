@@ -5388,6 +5388,7 @@
     "stt_denied": "Microphone access denied. Please allow microphone access and try again.",
     "stt_transcript": "Transcript",
     "ui_clear": "Clear",
+    "ui_delete": "Delete",
     "ui_collapse": "Collapse",
     "ui_expand": "Expand",
     "stt_ph": "Your speech will appear here...",

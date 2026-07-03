@@ -7,7 +7,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
-import { vhList, vhPut } from '@/lib/tools/videoHistory'
+import { vhList, vhPut, vhDelete } from '@/lib/tools/videoHistory'
 
 const tool = getToolBySlug('video-player')!
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
@@ -228,6 +228,18 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const toggleSaved = useCallback((key: string) => {
     setSaved((prev) => {
       const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key)
+      try { localStorage.setItem('vp_saved_v1', JSON.stringify(Array.from(n))) } catch { /* ignore */ }
+      return n
+    })
+  }, [])
+
+  // Remove a clip from the list (and its persisted blob + saved star).
+  const removeFromHistory = useCallback((key: string) => {
+    setHistory((h) => h.filter((x) => (x.name + '|' + x.size) !== key))
+    vhDelete(key)
+    setSaved((prev) => {
+      if (!prev.has(key)) return prev
+      const n = new Set(prev); n.delete(key)
       try { localStorage.setItem('vp_saved_v1', JSON.stringify(Array.from(n))) } catch { /* ignore */ }
       return n
     })
@@ -790,6 +802,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                         className={'absolute top-1 left-1 z-10 p-1 rounded-md bg-black/40 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-white/70 hover:text-amber-300')}>
                         {starSvg(key)}
                       </button>
+                      <button onClick={() => removeFromHistory(key)} aria-label={t('ui_delete')} title={t('ui_delete')}
+                        className="absolute top-1 right-1 z-10 p-1 rounded-md bg-black/40 text-white/70 hover:text-red-400 transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                      </button>
                     </div>
                   )
                 })}
@@ -817,6 +833,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                           <span className="sm:hidden">{fmtSizeShort(h.size)}</span>
                           <span className="hidden sm:inline">{fmtSize(h.size)}</span>
                         </span>
+                        <button onClick={() => removeFromHistory(key)} aria-label={t('ui_delete')} title={t('ui_delete')} className="shrink-0 p-1 text-gray-300 hover:text-red-500 transition-colors">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                        </button>
                       </div>
                     )
                   })}
