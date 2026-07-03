@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: { lang: string } })
   const titles: Record<string, string> = {
     en: 'Free Online Tools for Everyone',
     ja: '誰でも使える無料オンラインツール',
-    ko: '누구나 쓰는 무료 온라인 툴',
+    ko: '설치 없이 바로 쓰는 무료 온라인 툴',
   }
   const lang = SUPPORTED_LOCALES.includes(params.lang) ? params.lang : 'en'
 
