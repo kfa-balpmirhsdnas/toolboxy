@@ -616,7 +616,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             </div>
             {/* Inline: the control bar sits below the video as a persistent black toolbar (always visible). */}
             {!fs && (
-              <div className="relative mt-2 flex items-end justify-between gap-1 rounded-xl bg-black px-1.5 pt-1.5">
+              <div style={{ marginTop: 1 }} className="relative flex items-end justify-between gap-1 rounded-xl bg-black px-1.5 pt-1.5">
                 {bottomBar}
               </div>
             )}

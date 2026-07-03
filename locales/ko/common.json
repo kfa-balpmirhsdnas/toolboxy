@@ -5437,6 +5437,7 @@
     "og_def_desc": "링크를 공유할 때 소셜 미디어 미리보기에 표시될 매력적인 설명입니다.",
     "og_def_site": "내 웹사이트",
     "ui_copy": "복사",
+    "ui_cut": "잘라내기",
     "ui_copied": "✓ 복사됨",
     "bmi_metric": "미터법 (cm, kg)",
     "bmi_imperial": "야드파운드 (ft, lb)",

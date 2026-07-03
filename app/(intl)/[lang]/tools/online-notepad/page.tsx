@@ -166,6 +166,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [savedAt, setSavedAt] = useState('')
   const [savingVisible, setSavingVisible] = useState(false) // "saving…" auto-hides after 3s
   const [copied, setCopied] = useState(false)
+  const [cutDone, setCutDone] = useState(false)
   const [renaming, setRenaming] = useState<string | null>(null)
   const [showFind, setShowFind] = useState(false)
   const [showChars, setShowChars] = useState(false) // special-character palette
@@ -775,6 +776,15 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     if (!text) return
     navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000)
   }
+  // Cut the whole document: copy to clipboard, then clear. Snapshots the pre-cut text to history first so undo restores it.
+  function cut() {
+    if (!text) return
+    navigator.clipboard.writeText(text)
+    if (commitTimer.current) { clearTimeout(commitTimer.current); commitTimer.current = null }
+    commit(text)
+    applyText('', 0)
+    setCutDone(true); setTimeout(() => setCutDone(false), 2000)
+  }
 
   const chars = text.length
   const lines = text ? text.split(/\n/).length : 0
@@ -943,6 +953,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               </button>
               <button onClick={copy} disabled={!text} title={t('ui_copy')} aria-label={t('ui_copy')} className={iconBtn}>
                 <ToolIcon name={copied ? 'check' : 'copy'} className="w-4 h-4" />
+              </button>
+              <button onClick={cut} disabled={!text} title={t('ui_cut')} aria-label={t('ui_cut')} className={iconBtn}>
+                {cutDone
+                  ? <ToolIcon name="check" className="w-4 h-4" />
+                  : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="6" cy="6" r="3" /><path d="M8.12 8.12 12 12" /><path d="M20 4 8.12 15.88" /><circle cx="6" cy="18" r="3" /><path d="M14.8 14.8 20 20" /></svg>}
               </button>
               <button onClick={() => { setShowFind((s) => !s); setShowChars(false); setShowSettings(false) }} title={t('np_findreplace')} aria-label={t('np_findreplace')} aria-pressed={showFind} className={iconBtn + (showFind ? ' bg-brand-50 text-brand-600' : '')}>
                 <ToolIcon name="search" className="w-4 h-4" />

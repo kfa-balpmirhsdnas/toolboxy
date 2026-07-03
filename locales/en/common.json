@@ -5020,6 +5020,7 @@
     "og_def_desc": "This is a compelling description that will appear in social media previews when people share your link.",
     "og_def_site": "My Website",
     "ui_copy": "Copy",
+    "ui_cut": "Cut",
     "ui_copied": "✓ Copied",
     "bmi_metric": "Metric (cm, kg)",
     "bmi_imperial": "Imperial (ft, lb)",

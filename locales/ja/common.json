@@ -5410,6 +5410,7 @@
     "og_def_desc": "リンクを共有したときにSNSのプレビューに表示される魅力的な説明文です。",
     "og_def_site": "私のサイト",
     "ui_copy": "コピー",
+    "ui_cut": "切り取り",
     "ui_copied": "✓ コピー済み",
     "bmi_metric": "メートル法 (cm, kg)",
     "bmi_imperial": "ヤード・ポンド (ft, lb)",
