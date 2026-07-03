@@ -54,7 +54,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [histView, setHistView] = useState<'list' | 'thumbnails'>('list')
   const [thumbs, setThumbs] = useState<Record<string, string>>({})
   const [playing, setPlaying] = useState(false)
+  const [muted, setMuted] = useState(false)
+  const [fs, setFs] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const dirRef = useRef<HTMLInputElement>(null)
 
@@ -118,6 +121,11 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // Center overlay controls: skip ±5/±10s and play/pause.
   const seekBy = (delta: number) => { const v = videoRef.current; if (v) v.currentTime = Math.max(0, Math.min(v.duration || v.currentTime, v.currentTime + delta)); showOverlay() }
   const togglePlay = () => { const v = videoRef.current; if (!v) return; if (v.paused) v.play().catch(() => {}); else v.pause(); showOverlay() }
+  // Custom bottom bar (native controls are hidden): scrub, mute, fullscreen.
+  const seekTo = (time: number) => { const v = videoRef.current; if (v) v.currentTime = time; showOverlay() }
+  const toggleMute = () => { const v = videoRef.current; if (!v) return; v.muted = !v.muted; setMuted(v.muted); showOverlay() }
+  const toggleFs = () => { const el = wrapperRef.current; if (!el) return; if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else el.requestFullscreen?.().catch(() => {}); showOverlay() }
+  useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener('fullscreenchange', h); return () => document.removeEventListener('fullscreenchange', h) }, [])
 
   const load = useCallback((f: File) => {
     if (!f.type.startsWith('video/')) return
@@ -219,9 +227,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           </div>
         ) : (
           <>
-            <div onClick={showOverlay} className="relative overflow-hidden rounded-xl bg-black">
+            <div ref={wrapperRef} onClick={showOverlay} className="relative overflow-hidden rounded-xl bg-black">
+              {/* Native controls hidden — the top tabs + center cluster + bottom bar below are our own. */}
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <video ref={videoRef} src={url} controls playsInline
+              <video ref={videoRef} src={url} playsInline
                 style={{ transform: rot ? `rotate(${rot}deg)` : undefined }}
                 className="block w-full max-h-[60vh] transition-transform"
                 onLoadedMetadata={(e) => {
@@ -233,6 +242,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
                 }}
                 onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
+                onVolumeChange={(e) => setMuted(e.currentTarget.muted)}
                 onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
               {/* Overlay tab controls — container passes taps through; only buttons/menus capture.
                   Auto-hides 5s after the last interaction unless locked. Each tab opens a submenu below it. */}
@@ -364,6 +374,26 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   <button onClick={() => seekBy(10)} aria-label="+10s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
                     10<svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
                   </button>
+                </div>
+              )}
+              {/* Bottom bar — scrub / time / mute / fullscreen (replaces the hidden native bar). */}
+              {(ovVisible || locked) && (
+                <div className="absolute bottom-0 inset-x-0 p-2 pointer-events-none">
+                  <div className="pointer-events-auto flex items-center gap-2 px-3 h-9 rounded-full bg-black/60 backdrop-blur text-white text-[11px]">
+                    <span className="font-mono tabular-nums shrink-0">{fmt(cur)}</span>
+                    <input type="range" min={0} max={dur || 0} step={0.05} value={Math.min(cur, dur || 0)} onChange={(e) => seekTo(+e.target.value)} aria-label="seek" className="flex-1 h-1 accent-white cursor-pointer" />
+                    <span className="font-mono tabular-nums shrink-0 text-white/70">{fmt(dur)}</span>
+                    <button onClick={toggleMute} aria-label="mute" className="shrink-0 p-1 hover:text-white/70">
+                      {muted
+                        ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
+                        : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
+                    </button>
+                    <button onClick={toggleFs} aria-label="fullscreen" className="shrink-0 p-1 hover:text-white/70">
+                      {fs
+                        ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" /><path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" /></svg>
+                        : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /></svg>}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
