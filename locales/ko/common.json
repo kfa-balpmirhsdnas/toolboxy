@@ -7313,7 +7313,7 @@
     "ht_thu": "목",
     "ht_fri": "금",
     "ht_sat": "토",
-    "np_placeholder": "입력을 시작하세요… 메모는 이 브라우저에 자동 저장됩니다.",
+    "np_placeholder": "입력을 시작하세요. 입력한 내용은 이 브라우저에만 자동 저장됩니다.",
     "np_autosaved": "이 기기에 저장",
     "np_saving": "저장 중…",
     "np_words": "단어 {n}개",

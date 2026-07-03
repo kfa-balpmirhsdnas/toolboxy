@@ -6896,7 +6896,7 @@
     "ht_thu": "Thu",
     "ht_fri": "Fri",
     "ht_sat": "Sat",
-    "np_placeholder": "Start typing… your notes save automatically in this browser.",
+    "np_placeholder": "Start typing. What you write is saved automatically in this browser only.",
     "np_autosaved": "Saved on this device",
     "np_saving": "Saving…",
     "np_words": "{n} words",

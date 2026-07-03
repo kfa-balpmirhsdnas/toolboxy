@@ -33,7 +33,7 @@ const fmtDateFile = (ms: number) => { const d = new Date(ms); return `${String(d
 // glyph itself; the shortcut is turned into the glyph only on Enter (like numbers).
 // Special-character palette — inserted at the caret. Whitespace-split + de-duped.
 const CHARS = Array.from(new Set(
-  '· … ⁝ ※ • ⸰ ™ → ↑ ↓ ← ↔ ↕ ☜ ☞ ★ ☆ ♥ ♡ ○ ● ◎ □ ■ ☑ ✓ △ ▲ ▽ ▼ ◁ ◀ ▷ ▶ ⏺ ⚫ ☉ ♧ ♣ ♨ ☏ ☎ ♩ ♪ ♬ ♫ ♭ ± × ÷ ≠ ≒ ≈ ∞ ∴ ∵ ⊂ ⊃ ∪ ∩ 【 】 「 」 º ℃ ℉ ㎟ ㎠ ㎡ ㎢ ㎣ ㎤ ㎥ ㎦ ½ ⅓ ⅔ ¼ ¾ ⅛ ⅜ ⅝ ⅞ ¹ ² ³ ⁴ ⁿ ₁ ₂ ₃ ₄ α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ Ⅶ Ⅷ Ⅸ Ⅹ ⅰ ⅱ ⅲ ⅳ ⅴ ⅵ ⅶ ⅷ ⅸ ⅹ'.split(/\s+/).filter(Boolean),
+  '· … ⁝ ※ • ⸰ ™ → ↑ ↓ ← ↔ ↕ ⇨ ⇧ ⇩ ⇦ ➡ ➜ ☜ ☞ ★ ☆ ♥ ♡ ○ ● ◎ □ ■ ☑ ✓ △ ▲ ▽ ▼ ◁ ◀ ▷ ▶ ⏺ ⚫ ☉ ♧ ♣ ♨ ☏ ☎ ♩ ♪ ♬ ♫ ♭ ± × ÷ ≠ ≒ ≈ ∞ ∴ ∵ ⊂ ⊃ ∪ ∩ 【 】 「 」 º ℃ ℉ ㎟ ㎠ ㎡ ㎢ ㎣ ㎤ ㎥ ㎦ ½ ⅓ ⅔ ¼ ¾ ⅛ ⅜ ⅝ ⅞ ¹ ² ³ ⁴ ⁿ ₁ ₂ ₃ ₄ α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ Ⅶ Ⅷ Ⅸ Ⅹ ⅰ ⅱ ⅲ ⅳ ⅴ ⅵ ⅶ ⅷ ⅸ ⅹ'.split(/\s+/).filter(Boolean),
 ))
 const SYM_TO_GLYPH: Record<string, string> = { '*': '●', o: '○', '@': '■', '-': '▶', '●': '●', '○': '○', '■': '■', '▶': '▶' }
 const NUM_MARK = /^(\d+)([.)>]) /  // "1. " / "1) " / "1> "
@@ -1060,13 +1060,16 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             When the editor is focused, the whole box shows a brand ring — carry that onto the tabs
             too so they don't look like they cut into the ring (group-focus-within). */}
         <div className="flex items-center gap-1 px-3 -mt-px">
-          {([[false, t('np_edit')], [true, t('np_preview')]] as const).map(([val, label]) => {
+          {([false, true] as const).map((val) => {
             const on = preview === val
             return (
-              <button key={label} type="button" onClick={() => setPreview(val)} aria-pressed={on}
-                className={'shrink-0 whitespace-nowrap px-3 py-1 text-xs rounded-b-lg border border-t-0 transition-colors group-focus-within:border-brand-400 ' +
+              <button key={String(val)} type="button" onClick={() => setPreview(val)} aria-pressed={on}
+                className={'shrink-0 whitespace-nowrap inline-flex items-center gap-1 px-3 py-1 text-xs rounded-b-lg border border-t-0 transition-colors group-focus-within:border-brand-400 ' +
                   (on ? (val ? 'bg-amber-50' : 'bg-white') + ' border-gray-200 text-brand-600 font-semibold' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100')}>
-                {label}
+                {val
+                  ? <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                  : <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>}
+                {val ? t('np_preview') : t('np_edit')}
               </button>
             )
           })}
@@ -1081,11 +1084,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               {lines.toLocaleString()}
             </span>
           </span>
-          {/* Copy tab — copies the whole current note (where the creation date used to sit) */}
-          <button onClick={copy} disabled={!text} aria-label={t('ui_copy')} title={t('ui_copy')}
-            className="shrink-0 whitespace-nowrap inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-b-lg border border-t-0 border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition-colors group-focus-within:border-brand-400">
-            <ToolIcon name={copied ? 'check' : 'copy'} className="w-3.5 h-3.5" />{t('ui_copy')}
-          </button>
         </div>
         </div>
 
@@ -1094,13 +1092,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
           <span>{t('np_note')}</span>
         </div>
-
-        {/* Copy toast — shows the confirmation text after the copy button copies the whole note. */}
-        {copied && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-900 text-white text-sm shadow-lg">
-            <ToolIcon name="check" className="w-4 h-4 text-green-400" />{t('np_copied_all')}
-          </div>
-        )}
       </div>
     </ToolLayout>
   )

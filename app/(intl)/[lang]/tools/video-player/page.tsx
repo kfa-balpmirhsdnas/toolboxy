@@ -53,6 +53,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const hideRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [histView, setHistView] = useState<'list' | 'thumbnails'>('list')
   const [thumbs, setThumbs] = useState<Record<string, string>>({})
+  const [playing, setPlaying] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -113,6 +114,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       else if (typeof v.requestPictureInPicture === 'function') await v.requestPictureInPicture()
     } catch { /* unsupported / dismissed */ }
   }
+  // Center overlay controls: skip ±5/±10s and play/pause.
+  const seekBy = (delta: number) => { const v = videoRef.current; if (v) v.currentTime = Math.max(0, Math.min(v.duration || v.currentTime, v.currentTime + delta)); showOverlay() }
+  const togglePlay = () => { const v = videoRef.current; if (!v) return; if (v.paused) v.play().catch(() => {}); else v.pause(); showOverlay() }
 
   const load = useCallback((f: File) => {
     if (!f.type.startsWith('video/')) return
@@ -209,6 +213,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   v.muted = false
                   v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
                 }}
+                onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
                 onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)} />
               {/* Overlay tab controls — container passes taps through; only buttons/menus capture.
                   Auto-hides 5s after the last interaction unless locked. Each tab opens a submenu below it. */}
@@ -317,6 +322,28 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   <button onClick={() => { togglePip(); showOverlay() }} title={t('vp_bg')} aria-label={t('vp_bg')}
                     className={ovBtn + ' bg-black/55 hover:bg-black/75'}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
+                  </button>
+                </div>
+              )}
+              {/* Center controls — skip -10/-5, play/pause, +5/+10. Container passes taps through. */}
+              {(ovVisible || locked) && (
+                <div className="absolute inset-0 flex items-center justify-center gap-2 pointer-events-none">
+                  <button onClick={() => seekBy(-10)} aria-label="-10s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>10
+                  </button>
+                  <button onClick={() => seekBy(-5)} aria-label="-5s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>5
+                  </button>
+                  <button onClick={togglePlay} aria-label="play" className="pointer-events-auto inline-flex items-center justify-center w-12 h-12 rounded-full bg-black/60 text-white hover:bg-black/80 backdrop-blur transition-colors">
+                    {playing
+                      ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+                      : <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M8 5v14l11-7z" /></svg>}
+                  </button>
+                  <button onClick={() => seekBy(5)} aria-label="+5s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
+                    5<svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
+                  </button>
+                  <button onClick={() => seekBy(10)} aria-label="+10s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
+                    10<svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
                   </button>
                 </div>
               )}
