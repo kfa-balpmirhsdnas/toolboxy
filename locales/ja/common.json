@@ -4208,6 +4208,7 @@
     "vp_timer": "スリープタイマー（自動停止）",
     "vp_rotate": "回転",
     "vp_save_segment": "区間を保存",
+    "vp_seg_error": "区間の保存に失敗（未対応の形式の可能性）",
     "vp_saving": "保存中…",
     "vp_repeat_shuffle": "シャッフル",
     "vp_night": "ナイトモード",

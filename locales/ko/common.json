@@ -4235,6 +4235,7 @@
     "vp_timer": "취침 타이머 (자동 정지)",
     "vp_rotate": "회전",
     "vp_save_segment": "구간 저장",
+    "vp_seg_error": "구간 저장 실패 (형식 미지원일 수 있음)",
     "vp_saving": "저장 중…",
     "vp_repeat_shuffle": "랜덤 반복",
     "vp_night": "야간 모드",

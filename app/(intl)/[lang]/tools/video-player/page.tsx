@@ -55,6 +55,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [dragHud, setDragHud] = useState<null | { kind: 'bright' | 'vol'; pct: number }>(null) // brightness/volume gesture readout
   const [repeatMode, setRepeatMode] = useState<'off' | 'one' | 'all' | 'shuffle'>('all') // default: 전체 반복 (playlist loop)
   const [segSaving, setSegSaving] = useState(false) // "구간 저장" (A–B clip export) in progress
+  const [segError, setSegError] = useState('')      // "구간 저장" failure message
   const [sleepMin, setSleepMin] = useState(0)   // sleep-timer minutes (0 = off)
   const [sleepLeft, setSleepLeft] = useState(0) // seconds remaining
   const sleepRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -280,53 +281,32 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     }
   }
 
-  // 구간 저장: cut just the A–B range from the current clip and download it as a new file.
-  // Client-side only — an offscreen <video> is played A→B while a MediaRecorder captures its stream
-  // (audio is routed through Web Audio so nothing is heard aloud). Output is WebM.
+  // 구간 저장: cut just the A–B range and download it — fast, lossless STREAM COPY via ffmpeg.wasm
+  // (no re-encode), so the output keeps the ORIGINAL format + audio and saves near-instantly.
+  // ffmpeg (~30MB core) is loaded lazily on first use, so it never weighs down plain playback.
   async function saveSegment() {
     const cur = curFile
     if (!cur || a == null || b == null || b <= a || segSaving) return
-    setSegSaving(true)
-    const off = document.createElement('video')
-    off.src = URL.createObjectURL(cur)
-    off.playsInline = true; off.preload = 'auto'
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    let ac: AudioContext | null = null
-    const withTimeout = <T,>(p: Promise<T>, ms: number) => Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))])
+    setSegSaving(true); setSegError('')
     try {
-      await withTimeout(new Promise<void>((res, rej) => { off.onloadedmetadata = () => res(); off.onerror = () => rej(new Error('load')) }), 15000)
-      off.currentTime = a
-      await withTimeout(new Promise<void>((res) => { off.onseeked = () => res() }), 5000)
-      const cap = (off as any).captureStream ? (off as any).captureStream() : (off as any).mozCaptureStream()
-      let tracks: MediaStreamTrack[] = cap.getVideoTracks()
-      const AC = (window.AudioContext || (window as any).webkitAudioContext)
-      if (AC) {
-        ac = new AC(); await ac.resume().catch(() => {})
-        const dest = ac.createMediaStreamDestination()
-        ac.createMediaElementSource(off).connect(dest) // not connected to speakers -> silent locally
-        tracks = [...tracks, ...dest.stream.getAudioTracks()]
-      }
-      const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : 'video/webm'
-      const rec = new MediaRecorder(new MediaStream(tracks), { mimeType: mime })
-      const chunks: Blob[] = []
-      rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data) }
-      const done = new Promise<void>((res) => { rec.onstop = () => res() })
-      rec.start()
-      off.playbackRate = 1
-      await off.play()
-      await withTimeout(new Promise<void>((res) => { const tick = () => { if (off.currentTime >= (b as number) || off.ended) res(); else requestAnimationFrame(tick) }; requestAnimationFrame(tick) }), (b - a) * 1000 + 12000)
-      rec.stop(); off.pause()
-      await done
-      const blob = new Blob(chunks, { type: 'video/webm' })
-      if (blob.size) {
-        const dl = URL.createObjectURL(blob)
-        const link = document.createElement('a'); link.href = dl; link.download = `${base}_${fmtFile(a)}-${fmtFile(b)}.webm`; link.click()
-        setTimeout(() => URL.revokeObjectURL(dl), 3000)
-        trackToolDownload('video-player', 'segment')
-      }
-    } catch { /* ignore — leaves the player untouched */ }
-    finally { try { ac?.close() } catch { /* ignore */ } URL.revokeObjectURL(off.src); setSegSaving(false) }
-    /* eslint-enable @typescript-eslint/no-explicit-any */
+      const { getFFmpeg, toClock } = await import('@/lib/ffmpeg')
+      const { fetchFile } = await import('@ffmpeg/util')
+      const ff = await getFFmpeg()
+      const ext = (cur.name.split('.').pop() || 'mp4').toLowerCase()
+      const inName = 'seg_in.' + ext, outName = 'seg_out.' + ext
+      await ff.writeFile(inName, await fetchFile(cur))
+      // -ss before -i = fast input seeking; -c copy = no re-encode (keyframe-aligned).
+      await ff.exec(['-ss', toClock(a), '-i', inName, '-t', toClock(b - a), '-c', 'copy', '-avoid_negative_ts', 'make_zero', outName])
+      const data = await ff.readFile(outName)
+      const blob = new Blob([data as unknown as BlobPart], { type: cur.type || 'video/mp4' })
+      try { await ff.deleteFile(inName); await ff.deleteFile(outName) } catch { /* ignore */ }
+      if (!blob.size) throw new Error('empty')
+      const dl = URL.createObjectURL(blob)
+      const link = document.createElement('a'); link.href = dl; link.download = `${base}_${fmtFile(a)}-${fmtFile(b)}.${ext}`; link.click()
+      setTimeout(() => URL.revokeObjectURL(dl), 3000)
+      trackToolDownload('video-player', 'segment')
+    } catch (e) { console.error(e); setSegError(t('vp_seg_error')) }
+    finally { setSegSaving(false) }
   }
 
   // Restore the persisted list on mount (metadata for all; a File only for ★ saved clips whose blob was kept).
@@ -1022,6 +1002,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                           <ToolIcon name={segSaving ? 'loader' : 'save'} className={'w-3.5 h-3.5 ' + (segSaving ? 'animate-spin' : '')} />{segSaving ? t('vp_saving') : t('vp_save_segment')}</button>
                       </div>
                     </div>
+                    {segError && <p className="text-xs text-red-600">{segError}</p>}
                   </div>
                 )}
                 {optTab === 'timer' && (
