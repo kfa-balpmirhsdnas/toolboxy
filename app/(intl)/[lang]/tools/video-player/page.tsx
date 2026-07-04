@@ -13,7 +13,6 @@ const tool = getToolBySlug('video-player')!
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
 // Overlay submenu option sets.
 const TIMER_MENU = [15, 30, 60, 120]
-const ROTATE_MENU = [90, 180, 270, 360]
 // Media extensions kept in one place so the picker filter and the drop/folder guard stay in sync.
 const MEDIA_EXTS = [
   'mp4', 'm4v', 'mov', 'mkv', 'webm', 'avi', 'mpeg', 'mpg', 'ogv', '3gp', '3g2', 'flv', 'f4v', 'ts', 'mts', 'm2ts', 'wmv', 'asf', 'divx', 'vob', // video
@@ -57,7 +56,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [sleepMin, setSleepMin] = useState(0)   // sleep-timer minutes (0 = off)
   const [sleepLeft, setSleepLeft] = useState(0) // seconds remaining
   const sleepRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const [openMenu, setOpenMenu] = useState<null | 'timer' | 'ab' | 'speed' | 'capture' | 'rotate' | 'repeat'>(null) // which overlay submenu is open
+  const [openMenu, setOpenMenu] = useState<null | 'timer' | 'ab' | 'speed' | 'capture' | 'repeat'>(null) // which overlay submenu is open
   const [locked, setLocked] = useState(false)   // keep the overlay pinned open
   const [ovVisible, setOvVisible] = useState(true) // overlay shown (auto-hides 5s after last interaction when unlocked)
   const hideRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -207,7 +206,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     if (!isMedia(f)) return
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || 'frame')
-    setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0); setRot(0); setAudioMode(false); setAudioOnly(false)
+    setA(null); setB(null); setRepeat(false); setCur(0); setRot(0); setAudioMode(false); setAudioOnly(false)
     // Resume where this clip was last left off (saved per file); audio-only resumes via switchPosRef.
     const resume = positionsRef.current[f.name + '|' + f.size] || 0
     resumePosRef.current = resume; switchPosRef.current = resume; pendingVideoSeekRef.current = 0
@@ -537,17 +536,17 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       {showBright && (
         <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
           <div className="pointer-events-auto flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
-            {/* presets */}
+            {/* presets — centered at 0 (normal), negative = dimmer, positive = brighter */}
             <div className="flex items-center gap-0.5">
-              {[30, 50, 70, 100, 130, 150].map((p) => (
-                <button key={p} onClick={() => { setBrightness(p / 100); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (Math.round(brightness * 100) === p ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{p}</button>
+              {[-60, -40, -20, 0, 20, 40, 60].map((o) => (
+                <button key={o} onClick={() => { setBrightness(1 + o / 100); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (Math.round((brightness - 1) * 100) === o ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{o > 0 ? '+' + o : o}</button>
               ))}
             </div>
             <div className="flex items-center gap-2">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0 text-white/70"><circle cx="12" cy="12" r="4" /><path d="M12 3v1" /><path d="M12 20v1" /><path d="M3 12h1" /><path d="M20 12h1" /></svg>
               <input type="range" min={0.3} max={1.7} step={0.05} value={brightness} onChange={(e) => { setBrightness(+e.target.value); showOverlay() }} aria-label="brightness"
                 style={fillBg(((brightness - 0.3) / 1.4) * 100)} className={gaugeCls} />
-              <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{Math.round(brightness * 100)}</span>
+              <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{(Math.round((brightness - 1) * 100) > 0 ? '+' : '') + Math.round((brightness - 1) * 100)}</span>
             </div>
           </div>
         </div>
@@ -714,22 +713,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     )}
                   </div>
 
-                  {/* Rotate */}
-                  <div className="relative">
-                    <button onClick={() => { setOpenMenu((m) => m === 'rotate' ? null : 'rotate'); showOverlay() }} title={t('vp_rotate')} aria-label={t('vp_rotate')}
-                      className={ovBtn + (rot ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
-                      {/* screen-rotation: a tilted phone with two rotation arrows */}
-                      <svg viewBox="0 0 24 24" fill="currentColor" fillRule="evenodd" className="w-4 h-4"><path d="M16.48 2.52c3.27 1.55 5.61 4.72 5.97 8.48h1.5C23.44 4.84 18.29 0 12 0l-.66.03 3.81 3.81 1.33-1.32zM10.23 1.75c-.59-.59-1.54-.59-2.12 0L1.75 8.11c-.59.59-.59 1.54 0 2.12l12.02 12.02c.59.59 1.54.59 2.12 0l6.36-6.36c.59-.59.59-1.54 0-2.12L10.23 1.75zm3.6 18.65L3.6 10.17l6.57-6.57 10.23 10.23-6.57 6.57zM7.51 21.43C4.4 20.85 2.06 17.68 1.7 13.92H.2C.56 19.16 5.71 24 12 24l.66-.03-3.81-3.81-1.34 1.31z" /></svg>
-                    </button>
-                    {openMenu === 'rotate' && (
-                      <div className={subMenu}>
-                        {ROTATE_MENU.map((deg) => (
-                          <button key={deg} onClick={() => { setRot(deg); setOpenMenu(null); showOverlay() }} className={subRow + ((rot || 90) === deg ? ' bg-brand-600' : '')}><span>{deg}°</span></button>
-                        ))}
-                        <button onClick={() => { setRot(0); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_rotate_cancel')}</span></button>
-                      </div>
-                    )}
-                  </div>
+                  {/* Rotate — tap toggles portrait ↔ landscape (0° ↔ 90°) */}
+                  <button onClick={() => { setRot((r) => r ? 0 : 90); showOverlay() }} title={t('vp_rotate')} aria-label={t('vp_rotate')}
+                    className={ovBtn + (rot ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
+                    {/* screen-rotation: a tilted phone with two rotation arrows */}
+                    <svg viewBox="0 0 24 24" fill="currentColor" fillRule="evenodd" className="w-4 h-4"><path d="M16.48 2.52c3.27 1.55 5.61 4.72 5.97 8.48h1.5C23.44 4.84 18.29 0 12 0l-.66.03 3.81 3.81 1.33-1.32zM10.23 1.75c-.59-.59-1.54-.59-2.12 0L1.75 8.11c-.59.59-.59 1.54 0 2.12l12.02 12.02c.59.59 1.54.59 2.12 0l6.36-6.36c.59-.59.59-1.54 0-2.12L10.23 1.75zm3.6 18.65L3.6 10.17l6.57-6.57 10.23 10.23-6.57 6.57zM7.51 21.43C4.4 20.85 2.06 17.68 1.7 13.92H.2C.56 19.16 5.71 24 12 24l.66-.03-3.81-3.81-1.34 1.31z" /></svg>
+                  </button>
 
                   {/* Repeat — 한곡 반복 / 전체 반복 */}
                   <div className="relative">
@@ -785,6 +774,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                           <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>{n}
                         </button>
                       ))}
+                      {/* separator between rewind and forward groups — a hollow circle the size of a seek button */}
+                      <span aria-hidden className="w-8 h-8 rounded-full border border-white/25 shrink-0" />
                       {[5, 10, 30].map((n) => (
                         <button key={'p' + n} onClick={() => seekBy(n)} aria-label={`+${n}s`} className="pointer-events-auto inline-flex items-center gap-0.5 h-8 px-2 rounded-full bg-black/55 text-white text-[11px] font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
                           {n}<svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
