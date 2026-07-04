@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, type CSSProperties } from 'react'
 import { useTranslations, useMessages } from 'next-intl'
 import Link from 'next/link'
 import ToolLayout from '@/components/tools/ToolLayout'
@@ -52,6 +52,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [curFile, setCurFile] = useState<File | null>(null)
   // Overlay controls (on top of the video; the tab controls below stay as-is).
   const [rot, setRot] = useState(0)            // display rotation 0/90/180/270
+  const [boxSize, setBoxSize] = useState({ w: 0, h: 0 }) // measured video-frame size (for fit-to-frame rotation)
   const [repeatMode, setRepeatMode] = useState<'off' | 'one' | 'all'>('all') // default: 전체 반복 (playlist loop)
   const [sleepMin, setSleepMin] = useState(0)   // sleep-timer minutes (0 = off)
   const [sleepLeft, setSleepLeft] = useState(0) // seconds remaining
@@ -77,6 +78,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [audioMode, setAudioMode] = useState(false)  // "listen only" — hide the frame behind the poster; audio keeps playing (screen off) via MediaSession
   const videoRef = useRef<HTMLVideoElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const boxRef = useRef<HTMLDivElement>(null)       // the black video frame — measured so a 90°/270° rotation fills it (like turning the phone)
   const inputRef = useRef<HTMLInputElement>(null)   // video picker (opens gallery straight — no capture chooser)
   const dirRef = useRef<HTMLInputElement>(null)     // folder picker (dir picker; also reaches audio files)
   const audioElRef = useRef<HTMLAudioElement>(null) // background player used in audio mode / for audio-only files
@@ -343,6 +345,17 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // Keep both elements' playbackRate in sync with the chosen speed.
   useEffect(() => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) el.playbackRate = speed }) }, [speed, url])
 
+  // Measure the black video frame so a 90°/270° rotation can swap width/height and fill it (turn-the-phone effect).
+  useEffect(() => {
+    const el = boxRef.current
+    if (!el) return
+    const update = () => setBoxSize({ w: el.clientWidth, h: el.clientHeight })
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [fs, url, audioMode, audioOnly])
+
   // Transfer playback between the <video> and <audio> elements when audio mode / audio-only flips.
   // The <video> src is dropped in audio mode (binding below) so the page holds NO video-track element —
   // that's what lets the browser treat playback as pure audio and keep it alive with the screen off.
@@ -554,6 +567,18 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     </>
   )
 
+  // Rotation that mimics turning the phone: for 90°/270° we swap the video frame's width/height and
+  // scale it to the measured black box, so the rotated video fills the area instead of being clipped.
+  const filterStr = (brightness !== 1 || nightMode)
+    ? `brightness(${(brightness * (nightMode ? 0.68 : 1)).toFixed(2)})${nightMode ? ' contrast(0.82) sepia(0.08)' : ''}`
+    : undefined
+  const quarterTurned = (rot === 90 || rot === 270) && boxSize.w > 0 && boxSize.h > 0
+  const videoStyle: CSSProperties = quarterTurned
+    ? { filter: filterStr, position: 'absolute', left: '50%', top: '50%', width: boxSize.h, height: boxSize.w, maxWidth: 'none', maxHeight: 'none', transform: `translate(-50%, -50%) rotate(${rot}deg)` }
+    : { filter: filterStr, transform: rot ? `rotate(${rot}deg)` : undefined }
+  const videoCls = 'block object-contain transition-transform '
+    + (quarterTurned ? '' : (fs ? 'max-h-screen w-full max-w-full' : 'w-full max-w-full max-h-[50vh] sm:max-h-[60vh]'))
+
   return (
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4">
@@ -600,14 +625,14 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   in fullscreen the outer flex centers this box vertically. */}
               {/* Inline uses a min-height so short (landscape) clips are letterboxed — gives the top tabs + center
                   cluster room instead of cramming into a thin box. object-contain centers the video in the black. */}
-              <div className={'relative overflow-hidden bg-black w-full flex items-center justify-center '
-                + (fs ? '' : 'rounded-xl ')
+              <div ref={boxRef} className={'relative overflow-hidden bg-black w-full flex items-center justify-center '
+                + (fs ? 'h-full ' : 'rounded-xl ')
                 + ((audioOnly || audioMode) ? 'min-h-[50vh] sm:min-h-[260px] ' : (fs ? '' : 'min-h-[50vh] sm:min-h-0 '))}>
               {/* Native controls hidden — the top tabs + center cluster + bottom bar below are our own. */}
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video ref={videoRef} src={useAudioEl ? undefined : url} playsInline
-                style={{ transform: rot ? `rotate(${rot}deg)` : undefined, filter: (brightness !== 1 || nightMode) ? `brightness(${(brightness * (nightMode ? 0.68 : 1)).toFixed(2)})${nightMode ? ' contrast(0.82) sepia(0.08)' : ''}` : undefined }}
-                className={'block max-w-full object-contain transition-transform ' + (fs ? 'max-h-screen w-full' : 'w-full max-h-[50vh] sm:max-h-[60vh]')}
+                style={videoStyle}
+                className={videoCls}
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget
                   setDur(v.duration); v.playbackRate = speed; v.loop = repeatMode === 'one'; setAudioOnly(!v.videoWidth); showOverlay()
