@@ -1710,6 +1710,12 @@
     ]
   },
   "toolNames": {
+    "image-to-base64": "画像→Base64変換",
+    "base64-image-viewer": "Base64画像ビューア",
+    "hash-generator": "ハッシュ生成ツール",
+    "jwt-encoder": "JWTエンコーダー",
+    "checksum-generator": "チェックサム生成ツール",
+    "jwt-decoder": "JWTデコーダー",
     "column-extractor": "列抽出ツール",
     "text-line-numberer": "行番号付けツール",
     "text-padder": "テキストパディング",

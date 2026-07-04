@@ -1737,6 +1737,12 @@
     ]
   },
   "toolNames": {
+    "image-to-base64": "이미지 → Base64 변환",
+    "base64-image-viewer": "Base64 이미지 뷰어",
+    "hash-generator": "해시 생성기",
+    "jwt-encoder": "JWT 인코더",
+    "checksum-generator": "체크섬 생성기",
+    "jwt-decoder": "JWT 디코더",
     "column-extractor": "열 추출기",
     "text-line-numberer": "줄 번호 매기기",
     "text-padder": "텍스트 패딩",
