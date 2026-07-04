@@ -1004,7 +1004,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             {/* Show the save status only when the tab has content; "saving…" auto-hides after 3s. */}
             {text && (savedAt || savingVisible) && (
               <span className={'text-xs font-medium transition-colors ' + (savedAt ? 'text-green-600' : 'text-gray-400')}>
-                {savedAt ? <><span className="hidden sm:inline">{`✓ ${t('np_autosaved')} `}</span>{savedAt}</> : t('np_saving')}
+                {savedAt ? savedAt : t('np_saving')}
               </span>
             )}
           </div>
