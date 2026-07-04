@@ -20,14 +20,16 @@ export default function CalculatorPage() {
     }else if(key==='%'){setDisplay(d=>String(parseFloat(d)/100));setNewNum(true)
     }else if(['+','-','x','divide'].includes(key)){
       const op=key==='x'?'*':key==='divide'?'/':key
-      setExpr(display+' '+op+' ')
+      // Build up the FULL running expression. If an operator was just pressed (no new operand yet),
+      // swap the trailing operator instead of re-appending the same operand.
+      setExpr(e=>(newNum&&e)?e.replace(/[-+*/]\s*$/,op+' '):e+display+' '+op+' ')
       setNewNum(true)
     }else if(key==='='){
       try{
         const full=expr+display
         const res=Function('"use strict";return ('+full.replace(/x/g,'*').replace(/divide/g,'/')+')')()
         const rounded=parseFloat(res.toFixed(10)).toString()
-        setHistory(h=>[full+' = '+rounded,...h.slice(0,9)])
+        setHistory(h=>[full.replace(/\*/g,'×').replace(/\//g,'÷')+' = '+rounded,...h.slice(0,9)])
         setDisplay(rounded)
         setExpr('')
         setNewNum(true)
@@ -57,11 +59,13 @@ export default function CalculatorPage() {
   const isOp=(k:string)=>['divide','x','+','-'].includes(k)
   const isEq=(k:string)=>k==='='
   const isSpecial=(k:string)=>['%','CE','C','sqrt','x2','1/x'].includes(k)
+  // Top line = the whole running expression (accumulated ops + the number being typed), ×/÷ for readability.
+  const shownExpr=expr?(expr+(newNum?'':display)).replace(/\*/g,'×').replace(/\//g,'÷'):''
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-sm mx-auto px-4 space-y-4">
         <div className="bg-gray-900 rounded-2xl p-4 space-y-2">
-          <p className="text-gray-400 text-sm font-mono min-h-5 text-right">{expr}</p>
+          <p className="text-gray-400 text-sm font-mono min-h-5 text-right truncate">{shownExpr}</p>
           <p className="text-white text-4xl font-bold font-mono text-right truncate">{display}</p>
         </div>
         <div className="grid grid-cols-4 gap-2">
