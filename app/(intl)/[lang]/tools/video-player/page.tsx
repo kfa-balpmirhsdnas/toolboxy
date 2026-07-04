@@ -678,7 +678,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   Auto-hides 5s after the last interaction unless locked. Each tab opens a submenu below it. */}
               {(ovVisible || locked) && (
                 <div className="absolute top-0 inset-x-0 flex justify-center pointer-events-none">
-                  <div style={ovScaleStyle('top center')} className="flex items-start gap-1">
+                  <div style={ovScaleStyle('top center')} className="flex flex-col items-center gap-1">
+                  <div className="flex items-start gap-1">
                   {/* Lock — pin the overlay open */}
                   <button onClick={() => setLocked((v) => !v)} title={t('vp_lock')} aria-label={t('vp_lock')}
                     className={ovBtn + (locked ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
@@ -784,6 +785,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   </button>
 
                   </div>
+                  {/* Video title — shown with the overlay */}
+                  {base && <div className="max-w-[240px] truncate px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium text-center pointer-events-auto">{base}</div>}
+                </div>
                 </div>
               )}
               {/* Center controls — skip/play cluster with the time gauge right below it (same width). */}
@@ -791,17 +795,17 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 <div style={ovScaleStyle('center')} className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="inline-flex flex-col items-stretch gap-2">
                     {/* Row 1: previous video / play / next video */}
-                    <div className="flex items-center justify-center gap-3">
-                      <button onClick={playPrev} aria-label="previous video" className="pointer-events-auto inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/55 text-white hover:bg-black/75 backdrop-blur transition-colors">
-                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M19 20 9 12l10-8z" /><rect x="4" y="4" width="2.4" height="16" rx="1" /></svg>
+                    <div className="flex items-center justify-center gap-4">
+                      <button onClick={playPrev} aria-label="previous video" className="pointer-events-auto inline-flex items-center justify-center w-14 h-14 rounded-full bg-black/55 text-white hover:bg-black/75 backdrop-blur transition-colors">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7"><path d="M19 20 9 12l10-8z" /><rect x="4" y="4" width="2.4" height="16" rx="1" /></svg>
                       </button>
-                      <button onClick={togglePlay} aria-label="play" className="pointer-events-auto inline-flex items-center justify-center w-12 h-12 rounded-full bg-black/60 text-white hover:bg-black/80 backdrop-blur transition-colors">
+                      <button onClick={togglePlay} aria-label="play" className="pointer-events-auto inline-flex items-center justify-center w-16 h-16 rounded-full bg-black/60 text-white hover:bg-black/80 backdrop-blur transition-colors">
                         {playing
-                          ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
-                          : <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M8 5v14l11-7z" /></svg>}
+                          ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-9 h-9"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+                          : <svg viewBox="0 0 24 24" fill="currentColor" className="w-9 h-9"><path d="M8 5v14l11-7z" /></svg>}
                       </button>
-                      <button onClick={playNext} aria-label="next video" className="pointer-events-auto inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/55 text-white hover:bg-black/75 backdrop-blur transition-colors">
-                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="m5 4 10 8-10 8z" /><rect x="17.6" y="4" width="2.4" height="16" rx="1" /></svg>
+                      <button onClick={playNext} aria-label="next video" className="pointer-events-auto inline-flex items-center justify-center w-14 h-14 rounded-full bg-black/55 text-white hover:bg-black/75 backdrop-blur transition-colors">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7"><path d="m5 4 10 8-10 8z" /><rect x="17.6" y="4" width="2.4" height="16" rx="1" /></svg>
                       </button>
                     </div>
                     {/* Row 2: -30 -10 -5 / +5 +10 +30 */}
