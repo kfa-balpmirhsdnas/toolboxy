@@ -13,8 +13,7 @@ const tool = getToolBySlug('video-player')!
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
 // Overlay submenu option sets.
 const TIMER_MENU = [15, 30, 60, 120]
-const SPEED_MENU = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3]
-const ROTATE_MENU = [90, 180, 270, 350]
+const ROTATE_MENU = [90, 180, 270, 360]
 // Media extensions kept in one place so the picker filter and the drop/folder guard stay in sync.
 const MEDIA_EXTS = [
   'mp4', 'm4v', 'mov', 'mkv', 'webm', 'avi', 'mpeg', 'mpg', 'ogv', '3gp', '3g2', 'flv', 'f4v', 'ts', 'mts', 'm2ts', 'wmv', 'asf', 'divx', 'vob', // video
@@ -124,7 +123,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const showOverlay = useCallback(() => {
     setOvVisible(true)
     if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null }
-    if (!locked) hideRef.current = setTimeout(() => { setOvVisible(false); setOpenMenu(null); setShowVol(false) }, 3000)
+    if (!locked) hideRef.current = setTimeout(() => { setOvVisible(false); setOpenMenu(null); setShowVol(false) }, 6000)
   }, [locked])
   useEffect(() => {
     if (locked) { if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null } setOvVisible(true) }
@@ -424,6 +423,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const subMenu = 'absolute top-full left-1/2 -translate-x-1/2 mt-0.5 min-w-[9rem] pointer-events-auto rounded-lg bg-black/85 backdrop-blur text-white text-xs py-1 shadow-lg z-20 flex flex-col overflow-hidden'
   const subRow = 'w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left hover:bg-white/15 transition-colors tabular-nums'
   const subCell = 'w-full flex items-center justify-center px-3 py-1.5 hover:bg-white/15 transition-colors tabular-nums'
+  // Shared slider (gauge) styling — white thumb, two-tone track via an inline gradient.
+  const gaugeCls = 'w-40 h-1.5 appearance-none rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-0'
+  const fillBg = (pct: number) => ({ background: `linear-gradient(to right, #fff ${pct}%, rgba(255,255,255,0.25) ${pct}%)` })
   // History filtered by the 전체 / 보관 tab.
   const shownHistory = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
   const starSvg = (key: string) => (
@@ -475,18 +477,27 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       {/* Speed / volume appear as a horizontal row ABOVE the bar (spans the bar width, so it stays on-screen). */}
       {openMenu === 'speed' && (
         <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
-          <div className="pointer-events-auto flex flex-row items-center rounded-lg bg-black/90 backdrop-blur text-white text-xs shadow-lg overflow-hidden">
-            {SPEED_MENU.map((s) => (<button key={s} onClick={() => { setSpeed(s); setOpenMenu(null); showOverlay() }} className={'px-2.5 h-9 flex items-center hover:bg-white/15 tabular-nums transition-colors' + (speed === s ? ' bg-brand-600' : '')}>{s}×</button>))}
+          <div className="pointer-events-auto flex items-center gap-2 px-3 h-9 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
+            <input type="range" min={0.25} max={3} step={0.25} value={speed} onChange={(e) => { setSpeed(+e.target.value); showOverlay() }} aria-label="playback speed"
+              style={fillBg(((speed - 0.25) / 2.75) * 100)} className={gaugeCls} />
+            <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{speed}×</span>
           </div>
         </div>
       )}
       {showVol && (
         <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
-          <div className="pointer-events-auto flex items-center gap-2 px-3 h-9 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
-            <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume level"
-              style={{ background: `linear-gradient(to right, #fff ${volume * 100}%, rgba(255,255,255,0.25) ${volume * 100}%)` }}
-              className="w-40 h-1.5 appearance-none rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-0" />
-            <span className="text-[10px] tabular-nums text-white/80 w-6 text-right">{Math.round(volume * 100)}</span>
+          <div className="pointer-events-auto flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
+            {/* presets */}
+            <div className="flex items-center gap-0.5">
+              {[0, 10, 30, 50, 60, 80, 100].map((p) => (
+                <button key={p} onClick={() => { setVol(p / 100); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (Math.round(volume * 100) === p ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{p}</button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume level"
+                style={fillBg(volume * 100)} className={gaugeCls} />
+              <span className="text-[10px] tabular-nums text-white/80 w-6 text-right">{Math.round(volume * 100)}</span>
+            </div>
           </div>
         </div>
       )}

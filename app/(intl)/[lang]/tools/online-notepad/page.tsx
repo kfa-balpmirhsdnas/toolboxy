@@ -164,7 +164,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [docs, setDocs] = useState<Doc[]>([first])
   const [activeId, setActiveId] = useState(first.id)
   const [savedAt, setSavedAt] = useState('')
-  const [savingVisible, setSavingVisible] = useState(false) // "saving…" auto-hides after 3s
+  const [savingVisible, setSavingVisible] = useState(false) // "saving…" auto-hides after 2s
   const [copied, setCopied] = useState(false)
   const [cutDone, setCutDone] = useState(false)
   const [renaming, setRenaming] = useState<string | null>(null)
@@ -389,7 +389,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   useEffect(() => {
     if (savedAt) return
     setSavingVisible(true)
-    const id = setTimeout(() => setSavingVisible(false), 3000)
+    const id = setTimeout(() => setSavingVisible(false), 2000)
     return () => clearTimeout(id)
   }, [savedAt])
   useEffect(() => {
