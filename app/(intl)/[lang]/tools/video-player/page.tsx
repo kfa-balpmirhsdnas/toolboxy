@@ -53,6 +53,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // Overlay controls (on top of the video; the tab controls below stay as-is).
   const [rot, setRot] = useState(0)            // display rotation 0/90/180/270
   const [boxSize, setBoxSize] = useState({ w: 0, h: 0 }) // measured video-frame size (for fit-to-frame rotation)
+  const [stripNatW, setStripNatW] = useState(0)        // measured natural width of the top-strip buttons
   const [repeatMode, setRepeatMode] = useState<'off' | 'one' | 'all'>('all') // default: 전체 반복 (playlist loop)
   const [sleepMin, setSleepMin] = useState(0)   // sleep-timer minutes (0 = off)
   const [sleepLeft, setSleepLeft] = useState(0) // seconds remaining
@@ -79,6 +80,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const videoRef = useRef<HTMLVideoElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const boxRef = useRef<HTMLDivElement>(null)       // the black video frame — measured so a 90°/270° rotation fills it (like turning the phone)
+  const stripRef = useRef<HTMLDivElement>(null)     // top-strip content — measured to clamp the landscape overlay scale so end buttons don't clip
   const inputRef = useRef<HTMLInputElement>(null)   // video picker (opens gallery straight — no capture chooser)
   const dirRef = useRef<HTMLInputElement>(null)     // folder picker (dir picker; also reaches audio files)
   const audioElRef = useRef<HTMLAudioElement>(null) // background player used in audio mode / for audio-only files
@@ -356,6 +358,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     return () => ro.disconnect()
   }, [fs, url, audioMode, audioOnly])
 
+  // Measure the top strip's natural (untransformed) width so the landscape scale can be clamped to fit.
+  useEffect(() => { if (stripRef.current) setStripNatW(stripRef.current.offsetWidth) }, [ovVisible, locked, fs, url, audioMode, audioOnly, boxSize.w])
+
   // Transfer playback between the <video> and <audio> elements when audio mode / audio-only flips.
   // The <video> src is dropped in audio mode (binding below) so the page holds NO video-track element —
   // that's what lets the browser treat playback as pure audio and keep it alive with the screen off.
@@ -581,6 +586,14 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     : { position: 'absolute', inset: 0, transform: rot ? `rotate(${rot}deg)` : undefined }
   const stageCls = 'flex items-center justify-center'
   const videoCls = 'block object-contain w-full h-full'
+  // In landscape the video is displayed ~1.4× larger; scale the overlay controls by the same ratio so they
+  // keep the same proportion to the picture — but clamp so the top strip (which nearly fills the width) still
+  // fits along the box's long axis instead of clipping the end buttons.
+  const ovScale = quarterTurned
+    ? Math.min(boxSize.h / boxSize.w, stripNatW > 0 ? (boxSize.h - 8) / stripNatW : boxSize.h / boxSize.w)
+    : 1
+  const ovScaleStyle = (origin: string): CSSProperties | undefined =>
+    quarterTurned ? { transform: `scale(${ovScale.toFixed(3)})`, transformOrigin: origin } : undefined
 
   return (
     <ToolLayout tool={tool} lang={lang}>
@@ -672,7 +685,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               {/* Overlay tab controls — container passes taps through; only buttons/menus capture.
                   Auto-hides 5s after the last interaction unless locked. Each tab opens a submenu below it. */}
               {(ovVisible || locked) && (
-                <div className="absolute top-0 inset-x-0 flex items-start justify-center gap-1 pointer-events-none">
+                <div className="absolute top-0 inset-x-0 flex justify-center pointer-events-none">
+                  <div ref={stripRef} style={ovScaleStyle('top center')} className="flex items-start gap-1">
                   {/* Lock — pin the overlay open */}
                   <button onClick={() => setLocked((v) => !v)} title={t('vp_lock')} aria-label={t('vp_lock')}
                     className={ovBtn + (locked ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
@@ -777,11 +791,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
                   </button>
 
+                  </div>
                 </div>
               )}
               {/* Center controls — skip/play cluster with the time gauge right below it (same width). */}
               {(ovVisible || locked) && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div style={ovScaleStyle('center')} className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="inline-flex flex-col items-stretch gap-2">
                     {/* Row 1: previous video / play / next video */}
                     <div className="flex items-center justify-center gap-3">
@@ -823,7 +838,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               )}
               {/* Fullscreen: the control bar rides as a bottom overlay (there's no room "below" the video). */}
               {fs && (ovVisible || locked) && (
-                <div className="absolute bottom-0 inset-x-0 flex items-end justify-between gap-1 pointer-events-none">
+                <div style={ovScaleStyle('bottom center')} className="absolute bottom-0 inset-x-0 flex items-end justify-between gap-1 pointer-events-none">
                   {bottomBar}
                 </div>
               )}
