@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import {
   CATEGORY_META,
   getToolsByCategory,
+  TOOLS,
   type ToolCategory,
 } from '@/lib/tools/registry'
 import ToolCard from '@/components/tools/ToolCard'
@@ -44,10 +45,10 @@ export default async function CategoryPage({
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         <Link href={`/${lang}/tools`} className="hover:text-brand-600 transition-colors">
-          {tn('tools')}
+          {tn('tools')}<span className="text-gray-400">({TOOLS.length})</span>
         </Link>
         <span>/</span>
-        <span className="text-gray-900 font-medium">{t(category)}</span>
+        <span className="text-gray-900 font-medium">{t(category)}<span className="text-gray-400 font-normal">({tools.length})</span></span>
       </nav>
 
       {/* Title */}
