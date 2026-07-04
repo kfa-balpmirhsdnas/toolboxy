@@ -47,15 +47,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   )
 
-  // Each 고사성어 gets its own URL per language (page-count = traffic).
-  const idiomUrls = LANGS.flatMap((lang) =>
-    IDIOMS.map((i) => ({
-      url: `${BASE_URL}/${lang}/tools/gosaseongeo/${encodeURIComponent(i.reading)}`,
-      lastModified: now,
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    })),
-  )
+  // 고사성어 is Korean-only content, so only the /ko idiom pages are canonical/indexable
+  // (en/ja consolidate onto /ko). Submit just the /ko URLs.
+  const idiomUrls = IDIOMS.map((i) => ({
+    url: `${BASE_URL}/ko/tools/gosaseongeo/${encodeURIComponent(i.reading)}`,
+    lastModified: now,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
 
   return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls]
 }

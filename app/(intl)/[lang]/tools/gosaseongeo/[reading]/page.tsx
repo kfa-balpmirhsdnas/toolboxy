@@ -21,11 +21,12 @@ export async function generateMetadata({ params }: { params: { lang: string; rea
   if (!i) return {}
   const title = `${i.reading}(${i.hanja}) 뜻 - 고사성어`
   const description = `${i.hanja}(${i.reading}): ${i.fig}${i.origin ? ' 유래: ' + i.origin : ''}`.slice(0, 155)
-  const url = `${BASE}/${params.lang}/tools/gosaseongeo/${encodeURIComponent(i.reading)}`
+  // The idiom content is Korean, so /en and /ja are duplicates — consolidate all locales onto the /ko page.
+  const canonical = `${BASE}/ko/tools/gosaseongeo/${encodeURIComponent(i.reading)}`
   return {
     title, description,
-    alternates: { canonical: url },
-    openGraph: { title, description, url, type: 'article' },
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, type: 'article' },
   }
 }
 
