@@ -502,10 +502,18 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       {/* Speed / volume appear as a horizontal row ABOVE the bar (spans the bar width, so it stays on-screen). */}
       {openMenu === 'speed' && (
         <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
-          <div className="pointer-events-auto flex items-center gap-2 px-3 h-9 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
-            <input type="range" min={0.25} max={3} step={0.25} value={speed} onChange={(e) => { setSpeed(+e.target.value); showOverlay() }} aria-label="playback speed"
-              style={fillBg(((speed - 0.25) / 2.75) * 100)} className={gaugeCls} />
-            <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{speed}×</span>
+          <div className="pointer-events-auto flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
+            {/* presets */}
+            <div className="flex items-center gap-0.5">
+              {[0.5, 0.75, 1, 1.25, 1.5, 2].map((p) => (
+                <button key={p} onClick={() => { setSpeed(p); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (speed === p ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{p}×</button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <input type="range" min={0.25} max={3} step={0.25} value={speed} onChange={(e) => { setSpeed(+e.target.value); showOverlay() }} aria-label="playback speed"
+                style={fillBg(((speed - 0.25) / 2.75) * 100)} className={gaugeCls} />
+              <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{speed}×</span>
+            </div>
           </div>
         </div>
       )}
@@ -528,11 +536,19 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       )}
       {showBright && (
         <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
-          <div className="pointer-events-auto flex items-center gap-2 px-3 h-9 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0 text-white/70"><circle cx="12" cy="12" r="4" /><path d="M12 3v1" /><path d="M12 20v1" /><path d="M3 12h1" /><path d="M20 12h1" /></svg>
-            <input type="range" min={0.3} max={1.7} step={0.05} value={brightness} onChange={(e) => { setBrightness(+e.target.value); showOverlay() }} aria-label="brightness"
-              style={fillBg(((brightness - 0.3) / 1.4) * 100)} className={gaugeCls} />
-            <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{Math.round(brightness * 100)}</span>
+          <div className="pointer-events-auto flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
+            {/* presets */}
+            <div className="flex items-center gap-0.5">
+              {[30, 50, 70, 100, 130, 150].map((p) => (
+                <button key={p} onClick={() => { setBrightness(p / 100); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (Math.round(brightness * 100) === p ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{p}</button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0 text-white/70"><circle cx="12" cy="12" r="4" /><path d="M12 3v1" /><path d="M12 20v1" /><path d="M3 12h1" /><path d="M20 12h1" /></svg>
+              <input type="range" min={0.3} max={1.7} step={0.05} value={brightness} onChange={(e) => { setBrightness(+e.target.value); showOverlay() }} aria-label="brightness"
+                style={fillBg(((brightness - 0.3) / 1.4) * 100)} className={gaugeCls} />
+              <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{Math.round(brightness * 100)}</span>
+            </div>
           </div>
         </div>
       )}
@@ -591,7 +607,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               {/* Native controls hidden — the top tabs + center cluster + bottom bar below are our own. */}
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video ref={videoRef} src={useAudioEl ? undefined : url} playsInline
-                style={{ transform: rot ? `rotate(${rot}deg)` : undefined, filter: (brightness !== 1 || nightMode) ? `brightness(${brightness})${nightMode ? ' sepia(0.45) saturate(1.2) contrast(0.92)' : ''}` : undefined }}
+                style={{ transform: rot ? `rotate(${rot}deg)` : undefined, filter: (brightness !== 1 || nightMode) ? `brightness(${(brightness * (nightMode ? 0.68 : 1)).toFixed(2)})${nightMode ? ' contrast(0.82) sepia(0.08)' : ''}` : undefined }}
                 className={'block max-w-full object-contain transition-transform ' + (fs ? 'max-h-screen w-full' : 'w-full max-h-[50vh] sm:max-h-[60vh]')}
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget
@@ -858,19 +874,25 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                           className={chipBtn + ' inline-flex items-center gap-1.5 disabled:opacity-40 ' + (repeat ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
                           <ToolIcon name="refresh" className="w-3.5 h-3.5" />{t('vp_repeat_start')}
                         </button>
-                        {(a != null || b != null) && (
-                          <button onClick={() => { setA(null); setB(null); setRepeat(false) }} className="px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 transition-colors">{t('vp_repeat_cancel')}</button>
-                        )}
+                        <button onClick={() => { setA(null); setB(null); setRepeat(false) }} disabled={a == null && b == null && !repeat}
+                          className="px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 disabled:opacity-40 disabled:hover:text-gray-500 disabled:hover:bg-transparent disabled:hover:border-gray-200 transition-colors">{t('vp_repeat_cancel')}</button>
                       </div>
                     </div>
                   </div>
                 )}
                 {optTab === 'speed' && (
-                  <div className="flex flex-wrap gap-1">
-                    {SPEEDS.map((s) => (
-                      <button key={s} onClick={() => setSpeed(s)}
-                        className={'px-3 py-1.5 rounded-lg text-sm font-medium tabular-nums transition-colors ' + (speed === s ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>{s}×</button>
-                    ))}
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap gap-1">
+                      {SPEEDS.map((s) => (
+                        <button key={s} onClick={() => setSpeed(s)}
+                          className={'px-3 py-1.5 rounded-lg text-sm font-medium tabular-nums transition-colors ' + (speed === s ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>{s}×</button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input type="range" min={0.25} max={3} step={0.05} value={speed} onChange={(e) => setSpeed(+e.target.value)} aria-label={t('vp_speed')}
+                        className="flex-1 h-1.5 cursor-pointer accent-brand-600" />
+                      <span className="text-sm font-mono tabular-nums text-gray-600 w-12 text-right">{speed}×</span>
+                    </div>
                   </div>
                 )}
               </div>
