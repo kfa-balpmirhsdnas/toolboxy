@@ -574,13 +574,13 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     ? `brightness(${(brightness * (nightMode ? 0.68 : 1)).toFixed(2)})${nightMode ? ' contrast(0.82) sepia(0.08)' : ''}`
     : undefined
   const quarterTurned = (rot === 90 || rot === 270) && boxSize.w > 0 && boxSize.h > 0
+  // Non-rotated: the stage fills the black box (absolute inset-0) so the top strip / bottom bar anchor to the
+  // box edges (top strip hugs the very top). Rotated: the stage becomes the swapped, centred, rotated frame.
   const stageStyle: CSSProperties = quarterTurned
     ? { position: 'absolute', left: '50%', top: '50%', width: boxSize.h, height: boxSize.w, transform: `translate(-50%, -50%) rotate(${rot}deg)` }
-    : { transform: rot ? `rotate(${rot}deg)` : undefined }
-  const stageCls = 'flex items-center justify-center '
-    + (quarterTurned ? '' : ('relative w-full ' + (fs ? 'h-full' : '')))
-  const videoCls = 'block object-contain '
-    + (quarterTurned ? 'w-full h-full' : (fs ? 'max-h-screen w-full max-w-full' : 'w-full max-w-full max-h-[50vh] sm:max-h-[60vh]'))
+    : { position: 'absolute', inset: 0, transform: rot ? `rotate(${rot}deg)` : undefined }
+  const stageCls = 'flex items-center justify-center'
+  const videoCls = 'block object-contain w-full h-full'
 
   return (
     <ToolLayout tool={tool} lang={lang}>
