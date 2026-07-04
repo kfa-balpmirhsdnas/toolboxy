@@ -10,7 +10,6 @@ import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 import { vhList, vhPutMeta, vhPutManyMeta, vhSave, vhSetBlob, vhSetThumb, vhDelete, vhClear } from '@/lib/tools/videoHistory'
 
 const tool = getToolBySlug('video-player')!
-const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
 // Overlay submenu option sets.
 const TIMER_MENU = [15, 30, 60, 120]
 // Media extensions kept in one place so the picker filter and the drop/folder guard stay in sync.
@@ -47,7 +46,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [repeat, setRepeat] = useState(false)
   const [capFmt, setCapFmt] = useState<'png' | 'jpg'>('png')
   const [captured, setCaptured] = useState(false)
-  const [optTab, setOptTab] = useState<'frame' | 'ab' | 'speed'>('frame') // combined options tabs
+  const [optTab, setOptTab] = useState<'frame' | 'ab' | 'timer' | 'repeat'>('frame') // combined options tabs
   const [history, setHistory] = useState<{ name: string; size: number; file: File | null }[]>([]) // file null = metadata-only (not saved), needs re-open
   const [curFile, setCurFile] = useState<File | null>(null)
   // Overlay controls (on top of the video; the tab controls below stay as-is).
@@ -65,7 +64,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [histView, setHistView] = useState<'list' | 'thumbnails'>('list')
   const [histTab, setHistTab] = useState<'all' | 'saved'>('all') // 전체 / 보관
   const [saved, setSaved] = useState<Set<string>>(() => new Set()) // starred (kept) clip keys
-  const [optOpen, setOptOpen] = useState(false) // options box (frame/ab/speed) — collapsed by default
+  const [optOpen, setOptOpen] = useState(false) // options box (frame/ab/timer/repeat) — collapsed by default
   const [thumbs, setThumbs] = useState<Record<string, string>>({})
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(false)
@@ -892,13 +891,15 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             {/* Options — frame capture / A–B repeat / speed combined into tabs. Collapsed by default. */}
             <div className="rounded-2xl border border-gray-200 overflow-hidden">
               <div className={'flex items-center gap-1 bg-gray-50 px-2 ' + (optOpen ? 'border-b border-gray-200' : '')}>
-                {(['frame', 'ab', 'speed'] as const).map((id) => {
-                  const label = id === 'frame' ? t('vp_frame') : id === 'ab' ? t('vp_ab') : t('vp_speed')
+                {(['frame', 'ab', 'timer', 'repeat'] as const).map((id) => {
+                  const label = id === 'frame' ? t('vp_frame') : id === 'ab' ? t('vp_ab') : id === 'timer' ? t('vp_timer') : t('vp_repeat')
                   const icon = id === 'frame'
                     ? <ToolIcon name="camera" className="w-4 h-4" />
                     : id === 'ab'
                       ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>
-                      : <span className="w-4 h-4 inline-flex items-center justify-center text-[11px] font-bold tabular-nums leading-none">{speed}×</span>
+                      : id === 'timer'
+                        ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /></svg>
+                        : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>
                   return (
                     <button key={id} onClick={() => { setOptTab(id); setOptOpen(true) }} title={label} aria-label={label}
                       className={'inline-flex items-center gap-1.5 px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (optOpen && optTab === id ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>
@@ -954,19 +955,32 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     </div>
                   </div>
                 )}
-                {optTab === 'speed' && (
+                {optTab === 'timer' && (
                   <div className="space-y-3">
-                    <div className="flex flex-wrap gap-1">
-                      {SPEEDS.map((s) => (
-                        <button key={s} onClick={() => setSpeed(s)}
-                          className={'px-3 py-1.5 rounded-lg text-sm font-medium tabular-nums transition-colors ' + (speed === s ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>{s}×</button>
+                    <div className="flex flex-wrap items-center gap-1">
+                      {TIMER_MENU.map((min) => (
+                        <button key={min} onClick={() => setSleepMin(min)}
+                          className={'px-3 py-1.5 rounded-lg text-sm font-medium tabular-nums transition-colors ' + (sleepMin === min ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>{t('ct_min', { n: min })}</button>
                       ))}
+                      <button onClick={() => setSleepMin(0)} disabled={sleepMin === 0}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 disabled:opacity-40 disabled:hover:text-gray-500 disabled:hover:bg-transparent disabled:hover:border-gray-200 transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0"><circle cx="12" cy="12" r="9" /><path d="m5.6 5.6 12.8 12.8" /></svg>{t('vp_timer_cancel')}</button>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <input type="range" min={0.25} max={3} step={0.05} value={speed} onChange={(e) => setSpeed(+e.target.value)} aria-label={t('vp_speed')}
-                        className="flex-1 h-1.5 cursor-pointer accent-brand-600" />
-                      <span className="text-sm font-mono tabular-nums text-gray-600 w-12 text-right">{speed}×</span>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <span>{t('vp_time_left')}</span>
+                      <span className="font-mono tabular-nums text-gray-700">{sleepMin ? `${Math.floor(sleepLeft / 60)}:${String(sleepLeft % 60).padStart(2, '0')}` : '—'}</span>
                     </div>
+                  </div>
+                )}
+                {optTab === 'repeat' && (
+                  <div className="flex flex-wrap gap-2">
+                    <button onClick={() => setRepeatMode('one')}
+                      className={chipBtn + ' inline-flex items-center gap-1.5 ' + (repeatMode === 'one' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>{loopLetter('1')}{t('vp_repeat_one')}</button>
+                    <button onClick={() => setRepeatMode('all')}
+                      className={chipBtn + ' inline-flex items-center gap-1.5 ' + (repeatMode === 'all' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>{loopLetter('A')}{t('vp_repeat_all')}</button>
+                    <button onClick={() => setRepeatMode('off')}
+                      className={chipBtn + ' inline-flex items-center gap-1.5 ' + (repeatMode === 'off' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><circle cx="12" cy="12" r="9" /><path d="m5.6 5.6 12.8 12.8" /></svg>{t('vp_repeat_off')}</button>
                   </div>
                 )}
               </div>
