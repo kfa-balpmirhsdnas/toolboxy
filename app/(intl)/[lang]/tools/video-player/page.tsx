@@ -53,7 +53,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [rot, setRot] = useState(0)            // display rotation 0/90/180/270
   const [boxSize, setBoxSize] = useState({ w: 0, h: 0 }) // measured video-frame size (for fit-to-frame rotation)
   const [dragHud, setDragHud] = useState<null | { kind: 'bright' | 'vol'; pct: number }>(null) // brightness/volume gesture readout
-  const [repeatMode, setRepeatMode] = useState<'off' | 'one' | 'all'>('all') // default: 전체 반복 (playlist loop)
+  const [repeatMode, setRepeatMode] = useState<'off' | 'one' | 'all' | 'shuffle'>('all') // default: 전체 반복 (playlist loop)
+  const [segSaving, setSegSaving] = useState(false) // "구간 저장" (A–B clip export) in progress
   const [sleepMin, setSleepMin] = useState(0)   // sleep-timer minutes (0 = off)
   const [sleepLeft, setSleepLeft] = useState(0) // seconds remaining
   const sleepRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -255,6 +256,13 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     const list = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
     if (!list.length) return
     const idx = curFile ? list.findIndex((x) => x.file === curFile) : -1
+    // 랜덤 반복: pick a random OTHER playable clip in the open tab.
+    if (repeatMode === 'shuffle') {
+      const playable = list.filter((x) => x.file && x.file !== curFile)
+      const pick = playable.length ? playable[Math.floor(Math.random() * playable.length)] : list.find((x) => x.file)
+      if (pick?.file) { load(pick.file, true) }
+      return
+    }
     // Advance to the next PLAYABLE clip (skip metadata-only entries that have no blob).
     for (let step = 1; step <= list.length; step++) {
       const next = list[(idx + step) % list.length]
@@ -270,6 +278,55 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       const prev = list[(idx - step + list.length) % list.length]
       if (prev?.file) { load(prev.file, true); return }
     }
+  }
+
+  // 구간 저장: cut just the A–B range from the current clip and download it as a new file.
+  // Client-side only — an offscreen <video> is played A→B while a MediaRecorder captures its stream
+  // (audio is routed through Web Audio so nothing is heard aloud). Output is WebM.
+  async function saveSegment() {
+    const cur = curFile
+    if (!cur || a == null || b == null || b <= a || segSaving) return
+    setSegSaving(true)
+    const off = document.createElement('video')
+    off.src = URL.createObjectURL(cur)
+    off.playsInline = true; off.preload = 'auto'
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    let ac: AudioContext | null = null
+    const withTimeout = <T,>(p: Promise<T>, ms: number) => Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))])
+    try {
+      await withTimeout(new Promise<void>((res, rej) => { off.onloadedmetadata = () => res(); off.onerror = () => rej(new Error('load')) }), 15000)
+      off.currentTime = a
+      await withTimeout(new Promise<void>((res) => { off.onseeked = () => res() }), 5000)
+      const cap = (off as any).captureStream ? (off as any).captureStream() : (off as any).mozCaptureStream()
+      let tracks: MediaStreamTrack[] = cap.getVideoTracks()
+      const AC = (window.AudioContext || (window as any).webkitAudioContext)
+      if (AC) {
+        ac = new AC(); await ac.resume().catch(() => {})
+        const dest = ac.createMediaStreamDestination()
+        ac.createMediaElementSource(off).connect(dest) // not connected to speakers -> silent locally
+        tracks = [...tracks, ...dest.stream.getAudioTracks()]
+      }
+      const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : 'video/webm'
+      const rec = new MediaRecorder(new MediaStream(tracks), { mimeType: mime })
+      const chunks: Blob[] = []
+      rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data) }
+      const done = new Promise<void>((res) => { rec.onstop = () => res() })
+      rec.start()
+      off.playbackRate = 1
+      await off.play()
+      await withTimeout(new Promise<void>((res) => { const tick = () => { if (off.currentTime >= (b as number) || off.ended) res(); else requestAnimationFrame(tick) }; requestAnimationFrame(tick) }), (b - a) * 1000 + 12000)
+      rec.stop(); off.pause()
+      await done
+      const blob = new Blob(chunks, { type: 'video/webm' })
+      if (blob.size) {
+        const dl = URL.createObjectURL(blob)
+        const link = document.createElement('a'); link.href = dl; link.download = `${base}_${fmtFile(a)}-${fmtFile(b)}.webm`; link.click()
+        setTimeout(() => URL.revokeObjectURL(dl), 3000)
+        trackToolDownload('video-player', 'segment')
+      }
+    } catch { /* ignore — leaves the player untouched */ }
+    finally { try { ac?.close() } catch { /* ignore */ } URL.revokeObjectURL(off.src); setSegSaving(false) }
+    /* eslint-enable @typescript-eslint/no-explicit-any */
   }
 
   // Restore the persisted list on mount (metadata for all; a File only for ★ saved clips whose blob was kept).
@@ -624,7 +681,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
         <audio ref={audioElRef} src={url || undefined} preload="metadata"
           onPlay={() => { setPlaying(true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'playing' } catch { /* ignore */ } }}
           onPause={(e) => { setPlaying(false); if (useAudioEl) savePos(e.currentTarget.currentTime, true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
-          onEnded={() => { if (useAudioEl) clearPos(); if (repeatMode === 'all' && useAudioEl) playNext() }}
+          onEnded={() => { if (useAudioEl) clearPos(); if ((repeatMode === 'all' || repeatMode === 'shuffle') && useAudioEl) playNext() }}
           onVolumeChange={(e) => { setMuted(e.currentTarget.muted); setVolume(e.currentTarget.volume) }}
           onTimeUpdate={(e) => {
             if (!useAudioEl) return
@@ -681,7 +738,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 }}
                 onPlay={() => { setPlaying(true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'playing' } catch { /* ignore */ } }}
                 onPause={(e) => { setPlaying(false); if (!useAudioEl) savePos(e.currentTarget.currentTime, true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
-                onEnded={() => { if (!useAudioEl) clearPos(); if (repeatMode === 'all' && !useAudioEl) playNext() }}
+                onEnded={() => { if (!useAudioEl) clearPos(); if ((repeatMode === 'all' || repeatMode === 'shuffle') && !useAudioEl) playNext() }}
                 onVolumeChange={(e) => { setMuted(e.currentTarget.muted); setVolume(e.currentTarget.volume) }}
                 onTimeUpdate={(e) => {
                   if (useAudioEl) return
@@ -815,13 +872,14 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                       <span className="relative inline-flex">
                         {/* circular loop with a "1" in the middle — distinct from the A–B section-repeat icon */}
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>
-                        <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold leading-none">{repeatMode === 'all' ? 'A' : '1'}</span>
+                        <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold leading-none">{repeatMode === 'all' ? 'A' : repeatMode === 'shuffle' ? 'S' : '1'}</span>
                       </span>
                     </button>
                     {openMenu === 'repeat' && (
                       <div className={subMenu}>
                         <button onClick={() => { setRepeatMode('one'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'one' ? ' bg-brand-600' : '')}><span className="flex items-center gap-2">{loopLetter('1')}{t('vp_repeat_one')}</span></button>
                         <button onClick={() => { setRepeatMode('all'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'all' ? ' bg-brand-600' : '')}><span className="flex items-center gap-2">{loopLetter('A')}{t('vp_repeat_all')}</span></button>
+                        <button onClick={() => { setRepeatMode('shuffle'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'shuffle' ? ' bg-brand-600' : '')}><span className="flex items-center gap-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></svg>{t('vp_repeat_shuffle')}</span></button>
                         <button onClick={() => { setRepeatMode('off'); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span className="flex items-center gap-2">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><circle cx="12" cy="12" r="9" /><path d="m5.6 5.6 12.8 12.8" /></svg>
                           {t('vp_repeat_off')}</span></button>
@@ -957,7 +1015,11 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                           <ToolIcon name="refresh" className="w-3.5 h-3.5" />{t('vp_repeat_start')}
                         </button>
                         <button onClick={() => { setA(null); setB(null); setRepeat(false) }} disabled={a == null && b == null && !repeat}
-                          className="px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 disabled:opacity-40 disabled:hover:text-gray-500 disabled:hover:bg-transparent disabled:hover:border-gray-200 transition-colors">{t('vp_repeat_cancel')}</button>
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 disabled:opacity-40 disabled:hover:text-gray-500 disabled:hover:bg-transparent disabled:hover:border-gray-200 transition-colors">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0"><circle cx="12" cy="12" r="9" /><path d="m5.6 5.6 12.8 12.8" /></svg>{t('vp_repeat_cancel')}</button>
+                        <button onClick={saveSegment} disabled={a == null || b == null || b <= a || segSaving}
+                          className={chipBtn + ' inline-flex items-center gap-1.5 bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-40'}>
+                          <ToolIcon name={segSaving ? 'loader' : 'save'} className={'w-3.5 h-3.5 ' + (segSaving ? 'animate-spin' : '')} />{segSaving ? t('vp_saving') : t('vp_save_segment')}</button>
                       </div>
                     </div>
                   </div>
@@ -985,6 +1047,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                       className={chipBtn + ' inline-flex items-center gap-1.5 ' + (repeatMode === 'one' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>{loopLetter('1')}{t('vp_repeat_one')}</button>
                     <button onClick={() => setRepeatMode('all')}
                       className={chipBtn + ' inline-flex items-center gap-1.5 ' + (repeatMode === 'all' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>{loopLetter('A')}{t('vp_repeat_all')}</button>
+                    <button onClick={() => setRepeatMode('shuffle')}
+                      className={chipBtn + ' inline-flex items-center gap-1.5 ' + (repeatMode === 'shuffle' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></svg>{t('vp_repeat_shuffle')}</button>
                     <button onClick={() => setRepeatMode('off')}
                       className={chipBtn + ' inline-flex items-center gap-1.5 ' + (repeatMode === 'off' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><circle cx="12" cy="12" r="9" /><path d="m5.6 5.6 12.8 12.8" /></svg>{t('vp_repeat_off')}</button>
