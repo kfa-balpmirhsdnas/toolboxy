@@ -677,7 +677,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                             ))}
                           </div>
                         </div>
-                        <button onClick={() => { setSleepMin(0); setOpenMenu(null); showOverlay() }} className={subCell + ' border-t border-white/10 text-white/80'}>{t('vp_timer_cancel')}</button>
+                        <button onClick={() => { setSleepMin(0); setOpenMenu(null); showOverlay() }} className={subCell + ' gap-1.5 border-t border-white/10 text-white/80'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0"><circle cx="12" cy="12" r="9" /><path d="m5.6 5.6 12.8 12.8" /></svg>{t('vp_timer_cancel')}</button>
                       </div>
                     )}
                   </div>
@@ -689,11 +689,11 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>
                     </button>
                     {openMenu === 'ab' && (
-                      <div className={subMenu}>
+                      <div className={subMenu + ' w-max whitespace-nowrap'}>
                         <button onClick={() => { setA(cur); showOverlay() }} className={subRow}><span>{t('vp_start_time')}</span><span className="font-mono text-white inline-flex items-center gap-1 border border-white/30 rounded px-1.5 py-0.5 bg-white/10"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" /></svg>{a != null ? fmt(a) : t('vp_set')}</span></button>
                         <button onClick={() => { setB(cur); showOverlay() }} className={subRow}><span>{t('vp_end_time')}</span><span className="font-mono text-white inline-flex items-center gap-1 border border-white/30 rounded px-1.5 py-0.5 bg-white/10"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" /></svg>{b != null ? fmt(b) : t('vp_set')}</span></button>
-                        <button onClick={() => { if (repeat) { setRepeat(false); showOverlay() } else if (a != null && b != null && b > a) { setRepeat(true); showOverlay() } }} className={subRow + (repeat ? ' bg-brand-600' : (a == null || b == null || b <= a ? ' opacity-40' : ''))}><span>{repeat ? t('vp_repeat_stop') : t('vp_repeat_start')}</span></button>
-                        <button onClick={() => { setA(null); setB(null); setRepeat(false); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_repeat_cancel')}</span></button>
+                        <button onClick={() => { if (repeat) { setRepeat(false); showOverlay() } else if (a != null && b != null && b > a) { setRepeat(true); showOverlay() } }} className={subRow + (repeat ? ' bg-brand-600' : (a == null || b == null || b <= a ? ' opacity-40' : ''))}><span className="flex items-center gap-2"><ToolIcon name="refresh" className="w-3.5 h-3.5 shrink-0" />{repeat ? t('vp_repeat_stop') : t('vp_repeat_start')}</span></button>
+                        <button onClick={() => { setA(null); setB(null); setRepeat(false); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span className="flex items-center gap-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0"><circle cx="12" cy="12" r="9" /><path d="m5.6 5.6 12.8 12.8" /></svg>{t('vp_repeat_cancel')}</span></button>
                       </div>
                     )}
                   </div>
