@@ -567,17 +567,20 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     </>
   )
 
-  // Rotation that mimics turning the phone: for 90°/270° we swap the video frame's width/height and
-  // scale it to the measured black box, so the rotated video fills the area instead of being clipped.
+  // Rotation that mimics turning the phone: the whole "stage" (video + overlay controls) rotates as a
+  // unit. For 90°/270° we swap the stage's width/height to the measured black box, so the rotated stage
+  // fills the area instead of being clipped and the controls turn together with the video.
   const filterStr = (brightness !== 1 || nightMode)
     ? `brightness(${(brightness * (nightMode ? 0.68 : 1)).toFixed(2)})${nightMode ? ' contrast(0.82) sepia(0.08)' : ''}`
     : undefined
   const quarterTurned = (rot === 90 || rot === 270) && boxSize.w > 0 && boxSize.h > 0
-  const videoStyle: CSSProperties = quarterTurned
-    ? { filter: filterStr, position: 'absolute', left: '50%', top: '50%', width: boxSize.h, height: boxSize.w, maxWidth: 'none', maxHeight: 'none', transform: `translate(-50%, -50%) rotate(${rot}deg)` }
-    : { filter: filterStr, transform: rot ? `rotate(${rot}deg)` : undefined }
-  const videoCls = 'block object-contain transition-transform '
-    + (quarterTurned ? '' : (fs ? 'max-h-screen w-full max-w-full' : 'w-full max-w-full max-h-[50vh] sm:max-h-[60vh]'))
+  const stageStyle: CSSProperties = quarterTurned
+    ? { position: 'absolute', left: '50%', top: '50%', width: boxSize.h, height: boxSize.w, transform: `translate(-50%, -50%) rotate(${rot}deg)` }
+    : { transform: rot ? `rotate(${rot}deg)` : undefined }
+  const stageCls = 'flex items-center justify-center '
+    + (quarterTurned ? '' : ('relative w-full ' + (fs ? 'h-full' : '')))
+  const videoCls = 'block object-contain '
+    + (quarterTurned ? 'w-full h-full' : (fs ? 'max-h-screen w-full max-w-full' : 'w-full max-w-full max-h-[50vh] sm:max-h-[60vh]'))
 
   return (
     <ToolLayout tool={tool} lang={lang}>
@@ -628,10 +631,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               <div ref={boxRef} className={'relative overflow-hidden bg-black w-full flex items-center justify-center '
                 + (fs ? 'h-full ' : 'rounded-xl ')
                 + ((audioOnly || audioMode) ? 'min-h-[50vh] sm:min-h-[260px] ' : (fs ? '' : 'min-h-[50vh] sm:min-h-0 '))}>
+              {/* Rotating stage: video + all overlay controls turn together (so the menu rotates with the screen). */}
+              <div style={stageStyle} className={stageCls}>
               {/* Native controls hidden — the top tabs + center cluster + bottom bar below are our own. */}
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video ref={videoRef} src={useAudioEl ? undefined : url} playsInline
-                style={videoStyle}
+                style={{ filter: filterStr }}
                 className={videoCls}
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget
@@ -822,6 +827,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   {bottomBar}
                 </div>
               )}
+              </div>
               </div>
             </div>
             {/* Inline: the control bar sits below the video as a persistent black toolbar (always visible). */}
