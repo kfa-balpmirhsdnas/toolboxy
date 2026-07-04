@@ -7,7 +7,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
-import { vhList, vhPutMeta, vhSetBlob, vhSetThumb, vhDelete, vhClear } from '@/lib/tools/videoHistory'
+import { vhList, vhPutMeta, vhPutManyMeta, vhSave, vhSetBlob, vhSetThumb, vhDelete, vhClear } from '@/lib/tools/videoHistory'
 
 const tool = getToolBySlug('video-player')!
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
@@ -216,8 +216,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     }
     // Persist metadata so the list survives a refresh; the actual blob is only kept for ★ saved clips.
     const id = f.name + '|' + f.size
-    vhPutMeta({ id, name: f.name, size: f.size, type: f.type })
-    if (savedRef.current.has(id)) vhSetBlob(id, f) // already a favorite → keep it replayable
+    const meta = { id, name: f.name, size: f.size, type: f.type }
+    if (savedRef.current.has(id)) vhSave(meta, f); else vhPutMeta(meta)
     trackToolUsed('video-player')
   }, [])
   // Play the next clip in the history list (repeat-all), wrapping to the first.
@@ -256,7 +256,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const toggleSaved = useCallback((key: string, file: File | null) => {
     setSaved((prev) => {
       const n = new Set(prev); const willSave = !n.has(key)
-      if (willSave) { n.add(key); if (file) vhSetBlob(key, file) } else { n.delete(key); vhSetBlob(key, null) }
+      if (willSave) { n.add(key); if (file) vhSave({ id: key, name: file.name, size: file.size, type: file.type }, file) } else { n.delete(key); vhSetBlob(key, null) }
       try { localStorage.setItem('vp_saved_v1', JSON.stringify(Array.from(n))) } catch { /* ignore */ }
       return n
     })
@@ -304,6 +304,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       const add = vids.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f }))
       return [...add, ...h].slice(0, 60)
     })
+    // Persist metadata for every folder clip so the list survives a refresh (blobs stay session-only until ★ saved).
+    vhPutManyMeta(vids.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type })))
     trackToolUsed('video-player')
   }, [])
 

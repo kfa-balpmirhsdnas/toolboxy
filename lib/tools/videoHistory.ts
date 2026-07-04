@@ -10,7 +10,7 @@ const STORE = 'history'
 const DB_VERSION = 1
 
 export const VH_MAX_BYTES = 200 * 1024 * 1024 // per-file cap for a stored blob (200 MB)
-export const VH_MAX_ITEMS = 40                 // metadata is tiny, so keep plenty (favorites are never evicted)
+export const VH_MAX_ITEMS = 100                // metadata is tiny, so keep plenty (favorites are never evicted)
 
 export type VHItem = { id: string; name: string; size: number; type: string; ts: number; blob?: Blob; thumb?: string }
 
@@ -66,7 +66,34 @@ export async function vhPutMeta(meta: { id: string; name: string; size: number; 
   } catch { /* ignore */ }
 }
 
-// Add the video blob (on ★ save) or drop it (on unsave). Skips blobs above the size cap.
+// Bulk-store metadata (e.g. when a folder is opened) in one transaction, preserving any existing
+// blob/thumb, then evict once. Newest first — earlier items in `metas` get the higher timestamp.
+export async function vhPutManyMeta(metas: { id: string; name: string; size: number; type: string }[]): Promise<void> {
+  if (!metas.length) return
+  try {
+    const existing = await vhList()
+    const byId = new Map(existing.map((x) => [x.id, x]))
+    const db = await openDB()
+    const st = store(db, 'readwrite')
+    const base = Date.now()
+    metas.forEach((m, i) => { const prev = byId.get(m.id); st.put({ id: m.id, name: m.name, size: m.size, type: m.type, ts: base - i, blob: prev?.blob, thumb: prev?.thumb }) })
+    await new Promise<void>((res) => { st.transaction.oncomplete = () => res(); st.transaction.onerror = () => res(); st.transaction.onabort = () => res() })
+    await evict()
+  } catch { /* ignore */ }
+}
+
+// ★ Save: write the full record (metadata + blob) in one put — no dependency on prior metadata.
+// Blobs above the cap are skipped (metadata is still stored so the clip stays in the list).
+export async function vhSave(meta: { id: string; name: string; size: number; type: string }, blob: Blob): Promise<void> {
+  if (blob.size > VH_MAX_BYTES) { await vhPutMeta(meta); return }
+  try {
+    const prev = await vhGet(meta.id)
+    const db = await openDB()
+    store(db, 'readwrite').put({ id: meta.id, name: meta.name, size: meta.size, type: meta.type, ts: prev?.ts || Date.now(), blob, thumb: prev?.thumb })
+  } catch { /* ignore */ }
+}
+
+// Drop the blob on unsave (keeps metadata). Also used to set/clear a blob for an existing record.
 export async function vhSetBlob(id: string, blob: Blob | null): Promise<void> {
   if (blob && blob.size > VH_MAX_BYTES) return
   try {
