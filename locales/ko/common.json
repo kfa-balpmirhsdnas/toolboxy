@@ -4240,6 +4240,7 @@
     "vp_bg": "백그라운드 재생 (PiP)",
     "vp_lock": "메뉴 고정",
     "vp_start_time": "시작 시간",
+    "vp_set": "설정",
     "vp_end_time": "끝 시간",
     "vp_reset": "초기화",
     "vp_timer_cancel": "타이머 취소",

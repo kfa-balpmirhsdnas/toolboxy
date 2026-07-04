@@ -4213,6 +4213,7 @@
     "vp_bg": "バックグラウンド再生（PiP）",
     "vp_lock": "メニュー固定",
     "vp_start_time": "開始時間",
+    "vp_set": "設定",
     "vp_end_time": "終了時間",
     "vp_reset": "リセット",
     "vp_timer_cancel": "タイマー解除",

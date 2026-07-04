@@ -53,7 +53,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [curFile, setCurFile] = useState<File | null>(null)
   // Overlay controls (on top of the video; the tab controls below stay as-is).
   const [rot, setRot] = useState(0)            // display rotation 0/90/180/270
-  const [repeatMode, setRepeatMode] = useState<'off' | 'one' | 'all'>('off') // 한곡 반복 / 전체 반복
+  const [repeatMode, setRepeatMode] = useState<'off' | 'one' | 'all'>('all') // default: 전체 반복 (playlist loop)
   const [sleepMin, setSleepMin] = useState(0)   // sleep-timer minutes (0 = off)
   const [sleepLeft, setSleepLeft] = useState(0) // seconds remaining
   const sleepRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -219,13 +219,14 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     if (savedRef.current.has(id)) vhSave(meta, f); else vhPutMeta(meta)
     trackToolUsed('video-player')
   }, [])
-  // Play the next clip in the history list (repeat-all), wrapping to the first.
+  // Play the next clip for repeat-all — cycles the CURRENTLY OPEN tab (전체 or 보관), wrapping around.
   function playNext() {
-    if (!history.length) return
-    const idx = curFile ? history.findIndex((x) => x.file === curFile) : -1
+    const list = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
+    if (!list.length) return
+    const idx = curFile ? list.findIndex((x) => x.file === curFile) : -1
     // Advance to the next PLAYABLE clip (skip metadata-only entries that have no blob).
-    for (let step = 1; step <= history.length; step++) {
-      const next = history[(idx + step) % history.length]
+    for (let step = 1; step <= list.length; step++) {
+      const next = list[(idx + step) % list.length]
       if (next?.file) { load(next.file, true); return }
     }
   }
@@ -430,6 +431,13 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const shownHistory = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
   const starSvg = (key: string) => (
     <svg viewBox="0 0 24 24" fill={saved.has(key) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" /></svg>
+  )
+  // Circular loop with an optional letter in the middle (repeat one/all icons).
+  const loopLetter = (letter: string) => (
+    <span className="relative inline-flex shrink-0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>
+      {letter && <span className="absolute inset-0 flex items-center justify-center text-[8px] font-bold leading-none">{letter}</span>}
+    </span>
   )
 
   // Control-bar button style. Inline: plain icon buttons (the whole bar is already black) so they don't
@@ -640,28 +648,19 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     </button>
                     {openMenu === 'ab' && (
                       <div className={subMenu}>
-                        <button onClick={() => { setA(cur); showOverlay() }} className={subRow}><span>{t('vp_start_time')}</span><span className="font-mono text-white/80">{a != null ? fmt(a) : '—'}</span></button>
-                        <button onClick={() => { setB(cur); showOverlay() }} className={subRow}><span>{t('vp_end_time')}</span><span className="font-mono text-white/80">{b != null ? fmt(b) : '—'}</span></button>
+                        <button onClick={() => { setA(cur); showOverlay() }} className={subRow}><span>{t('vp_start_time')}</span><span className="font-mono text-white inline-flex items-center gap-1 border border-white/30 rounded px-1.5 py-0.5 bg-white/10"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" /></svg>{a != null ? fmt(a) : t('vp_set')}</span></button>
+                        <button onClick={() => { setB(cur); showOverlay() }} className={subRow}><span>{t('vp_end_time')}</span><span className="font-mono text-white inline-flex items-center gap-1 border border-white/30 rounded px-1.5 py-0.5 bg-white/10"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" /></svg>{b != null ? fmt(b) : t('vp_set')}</span></button>
                         <button onClick={() => { if (repeat) { setRepeat(false); showOverlay() } else if (a != null && b != null && b > a) { setRepeat(true); showOverlay() } }} className={subRow + (repeat ? ' bg-brand-600' : (a == null || b == null || b <= a ? ' opacity-40' : ''))}><span>{repeat ? t('vp_repeat_stop') : t('vp_repeat_start')}</span></button>
                         <button onClick={() => { setA(null); setB(null); setRepeat(false); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_repeat_cancel')}</span></button>
                       </div>
                     )}
                   </div>
 
-                  {/* Capture */}
-                  <div className="relative">
-                    <button onClick={() => { setOpenMenu((m) => m === 'capture' ? null : 'capture'); showOverlay() }} title={t('vp_capture')} aria-label={t('vp_capture')}
-                      className={ovBtn + ' bg-black/55 hover:bg-black/75'}>
-                      <ToolIcon name={captured ? 'check' : 'camera'} className="w-4 h-4" />
-                    </button>
-                    {openMenu === 'capture' && (
-                      <div className={subMenu}>
-                        <div className={subRow + ' cursor-default'}><span>{t('vp_cap_time')}</span><span className="font-mono text-white/80">{fmt(cur)}</span></div>
-                        <div className={subRow + ' cursor-default'}><span>{t('vp_video_time')}</span><span className="font-mono text-white/80">{fmt(dur)}</span></div>
-                        <button onClick={() => { capture(); showOverlay() }} className="w-full flex items-center justify-center px-3 py-1.5 border-t border-white/10 bg-brand-600 hover:bg-brand-700 font-semibold transition-colors">{captured ? t('vp_captured') : t('vp_capture')}</button>
-                      </div>
-                    )}
-                  </div>
+                  {/* Capture — tapping the icon captures the current frame immediately (format from the options box) */}
+                  <button onClick={() => { capture(); showOverlay() }} title={t('vp_capture')} aria-label={t('vp_capture')}
+                    className={ovBtn + ' bg-black/55 hover:bg-black/75'}>
+                    <ToolIcon name={captured ? 'check' : 'camera'} className="w-4 h-4" />
+                  </button>
 
                   {/* Rotate */}
                   <div className="relative">
@@ -692,9 +691,11 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     </button>
                     {openMenu === 'repeat' && (
                       <div className={subMenu}>
-                        <button onClick={() => { setRepeatMode('one'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'one' ? ' bg-brand-600' : '')}><span>{t('vp_repeat_one')}</span></button>
-                        <button onClick={() => { setRepeatMode('all'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'all' ? ' bg-brand-600' : '')}><span>{t('vp_repeat_all')}</span></button>
-                        <button onClick={() => { setRepeatMode('off'); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span>{t('vp_repeat_off')}</span></button>
+                        <button onClick={() => { setRepeatMode('one'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'one' ? ' bg-brand-600' : '')}><span className="flex items-center gap-2">{loopLetter('1')}{t('vp_repeat_one')}</span></button>
+                        <button onClick={() => { setRepeatMode('all'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'all' ? ' bg-brand-600' : '')}><span className="flex items-center gap-2">{loopLetter('A')}{t('vp_repeat_all')}</span></button>
+                        <button onClick={() => { setRepeatMode('off'); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span className="flex items-center gap-2">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><circle cx="12" cy="12" r="9" /><path d="m5.6 5.6 12.8 12.8" /></svg>
+                          {t('vp_repeat_off')}</span></button>
                       </div>
                     )}
                   </div>
@@ -757,7 +758,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     ? <ToolIcon name="camera" className="w-4 h-4" />
                     : id === 'ab'
                       ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>
-                      : <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
+                      : <span className="w-4 h-4 inline-flex items-center justify-center text-[11px] font-bold tabular-nums leading-none">{speed}×</span>
                   return (
                     <button key={id} onClick={() => { setOptTab(id); setOptOpen(true) }} title={label} aria-label={label}
                       className={'inline-flex items-center gap-1.5 px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (optOpen && optTab === id ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>
@@ -790,20 +791,27 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 {optTab === 'ab' && (
                   <div className="space-y-2">
                     <p className="text-xs text-gray-400">{t('vp_ab_hint')}</p>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <button onClick={() => setA(cur)} className={chipBtn + ' bg-gray-100 text-gray-700 hover:bg-gray-200'}>{t('vp_set_a')}</button>
-                      <button onClick={() => (a != null && seek(a))} disabled={a == null}
-                        className="px-2.5 py-1.5 rounded-lg text-sm font-mono tabular-nums bg-brand-50 text-brand-700 border border-brand-200 disabled:opacity-40 hover:bg-brand-100">A {a != null ? fmt(a) : '—'}</button>
-                      <button onClick={() => setB(cur)} className={chipBtn + ' bg-gray-100 text-gray-700 hover:bg-gray-200'}>{t('vp_set_b')}</button>
-                      <button onClick={() => (b != null && seek(b))} disabled={b == null}
-                        className="px-2.5 py-1.5 rounded-lg text-sm font-mono tabular-nums bg-brand-50 text-brand-700 border border-brand-200 disabled:opacity-40 hover:bg-brand-100">B {b != null ? fmt(b) : '—'}</button>
-                      <button onClick={() => setRepeat((r) => !r)} disabled={a == null || b == null || b <= a}
-                        className={chipBtn + ' inline-flex items-center gap-1.5 disabled:opacity-40 ' + (repeat ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
-                        <ToolIcon name="refresh" className="w-3.5 h-3.5" />{t('vp_repeat_start')}
-                      </button>
-                      {(a != null || b != null) && (
-                        <button onClick={() => { setA(null); setB(null); setRepeat(false) }} className="px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 transition-colors">{t('vp_repeat_cancel')}</button>
-                      )}
+                    {/* Mobile: A row / B row / repeat row (3 lines). Desktop: one wrapping row. */}
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2">
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setA(cur)} className={chipBtn + ' bg-gray-100 text-gray-700 hover:bg-gray-200'}>{t('vp_set_a')}</button>
+                        <button onClick={() => (a != null && seek(a))} disabled={a == null}
+                          className="px-2.5 py-1.5 rounded-lg text-sm font-mono tabular-nums bg-brand-50 text-brand-700 border border-brand-200 disabled:opacity-40 hover:bg-brand-100">A {a != null ? fmt(a) : '—'}</button>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setB(cur)} className={chipBtn + ' bg-gray-100 text-gray-700 hover:bg-gray-200'}>{t('vp_set_b')}</button>
+                        <button onClick={() => (b != null && seek(b))} disabled={b == null}
+                          className="px-2.5 py-1.5 rounded-lg text-sm font-mono tabular-nums bg-brand-50 text-brand-700 border border-brand-200 disabled:opacity-40 hover:bg-brand-100">B {b != null ? fmt(b) : '—'}</button>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setRepeat((r) => !r)} disabled={a == null || b == null || b <= a}
+                          className={chipBtn + ' inline-flex items-center gap-1.5 disabled:opacity-40 ' + (repeat ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
+                          <ToolIcon name="refresh" className="w-3.5 h-3.5" />{t('vp_repeat_start')}
+                        </button>
+                        {(a != null || b != null) && (
+                          <button onClick={() => { setA(null); setB(null); setRepeat(false) }} className="px-2.5 py-1.5 rounded-lg text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 transition-colors">{t('vp_repeat_cancel')}</button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -875,7 +883,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                         </button>
                       )}
                       <button onClick={() => removeFromHistory(key)} aria-label={t('ui_delete')} title={t('ui_delete')}
-                        className="absolute top-1 right-1 z-10 p-1 rounded-md bg-black/40 text-white/70 hover:text-red-400 transition-colors">
+                        className="absolute top-1 right-1 z-10 p-1 rounded-md bg-black/40 text-white/70 [@media(hover:hover)]:hover:text-red-400 transition-colors">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                       </button>
                     </div>
@@ -907,7 +915,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                           <span className="sm:hidden">{fmtSizeShort(h.size)}</span>
                           <span className="hidden sm:inline">{fmtSize(h.size)}</span>
                         </span>
-                        <button onClick={() => removeFromHistory(key)} aria-label={t('ui_delete')} title={t('ui_delete')} className="shrink-0 p-1 text-gray-300 hover:text-red-500 transition-colors">
+                        <button onClick={() => removeFromHistory(key)} aria-label={t('ui_delete')} title={t('ui_delete')} className="shrink-0 p-1 text-gray-300 [@media(hover:hover)]:hover:text-red-500 transition-colors">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                         </button>
                       </div>
