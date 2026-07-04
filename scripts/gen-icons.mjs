@@ -123,6 +123,14 @@ const VECTOR = {
     ['circle', { cx: '12', cy: '12', r: '10' }],
     ['path', { d: 'm10 8 6 4-6 4V8z' }],
   ],
+  'calculator': [ // calculator (lucide)
+    ['rect', { x: '4', y: '2', width: '16', height: '20', rx: '2' }],
+    ['line', { x1: '8', x2: '16', y1: '6', y2: '6' }],
+    ['line', { x1: '16', x2: '16', y1: '14', y2: '18' }],
+    ['path', { d: 'M16 10h.01' }], ['path', { d: 'M12 10h.01' }], ['path', { d: 'M8 10h.01' }],
+    ['path', { d: 'M12 14h.01' }], ['path', { d: 'M8 14h.01' }],
+    ['path', { d: 'M12 18h.01' }], ['path', { d: 'M8 18h.01' }],
+  ],
   'batch-image-editor': [ // image-plus
     ['path', { d: 'M16 5h6' }], ['path', { d: 'M19 2v6' }],
     ['path', { d: 'M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5' }],
