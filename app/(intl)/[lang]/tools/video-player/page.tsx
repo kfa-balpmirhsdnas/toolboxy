@@ -795,17 +795,17 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 <div style={ovScaleStyle('center')} className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="inline-flex flex-col items-stretch gap-2">
                     {/* Row 1: previous video / play / next video */}
-                    <div className="flex items-center justify-center gap-5">
-                      <button onClick={playPrev} aria-label="previous video" className="pointer-events-auto inline-flex items-center justify-center w-16 h-16 rounded-full bg-black/55 text-white hover:bg-black/75 backdrop-blur transition-colors">
-                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8"><path d="M19 20 9 12l10-8z" /><rect x="4" y="4" width="2.4" height="16" rx="1" /></svg>
+                    <div className="flex items-center justify-center gap-4">
+                      <button onClick={playPrev} aria-label="previous video" className="pointer-events-auto inline-flex items-center justify-center w-14 h-14 rounded-full bg-black/55 text-white hover:bg-black/75 backdrop-blur transition-colors">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7"><path d="M19 20 9 12l10-8z" /><rect x="4" y="4" width="2.4" height="16" rx="1" /></svg>
                       </button>
-                      <button onClick={togglePlay} aria-label="play" className="pointer-events-auto inline-flex items-center justify-center w-20 h-20 rounded-full bg-black/60 text-white hover:bg-black/80 backdrop-blur transition-colors">
+                      <button onClick={togglePlay} aria-label="play" className="pointer-events-auto inline-flex items-center justify-center w-16 h-16 rounded-full bg-black/60 text-white hover:bg-black/80 backdrop-blur transition-colors">
                         {playing
-                          ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-11 h-11"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
-                          : <svg viewBox="0 0 24 24" fill="currentColor" className="w-11 h-11"><path d="M8 5v14l11-7z" /></svg>}
+                          ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-9 h-9"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+                          : <svg viewBox="0 0 24 24" fill="currentColor" className="w-9 h-9"><path d="M8 5v14l11-7z" /></svg>}
                       </button>
-                      <button onClick={playNext} aria-label="next video" className="pointer-events-auto inline-flex items-center justify-center w-16 h-16 rounded-full bg-black/55 text-white hover:bg-black/75 backdrop-blur transition-colors">
-                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8"><path d="m5 4 10 8-10 8z" /><rect x="17.6" y="4" width="2.4" height="16" rx="1" /></svg>
+                      <button onClick={playNext} aria-label="next video" className="pointer-events-auto inline-flex items-center justify-center w-14 h-14 rounded-full bg-black/55 text-white hover:bg-black/75 backdrop-blur transition-colors">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7"><path d="m5 4 10 8-10 8z" /><rect x="17.6" y="4" width="2.4" height="16" rx="1" /></svg>
                       </button>
                     </div>
                     {/* Row 2: -30 -10 -5 / +5 +10 +30 */}
