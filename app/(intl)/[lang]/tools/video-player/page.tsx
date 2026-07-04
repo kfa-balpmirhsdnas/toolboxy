@@ -857,10 +857,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                           : <span className="absolute inset-0 flex items-center justify-center text-2xl">🎞️</span>}
                         <span className="absolute bottom-0 inset-x-0 px-1.5 py-0.5 bg-black/60 text-white text-[10px] truncate text-left">{h.name}</span>
                       </button>
-                      <button onClick={() => toggleSaved(key, h.file)} aria-label={t('vp_save')} title={t('vp_save')}
-                        className={'absolute top-1 left-1 z-10 p-1 rounded-md bg-black/40 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-white/70 hover:text-amber-300')}>
-                        {starSvg(key)}
-                      </button>
+                      {h.file && (
+                        <button onClick={() => toggleSaved(key, h.file)} aria-label={t('vp_save')} title={t('vp_save')}
+                          className={'absolute top-1 left-1 z-10 p-1 rounded-md bg-black/40 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-white/70 hover:text-amber-300')}>
+                          {starSvg(key)}
+                        </button>
+                      )}
                       <button onClick={() => removeFromHistory(key)} aria-label={t('ui_delete')} title={t('ui_delete')}
                         className="absolute top-1 right-1 z-10 p-1 rounded-md bg-black/40 text-white/70 hover:text-red-400 transition-colors">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
@@ -881,10 +883,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     const key = h.name + '|' + h.size
                     return (
                       <div key={i} className={'flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors ' + (h.file === curFile ? 'bg-brand-50' : 'hover:bg-gray-50')}>
-                        <button onClick={() => toggleSaved(key, h.file)} aria-label={t('vp_save')} title={t('vp_save')}
-                          className={'shrink-0 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400')}>
-                          {starSvg(key)}
-                        </button>
+                        {h.file
+                          ? <button onClick={() => toggleSaved(key, h.file)} aria-label={t('vp_save')} title={t('vp_save')}
+                              className={'shrink-0 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400')}>
+                              {starSvg(key)}
+                            </button>
+                          : <span className="w-4 shrink-0" />}
                         <button onClick={() => openHistItem(h.file)} title={h.file ? undefined : t('vp_reopen')} className={'flex items-center gap-2 flex-1 min-w-0 text-left ' + (h.file ? '' : 'opacity-50')}>
                           <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{h.name}</span>
                         </button>
