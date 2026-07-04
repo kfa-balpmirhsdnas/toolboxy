@@ -53,6 +53,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // Overlay controls (on top of the video; the tab controls below stay as-is).
   const [rot, setRot] = useState(0)            // display rotation 0/90/180/270
   const [boxSize, setBoxSize] = useState({ w: 0, h: 0 }) // measured video-frame size (for fit-to-frame rotation)
+  const [dragHud, setDragHud] = useState<null | { kind: 'bright' | 'vol'; pct: number }>(null) // brightness/volume gesture readout
   const [repeatMode, setRepeatMode] = useState<'off' | 'one' | 'all'>('all') // default: 전체 반복 (playlist loop)
   const [sleepMin, setSleepMin] = useState(0)   // sleep-timer minutes (0 = off)
   const [sleepLeft, setSleepLeft] = useState(0) // seconds remaining
@@ -183,6 +184,26 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const toggleMute = () => { const v = media(); if (!v) return; const nm = !v.muted;[videoRef.current, audioElRef.current].forEach((el) => { if (el) el.muted = nm }); setMuted(nm); showOverlay() }
   const setVol = (val: number) => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) { el.volume = val; el.muted = val === 0 } }); setVolume(val); setMuted(val === 0); showOverlay() }
   const toggleFs = () => { const el = wrapperRef.current; if (!el) return; if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else el.requestFullscreen?.().catch(() => {}); showOverlay() }
+  // Edge gestures (MX-player style): drag the left edge up/down for brightness, the right edge for volume.
+  const dragRef = useRef<null | { y: number; val: number; kind: 'bright' | 'vol'; h: number; moved: boolean }>(null)
+  const justDraggedRef = useRef(false)
+  const onEdgeGrab = (kind: 'bright' | 'vol') => (e: React.PointerEvent) => {
+    dragRef.current = { y: e.clientY, val: kind === 'bright' ? brightness : volume, kind, h: e.currentTarget.getBoundingClientRect().height || 1, moved: false }
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch { /* ignore */ }
+  }
+  const onEdgeMove = (e: React.PointerEvent) => {
+    const d = dragRef.current; if (!d) return
+    const dy = d.y - e.clientY
+    if (!d.moved && Math.abs(dy) < 5) return
+    d.moved = true; e.preventDefault()
+    const frac = dy / d.h
+    if (d.kind === 'bright') { const v = Math.min(1.7, Math.max(0.3, d.val + frac * 1.4)); setBrightness(v); setDragHud({ kind: 'bright', pct: Math.round((v - 1) * 100) }) }
+    else { const v = Math.min(1, Math.max(0, d.val + frac)); setVol(v); setDragHud({ kind: 'vol', pct: Math.round(v * 100) }) }
+    showOverlay()
+  }
+  const onEdgeRelease = () => { const d = dragRef.current; dragRef.current = null; if (d && d.moved) { justDraggedRef.current = true; setTimeout(() => setDragHud(null), 650) } }
+  // Swallow the click that follows a drag so it doesn't toggle the overlay off; a plain tap still passes through.
+  const onEdgeClick = (e: React.MouseEvent) => { if (justDraggedRef.current) { e.stopPropagation(); justDraggedRef.current = false } }
   useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener('fullscreenchange', h); return () => document.removeEventListener('fullscreenchange', h) }, [])
   // Some browsers flip the play state when the PiP window closes. Sample the play state WHILE in PiP
   // (stopping before the exit transition can corrupt it), then restore that exact state after exit.
@@ -668,6 +689,28 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black text-white/80 pointer-events-none">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-14 h-14 opacity-90"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
                   <span className="max-w-[80%] truncate text-sm font-medium">{base}</span>
+                </div>
+              )}
+              {/* Edge drag gestures — ONLY in fullscreen + landscape (per request): left edge = brightness,
+                  right edge = volume. Sit below the control buttons in the DOM so buttons still capture their
+                  own taps; the pointer-events-none overlay containers let empty areas fall through here. */}
+              {fs && quarterTurned && (ovVisible || locked) && (
+                <>
+                  <div aria-hidden onPointerDown={onEdgeGrab('bright')} onPointerMove={onEdgeMove} onPointerUp={onEdgeRelease} onPointerCancel={onEdgeRelease} onClick={onEdgeClick}
+                    className="absolute inset-y-0 left-0 w-[28%] touch-none pointer-events-auto" />
+                  <div aria-hidden onPointerDown={onEdgeGrab('vol')} onPointerMove={onEdgeMove} onPointerUp={onEdgeRelease} onPointerCancel={onEdgeRelease} onClick={onEdgeClick}
+                    className="absolute inset-y-0 right-0 w-[28%] touch-none pointer-events-auto" />
+                </>
+              )}
+              {/* Gesture readout — centred pill shown while dragging brightness/volume. */}
+              {dragHud && (
+                <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/75 backdrop-blur text-white text-sm font-semibold">
+                    {dragHud.kind === 'bright'
+                      ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
+                      : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
+                    <span className="tabular-nums">{dragHud.kind === 'bright' ? (dragHud.pct > 0 ? '+' : '') + dragHud.pct : dragHud.pct}</span>
+                  </div>
                 </div>
               )}
               {/* Overlay tab controls — container passes taps through; only buttons/menus capture.
