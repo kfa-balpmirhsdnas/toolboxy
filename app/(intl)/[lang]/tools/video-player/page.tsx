@@ -183,19 +183,25 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const toggleMute = () => { const v = media(); if (!v) return; const nm = !v.muted;[videoRef.current, audioElRef.current].forEach((el) => { if (el) el.muted = nm }); setMuted(nm); showOverlay() }
   const setVol = (val: number) => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) { el.volume = val; el.muted = val === 0 } }); setVolume(val); setMuted(val === 0); showOverlay() }
   const toggleFs = () => { const el = wrapperRef.current; if (!el) return; if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else el.requestFullscreen?.().catch(() => {}); showOverlay() }
-  // Edge gestures (MX-player style): drag the left edge up/down for brightness, the right edge for volume.
-  const dragRef = useRef<null | { y: number; val: number; kind: 'bright' | 'vol'; h: number; moved: boolean }>(null)
+  // Edge gestures (MX-player style): drag a video edge toward the video's top to raise, toward its bottom to
+  // lower — left edge = brightness, right edge = volume. The value tracks from wherever it started, so a
+  // 100% start still goes down when you drag down. In landscape the video is rotated 90°, so "up on the
+  // video" is a horizontal screen drag; we pick the axis (and its length) from the current rotation.
+  const dragRef = useRef<null | { x: number; y: number; val: number; kind: 'bright' | 'vol'; span: number; moved: boolean }>(null)
   const justDraggedRef = useRef(false)
   const onEdgeGrab = (kind: 'bright' | 'vol') => (e: React.PointerEvent) => {
-    dragRef.current = { y: e.clientY, val: kind === 'bright' ? brightness : volume, kind, h: e.currentTarget.getBoundingClientRect().height || 1, moved: false }
+    const r = e.currentTarget.getBoundingClientRect()
+    const horizontal = rot === 90 || rot === 270
+    dragRef.current = { x: e.clientX, y: e.clientY, val: kind === 'bright' ? brightness : volume, kind, span: (horizontal ? r.width : r.height) || 1, moved: false }
     try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch { /* ignore */ }
   }
   const onEdgeMove = (e: React.PointerEvent) => {
     const d = dragRef.current; if (!d) return
-    const dy = d.y - e.clientY
-    if (!d.moved && Math.abs(dy) < 5) return
+    // Movement toward the video's top (= increase), following the 90°/270° rotation.
+    const up = rot === 90 ? e.clientX - d.x : rot === 270 ? d.x - e.clientX : d.y - e.clientY
+    if (!d.moved && Math.abs(up) < 5) return
     d.moved = true; e.preventDefault()
-    const frac = dy / d.h
+    const frac = up / d.span
     if (d.kind === 'bright') { const v = Math.min(1.7, Math.max(0.3, d.val + frac * 1.4)); setBrightness(v); setDragHud({ kind: 'bright', pct: Math.round((v - 1) * 100) }) }
     else { const v = Math.min(1, Math.max(0, d.val + frac)); setVol(v); setDragHud({ kind: 'vol', pct: Math.round(v * 100) }) }
     showOverlay()
