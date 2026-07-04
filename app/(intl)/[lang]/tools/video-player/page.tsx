@@ -631,7 +631,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           <div className="pointer-events-auto flex flex-col items-center gap-1.5 w-[248px] px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
             {/* presets — 0–100 scale (0 = darkest, ~50 = normal, 100 = brightest) */}
             <div className="flex items-center gap-0.5">
-              {[0, 20, 40, 60, 80, 100].map((p) => (
+              {[0, 20, 40, 50, 60, 80, 100].map((p) => (
                 <button key={p} onClick={() => { setBrightness(0.3 + (p / 100) * 1.4); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (Math.round(((brightness - 0.3) / 1.4) * 100) === p ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{p}</button>
               ))}
             </div>
