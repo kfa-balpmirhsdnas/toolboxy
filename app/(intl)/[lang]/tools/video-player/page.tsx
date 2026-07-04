@@ -572,17 +572,17 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       {showBright && (
         <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
           <div className="pointer-events-auto flex flex-col items-center gap-1.5 w-[248px] px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
-            {/* presets — centered at 0 (normal), negative = dimmer, positive = brighter */}
+            {/* presets — 0–100 scale (0 = darkest, ~50 = normal, 100 = brightest) */}
             <div className="flex items-center gap-0.5">
-              {[-60, -40, -20, 0, 20, 40, 60].map((o) => (
-                <button key={o} onClick={() => { setBrightness(1 + o / 100); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (Math.round((brightness - 1) * 100) === o ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{o > 0 ? '+' + o : o}</button>
+              {[0, 20, 40, 60, 80, 100].map((p) => (
+                <button key={p} onClick={() => { setBrightness(0.3 + (p / 100) * 1.4); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (Math.round(((brightness - 0.3) / 1.4) * 100) === p ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{p}</button>
               ))}
             </div>
             <div className="flex items-center gap-2">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0 text-white/70"><circle cx="12" cy="12" r="4" /><path d="M12 3v1" /><path d="M12 20v1" /><path d="M3 12h1" /><path d="M20 12h1" /></svg>
               <input type="range" min={0.3} max={1.7} step={0.05} value={brightness} onChange={(e) => { setBrightness(+e.target.value); showOverlay() }} aria-label="brightness"
                 style={fillBg(((brightness - 0.3) / 1.4) * 100)} className={gaugeCls} />
-              <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{(Math.round((brightness - 1) * 100) > 0 ? '+' : '') + Math.round((brightness - 1) * 100)}</span>
+              <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{Math.round(((brightness - 0.3) / 1.4) * 100)}</span>
             </div>
           </div>
         </div>
