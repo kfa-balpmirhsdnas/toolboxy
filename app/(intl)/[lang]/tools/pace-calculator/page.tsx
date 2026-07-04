@@ -6,7 +6,7 @@ import {TOOLS} from '@/lib/tools/registry'
 
 export default function Page(){
   const t = useTranslations('toolui')
-  const tool=TOOLS.find(x=>x.slug==='pace-calculator')
+  const tool=TOOLS.find(x=>x.slug==='pace-calculator')!
   const [mode,setMode]=useState<'pace'|'time'|'distance'>('pace')
   const [distance,setDistance]=useState('5')
   const [unit,setUnit]=useState<'km'|'mi'>('km')

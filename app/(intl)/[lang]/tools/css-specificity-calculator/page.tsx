@@ -3,7 +3,7 @@ import {useState} from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import {TOOLS} from '@/lib/tools/registry'
-function calcSpec(sel){
+function calcSpec(sel: string){
   let s=sel.trim()
   const ids=(s.match(/#[a-zA-Z][\w-]*/g)||[]).length
   s=s.replace(/#[a-zA-Z][\w-]*/g,'')
@@ -19,8 +19,8 @@ export default function Page(){
   const [act,setAct]=useState(-1)
   const lines=sel.split('\n').filter(s=>s.trim())
   const results=lines.map(s=>({s:s.trim(),sp:calcSpec(s.trim())}))
-  const sp2s=(sp)=>sp.join(',')
-  const tool=TOOLS.find(x=>x.slug==='css-specificity-calculator')
+  const sp2s=(sp: number[])=>sp.join(',')
+  const tool=TOOLS.find(x=>x.slug==='css-specificity-calculator')!
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-lg mx-auto px-4 space-y-4">

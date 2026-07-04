@@ -23,7 +23,7 @@ function stats(nums:number[]){
 
 export default function Page(){
   const t = useTranslations('toolui')
-  const tool=TOOLS.find(x=>x.slug==='statistics-calculator')
+  const tool=TOOLS.find(x=>x.slug==='statistics-calculator')!
   const [input,setInput]=useState('4 8 15 16 23 42')
   const nums=input.split(/[,\s]+/).map(Number).filter(n=>!isNaN(n)&&String(n)!=='')
   const s=stats(nums)

@@ -6,7 +6,7 @@ import {TOOLS} from '@/lib/tools/registry'
 
 export default function Page(){
   const t = useTranslations('toolui')
-  const tool=TOOLS.find(t=>t.slug==='electricity-cost-calculator')
+  const tool=TOOLS.find(t=>t.slug==='electricity-cost-calculator')!
   const [watts,setWatts]=useState('100')
   const [hours,setHours]=useState('8')
   const [rate,setRate]=useState('0.12')
