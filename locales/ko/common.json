@@ -4214,7 +4214,7 @@
     "vp_pick_video": "영상 열기",
     "vp_pick_audio": "오디오",
     "vp_pick_folder": "폴더 열기",
-    "vp_reopen": "보관하지 않은 영상입니다. 눌러서 다시 여세요",
+    "vp_reopen": "보관하지 않은 영상입니다. 눌러서 폴더를 다시 열면 복원됩니다",
     "vp_reset": "목록 초기화",
     "vp_reset_confirm": "재생기록 전체(메타데이터·보관 영상 포함)를 삭제할까요?",
     "vp_col_name": "파일명",

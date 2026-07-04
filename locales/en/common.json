@@ -3797,7 +3797,7 @@
     "vp_pick_video": "Open video",
     "vp_pick_audio": "Audio",
     "vp_pick_folder": "Open folder",
-    "vp_reopen": "Not saved — tap to re-open this video",
+    "vp_reopen": "Not saved — tap to re-open the folder to restore it",
     "vp_reset": "Reset list",
     "vp_reset_confirm": "Delete the whole play history (metadata and saved videos)?",
     "vp_col_name": "Name",

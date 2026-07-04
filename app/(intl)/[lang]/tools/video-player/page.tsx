@@ -290,8 +290,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     requestAnimationFrame(() => wrapperRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   }, [load])
   // Click a history item: play it if we still have the file (in-session or ★ saved); otherwise it's a
-  // metadata-only entry after a refresh — reopen the picker so the user can re-select it.
-  const openHistItem = useCallback((f: File | null) => { if (f) loadAndScroll(f); else inputRef.current?.click() }, [loadAndScroll])
+  // metadata-only entry after a refresh — the browser can't reopen it by path, so open the FOLDER picker.
+  // Re-selecting the folder restores every clip in it (matched by name+size), not just this one.
+  const openHistItem = useCallback((f: File | null) => { if (f) loadAndScroll(f); else dirRef.current?.click() }, [loadAndScroll])
 
   // Open a folder: list only its video files into the history list (thumbnails view). Nothing is
   // played until you click one. Folder selection = webkitdirectory (desktop + Android Chrome; not iOS).
@@ -300,9 +301,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     const vids = Array.from(list).filter(isMedia).sort((a, b) => a.name.localeCompare(b.name))
     if (!vids.length) return
     setHistory((h) => {
+      const byKey = new Map(vids.map((f) => [f.name + '|' + f.size, f]))
       const seen = new Set(h.map((x) => x.name + '|' + x.size))
       const add = vids.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f }))
-      return [...add, ...h].slice(0, 60)
+      // Re-opening a folder restores the File on any matching metadata-only entries (dimmed → playable again).
+      const restored = h.map((x) => { const f = byKey.get(x.name + '|' + x.size); return f && !x.file ? { ...x, file: f } : x })
+      return [...add, ...restored].slice(0, 60)
     })
     // Persist metadata for every folder clip so the list survives a refresh (blobs stay session-only until ★ saved).
     vhPutManyMeta(vids.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type })))
