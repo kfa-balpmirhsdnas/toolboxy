@@ -201,7 +201,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     const up = rot === 90 ? e.clientX - d.x : rot === 270 ? d.x - e.clientX : d.y - e.clientY
     if (!d.moved && Math.abs(up) < 5) return
     d.moved = true; e.preventDefault()
-    const frac = up / d.span
+    // ~half of the edge's length covers the whole range, so a comfortable swipe reaches 0↔100%.
+    const frac = up / (d.span * 0.5)
     if (d.kind === 'bright') { const v = Math.min(1.7, Math.max(0.3, d.val + frac * 1.4)); setBrightness(v); setDragHud({ kind: 'bright', pct: Math.round((v - 1) * 100) }) }
     else { const v = Math.min(1, Math.max(0, d.val + frac)); setVol(v); setDragHud({ kind: 'vol', pct: Math.round(v * 100) }) }
     showOverlay()
