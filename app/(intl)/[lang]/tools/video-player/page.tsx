@@ -725,7 +725,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
 
                   {/* Capture */}
                   <div className="relative">
-                    <button onClick={() => { setOpenMenu((m) => m === 'capture' ? null : 'capture'); showOverlay() }} title={t('vp_capture')} aria-label={t('vp_capture')}
+                    <button onClick={() => { capture(); setOpenMenu((m) => m === 'capture' ? null : 'capture'); showOverlay() }} title={t('vp_capture')} aria-label={t('vp_capture')}
                       className={ovBtn + ' bg-black/55 hover:bg-black/75'}>
                       <ToolIcon name={captured ? 'check' : 'camera'} className="w-4 h-4" />
                     </button>
