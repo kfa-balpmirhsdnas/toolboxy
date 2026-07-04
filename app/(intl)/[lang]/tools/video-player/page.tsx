@@ -436,7 +436,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       {showVol && (
         <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
           <div className="pointer-events-auto flex items-center gap-2 px-3 h-9 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
-            <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume level" className="w-40 h-1 accent-white cursor-pointer" />
+            <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume level"
+              style={{ background: `linear-gradient(to right, #fff ${volume * 100}%, rgba(255,255,255,0.25) ${volume * 100}%)` }}
+              className="w-40 h-1.5 appearance-none rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-0" />
             <span className="text-[10px] tabular-nums text-white/80 w-6 text-right">{Math.round(volume * 100)}</span>
           </div>
         </div>
@@ -622,9 +624,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     <button onClick={() => { setOpenMenu((m) => m === 'repeat' ? null : 'repeat'); showOverlay() }} title={t('vp_repeat')} aria-label={t('vp_repeat')}
                       className={ovBtn + (repeatMode !== 'off' ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
                       <span className="relative inline-flex">
-                        {/* circular loop — distinct from the A–B section-repeat icon */}
+                        {/* circular loop with a "1" in the middle — distinct from the A–B section-repeat icon */}
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>
-                        {repeatMode === 'one' && <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold leading-none">1</span>}
+                        <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold leading-none">1</span>
                       </span>
                     </button>
                     {openMenu === 'repeat' && (
