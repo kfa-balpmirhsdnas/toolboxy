@@ -383,16 +383,23 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     <svg viewBox="0 0 24 24" fill={saved.has(key) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" /></svg>
   )
 
-  // The player's control bar (file pickers + speed/volume/fullscreen/audio-mode/PiP). Rendered below the video
+  // Control-bar button style. Inline: plain icon buttons (the whole bar is already black) so they don't
+  // read as separate rounded tabs and don't break on narrow widths. Fullscreen: keep the translucent
+  // per-button background since they ride over the video.
+  const barBtn = (active: boolean) => fs
+    ? (ovBtnB + (active ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75'))
+    : ('pointer-events-auto inline-flex items-center justify-center gap-1 h-9 px-2.5 rounded-lg text-xs font-semibold transition-colors ' + (active ? 'bg-brand-600 text-white' : 'text-white hover:bg-white/10'))
+
+  // The player's control bar (file pickers + speed/volume/fullscreen/PiP). Rendered below the video
   // when inline (always visible), and as a bottom overlay in fullscreen (where there is no "below").
   const bottomBar = (
     <>
       {/* Open — left: video picker (straight to gallery) + folder picker (dir picker; also lists audio, no capture chooser) */}
       <div className="flex items-end gap-1">
-        <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('vp_pick_video')} title={t('vp_pick_video')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
-          <ToolIcon name="camera" className="w-4 h-4" /><span className="hidden sm:inline">{t('vp_pick_video')}</span>
+        <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('vp_pick_video')} title={t('vp_pick_video')} className={barBtn(false)}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m22 8-6 4 6 4V8Z" /><rect width="14" height="12" x="2" y="6" rx="2" ry="2" /></svg><span className="hidden sm:inline">{t('vp_pick_video')}</span>
         </button>
-        <button onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} aria-label={t('vp_pick_folder')} title={t('vp_pick_folder')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+        <button onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} aria-label={t('vp_pick_folder')} title={t('vp_pick_folder')} className={barBtn(false)}>
           <ToolIcon name="folder" className="w-4 h-4" /><span className="hidden sm:inline">{t('vp_pick_folder')}</span>
         </button>
       </div>
@@ -400,24 +407,21 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       <div className="flex items-end gap-1">
         {/* Speed — options appear as a horizontal row above the bar (rendered at bar level below) */}
         <button onClick={() => { setOpenMenu((m) => m === 'speed' ? null : 'speed'); setShowVol(false); showOverlay() }} aria-label={t('vp_speed')} title={t('vp_speed')}
-          className={ovBtnB + ' tabular-nums' + (speed !== 1 ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>{speed}×</button>
+          className={barBtn(speed !== 1) + ' tabular-nums'}>{speed}×</button>
         {/* Volume — gauge appears as a horizontal slider above the bar (rendered at bar level below) */}
-        <button onClick={() => { setShowVol((s) => !s); setOpenMenu(null); showOverlay() }} aria-label="volume" className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+        <button onClick={() => { setShowVol((s) => !s); setOpenMenu(null); showOverlay() }} aria-label="volume" className={barBtn(false)}>
           {(muted || volume === 0)
             ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
             : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
         </button>
         {/* Fullscreen */}
-        <button onClick={toggleFs} aria-label="fullscreen" className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+        <button onClick={toggleFs} aria-label="fullscreen" className={barBtn(false)}>
           {fs
             ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" /><path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" /></svg>
             : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /></svg>}
         </button>
-        {/* Audio (listen-only) mode removed: it can't do real background audio for video files (the browser
-            pauses a video-track resource off-screen), and it's redundant for audio-only files. Use PiP for
-            video background; audio-only files auto-play via the <audio> element. */}
         {/* Background play (PiP) — far right */}
-        <button onClick={() => { togglePip(); showOverlay() }} aria-label={t('vp_bg')} title={t('vp_bg')} className={ovBtnB + ' bg-black/55 hover:bg-black/75'}>
+        <button onClick={() => { togglePip(); showOverlay() }} aria-label={t('vp_bg')} title={t('vp_bg')} className={barBtn(false)}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 10h6V4" /><path d="m2 4 6 6" /><path d="M21 10V7a2 2 0 0 0-2-2h-7" /><path d="M3 14v2a2 2 0 0 0 2 2h3" /><rect width="10" height="7" x="12" y="13" rx="2" /></svg>
         </button>
       </div>
@@ -472,7 +476,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             <p className="text-xs text-gray-400 mt-1">{t('vp_drop_sub')}</p>
             <div className="flex flex-wrap justify-center gap-2 mt-4">
               <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">
-                <ToolIcon name="camera" className="w-4 h-4" />{t('vp_pick_video')}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m22 8-6 4 6 4V8Z" /><rect width="14" height="12" x="2" y="6" rx="2" ry="2" /></svg>{t('vp_pick_video')}
               </button>
               <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">
                 <ToolIcon name="folder" className="w-4 h-4" />{t('vp_pick_folder')}
@@ -676,7 +680,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             </div>
             {/* Inline: the control bar sits below the video as a persistent black toolbar (always visible). */}
             {!fs && (
-              <div style={{ marginTop: 1 }} className="relative flex items-end justify-between gap-1 rounded-xl bg-black px-1.5 pt-1.5">
+              <div style={{ marginTop: 1 }} className="relative flex items-center justify-between gap-1 rounded-xl bg-black px-1.5 py-1">
                 {bottomBar}
               </div>
             )}

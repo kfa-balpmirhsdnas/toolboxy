@@ -925,8 +925,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
         </div>
 
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-x-3 gap-y-2 flex-wrap sm:flex-nowrap min-w-0">
-            <div className="flex items-center gap-0.5">
+          <div className="flex flex-1 items-center gap-x-3 gap-y-2 flex-wrap sm:flex-nowrap min-w-0">
+            <div className="flex flex-wrap items-center gap-0.5 gap-y-1">
               {/* Save — custom dropdown (.txt for this tab / ZIP for all tabs) */}
               <div className="relative">
                 {openMenu === 'save' && <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />}
@@ -969,7 +969,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               <div className="relative">
                 {openMenu === 'auto' && <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />}
                 <button type="button" onClick={() => setOpenMenu(openMenu === 'auto' ? null : 'auto')} title={t('np_autoconvert')} aria-label={t('np_autoconvert')} aria-pressed={openMenu === 'auto'} className={'relative z-20 ' + iconBtn + (openMenu === 'auto' ? ' bg-brand-50 text-brand-600' : '')}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m14 4 1.2 2.8L18 8l-2.8 1.2L14 12l-1.2-2.8L10 8l2.8-1.2L14 4Z" /><path d="M5 19 13 11" /><path d="M19 15v4M17 17h4" /></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>
                 </button>
                 {openMenu === 'auto' && (
                   <div className="absolute z-30 mt-1 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 w-60 max-w-[calc(100vw-1.5rem)] bg-white border border-gray-200 rounded-lg shadow-lg py-1.5 text-sm">
