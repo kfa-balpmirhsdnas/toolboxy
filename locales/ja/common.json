@@ -4207,6 +4207,8 @@
     "vp_col_size": "サイズ",
     "vp_timer": "スリープタイマー（自動停止）",
     "vp_rotate": "回転",
+    "vp_night": "ナイトモード",
+    "vp_brightness": "明るさ",
     "vp_repeat_one": "1曲リピート",
     "vp_repeat_all": "全曲リピート",
     "vp_repeat_off": "リピートオフ",

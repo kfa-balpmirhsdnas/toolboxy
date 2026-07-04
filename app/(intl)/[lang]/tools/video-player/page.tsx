@@ -71,6 +71,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [fs, setFs] = useState(false)
   const [showVol, setShowVol] = useState(false)
   const [volume, setVolume] = useState(1)
+  const [showBright, setShowBright] = useState(false) // brightness gauge popup
+  const [brightness, setBrightness] = useState(1)     // CSS filter brightness on the video
+  const [nightMode, setNightMode] = useState(false)   // warm/dim filter for comfortable night viewing
   const [audioOnly, setAudioOnly] = useState(false) // no video track — show a music poster so the box isn't 0-height
   const [audioMode, setAudioMode] = useState(false)  // "listen only" — hide the frame behind the poster; audio keeps playing (screen off) via MediaSession
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -123,7 +126,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const showOverlay = useCallback(() => {
     setOvVisible(true)
     if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null }
-    if (!locked) hideRef.current = setTimeout(() => { setOvVisible(false); setOpenMenu(null); setShowVol(false) }, 6000)
+    if (!locked) hideRef.current = setTimeout(() => { setOvVisible(false); setOpenMenu(null); setShowVol(false); setShowBright(false) }, 6000)
   }, [locked])
   useEffect(() => {
     if (locked) { if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null } setOvVisible(true) }
@@ -134,7 +137,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const toggleOverlay = useCallback((e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('button,input,a')) return
     if (!locked && ovVisible) {
-      setOvVisible(false); setOpenMenu(null); setShowVol(false)
+      setOvVisible(false); setOpenMenu(null); setShowVol(false); setShowBright(false)
       if (hideRef.current) { clearTimeout(hideRef.current); hideRef.current = null }
     } else showOverlay()
   }, [locked, ovVisible, showOverlay])
@@ -228,6 +231,16 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     for (let step = 1; step <= list.length; step++) {
       const next = list[(idx + step) % list.length]
       if (next?.file) { load(next.file, true); return }
+    }
+  }
+  // Previous playable clip in the open tab (wraps around).
+  function playPrev() {
+    const list = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
+    if (!list.length) return
+    const idx = curFile ? list.findIndex((x) => x.file === curFile) : 0
+    for (let step = 1; step <= list.length; step++) {
+      const prev = list[(idx - step + list.length) % list.length]
+      if (prev?.file) { load(prev.file, true); return }
     }
   }
 
@@ -463,13 +476,17 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       {/* Controls — right */}
       <div className="flex items-end gap-1">
         {/* Speed — options appear as a horizontal row above the bar (rendered at bar level below) */}
-        <button onClick={() => { setOpenMenu((m) => m === 'speed' ? null : 'speed'); setShowVol(false); showOverlay() }} aria-label={t('vp_speed')} title={t('vp_speed')}
+        <button onClick={() => { setOpenMenu((m) => m === 'speed' ? null : 'speed'); setShowVol(false); setShowBright(false); showOverlay() }} aria-label={t('vp_speed')} title={t('vp_speed')}
           className={barBtn(speed !== 1) + ' tabular-nums'}>{speed}×</button>
         {/* Volume — gauge appears as a horizontal slider above the bar (rendered at bar level below) */}
-        <button onClick={() => { setShowVol((s) => !s); setOpenMenu(null); showOverlay() }} aria-label="volume" className={barBtn(false)}>
+        <button onClick={() => { setShowVol((s) => !s); setOpenMenu(null); setShowBright(false); showOverlay() }} aria-label="volume" className={barBtn(false)}>
           {(muted || volume === 0)
             ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></svg>
             : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></svg>}
+        </button>
+        {/* Brightness — gauge above the bar */}
+        <button onClick={() => { setShowBright((s) => !s); setShowVol(false); setOpenMenu(null); showOverlay() }} aria-label={t('vp_brightness')} title={t('vp_brightness')} className={barBtn(brightness !== 1)}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
         </button>
         {/* Fullscreen */}
         <button onClick={toggleFs} aria-label="fullscreen" className={barBtn(false)}>
@@ -506,6 +523,16 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 style={fillBg(volume * 100)} className={gaugeCls} />
               <span className="text-[10px] tabular-nums text-white/80 w-6 text-right">{Math.round(volume * 100)}</span>
             </div>
+          </div>
+        </div>
+      )}
+      {showBright && (
+        <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
+          <div className="pointer-events-auto flex items-center gap-2 px-3 h-9 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0 text-white/70"><circle cx="12" cy="12" r="4" /><path d="M12 3v1" /><path d="M12 20v1" /><path d="M3 12h1" /><path d="M20 12h1" /></svg>
+            <input type="range" min={0.3} max={1.7} step={0.05} value={brightness} onChange={(e) => { setBrightness(+e.target.value); showOverlay() }} aria-label="brightness"
+              style={fillBg(((brightness - 0.3) / 1.4) * 100)} className={gaugeCls} />
+            <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{Math.round(brightness * 100)}</span>
           </div>
         </div>
       )}
@@ -564,7 +591,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               {/* Native controls hidden — the top tabs + center cluster + bottom bar below are our own. */}
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video ref={videoRef} src={useAudioEl ? undefined : url} playsInline
-                style={{ transform: rot ? `rotate(${rot}deg)` : undefined }}
+                style={{ transform: rot ? `rotate(${rot}deg)` : undefined, filter: (brightness !== 1 || nightMode) ? `brightness(${brightness})${nightMode ? ' sepia(0.45) saturate(1.2) contrast(0.92)' : ''}` : undefined }}
                 className={'block max-w-full object-contain transition-transform ' + (fs ? 'max-h-screen w-full' : 'w-full max-h-[50vh] sm:max-h-[60vh]')}
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget
@@ -656,11 +683,20 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     )}
                   </div>
 
-                  {/* Capture — tapping the icon captures the current frame immediately (format from the options box) */}
-                  <button onClick={() => { capture(); showOverlay() }} title={t('vp_capture')} aria-label={t('vp_capture')}
-                    className={ovBtn + ' bg-black/55 hover:bg-black/75'}>
-                    <ToolIcon name={captured ? 'check' : 'camera'} className="w-4 h-4" />
-                  </button>
+                  {/* Capture */}
+                  <div className="relative">
+                    <button onClick={() => { setOpenMenu((m) => m === 'capture' ? null : 'capture'); showOverlay() }} title={t('vp_capture')} aria-label={t('vp_capture')}
+                      className={ovBtn + ' bg-black/55 hover:bg-black/75'}>
+                      <ToolIcon name={captured ? 'check' : 'camera'} className="w-4 h-4" />
+                    </button>
+                    {openMenu === 'capture' && (
+                      <div className={subMenu}>
+                        <div className={subRow + ' cursor-default'}><span>{t('vp_cap_time')}</span><span className="font-mono text-white/80">{fmt(cur)}</span></div>
+                        <div className={subRow + ' cursor-default'}><span>{t('vp_video_time')}</span><span className="font-mono text-white/80">{fmt(dur)}</span></div>
+                        <button onClick={() => { capture(); showOverlay() }} className="w-full flex items-center justify-center px-3 py-1.5 border-t border-white/10 bg-brand-600 hover:bg-brand-700 font-semibold transition-colors">{captured ? t('vp_captured') : t('vp_capture')}</button>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Rotate */}
                   <div className="relative">
@@ -700,30 +736,44 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     )}
                   </div>
 
+                  {/* Night mode — warm/dim filter for comfortable night viewing (moon; highlighted when on) */}
+                  <button onClick={() => { setNightMode((n) => !n); showOverlay() }} title={t('vp_night')} aria-label={t('vp_night')}
+                    className={ovBtn + (nightMode ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+                  </button>
+
                 </div>
               )}
               {/* Center controls — skip/play cluster with the time gauge right below it (same width). */}
               {(ovVisible || locked) && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="inline-flex flex-col items-stretch gap-2">
-                    <div className="flex items-center justify-center gap-2">
-                      <button onClick={() => seekBy(-10)} aria-label="-10s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
-                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>10
-                      </button>
-                      <button onClick={() => seekBy(-5)} aria-label="-5s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
-                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>5
+                    {/* Row 1: previous video / play / next video */}
+                    <div className="flex items-center justify-center gap-3">
+                      <button onClick={playPrev} aria-label="previous video" className="pointer-events-auto inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/55 text-white hover:bg-black/75 backdrop-blur transition-colors">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M19 20 9 12l10-8z" /><rect x="4" y="4" width="2.4" height="16" rx="1" /></svg>
                       </button>
                       <button onClick={togglePlay} aria-label="play" className="pointer-events-auto inline-flex items-center justify-center w-12 h-12 rounded-full bg-black/60 text-white hover:bg-black/80 backdrop-blur transition-colors">
                         {playing
                           ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
                           : <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M8 5v14l11-7z" /></svg>}
                       </button>
-                      <button onClick={() => seekBy(5)} aria-label="+5s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
-                        5<svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
+                      <button onClick={playNext} aria-label="next video" className="pointer-events-auto inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/55 text-white hover:bg-black/75 backdrop-blur transition-colors">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="m5 4 10 8-10 8z" /><rect x="17.6" y="4" width="2.4" height="16" rx="1" /></svg>
                       </button>
-                      <button onClick={() => seekBy(10)} aria-label="+10s" className="pointer-events-auto inline-flex items-center gap-0.5 h-9 px-2.5 rounded-full bg-black/55 text-white text-xs font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
-                        10<svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
-                      </button>
+                    </div>
+                    {/* Row 2: -30 -10 -5 / +5 +10 +30 */}
+                    <div className="flex items-center justify-center gap-1">
+                      {[30, 10, 5].map((n) => (
+                        <button key={'m' + n} onClick={() => seekBy(-n)} aria-label={`-${n}s`} className="pointer-events-auto inline-flex items-center gap-0.5 h-8 px-2 rounded-full bg-black/55 text-white text-[11px] font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
+                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>{n}
+                        </button>
+                      ))}
+                      {[5, 10, 30].map((n) => (
+                        <button key={'p' + n} onClick={() => seekBy(n)} aria-label={`+${n}s`} className="pointer-events-auto inline-flex items-center gap-0.5 h-8 px-2 rounded-full bg-black/55 text-white text-[11px] font-bold hover:bg-black/75 backdrop-blur transition-colors tabular-nums">
+                          {n}<svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
+                        </button>
+                      ))}
                     </div>
                     {/* Time gauge — same width as the 5 buttons above. */}
                     <div className="pointer-events-auto flex items-center gap-2 px-3 h-8 rounded-full bg-black/60 backdrop-blur text-white text-[11px]">

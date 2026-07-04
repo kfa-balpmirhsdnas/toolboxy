@@ -4234,6 +4234,8 @@
     "vp_col_size": "크기",
     "vp_timer": "취침 타이머 (자동 정지)",
     "vp_rotate": "회전",
+    "vp_night": "야간 모드",
+    "vp_brightness": "밝기",
     "vp_repeat_one": "한곡 반복",
     "vp_repeat_all": "전체 반복",
     "vp_repeat_off": "반복 끄기",

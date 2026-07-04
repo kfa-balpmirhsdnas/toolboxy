@@ -3804,6 +3804,8 @@
     "vp_col_size": "Size",
     "vp_timer": "Sleep timer (auto-pause)",
     "vp_rotate": "Rotate",
+    "vp_night": "Night mode",
+    "vp_brightness": "Brightness",
     "vp_repeat_one": "Repeat one",
     "vp_repeat_all": "Repeat all",
     "vp_repeat_off": "Repeat off",
