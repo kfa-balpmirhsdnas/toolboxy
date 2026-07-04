@@ -208,7 +208,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     if (!isMedia(f)) return
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || 'frame')
-    setA(null); setB(null); setRepeat(false); setCur(0); setRot(0); setAudioMode(false); setAudioOnly(false)
+    setA(null); setB(null); setRepeat(false); setCur(0); setAudioMode(false); setAudioOnly(false)
     // Resume where this clip was last left off (saved per file); audio-only resumes via switchPosRef.
     const resume = positionsRef.current[f.name + '|' + f.size] || 0
     resumePosRef.current = resume; switchPosRef.current = resume; pendingVideoSeekRef.current = 0
