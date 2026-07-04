@@ -838,7 +838,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               )}
               {/* Fullscreen: the control bar rides as a bottom overlay (there's no room "below" the video). */}
               {fs && (ovVisible || locked) && (
-                <div style={ovScaleStyle('bottom center')} className="absolute bottom-0 inset-x-0 flex items-end justify-between gap-1 pointer-events-none">
+                <div style={ovScaleStyle('bottom center')} className={'absolute bottom-0 inset-x-0 flex items-end gap-1 pointer-events-none ' + (quarterTurned ? 'justify-center gap-2' : 'justify-between')}>
                   {bottomBar}
                 </div>
               )}
