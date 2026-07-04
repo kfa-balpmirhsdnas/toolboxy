@@ -510,7 +510,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       {/* Speed / volume appear as a horizontal row ABOVE the bar (spans the bar width, so it stays on-screen). */}
       {openMenu === 'speed' && (
         <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
-          <div className="pointer-events-auto flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
+          <div className="pointer-events-auto flex flex-col items-center gap-1.5 w-[248px] px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
             {/* presets */}
             <div className="flex items-center gap-0.5">
               {[0.5, 0.75, 1, 1.25, 1.5, 2].map((p) => (
@@ -527,7 +527,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       )}
       {showVol && (
         <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
-          <div className="pointer-events-auto flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
+          <div className="pointer-events-auto flex flex-col items-center gap-1.5 w-[248px] px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
             {/* presets */}
             <div className="flex items-center gap-0.5">
               {[0, 10, 30, 50, 60, 80, 100].map((p) => (
@@ -544,7 +544,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       )}
       {showBright && (
         <div className="absolute bottom-full inset-x-0 mb-1 flex justify-center pointer-events-none z-20">
-          <div className="pointer-events-auto flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
+          <div className="pointer-events-auto flex flex-col items-center gap-1.5 w-[248px] px-3 py-2 rounded-lg bg-black/90 backdrop-blur text-white shadow-lg">
             {/* presets — centered at 0 (normal), negative = dimmer, positive = brighter */}
             <div className="flex items-center gap-0.5">
               {[-60, -40, -20, 0, 20, 40, 60].map((o) => (
@@ -684,6 +684,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                       : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect width="18" height="11" x="3" y="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 9.9-1" /></svg>}
                   </button>
 
+                  {/* Night mode — warm/dim filter for comfortable night viewing (moon; highlighted when on) */}
+                  <button onClick={() => { setNightMode((n) => !n); showOverlay() }} title={t('vp_night')} aria-label={t('vp_night')}
+                    className={ovBtn + (nightMode ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+                  </button>
+
                   {/* Timer */}
                   <div className="relative">
                     <button onClick={() => { const open = openMenu !== 'timer'; setOpenMenu(open ? 'timer' : null); if (open && sleepMin === 0) setSleepMin(15); showOverlay() }} title={t('vp_timer')} aria-label={t('vp_timer')}
@@ -773,12 +779,6 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                       </div>
                     )}
                   </div>
-
-                  {/* Night mode — warm/dim filter for comfortable night viewing (moon; highlighted when on) */}
-                  <button onClick={() => { setNightMode((n) => !n); showOverlay() }} title={t('vp_night')} aria-label={t('vp_night')}
-                    className={ovBtn + (nightMode ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
-                  </button>
 
                   </div>
                   {/* Video title — shown with the overlay */}
