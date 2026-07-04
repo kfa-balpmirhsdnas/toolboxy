@@ -444,9 +444,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
 
   const chipBtn = 'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors'
   const ovBtn = 'pointer-events-auto inline-flex items-center justify-center gap-1 h-9 px-3 rounded-b-xl text-white text-xs font-semibold backdrop-blur transition-colors'
-  // Bottom-bar variant of the top tab style — same look, but rounded on top so tabs hang up from the bottom edge.
-  const ovBtnB = 'pointer-events-auto inline-flex items-center justify-center gap-1 h-9 px-3 rounded-t-xl text-white text-xs font-semibold backdrop-blur transition-colors'
-  const subMenu = 'absolute top-full left-1/2 -translate-x-1/2 mt-0.5 min-w-[9rem] pointer-events-auto rounded-lg bg-black/85 backdrop-blur text-white text-xs py-1 shadow-lg z-20 flex flex-col overflow-hidden'
+  const subMenu ='absolute top-full left-1/2 -translate-x-1/2 mt-0.5 min-w-[9rem] pointer-events-auto rounded-lg bg-black/85 backdrop-blur text-white text-xs py-1 shadow-lg z-20 flex flex-col overflow-hidden'
   const subRow = 'w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left hover:bg-white/15 transition-colors tabular-nums'
   const subCell = 'w-full flex items-center justify-center px-3 py-1.5 hover:bg-white/15 transition-colors tabular-nums'
   // Shared slider (gauge) styling — white thumb, two-tone track via an inline gradient.
@@ -465,12 +463,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     </span>
   )
 
-  // Control-bar button style. Inline: plain icon buttons (the whole bar is already black) so they don't
-  // read as separate rounded tabs and don't break on narrow widths. Fullscreen: keep the translucent
-  // per-button background since they ride over the video.
-  const barBtn = (active: boolean) => fs
-    ? (ovBtnB + (active ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75'))
-    : ('pointer-events-auto inline-flex items-center justify-center gap-1 h-9 px-2.5 rounded-lg text-xs font-semibold transition-colors ' + (active ? 'bg-brand-600 text-white' : 'text-white hover:bg-white/10'))
+  // Control-bar button style — plain icon buttons in both inline and fullscreen, since the bar itself is a
+  // single black bar in both. They don't read as separate rounded tabs and don't break on narrow widths.
+  const barBtn = (active: boolean) =>
+    'pointer-events-auto inline-flex items-center justify-center gap-1 h-9 px-2.5 rounded-lg text-xs font-semibold transition-colors ' + (active ? 'bg-brand-600 text-white' : 'text-white hover:bg-white/10')
 
   // The player's control bar (file pickers + speed/volume/fullscreen/PiP). Rendered below the video
   // when inline (always visible), and as a bottom overlay in fullscreen (where there is no "below").
@@ -834,8 +830,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
               )}
               {/* Fullscreen: the control bar rides as a bottom overlay (there's no room "below" the video). */}
               {fs && (ovVisible || locked) && (
-                <div style={ovScaleStyle('bottom center')} className={'absolute bottom-0 inset-x-0 flex items-end gap-1 pointer-events-none ' + (quarterTurned ? 'justify-center gap-2' : 'justify-between')}>
-                  {bottomBar}
+                <div className="absolute bottom-1 inset-x-1 flex justify-center pointer-events-none">
+                  <div style={ovScaleStyle('bottom center')} className={'flex items-center gap-1 rounded-xl bg-black/90 px-1.5 py-1 pointer-events-auto ' + (quarterTurned ? 'gap-2' : 'w-full justify-between')}>
+                    {bottomBar}
+                  </div>
                 </div>
               )}
               </div>
