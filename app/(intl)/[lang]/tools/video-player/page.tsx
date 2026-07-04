@@ -82,6 +82,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const pipPlayingRef = useRef(true)                // play state sampled while in PiP, to restore it on exit
   const switchPosRef = useRef(0)                    // playback position carried across audio↔video element switches
   const pendingVideoSeekRef = useRef(0)             // seek the <video> here once it reloads (leaving audio mode)
+  const positionsRef = useRef<Record<string, number>>({}) // last-played position per clip (name|size → seconds)
+  const resumePosRef = useRef(0)                    // seek the freshly-loaded clip here (resume where you left off)
+  const posSaveTsRef = useRef(0)                    // throttle the localStorage writes
+  useEffect(() => { try { const s = localStorage.getItem('vp_pos_v1'); if (s) positionsRef.current = JSON.parse(s) } catch { /* ignore */ } }, [])
 
   // In "audio mode" (and for audio-only files) playback runs through the <audio> element — browsers keep
   // audio elements playing when the screen turns off, whereas a <video> gets paused in the background.
@@ -89,6 +93,17 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const activeRef = useRef<HTMLMediaElement | null>(null)
   useEffect(() => { activeRef.current = useAudioEl ? audioElRef.current : videoRef.current }, [useAudioEl, url])
   const media = (): HTMLMediaElement | null => (useAudioEl ? audioElRef.current : videoRef.current)
+
+  // Resume-position bookkeeping (per clip). savePos is throttled; flush=true writes immediately.
+  const writePositions = () => { try { localStorage.setItem('vp_pos_v1', JSON.stringify(positionsRef.current)) } catch { /* ignore */ } }
+  const savePos = (t: number, flush = false) => {
+    const key = curFile ? curFile.name + '|' + curFile.size : ''
+    if (!key || !(t > 0)) return
+    positionsRef.current[key] = t
+    const now = Date.now()
+    if (flush || now - posSaveTsRef.current > 3000) { posSaveTsRef.current = now; writePositions() }
+  }
+  const clearPos = () => { const key = curFile ? curFile.name + '|' + curFile.size : ''; if (key && positionsRef.current[key] != null) { delete positionsRef.current[key]; writePositions() } }
 
   // Whole-video loop mirrors the .loop flag on both elements.
   useEffect(() => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) el.loop = repeatMode === 'one' }) }, [repeatMode, url])
@@ -191,7 +206,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || 'frame')
     setA(null); setB(null); setRepeat(false); setSpeed(1); setCur(0); setRot(0); setAudioMode(false); setAudioOnly(false)
-    switchPosRef.current = 0; pendingVideoSeekRef.current = 0
+    // Resume where this clip was last left off (saved per file); audio-only resumes via switchPosRef.
+    const resume = positionsRef.current[f.name + '|' + f.size] || 0
+    resumePosRef.current = resume; switchPosRef.current = resume; pendingVideoSeekRef.current = 0
     setCurFile(f)
     if (!advance) {
       // Keep a session history of played videos (newest first, de-duped, capped).
@@ -277,7 +294,6 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       const add = vids.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f }))
       return [...add, ...h].slice(0, 60)
     })
-    setHistView('thumbnails')
     trackToolUsed('video-player')
   }, [])
 
@@ -412,7 +428,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       {/* Open — left: video picker (straight to gallery) + folder picker (dir picker; also lists audio, no capture chooser) */}
       <div className="flex items-end gap-1">
         <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} aria-label={t('vp_pick_video')} title={t('vp_pick_video')} className={barBtn(false)}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m22 8-6 4 6 4V8Z" /><rect width="14" height="12" x="2" y="6" rx="2" ry="2" /></svg><span className="hidden sm:inline">{t('vp_pick_video')}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M7 3v18" /><path d="M3 7.5h4" /><path d="M3 12h18" /><path d="M3 16.5h4" /><path d="M17 3v18" /><path d="M17 7.5h4" /><path d="M17 16.5h4" /></svg><span className="hidden sm:inline">{t('vp_pick_video')}</span>
         </button>
         <button onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} aria-label={t('vp_pick_folder')} title={t('vp_pick_folder')} className={barBtn(false)}>
           <ToolIcon name="folder" className="w-4 h-4" /><span className="hidden sm:inline">{t('vp_pick_folder')}</span>
@@ -474,12 +490,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <audio ref={audioElRef} src={url || undefined} preload="metadata"
           onPlay={() => { setPlaying(true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'playing' } catch { /* ignore */ } }}
-          onPause={() => { setPlaying(false); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
-          onEnded={() => { if (repeatMode === 'all' && useAudioEl) playNext() }}
+          onPause={(e) => { setPlaying(false); if (useAudioEl) savePos(e.currentTarget.currentTime, true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
+          onEnded={() => { if (useAudioEl) clearPos(); if (repeatMode === 'all' && useAudioEl) playNext() }}
           onVolumeChange={(e) => { setMuted(e.currentTarget.muted); setVolume(e.currentTarget.volume) }}
           onTimeUpdate={(e) => {
             if (!useAudioEl) return
-            const el = e.currentTarget; setCur(el.currentTime)
+            const el = e.currentTarget; setCur(el.currentTime); savePos(el.currentTime)
             /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
             const ms = (navigator as any).mediaSession
             if (ms?.setPositionState && el.duration && isFinite(el.duration)) { try { ms.setPositionState({ duration: el.duration, position: Math.min(el.currentTime, el.duration), playbackRate: el.playbackRate || 1 }) } catch { /* ignore */ } }
@@ -493,7 +509,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             <p className="text-xs text-gray-400 mt-1">{t('vp_drop_sub')}</p>
             <div className="flex flex-wrap justify-center gap-2 mt-4">
               <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m22 8-6 4 6 4V8Z" /><rect width="14" height="12" x="2" y="6" rx="2" ry="2" /></svg>{t('vp_pick_video')}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M7 3v18" /><path d="M3 7.5h4" /><path d="M3 12h18" /><path d="M3 16.5h4" /><path d="M17 3v18" /><path d="M17 7.5h4" /><path d="M17 16.5h4" /></svg>{t('vp_pick_video')}
               </button>
               <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">
                 <ToolIcon name="folder" className="w-4 h-4" />{t('vp_pick_folder')}
@@ -518,20 +534,23 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget
                   setDur(v.duration); v.playbackRate = speed; v.loop = repeatMode === 'one'; setAudioOnly(!v.videoWidth); showOverlay()
-                  // Restore the position when the video reloads after leaving audio mode.
+                  // Restore the position when the video reloads after leaving audio mode; otherwise resume
+                  // where this clip was last left off (skip if it's near the very start or end).
                   if (pendingVideoSeekRef.current) { try { v.currentTime = pendingVideoSeekRef.current } catch { /* ignore */ } pendingVideoSeekRef.current = 0 }
+                  else if (resumePosRef.current > 1 && v.duration && resumePosRef.current < v.duration - 2) { try { v.currentTime = resumePosRef.current } catch { /* ignore */ } }
+                  resumePosRef.current = 0
                   // Auto-play as soon as the file loads (Q2): selecting the file is a user gesture, so
                   // sound is normally allowed; if a browser blocks it, fall back to muted autoplay.
                   v.muted = false
                   v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
                 }}
                 onPlay={() => { setPlaying(true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'playing' } catch { /* ignore */ } }}
-                onPause={() => { setPlaying(false); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
-                onEnded={() => { if (repeatMode === 'all' && !useAudioEl) playNext() }}
+                onPause={(e) => { setPlaying(false); if (!useAudioEl) savePos(e.currentTarget.currentTime, true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
+                onEnded={() => { if (!useAudioEl) clearPos(); if (repeatMode === 'all' && !useAudioEl) playNext() }}
                 onVolumeChange={(e) => { setMuted(e.currentTarget.muted); setVolume(e.currentTarget.volume) }}
                 onTimeUpdate={(e) => {
                   if (useAudioEl) return
-                  const v = e.currentTarget; setCur(v.currentTime)
+                  const v = e.currentTarget; setCur(v.currentTime); savePos(v.currentTime)
                   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
                   const ms = (navigator as any).mediaSession
                   if (ms?.setPositionState && v.duration && isFinite(v.duration)) { try { ms.setPositionState({ duration: v.duration, position: Math.min(v.currentTime, v.duration), playbackRate: v.playbackRate || 1 }) } catch { /* ignore */ } }
@@ -621,8 +640,8 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   <div className="relative">
                     <button onClick={() => { setOpenMenu((m) => m === 'rotate' ? null : 'rotate'); showOverlay() }} title={t('vp_rotate')} aria-label={t('vp_rotate')}
                       className={ovBtn + (rot ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
-                      {/* frame + corner arrow — clearly "rotate the picture", not refresh */}
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect x="3" y="12" width="9" height="9" rx="2" /><path d="M8 12V8a4 4 0 0 1 4-4h5" /><path d="m14 1 3 3-3 3" /></svg>
+                      {/* screen-rotation: a tilted phone with two rotation arrows */}
+                      <svg viewBox="0 0 24 24" fill="currentColor" fillRule="evenodd" className="w-4 h-4"><path d="M16.48 2.52c3.27 1.55 5.61 4.72 5.97 8.48h1.5C23.44 4.84 18.29 0 12 0l-.66.03 3.81 3.81 1.33-1.32zM10.23 1.75c-.59-.59-1.54-.59-2.12 0L1.75 8.11c-.59.59-.59 1.54 0 2.12l12.02 12.02c.59.59 1.54.59 2.12 0l6.36-6.36c.59-.59.59-1.54 0-2.12L10.23 1.75zm3.6 18.65L3.6 10.17l6.57-6.57 10.23 10.23-6.57 6.57zM7.51 21.43C4.4 20.85 2.06 17.68 1.7 13.92H.2C.56 19.16 5.71 24 12 24l.66-.03-3.81-3.81-1.34 1.31z" /></svg>
                     </button>
                     {openMenu === 'rotate' && (
                       <div className={subMenu}>
@@ -641,7 +660,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                       <span className="relative inline-flex">
                         {/* circular loop with a "1" in the middle — distinct from the A–B section-repeat icon */}
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>
-                        <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold leading-none">1</span>
+                        <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold leading-none">{repeatMode === 'all' ? 'A' : '1'}</span>
                       </span>
                     </button>
                     {openMenu === 'repeat' && (
