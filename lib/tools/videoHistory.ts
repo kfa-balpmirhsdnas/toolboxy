@@ -1,17 +1,18 @@
-// Persistent play-history for the Video Player. Small/medium clips are stored as blobs in
-// IndexedDB so they replay in one click after a page refresh; files above VH_MAX_BYTES are
-// skipped (they stay session-only) so the user's disk never balloons with huge videos.
-// Newest-first, capped to VH_MAX_ITEMS (oldest evicted). All ops fail soft — if IndexedDB is
-// unavailable/quota-full, the in-memory session history still works.
+// Hybrid persistence for the Video Player play-list:
+//   • metadata (name/size/type + a small thumbnail) is kept for EVERY recent clip, so the list
+//     survives a page refresh with almost no disk use.
+//   • the actual video BLOB is kept ONLY for 보관(starred) clips, so only those replay in one click.
+// Non-starred clips show in the list after a refresh but need to be re-opened to play (no blob).
+// All ops fail soft — if IndexedDB is unavailable/quota-full, the in-memory session history still works.
 
 const DB_NAME = 'toolboxy-video'
 const STORE = 'history'
 const DB_VERSION = 1
 
-export const VH_MAX_BYTES = 200 * 1024 * 1024 // per-file cap for persistence (200 MB)
-export const VH_MAX_ITEMS = 15
+export const VH_MAX_BYTES = 200 * 1024 * 1024 // per-file cap for a stored blob (200 MB)
+export const VH_MAX_ITEMS = 40                 // metadata is tiny, so keep plenty (favorites are never evicted)
 
-export type VHItem = { id: string; name: string; size: number; type: string; ts: number; blob: Blob }
+export type VHItem = { id: string; name: string; size: number; type: string; ts: number; blob?: Blob; thumb?: string }
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -24,8 +25,13 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 function store(db: IDBDatabase, mode: IDBTransactionMode) { return db.transaction(STORE, mode).objectStore(STORE) }
+function reqP<T>(r: IDBRequest<T>): Promise<T> { return new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error) }) }
 
-// All persisted clips, newest first.
+async function vhGet(id: string): Promise<VHItem | undefined> {
+  try { const db = await openDB(); return await reqP(store(db, 'readonly').get(id)) as VHItem | undefined } catch { return undefined }
+}
+
+// All records, newest first.
 export async function vhList(): Promise<VHItem[]> {
   try {
     const db = await openDB()
@@ -38,18 +44,45 @@ export async function vhList(): Promise<VHItem[]> {
   } catch { return [] }
 }
 
-// Store a played clip (skips large files); then evict anything beyond the item cap.
-export async function vhPut(item: VHItem): Promise<void> {
-  if (item.size > VH_MAX_BYTES) return
+// Evict oldest METADATA-ONLY records beyond the cap. Starred clips (with a blob) are never evicted.
+async function evict(): Promise<void> {
   try {
-    const db = await openDB()
-    await new Promise<void>((resolve) => { const r = store(db, 'readwrite').put(item); r.onsuccess = () => resolve(); r.onerror = () => resolve() })
     const all = await vhList()
-    if (all.length > VH_MAX_ITEMS) {
+    const metaOnly = all.filter((x) => !x.blob)
+    if (metaOnly.length > VH_MAX_ITEMS) {
       const st = store(await openDB(), 'readwrite')
-      all.slice(VH_MAX_ITEMS).forEach((x) => st.delete(x.id))
+      metaOnly.slice(VH_MAX_ITEMS).forEach((x) => st.delete(x.id))
     }
-  } catch { /* quota full / disabled — session history still works */ }
+  } catch { /* ignore */ }
+}
+
+// Store/update a clip's metadata. Preserves any existing blob/thumb.
+export async function vhPutMeta(meta: { id: string; name: string; size: number; type: string }): Promise<void> {
+  try {
+    const prev = await vhGet(meta.id)
+    const db = await openDB()
+    store(db, 'readwrite').put({ id: meta.id, name: meta.name, size: meta.size, type: meta.type, ts: Date.now(), blob: prev?.blob, thumb: prev?.thumb })
+    await evict()
+  } catch { /* ignore */ }
+}
+
+// Add the video blob (on ★ save) or drop it (on unsave). Skips blobs above the size cap.
+export async function vhSetBlob(id: string, blob: Blob | null): Promise<void> {
+  if (blob && blob.size > VH_MAX_BYTES) return
+  try {
+    const prev = await vhGet(id); if (!prev) return
+    const db = await openDB()
+    store(db, 'readwrite').put({ ...prev, blob: blob || undefined })
+  } catch { /* ignore */ }
+}
+
+// Store a small thumbnail dataURL so the list keeps its preview after a refresh.
+export async function vhSetThumb(id: string, thumb: string): Promise<void> {
+  try {
+    const prev = await vhGet(id); if (!prev || prev.thumb === thumb) return
+    const db = await openDB()
+    store(db, 'readwrite').put({ ...prev, thumb })
+  } catch { /* ignore */ }
 }
 
 export async function vhDelete(id: string): Promise<void> {

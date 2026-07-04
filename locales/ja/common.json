@@ -4187,6 +4187,7 @@
     "vp_pick_video": "動画を開く",
     "vp_pick_audio": "音声",
     "vp_pick_folder": "フォルダを開く",
+    "vp_reopen": "保存していない動画です。タップして再度開いてください",
     "vp_col_name": "ファイル名",
     "vp_col_size": "サイズ",
     "vp_timer": "スリープタイマー（自動停止）",

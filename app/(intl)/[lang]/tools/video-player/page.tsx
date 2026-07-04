@@ -7,7 +7,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
-import { vhList, vhPut, vhDelete } from '@/lib/tools/videoHistory'
+import { vhList, vhPutMeta, vhSetBlob, vhSetThumb, vhDelete } from '@/lib/tools/videoHistory'
 
 const tool = getToolBySlug('video-player')!
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
@@ -50,7 +50,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const [capFmt, setCapFmt] = useState<'png' | 'jpg'>('png')
   const [captured, setCaptured] = useState(false)
   const [optTab, setOptTab] = useState<'frame' | 'ab' | 'speed'>('frame') // combined options tabs
-  const [history, setHistory] = useState<{ name: string; size: number; file: File }[]>([]) // played videos (session)
+  const [history, setHistory] = useState<{ name: string; size: number; file: File | null }[]>([]) // file null = metadata-only (not saved), needs re-open
   const [curFile, setCurFile] = useState<File | null>(null)
   // Overlay controls (on top of the video; the tab controls below stay as-is).
   const [rot, setRot] = useState(0)            // display rotation 0/90/180/270
@@ -130,13 +130,13 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     if (histView !== 'thumbnails') return
     history.forEach((h) => {
       const key = h.name + '|' + h.size
-      if (thumbs[key]) return
+      if (thumbs[key] || !h.file) return // metadata-only clips (no blob) keep the 🎞️ placeholder
       const v = document.createElement('video'); v.muted = true; v.preload = 'metadata'
       const u = URL.createObjectURL(h.file); v.src = u
       const done = () => URL.revokeObjectURL(u)
       v.onloadeddata = () => { try { v.currentTime = Math.min(1, (v.duration || 2) / 2) } catch { /* ignore */ } }
       v.onseeked = () => {
-        try { const c = document.createElement('canvas'); c.width = 160; c.height = 90; const ctx = c.getContext('2d'); if (ctx) { ctx.drawImage(v, 0, 0, 160, 90); setThumbs((tp) => ({ ...tp, [key]: c.toDataURL('image/jpeg', 0.6) })) } } catch { /* ignore */ }
+        try { const c = document.createElement('canvas'); c.width = 160; c.height = 90; const ctx = c.getContext('2d'); if (ctx) { ctx.drawImage(v, 0, 0, 160, 90); const data = c.toDataURL('image/jpeg', 0.6); setThumbs((tp) => ({ ...tp, [key]: data })); vhSetThumb(key, data) } } catch { /* ignore */ }
         done()
       }
       v.onerror = done
@@ -197,37 +197,49 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       // Keep a session history of played videos (newest first, de-duped, capped).
       setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 60)) // eslint-disable-line
     }
-    // Persist the clip so it survives a refresh (large files are skipped inside vhPut).
-    vhPut({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type, ts: Date.now(), blob: f })
+    // Persist metadata so the list survives a refresh; the actual blob is only kept for ★ saved clips.
+    const id = f.name + '|' + f.size
+    vhPutMeta({ id, name: f.name, size: f.size, type: f.type })
+    if (savedRef.current.has(id)) vhSetBlob(id, f) // already a favorite → keep it replayable
     trackToolUsed('video-player')
   }, [])
   // Play the next clip in the history list (repeat-all), wrapping to the first.
   function playNext() {
     if (!history.length) return
     const idx = curFile ? history.findIndex((x) => x.file === curFile) : -1
-    const next = history[(idx + 1) % history.length]
-    if (next) load(next.file, true)
+    // Advance to the next PLAYABLE clip (skip metadata-only entries that have no blob).
+    for (let step = 1; step <= history.length; step++) {
+      const next = history[(idx + step) % history.length]
+      if (next?.file) { load(next.file, true); return }
+    }
   }
 
-  // Restore persisted play-history (blobs kept in IndexedDB) on mount so it survives refreshes.
+  // Restore the persisted list on mount (metadata for all; a File only for ★ saved clips whose blob was kept).
   useEffect(() => {
     let alive = true
     vhList().then((items) => {
       if (!alive || !items.length) return
-      const restored = items.map((it) => ({ name: it.name, size: it.size, file: new File([it.blob], it.name, { type: it.type }) }))
+      const restored = items.map((it) => ({ name: it.name, size: it.size, file: it.blob ? new File([it.blob], it.name, { type: it.type }) : null }))
       setHistory((h) => {
         const seen = new Set(h.map((x) => x.name + '|' + x.size))
         return [...h, ...restored.filter((r) => !seen.has(r.name + '|' + r.size))].slice(0, 60)
       })
+      const th: Record<string, string> = {}
+      items.forEach((it) => { if (it.thumb) th[it.name + '|' + it.size] = it.thumb })
+      if (Object.keys(th).length) setThumbs((p) => ({ ...th, ...p }))
     })
     return () => { alive = false }
   }, [])
 
   // "보관" (Saved) tab — starred clip keys, persisted so the shelf survives refreshes.
+  const savedRef = useRef<Set<string>>(new Set())
+  useEffect(() => { savedRef.current = saved }, [saved])
   useEffect(() => { try { const s = localStorage.getItem('vp_saved_v1'); if (s) setSaved(new Set(JSON.parse(s))) } catch { /* ignore */ } }, [])
-  const toggleSaved = useCallback((key: string) => {
+  // Star ⇒ persist the video blob (hybrid: only saved clips keep their video). Unstar ⇒ drop the blob (keep metadata).
+  const toggleSaved = useCallback((key: string, file: File | null) => {
     setSaved((prev) => {
-      const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key)
+      const n = new Set(prev); const willSave = !n.has(key)
+      if (willSave) { n.add(key); if (file) vhSetBlob(key, file) } else { n.delete(key); vhSetBlob(key, null) }
       try { localStorage.setItem('vp_saved_v1', JSON.stringify(Array.from(n))) } catch { /* ignore */ }
       return n
     })
@@ -250,6 +262,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     load(f)
     requestAnimationFrame(() => wrapperRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   }, [load])
+  // Click a history item: play it if we still have the file (in-session or ★ saved); otherwise it's a
+  // metadata-only entry after a refresh — reopen the picker so the user can re-select it.
+  const openHistItem = useCallback((f: File | null) => { if (f) loadAndScroll(f); else inputRef.current?.click() }, [loadAndScroll])
 
   // Open a folder: list only its video files into the history list (thumbnails view). Nothing is
   // played until you click one. Folder selection = webkitdirectory (desktop + Android Chrome; not iOS).
@@ -793,16 +808,16 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 {shownHistory.map((h, i) => {
                   const key = h.name + '|' + h.size, on = h.file === curFile
                   return (
-                    <div key={i} title={h.name}
+                    <div key={i} title={h.file ? h.name : h.name + ' — ' + t('vp_reopen')}
                       className={'relative aspect-video rounded-xl overflow-hidden border-2 bg-gray-900 transition-colors ' + (on ? 'border-brand-500' : 'border-gray-200 hover:border-brand-300')}>
-                      <button onClick={() => loadAndScroll(h.file)} className="absolute inset-0 w-full h-full">
+                      <button onClick={() => openHistItem(h.file)} className={'absolute inset-0 w-full h-full ' + (h.file ? '' : 'opacity-60')}>
                         {thumbs[key]
                           /* eslint-disable-next-line @next/next/no-img-element */
                           ? <img src={thumbs[key]} alt={h.name} className="w-full h-full object-cover" />
                           : <span className="absolute inset-0 flex items-center justify-center text-2xl">🎞️</span>}
                         <span className="absolute bottom-0 inset-x-0 px-1.5 py-0.5 bg-black/60 text-white text-[10px] truncate text-left">{h.name}</span>
                       </button>
-                      <button onClick={() => toggleSaved(key)} aria-label={t('vp_save')} title={t('vp_save')}
+                      <button onClick={() => toggleSaved(key, h.file)} aria-label={t('vp_save')} title={t('vp_save')}
                         className={'absolute top-1 left-1 z-10 p-1 rounded-md bg-black/40 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-white/70 hover:text-amber-300')}>
                         {starSvg(key)}
                       </button>
@@ -826,11 +841,11 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     const key = h.name + '|' + h.size
                     return (
                       <div key={i} className={'flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors ' + (h.file === curFile ? 'bg-brand-50' : 'hover:bg-gray-50')}>
-                        <button onClick={() => toggleSaved(key)} aria-label={t('vp_save')} title={t('vp_save')}
+                        <button onClick={() => toggleSaved(key, h.file)} aria-label={t('vp_save')} title={t('vp_save')}
                           className={'shrink-0 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400')}>
                           {starSvg(key)}
                         </button>
-                        <button onClick={() => loadAndScroll(h.file)} className="flex items-center gap-2 flex-1 min-w-0 text-left">
+                        <button onClick={() => openHistItem(h.file)} title={h.file ? undefined : t('vp_reopen')} className={'flex items-center gap-2 flex-1 min-w-0 text-left ' + (h.file ? '' : 'opacity-50')}>
                           <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{h.name}</span>
                         </button>
                         <span className="shrink-0 sm:w-16 text-right text-gray-400 tabular-nums whitespace-nowrap">
