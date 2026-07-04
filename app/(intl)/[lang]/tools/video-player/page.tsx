@@ -7,7 +7,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
-import { vhList, vhPutMeta, vhSetBlob, vhSetThumb, vhDelete } from '@/lib/tools/videoHistory'
+import { vhList, vhPutMeta, vhSetBlob, vhSetThumb, vhDelete, vhClear } from '@/lib/tools/videoHistory'
 
 const tool = getToolBySlug('video-player')!
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
@@ -260,6 +260,16 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       try { localStorage.setItem('vp_saved_v1', JSON.stringify(Array.from(n))) } catch { /* ignore */ }
       return n
     })
+  }, [])
+
+  // Wipe the whole list — metadata, saved blobs, stars and resume positions.
+  const resetHistory = useCallback(() => {
+    if (typeof window !== 'undefined' && !window.confirm(t('vp_reset_confirm'))) return
+    setHistory([]); setSaved(new Set()); setThumbs({})
+    positionsRef.current = {}
+    try { localStorage.removeItem('vp_saved_v1'); localStorage.removeItem('vp_pos_v1') } catch { /* ignore */ }
+    vhClear()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Remove a clip from the list (and its persisted blob + saved star).
@@ -807,14 +817,19 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   </button>
                 ))}
               </div>
-              <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
-                {(['list', 'thumbnails'] as const).map((v) => (
-                  <button key={v} onClick={() => setHistView(v)}
-                    className={'flex items-center gap-1 whitespace-nowrap px-2.5 py-1 rounded-md font-medium transition-colors ' + (histView === v ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>
-                    <ToolIcon name={v === 'list' ? 'list' : 'grid'} className="w-3.5 h-3.5" />
-                    {v === 'list' ? t('bip_view_list') : t('bip_view_thumb')}
-                  </button>
-                ))}
+              <div className="flex items-center gap-1.5">
+                <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
+                  {(['list', 'thumbnails'] as const).map((v) => (
+                    <button key={v} onClick={() => setHistView(v)}
+                      className={'flex items-center gap-1 whitespace-nowrap px-2.5 py-1 rounded-md font-medium transition-colors ' + (histView === v ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>
+                      <ToolIcon name={v === 'list' ? 'list' : 'grid'} className="w-3.5 h-3.5" />
+                      {v === 'list' ? t('bip_view_list') : t('bip_view_thumb')}
+                    </button>
+                  ))}
+                </div>
+                <button onClick={resetHistory} title={t('vp_reset')} aria-label={t('vp_reset')} className="shrink-0 p-1.5 text-gray-400 hover:text-red-500 transition-colors">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
+                </button>
               </div>
             </div>
             {shownHistory.length === 0 ? (
