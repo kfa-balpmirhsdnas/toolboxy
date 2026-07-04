@@ -1710,6 +1710,13 @@
     ]
   },
   "toolNames": {
+    "column-extractor": "列抽出ツール",
+    "text-line-numberer": "行番号付けツール",
+    "text-padder": "テキストパディング",
+    "text-sort-by-length": "長さ順ソート",
+    "word-wrap": "テキスト折り返し",
+    "number-palindrome": "回文数チェッカー",
+    "number-sequence-generator": "数列ジェネレーター",
     "video-player": "動画プレーヤー",
     "image-comparison": "画像比較",
     "heic-viewer": "HEICビューア",

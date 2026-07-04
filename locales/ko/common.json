@@ -1737,6 +1737,13 @@
     ]
   },
   "toolNames": {
+    "column-extractor": "열 추출기",
+    "text-line-numberer": "줄 번호 매기기",
+    "text-padder": "텍스트 패딩",
+    "text-sort-by-length": "길이순 정렬",
+    "word-wrap": "자동 줄바꿈",
+    "number-palindrome": "회문수 확인",
+    "number-sequence-generator": "수열 생성기",
     "video-player": "비디오 플레이어",
     "image-comparison": "이미지 비교 뷰어",
     "heic-viewer": "HEIC 뷰어",
