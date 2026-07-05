@@ -80,7 +80,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       setCur(0)
       resumePosRef.current = positionsRef.current[f.name + '|' + f.size] || 0
       setCurFile(f)
-      if (!advance) setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 100))
+      // Playing a track that's already in the list keeps its position; only a brand-new file goes on top.
+      if (!advance) setHistory((h) => h.some((x) => x.name === f.name && x.size === f.size)
+        ? h.map((x) => (x.name === f.name && x.size === f.size ? { name: f.name, size: f.size, file: f } : x))
+        : [{ name: f.name, size: f.size, file: f }, ...h].slice(0, 100))
       const id = f.name + '|' + f.size
       const meta = { id, name: f.name, size: f.size, type: f.type }
       if (savedRef.current.has(id)) mhSave(meta, f); else mhPutMeta(meta)
@@ -91,6 +94,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
 
   // Playlist filtered by the open tab; next/prev cycle it (skipping metadata-only entries with no blob).
   const shown = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
+  const allCount = history.length
+  const savedCount = history.filter((h) => saved.has(h.name + '|' + h.size)).length
   function playNext() {
     const list = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
     if (!list.length) return
@@ -297,10 +302,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
             <div className="rounded-2xl border border-gray-200 overflow-hidden">
               <div className="flex items-center gap-1 bg-gray-50 px-2 border-b border-gray-200">
                 {(['all', 'saved'] as const).map((tab) => (
-                  <button key={tab} onClick={() => setHistTab(tab)} className={'px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (histTab === tab ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>{t(tab === 'all' ? 'mp_all' : 'mp_saved')}</button>
+                  <button key={tab} onClick={() => setHistTab(tab)} className={'inline-flex items-center gap-1 px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (histTab === tab ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>
+                    {t(tab === 'all' ? 'mp_all' : 'mp_saved')}<span className="text-xs font-normal opacity-60 tabular-nums">{tab === 'all' ? allCount : savedCount}</span>
+                  </button>
                 ))}
-                <span className="ml-auto pr-1 text-xs text-gray-400">{shown.length}</span>
-                <label htmlFor="mp-file" title={t('mp_pick')} className="p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" /></label>
+                <label htmlFor="mp-file" title={t('mp_pick')} className="ml-auto p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" /></label>
                 <label htmlFor="mp-folder" title={t('mp_folder')} className="p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="folder" className="w-4 h-4" /></label>
                 <button onClick={clearAll} title={t('mp_reset')} className="p-2 text-gray-400 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>
               </div>
