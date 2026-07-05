@@ -4220,6 +4220,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "mpl_reorder": "순서 조정",
     "mpl_vol": "소리",
     "mpl_tip": "파일 선택에서 파일이 안 보이면(카메라만 뜨면) \"폴더 열기\"를 이용하세요",
     "mp_selected": "선택됨",

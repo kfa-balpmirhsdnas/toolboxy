@@ -3789,6 +3789,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "mpl_reorder": "Reorder",
     "mpl_vol": "Volume",
     "mpl_tip": "If Pick files only shows the camera, use Open folder instead",
     "mp_selected": "Selected",
