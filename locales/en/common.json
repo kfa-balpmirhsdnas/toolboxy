@@ -3789,6 +3789,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "mpl_tip": "If Pick files only shows the camera, use Open folder instead",
     "mp_selected": "Selected",
     "mp_none_sel": "No file returned by the picker",
     "mp_play_err": "Playback / decode error",

@@ -246,6 +246,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               <label htmlFor="mp-folder" className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 cursor-pointer"><ToolIcon name="folder" className="w-4 h-4" />{t('mp_folder')}</label>
               <label htmlFor="mp-file" className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-200 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" />{t('mp_pick')}</label>
             </div>
+            <p className="text-xs text-gray-400 mt-3">{t('mpl_tip')}</p>
           </div>
         ) : (
           <>
