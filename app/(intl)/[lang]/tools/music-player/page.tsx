@@ -38,9 +38,12 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [saved, setSaved] = useState<Set<string>>(() => new Set())
   const [notice, setNotice] = useState<{ msg: string; err?: boolean } | null>(null) // on-screen diagnostic (surface real errors)
   const [panel, setPanel] = useState<'none' | 'vol' | 'speed' | 'timer'>('none') // which bottom gauge is open
-  const [reorder, setReorder] = useState(false) // playlist reorder mode (↑/↓ per row)
+  const [reorder, setReorder] = useState(false) // playlist reorder mode (drag handle per row)
+  const [dragKey, setDragKey] = useState<string | null>(null) // row currently being dragged
 
   const audioRef = useRef<HTMLAudioElement>(null)
+  const dragKeyRef = useRef<string | null>(null)
+  const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const dirRef = useRef<HTMLInputElement>(null)
   const positionsRef = useRef<Record<string, number>>({})
@@ -99,12 +102,30 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const allCount = history.length
   const savedCount = history.filter((h) => saved.has(h.name + '|' + h.size)).length
   const firstPlayable = history.find((h) => h.file) // for the play button when nothing is loaded yet
-  // Reorder the playlist (session order). Swaps a track with its neighbour in the 전체 list.
-  const moveItem = (key: string, dir: -1 | 1) => setHistory((h) => {
-    const i = h.findIndex((x) => x.name + '|' + x.size === key); const j = i + dir
-    if (i < 0 || j < 0 || j >= h.length) return h
-    const n = [...h];[n[i], n[j]] = [n[j], n[i]]; return n
-  })
+  // ---- drag-to-reorder (pointer events so it works on touch / mobile too) ----
+  const startDrag = (key: string) => (e: React.PointerEvent) => {
+    e.preventDefault()
+    dragKeyRef.current = key; setDragKey(key)
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch { /* ignore */ }
+  }
+  const onDragMove = (e: React.PointerEvent) => {
+    const from = dragKeyRef.current; if (!from) return
+    // Find the row under the pointer and move the dragged track to its slot (전체 order === history order).
+    const rows = Array.from(listRef.current?.children || []) as HTMLElement[]
+    let over: string | null = null
+    for (const row of rows) { const r = row.getBoundingClientRect(); if (e.clientY >= r.top && e.clientY <= r.bottom) { over = row.dataset.key || null; break } }
+    if (!over || over === from) return
+    setHistory((h) => {
+      const i = h.findIndex((x) => x.name + '|' + x.size === from)
+      const j = h.findIndex((x) => x.name + '|' + x.size === over)
+      if (i < 0 || j < 0 || i === j) return h
+      const n = [...h]; const [it] = n.splice(i, 1); n.splice(j, 0, it); return n
+    })
+  }
+  const endDrag = (e: React.PointerEvent) => {
+    dragKeyRef.current = null; setDragKey(null)
+    try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId) } catch { /* ignore */ }
+  }
   function playNext() {
     const list = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
     if (!list.length) return
@@ -384,7 +405,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               {shown.length === 0 ? (
                 <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
               ) : (
-                <div className="divide-y divide-gray-100">
+                <div ref={listRef} className="divide-y divide-gray-100">
                   {shown.map((h) => {
                     const key = h.name + '|' + h.size
                     const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
@@ -401,17 +422,20 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                       </>
                     )
                     return (
-                      <div key={key} className={'flex items-center gap-2 px-3 py-2.5 ' + (isCur ? 'bg-brand-50' : '')}>
+                      <div key={key} data-key={key} className={'flex items-center gap-2 px-3 py-2.5 transition-colors ' + (dragKey === key ? 'bg-brand-100 shadow-inner' : isCur ? 'bg-brand-50' : '')}>
+                        {/* Reorder mode: a drag handle on the LEFT — press & drag it to move the track. */}
+                        {reorder && (
+                          <button onPointerDown={startDrag(key)} onPointerMove={onDragMove} onPointerUp={endDrag} onPointerCancel={endDrag} aria-label={t('mpl_reorder')} className="p-1.5 -ml-1 shrink-0 text-gray-400 hover:text-brand-600 touch-none select-none cursor-grab active:cursor-grabbing">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><line x1="4" y1="8" x2="20" y2="8" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="16" x2="20" y2="16" /></svg>
+                          </button>
+                        )}
                         {/* Loaded track → play it; dimmed (metadata-only) track → open the folder to re-add it. */}
-                        {h.file
+                        {reorder
+                          ? <div className="flex-1 min-w-0 flex items-center gap-2 select-none">{rowInner}</div>
+                          : h.file
                           ? <button onClick={() => load(h.file!)} className="flex-1 min-w-0 flex items-center gap-2 text-left">{rowInner}</button>
                           : <label htmlFor="mp-folder" title={t('mp_reopen')} className="flex-1 min-w-0 flex items-center gap-2 text-left cursor-pointer">{rowInner}</label>}
-                        {reorder ? (
-                          <>
-                            <button onClick={() => moveItem(key, -1)} aria-label="move up" className="p-1.5 shrink-0 text-gray-400 hover:text-brand-600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m18 15-6-6-6 6" /></svg></button>
-                            <button onClick={() => moveItem(key, 1)} aria-label="move down" className="p-1.5 shrink-0 text-gray-400 hover:text-brand-600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m6 9 6 6 6-6" /></svg></button>
-                          </>
-                        ) : (
+                        {!reorder && (
                           <>
                             <button onClick={() => toggleSaved(key, h.file)} disabled={!h.file && !star} aria-label={t('mp_saved')} className={'p-1.5 shrink-0 disabled:opacity-30 ' + (star ? 'text-amber-500' : 'text-gray-300 hover:text-amber-500')}>
                               <svg viewBox="0 0 24 24" fill={star ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>
