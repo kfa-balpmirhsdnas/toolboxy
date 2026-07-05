@@ -103,6 +103,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "music-player": "A free browser music player for MP3 and other audio. Playlist, lock-screen and background playback, repeat and shuffle, resume, and a sleep timer. Files never leave your device.",
     "video-player": "Free in-browser video player that captures any moment as an image (PNG/JPG) and loops an A–B section on repeat. No upload, all local — perfect for language and instrument practice.",
     "image-comparison": "Free image comparison tool — slider, side-by-side, overlay (opacity) and synced zoom. Compare before/after edits, compression, or A/B designs. No upload, all in-browser.",
     "heic-viewer": "Free HEIC viewer — open and view iPhone HEIC/HEIF photos right in your PC browser (Windows can’t by default). Flip through multiple, zoom, rotate, read EXIF. No upload, all in-browser.",
@@ -3788,6 +3789,24 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "mp_drop": "Drop audio files here or pick them",
+    "mp_pick": "Pick files",
+    "mp_folder": "Open folder",
+    "mp_playlist": "Playlist",
+    "mp_all": "All",
+    "mp_saved": "Saved",
+    "mp_empty": "Your playlist is empty",
+    "mp_reopen": "Re-open",
+    "mp_speed": "Speed",
+    "mp_timer": "Sleep timer",
+    "mp_timer_off": "Off",
+    "mp_repeat_off": "No repeat",
+    "mp_repeat_all": "Repeat all",
+    "mp_repeat_one": "Repeat one",
+    "mp_shuffle": "Shuffle",
+    "mp_nothing": "Pick a track to play",
+    "mp_reset": "Clear list",
+    "mp_unsupported": "Only audio files can be played",
     "vp_related": "Related:",
     "vp_history": "Play history",
     "vp_tab_all": "All",
@@ -7281,6 +7300,7 @@
     ]
   },
   "toolNames": {
+    "music-player": "Music Player",
     "video-player": "Video Player",
     "image-comparison": "Image Comparison",
     "heic-viewer": "HEIC Viewer",
@@ -7444,6 +7464,7 @@
     }
   },
   "toolTitles": {
+    "music-player": "MP3 Music Player · Free Online",
     "video-player": "Video Player — Frame Capture & A-B Loop Repeat",
     "image-comparison": "Image Comparison Slider — Before / After, Compare Images",
     "heic-viewer": "HEIC Viewer — Open & View HEIC on Windows / PC",

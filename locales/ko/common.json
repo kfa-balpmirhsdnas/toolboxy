@@ -103,6 +103,7 @@
     "generic": "오류가 발생했습니다. 다시 시도해 주세요."
   },
   "toolDescriptions": {
+    "music-player": "브라우저에서 MP3·오디오를 바로 재생하는 무료 음악 플레이어. 재생목록, 잠금화면·백그라운드 재생, 반복·셔플, 이어듣기, 취침 타이머를 지원해요. 파일은 업로드되지 않고 기기에서만 재생됩니다.",
     "video-player": "동영상을 브라우저에서 바로 재생하고, 원하는 순간을 이미지(PNG·JPG)로 캡처하거나 A~B 구간을 반복 재생하는 무료 도구. 업로드 없이 로컬에서 처리 · 어학·악기 연습에 최적.",
     "image-comparison": "두 이미지를 슬라이더·나란히·겹치기·확대 동기화로 비교하는 무료 도구. 보정 전후, 압축 전후, 디자인 A/B 비교. 업로드 없이 브라우저에서 처리.",
     "heic-viewer": "아이폰 HEIC/HEIF 사진을 설치 없이 PC 브라우저에서 바로 열어보는 무료 HEIC 뷰어. 여러 장 넘겨보기·확대·회전·EXIF 확인, 업로드 없이 브라우저에서 처리.",
@@ -1737,6 +1738,7 @@
     ]
   },
   "toolNames": {
+    "music-player": "음악 플레이어",
     "image-to-base64": "이미지 → Base64 변환",
     "base64-image-viewer": "Base64 이미지 뷰어",
     "hash-generator": "해시 생성기",
@@ -4218,6 +4220,24 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "mp_drop": "음악 파일을 여기에 놓거나 선택하세요",
+    "mp_pick": "파일 선택",
+    "mp_folder": "폴더 열기",
+    "mp_playlist": "재생목록",
+    "mp_all": "전체",
+    "mp_saved": "보관",
+    "mp_empty": "재생목록이 비어 있어요",
+    "mp_reopen": "다시 열기",
+    "mp_speed": "속도",
+    "mp_timer": "취침 타이머",
+    "mp_timer_off": "끄기",
+    "mp_repeat_off": "반복 없음",
+    "mp_repeat_all": "전체 반복",
+    "mp_repeat_one": "한 곡 반복",
+    "mp_shuffle": "랜덤 재생",
+    "mp_nothing": "재생할 곡을 선택하세요",
+    "mp_reset": "목록 비우기",
+    "mp_unsupported": "오디오 파일만 재생할 수 있어요",
     "vp_related": "관련 도구:",
     "vp_history": "재생 기록",
     "vp_tab_all": "전체",
@@ -7661,6 +7681,7 @@
     }
   },
   "toolTitles": {
+    "music-player": "MP3 음악 플레이어 · 무료 온라인",
     "video-player": "비디오 플레이어 · 프레임 캡처 & 구간 반복(AB)",
     "image-comparison": "이미지 비교 · 사진 전후(Before/After) 비교 슬라이더",
     "heic-viewer": "HEIC 뷰어 · 아이폰 HEIC 사진 PC에서 열기",

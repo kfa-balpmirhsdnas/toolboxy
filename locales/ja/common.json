@@ -103,6 +103,7 @@
     "generic": "エラーが発生しました。もう一度お試しください。"
   },
   "toolDescriptions": {
+    "music-player": "ブラウザでMP3や音声をそのまま再生できる無料の音楽プレーヤー。プレイリスト、ロック画面・バックグラウンド再生、リピート・シャッフル、続きから再生、スリープタイマーに対応。ファイルは端末外に出ません。",
     "video-player": "動画をブラウザで再生し、好きな瞬間を画像(PNG・JPG)として保存したり、A〜B区間をリピート再生できる無料ツール。アップロードなしでローカル処理。語学・楽器の練習に最適。",
     "image-comparison": "2枚の画像をスライダー・並べて・重ね・拡大同期で比較する無料ツール。加工前後・圧縮前後・デザインA/Bを比較。アップロードなしでブラウザ処理。",
     "heic-viewer": "iPhoneのHEIC/HEIF写真をインストール不要でPCブラウザからそのまま開く無料HEICビューア。複数めくり・拡大・回転・EXIF確認、アップロードなしでブラウザ処理。",
@@ -1710,6 +1711,7 @@
     ]
   },
   "toolNames": {
+    "music-player": "ミュージックプレーヤー",
     "image-to-base64": "画像→Base64変換",
     "base64-image-viewer": "Base64画像ビューア",
     "hash-generator": "ハッシュ生成ツール",
@@ -4191,6 +4193,24 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "mp_drop": "ここに音声ファイルをドロップまたは選択",
+    "mp_pick": "ファイルを選択",
+    "mp_folder": "フォルダを開く",
+    "mp_playlist": "プレイリスト",
+    "mp_all": "すべて",
+    "mp_saved": "保存",
+    "mp_empty": "プレイリストは空です",
+    "mp_reopen": "再度開く",
+    "mp_speed": "速度",
+    "mp_timer": "スリープタイマー",
+    "mp_timer_off": "オフ",
+    "mp_repeat_off": "リピートなし",
+    "mp_repeat_all": "全曲リピート",
+    "mp_repeat_one": "1曲リピート",
+    "mp_shuffle": "シャッフル",
+    "mp_nothing": "再生する曲を選択",
+    "mp_reset": "リストを消去",
+    "mp_unsupported": "音声ファイルのみ再生できます",
     "vp_related": "関連ツール：",
     "vp_history": "再生履歴",
     "vp_tab_all": "すべて",
@@ -7634,6 +7654,7 @@
     }
   },
   "toolTitles": {
+    "music-player": "MP3 音楽プレーヤー · 無料オンライン",
     "video-player": "動画プレーヤー · フレーム抽出 & AB区間リピート",
     "image-comparison": "画像比較 · ビフォーアフター比較スライダー",
     "heic-viewer": "HEIC ビューア · HEICを開く・表示（Windows/PC）",
