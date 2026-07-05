@@ -192,10 +192,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   return (
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4 max-w-lg mx-auto">
-        {/* Extension-based accept (no audio/* and no wildcard): Android maps this to the Documents/Files
-            browser, avoiding both the media-store audio picker (un-indexed files hidden) and the
-            camera/gallery capture chooser that audio/* or a wildcard triggers on Samsung Internet. */}
-        <input ref={inputRef} id="mp-file" type="file" accept=".mp3,.m4a,.aac,.flac,.wav,.ogg,.oga,.opus,.weba,.wma,.mid,.amr,.aiff,.aif,.3gp" multiple className="hidden" onChange={(e) => {
+        {/* accept="audio/*" is the clean audio filter on desktop / Chrome. On Samsung Internet ANY
+            audio-flavoured accept opens a capture chooser (camera/recorder) rather than a file browser,
+            so those users use 폴더 열기 (webkitdirectory), which reliably opens the real file browser. */}
+        <input ref={inputRef} id="mp-file" type="file" accept="audio/*" multiple className="hidden" onChange={(e) => {
           const fl = Array.from(e.target.files || [])
           setNotice(fl.length ? { msg: `${t('mp_selected')} ${fl.length} · ${fl[0].name} · ${fl[0].type || 'no-type'} · ${fmtSize(fl[0].size)}` } : { msg: t('mp_none_sel'), err: true })
           addFiles(e.target.files, true); e.target.value = ''
@@ -238,12 +238,13 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
           /* ---- empty: drop zone ---- */
           <div className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-14 h-14 mx-auto text-gray-400"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
-            <p className="text-sm font-medium text-gray-600 mt-3">{t('mp_drop')}</p>
+            <p className="text-sm font-medium text-gray-600 mt-3">{t('mpl_drop')}</p>
             <div className="flex justify-center gap-2 mt-4">
-              {/* Native <label htmlFor> — a tap triggers the file input directly, so it works on every mobile
-                  browser (some ignore a programmatic .click() on a hidden input). */}
-              <label htmlFor="mp-file" className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" />{t('mp_pick')}</label>
-              <label htmlFor="mp-folder" className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-200 cursor-pointer"><ToolIcon name="folder" className="w-4 h-4" />{t('mp_folder')}</label>
+              {/* Native <label htmlFor> — a tap triggers the input directly (works even where a programmatic
+                  .click() is ignored). 폴더 열기 is primary: it opens the real file browser on every browser
+                  (some, e.g. Samsung Internet, force a camera/recorder chooser for an audio file input). */}
+              <label htmlFor="mp-folder" className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 cursor-pointer"><ToolIcon name="folder" className="w-4 h-4" />{t('mp_folder')}</label>
+              <label htmlFor="mp-file" className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-200 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" />{t('mp_pick')}</label>
             </div>
           </div>
         ) : (

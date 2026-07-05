@@ -3793,7 +3793,7 @@
     "mp_none_sel": "No file returned by the picker",
     "mp_play_err": "Playback / decode error",
     "mp_load_err": "Load error",
-    "mp_drop": "Drop audio files here or pick them",
+    "mpl_drop": "Open a music folder, or drop files here",
     "mp_pick": "Pick files",
     "mp_folder": "Open folder",
     "mp_playlist": "Playlist",
