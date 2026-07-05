@@ -37,6 +37,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [histTab, setHistTab] = useState<'all' | 'saved'>('all')
   const [saved, setSaved] = useState<Set<string>>(() => new Set())
   const [notice, setNotice] = useState<{ msg: string; err?: boolean } | null>(null) // on-screen diagnostic (surface real errors)
+  const [panel, setPanel] = useState<'none' | 'vol' | 'speed' | 'timer'>('none') // which bottom gauge is open
 
   const audioRef = useRef<HTMLAudioElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -120,7 +121,6 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const seekTo = (time: number) => { const a = media(); if (a) a.currentTime = time }
   const seekBy = (d: number) => { const a = media(); if (a) a.currentTime = Math.max(0, Math.min(a.duration || a.currentTime, a.currentTime + d)) }
   const setVol = (v: number) => { const a = media(); if (a) a.volume = v; setVolume(v) }
-  const cycleSpeed = () => { const i = SPEEDS.indexOf(speed); setSpeed(SPEEDS[(i + 1) % SPEEDS.length]) }
 
   // apply speed / volume / loop to the element
   useEffect(() => { const a = audioRef.current; if (a) a.playbackRate = speed }, [speed, url])
@@ -192,8 +192,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url, base])
 
-  const REPEATS: ('all' | 'one' | 'off')[] = ['all', 'one', 'off']
-  const cycleRepeat = () => setRepeatMode((m) => (m === 'shuffle' ? 'all' : REPEATS[(REPEATS.indexOf(m as 'all') + 1) % REPEATS.length]))
+  // Repeat button now cycles all(A) → one(1) → shuffle → off, so shuffle lives here (its old slot is the timer).
+  const cycleRepeat = () => setRepeatMode((m) => (m === 'all' ? 'one' : m === 'one' ? 'shuffle' : m === 'shuffle' ? 'off' : 'all'))
 
   return (
     <ToolLayout tool={tool} lang={lang}>
@@ -268,8 +268,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               <div className="flex justify-between text-xs font-mono text-white/80"><span>{fmt(cur)}</span><span>{fmt(dur)}</span></div>
               {/* transport */}
               <div className="flex items-center justify-center gap-4 mt-3 text-white">
-                <button onClick={() => setRepeatMode((m) => (m === 'shuffle' ? 'all' : 'shuffle'))} aria-label={t('mp_shuffle')} title={t('mp_shuffle')} className={'w-10 h-10 inline-flex items-center justify-center rounded-full active:scale-95 transition ' + (repeatMode === 'shuffle' ? 'bg-white/25' : 'hover:bg-white/15')}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></svg>
+                {/* Sleep timer (in the old shuffle slot; shuffle moved into the repeat cycle) */}
+                <button onClick={() => setPanel((p) => (p === 'timer' ? 'none' : 'timer'))} aria-label={t('mp_timer')} title={t('mp_timer')} className={'w-10 h-10 inline-flex items-center justify-center rounded-full active:scale-95 transition ' + (sleepMin || panel === 'timer' ? 'bg-white/25' : 'hover:bg-white/15')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /></svg>
                 </button>
                 <button onClick={playPrev} aria-label="previous" className="w-12 h-12 inline-flex items-center justify-center rounded-full hover:bg-white/15 active:scale-95 transition"><svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M19 20 9 12l10-8z" /><rect x="4" y="4" width="2.4" height="16" rx="1" /></svg></button>
                 {url ? (
@@ -283,8 +284,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   </label>
                 )}
                 <button onClick={playNext} aria-label="next" className="w-12 h-12 inline-flex items-center justify-center rounded-full hover:bg-white/15 active:scale-95 transition"><svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="m5 4 10 8-10 8z" /><rect x="17.6" y="4" width="2.4" height="16" rx="1" /></svg></button>
-                <button onClick={cycleRepeat} aria-label={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} title={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} className={'w-10 h-10 inline-flex items-center justify-center rounded-full active:scale-95 transition ' + (repeatMode === 'one' || repeatMode === 'all' ? 'bg-white/25' : 'hover:bg-white/15')}>
-                  <span className="relative inline-flex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>{(repeatMode === 'one' || repeatMode === 'all') && <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold">{repeatMode === 'all' ? 'A' : '1'}</span>}</span>
+                <button onClick={cycleRepeat} aria-label={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'shuffle' ? 'mp_shuffle' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} title={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'shuffle' ? 'mp_shuffle' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} className={'w-10 h-10 inline-flex items-center justify-center rounded-full active:scale-95 transition ' + (repeatMode !== 'off' ? 'bg-white/25' : 'hover:bg-white/15')}>
+                  {repeatMode === 'shuffle'
+                    ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></svg>
+                    : <span className="relative inline-flex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>{(repeatMode === 'one' || repeatMode === 'all') && <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold">{repeatMode === 'all' ? 'A' : '1'}</span>}</span>}
                 </button>
               </div>
               {/* seek row — −30/−10/−5 · +5/+10/+30 (same as the video player) */}
@@ -303,16 +306,40 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   ))}
                 </div>
               )}
-              {/* volume + speed + timer */}
-              <div className="flex items-center gap-3 mt-4">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0 text-white/80"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /></svg>
-                <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume" className="flex-1 h-1.5 accent-white cursor-pointer" />
-                <button onClick={cycleSpeed} title={t('mp_speed')} className="text-xs font-bold tabular-nums bg-white/15 hover:bg-white/25 rounded-lg px-2 py-1">{speed}×</button>
-                <select value={sleepMin} onChange={(e) => setSleepMin(+e.target.value)} aria-label={t('mp_timer')} className="text-xs font-semibold bg-white/15 hover:bg-white/25 rounded-lg px-1.5 py-1 outline-none [&>option]:text-gray-800">
-                  <option value={0}>⏱ {sleepMin ? `${Math.floor(sleepLeft / 60)}:${String(sleepLeft % 60).padStart(2, '0')}` : t('mp_timer_off')}</option>
-                  {TIMER_MENU.map((m) => <option key={m} value={m}>{t('ct_min', { n: m })}</option>)}
-                </select>
+              {/* 소리 / 속도 toggle buttons — each reveals its gauge below */}
+              <div className="flex items-center justify-center gap-2 mt-4 text-white">
+                <button onClick={() => setPanel((p) => (p === 'vol' ? 'none' : 'vol'))} className={'inline-flex items-center gap-1.5 px-3 h-9 rounded-full text-xs font-semibold active:scale-95 transition ' + (panel === 'vol' ? 'bg-white/30' : 'bg-white/15 hover:bg-white/25')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">{volume === 0 ? <><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></> : <><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></>}</svg>{t('mpl_vol')}
+                </button>
+                <button onClick={() => setPanel((p) => (p === 'speed' ? 'none' : 'speed'))} className={'inline-flex items-center gap-1.5 px-3 h-9 rounded-full text-xs font-semibold tabular-nums active:scale-95 transition ' + (panel === 'speed' ? 'bg-white/30' : 'bg-white/15 hover:bg-white/25')}>
+                  {t('mp_speed')} {speed}×
+                </button>
               </div>
+              {/* gauges */}
+              {panel === 'vol' && (
+                <div className="flex items-center gap-3 mt-3 text-white">
+                  <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume" className="flex-1 h-1.5 accent-white cursor-pointer" />
+                  <span className="text-xs font-mono tabular-nums text-white/80 w-8 text-right">{Math.round(volume * 100)}</span>
+                </div>
+              )}
+              {panel === 'speed' && (
+                <div className="mt-3 text-white space-y-2">
+                  <div className="flex items-center gap-3">
+                    <input type="range" min={0.5} max={2} step={0.05} value={speed} onChange={(e) => setSpeed(+e.target.value)} aria-label={t('mp_speed')} className="flex-1 h-1.5 accent-white cursor-pointer" />
+                    <span className="text-xs font-mono tabular-nums text-white/80 w-10 text-right">{speed}×</span>
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-1">
+                    {SPEEDS.map((s) => <button key={s} onClick={() => setSpeed(s)} className={'px-2 h-6 rounded text-[11px] tabular-nums transition ' + (speed === s ? 'bg-white text-brand-700 font-bold' : 'bg-white/15 hover:bg-white/25')}>{s}×</button>)}
+                  </div>
+                </div>
+              )}
+              {panel === 'timer' && (
+                <div className="flex flex-wrap items-center justify-center gap-1 mt-3 text-white">
+                  {TIMER_MENU.map((m) => <button key={m} onClick={() => setSleepMin(m)} className={'px-2.5 h-7 rounded-full text-xs font-semibold transition ' + (sleepMin === m ? 'bg-white text-brand-700' : 'bg-white/15 hover:bg-white/25')}>{t('ct_min', { n: m })}</button>)}
+                  <button onClick={() => setSleepMin(0)} className={'px-2.5 h-7 rounded-full text-xs font-semibold transition ' + (sleepMin === 0 ? 'bg-white/30' : 'bg-white/15 hover:bg-white/25')}>{t('mp_timer_off')}</button>
+                  {sleepMin > 0 && <span className="text-xs font-mono tabular-nums text-white/80 ml-1">{Math.floor(sleepLeft / 60)}:{String(sleepLeft % 60).padStart(2, '0')}</span>}
+                </div>
+              )}
             </div>
 
             {/* ---- Playlist (standard list style) ---- */}

@@ -4193,6 +4193,7 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "mpl_vol": "音量",
     "mpl_tip": "ファイル選択でカメラしか出ない場合は「フォルダを開く」を使ってください",
     "mp_selected": "選択",
     "mp_none_sel": "ファイルが返されませんでした",
