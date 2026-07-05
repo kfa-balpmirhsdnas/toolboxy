@@ -260,6 +260,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 ))}
                 <span className="ml-auto pr-1 text-xs text-gray-400">{shown.length}</span>
                 <button onClick={() => inputRef.current?.click()} title={t('mp_pick')} className="p-2 text-gray-400 hover:text-brand-600"><ToolIcon name="plus" className="w-4 h-4" /></button>
+                <button onClick={() => dirRef.current?.click()} title={t('mp_folder')} className="p-2 text-gray-400 hover:text-brand-600"><ToolIcon name="folder" className="w-4 h-4" /></button>
                 <button onClick={clearAll} title={t('mp_reset')} className="p-2 text-gray-400 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>
               </div>
               {shown.length === 0 ? (
