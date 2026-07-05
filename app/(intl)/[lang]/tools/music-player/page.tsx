@@ -192,7 +192,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   return (
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4 max-w-lg mx-auto">
-        <input ref={inputRef} id="mp-file" type="file" multiple className="hidden" onChange={(e) => {
+        {/* accept="star-slash-star" opens Android's FILE browser, not the media-store audio picker
+            (files may be un-indexed) nor the camera/gallery capture chooser a bare input shows. */}
+        <input ref={inputRef} id="mp-file" type="file" accept="*/*" multiple className="hidden" onChange={(e) => {
           const fl = Array.from(e.target.files || [])
           setNotice(fl.length ? { msg: `${t('mp_selected')} ${fl.length} · ${fl[0].name} · ${fl[0].type || 'no-type'} · ${fmtSize(fl[0].size)}` } : { msg: t('mp_none_sel'), err: true })
           addFiles(e.target.files, true); e.target.value = ''
