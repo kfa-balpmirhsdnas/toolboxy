@@ -4226,7 +4226,7 @@
     "mp_play_err": "재생/디코드 오류",
     "mp_load_err": "불러오기 오류",
     "mpl_drop": "음악 폴더를 열거나 파일을 놓아 불러오세요",
-    "mp_pick": "파일 선택",
+    "mp_pick": "파일 열기",
     "mp_folder": "폴더 열기",
     "mp_playlist": "재생목록",
     "mp_all": "전체",

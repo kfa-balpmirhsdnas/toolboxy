@@ -266,9 +266,16 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></svg>
                 </button>
                 <button onClick={playPrev} aria-label="previous" className="w-12 h-12 inline-flex items-center justify-center rounded-full hover:bg-white/15 active:scale-95 transition"><svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M19 20 9 12l10-8z" /><rect x="4" y="4" width="2.4" height="16" rx="1" /></svg></button>
-                <button onClick={togglePlay} aria-label="play" className="w-16 h-16 inline-flex items-center justify-center rounded-full bg-white text-brand-700 hover:bg-white/90 active:scale-95 transition shadow">
-                  {playing ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg> : <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8"><path d="M8 5v14l11-7z" /></svg>}
-                </button>
+                {url ? (
+                  <button onClick={togglePlay} aria-label="play" className="w-16 h-16 inline-flex items-center justify-center rounded-full bg-white text-brand-700 hover:bg-white/90 active:scale-95 transition shadow">
+                    {playing ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg> : <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8"><path d="M8 5v14l11-7z" /></svg>}
+                  </button>
+                ) : (
+                  /* No track loaded → the play button opens the folder picker so users can add music. */
+                  <label htmlFor="mp-folder" aria-label={t('mp_folder')} title={t('mp_folder')} className="w-16 h-16 inline-flex items-center justify-center rounded-full bg-white text-brand-700 hover:bg-white/90 active:scale-95 transition shadow cursor-pointer">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8"><path d="M8 5v14l11-7z" /></svg>
+                  </label>
+                )}
                 <button onClick={playNext} aria-label="next" className="w-12 h-12 inline-flex items-center justify-center rounded-full hover:bg-white/15 active:scale-95 transition"><svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="m5 4 10 8-10 8z" /><rect x="17.6" y="4" width="2.4" height="16" rx="1" /></svg></button>
                 <button onClick={cycleRepeat} aria-label={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} title={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} className={'w-10 h-10 inline-flex items-center justify-center rounded-full active:scale-95 transition ' + (repeatMode === 'one' || repeatMode === 'all' ? 'bg-white/25' : 'hover:bg-white/15')}>
                   <span className="relative inline-flex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>{repeatMode === 'one' && <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold">1</span>}</span>
@@ -305,17 +312,23 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     const key = h.name + '|' + h.size
                     const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                     const star = saved.has(key)
+                    const rowInner = (
+                      <>
+                        <span className={'w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg ' + (isCur && playing ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-400')}>
+                          {isCur && playing ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg> : <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M8 5v14l11-7z" /></svg>}
+                        </span>
+                        <span className="min-w-0">
+                          <span className={'block truncate text-sm ' + (isCur ? 'font-semibold text-brand-700' : 'text-gray-800') + (h.file ? '' : ' opacity-50')}>{h.name.replace(/\.[^.]+$/, '')}</span>
+                          <span className="block text-[11px] text-gray-400">{h.file ? fmtSize(h.size) : t('mp_reopen')}</span>
+                        </span>
+                      </>
+                    )
                     return (
                       <div key={key} className={'flex items-center gap-2 px-3 py-2.5 ' + (isCur ? 'bg-brand-50' : '')}>
-                        <button onClick={() => (h.file ? load(h.file) : inputRef.current?.click())} className="flex-1 min-w-0 flex items-center gap-2 text-left" title={h.file ? '' : t('mp_reopen')}>
-                          <span className={'w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg ' + (isCur && playing ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-400')}>
-                            {isCur && playing ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg> : <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M8 5v14l11-7z" /></svg>}
-                          </span>
-                          <span className="min-w-0">
-                            <span className={'block truncate text-sm ' + (isCur ? 'font-semibold text-brand-700' : 'text-gray-800') + (h.file ? '' : ' opacity-50')}>{h.name.replace(/\.[^.]+$/, '')}</span>
-                            <span className="block text-[11px] text-gray-400">{h.file ? fmtSize(h.size) : t('mp_reopen')}</span>
-                          </span>
-                        </button>
+                        {/* Loaded track → play it; dimmed (metadata-only) track → open the folder to re-add it. */}
+                        {h.file
+                          ? <button onClick={() => load(h.file!)} className="flex-1 min-w-0 flex items-center gap-2 text-left">{rowInner}</button>
+                          : <label htmlFor="mp-folder" title={t('mp_reopen')} className="flex-1 min-w-0 flex items-center gap-2 text-left cursor-pointer">{rowInner}</label>}
                         <button onClick={() => toggleSaved(key, h.file)} disabled={!h.file && !star} aria-label={t('mp_saved')} className={'p-1.5 shrink-0 disabled:opacity-30 ' + (star ? 'text-amber-500' : 'text-gray-300 hover:text-amber-500')}>
                           <svg viewBox="0 0 24 24" fill={star ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>
                         </button>

@@ -3795,7 +3795,7 @@
     "mp_play_err": "Playback / decode error",
     "mp_load_err": "Load error",
     "mpl_drop": "Open a music folder, or drop files here",
-    "mp_pick": "Pick files",
+    "mp_pick": "Open files",
     "mp_folder": "Open folder",
     "mp_playlist": "Playlist",
     "mp_all": "All",
