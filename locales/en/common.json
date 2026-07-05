@@ -3789,6 +3789,10 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "mp_selected": "Selected",
+    "mp_none_sel": "No file returned by the picker",
+    "mp_play_err": "Playback / decode error",
+    "mp_load_err": "Load error",
     "mp_drop": "Drop audio files here or pick them",
     "mp_pick": "Pick files",
     "mp_folder": "Open folder",

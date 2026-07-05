@@ -32,6 +32,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [curFile, setCurFile] = useState<File | null>(null)
   const [histTab, setHistTab] = useState<'all' | 'saved'>('all')
   const [saved, setSaved] = useState<Set<string>>(() => new Set())
+  const [notice, setNotice] = useState<{ msg: string; err?: boolean } | null>(null) // on-screen diagnostic (surface real errors)
 
   const audioRef = useRef<HTMLAudioElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -68,17 +69,19 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
 
   // ---- load a track ----
   const load = useCallback((f: File, advance = false) => {
-    if (/^(image|video|text)\//.test(f.type)) return // clearly not an audio file; otherwise trust it
-    setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
-    setBase(f.name.replace(/\.[^.]+$/, '') || f.name)
-    setCur(0)
-    resumePosRef.current = positionsRef.current[f.name + '|' + f.size] || 0
-    setCurFile(f)
-    if (!advance) setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 100))
-    const id = f.name + '|' + f.size
-    const meta = { id, name: f.name, size: f.size, type: f.type }
-    if (savedRef.current.has(id)) mhSave(meta, f); else mhPutMeta(meta)
-    trackToolUsed('music-player')
+    try {
+      if (/^(image|video|text)\//.test(f.type)) { setNotice({ msg: `${f.name} — ${f.type}`, err: true }); return } // clearly not audio
+      setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
+      setBase(f.name.replace(/\.[^.]+$/, '') || f.name)
+      setCur(0)
+      resumePosRef.current = positionsRef.current[f.name + '|' + f.size] || 0
+      setCurFile(f)
+      if (!advance) setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 100))
+      const id = f.name + '|' + f.size
+      const meta = { id, name: f.name, size: f.size, type: f.type }
+      if (savedRef.current.has(id)) mhSave(meta, f); else mhPutMeta(meta)
+      trackToolUsed('music-player')
+    } catch (e) { setNotice({ msg: `load: ${(e as Error)?.message || e}`, err: true }) }
   }, [])
   useEffect(() => () => { if (url) URL.revokeObjectURL(url) }, [url])
 
@@ -185,9 +188,17 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   return (
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4 max-w-lg mx-auto">
-        <input ref={inputRef} id="mp-file" type="file" accept="audio/*" multiple className="hidden" onChange={(e) => { addFiles(e.target.files, true); e.target.value = '' }} />
+        <input ref={inputRef} id="mp-file" type="file" accept="audio/*" multiple className="hidden" onChange={(e) => {
+          const fl = Array.from(e.target.files || [])
+          setNotice(fl.length ? { msg: `${t('mp_selected')} ${fl.length} · ${fl[0].name} · ${fl[0].type || 'no-type'} · ${fmtSize(fl[0].size)}` } : { msg: t('mp_none_sel'), err: true })
+          addFiles(e.target.files, true); e.target.value = ''
+        }} />
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        <input ref={dirRef} id="mp-folder" type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
+        <input ref={dirRef} id="mp-folder" type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onChange={(e) => {
+          const fl = Array.from(e.target.files || []); const audio = fl.filter(isAudio)
+          setNotice(fl.length ? { msg: `${t('mp_folder')}: ${fl.length} / audio ${audio.length}`, err: !audio.length } : { msg: t('mp_none_sel'), err: true })
+          addFiles(e.target.files); e.target.value = ''
+        }} />
         {/* Hidden audio engine (keeps playing screen-off; MediaSession drives the lock screen). */}
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <audio ref={audioRef} src={url || undefined} preload="metadata"
@@ -200,12 +211,21 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
           onPlay={() => { setPlaying(true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'playing' } catch { /* ignore */ } }}
           onPause={(e) => { setPlaying(false); savePos(e.currentTarget.currentTime, true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
           onEnded={() => { clearPos(); if (repeatMode === 'all' || repeatMode === 'shuffle') playNext() }}
+          onError={() => { const err = audioRef.current?.error; setNotice({ msg: `${t('mp_play_err')} (code ${err?.code ?? '?'})${err?.message ? ' ' + err.message : ''}`, err: true }) }}
           onTimeUpdate={(e) => {
             const a = e.currentTarget; setCur(a.currentTime); savePos(a.currentTime)
             /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
             const ms = (navigator as any).mediaSession
             if (ms?.setPositionState && a.duration && isFinite(a.duration)) { try { ms.setPositionState({ duration: a.duration, position: Math.min(a.currentTime, a.duration), playbackRate: a.playbackRate || 1 }) } catch { /* ignore */ } }
           }} />
+
+        {/* On-screen diagnostic — surfaces the real reason a pick/load failed instead of failing silently. */}
+        {notice && (
+          <div className={'flex items-start gap-2 rounded-xl px-3 py-2 text-xs break-all ' + (notice.err ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-gray-100 text-gray-600')}>
+            <span className="flex-1 font-mono leading-relaxed">{notice.msg}</span>
+            <button onClick={() => setNotice(null)} aria-label="dismiss" className="shrink-0 text-current opacity-60 hover:opacity-100"><ToolIcon name="x" className="w-3.5 h-3.5" /></button>
+          </div>
+        )}
 
         {history.length === 0 && !curFile ? (
           /* ---- empty: drop zone ---- */

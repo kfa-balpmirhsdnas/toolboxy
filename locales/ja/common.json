@@ -4193,6 +4193,10 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "mp_selected": "選択",
+    "mp_none_sel": "ファイルが返されませんでした",
+    "mp_play_err": "再生／デコードエラー",
+    "mp_load_err": "読み込みエラー",
     "mp_drop": "ここに音声ファイルをドロップまたは選択",
     "mp_pick": "ファイルを選択",
     "mp_folder": "フォルダを開く",

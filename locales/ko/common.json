@@ -4220,6 +4220,10 @@
     "email_ph": "you@example.com"
   },
   "toolui": {
+    "mp_selected": "선택됨",
+    "mp_none_sel": "선택된 파일이 없습니다 (브라우저가 파일을 반환하지 않음)",
+    "mp_play_err": "재생/디코드 오류",
+    "mp_load_err": "불러오기 오류",
     "mp_drop": "음악 파일을 여기에 놓거나 선택하세요",
     "mp_pick": "파일 선택",
     "mp_folder": "폴더 열기",
