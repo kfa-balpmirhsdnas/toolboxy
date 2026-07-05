@@ -295,8 +295,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
             {/* ---- Now-playing card ---- */}
             <div className="rounded-2xl bg-gradient-to-b from-brand-500 to-brand-700 text-white shadow-sm overflow-hidden">
               <div className="p-5">
-              <div className="aspect-square max-h-56 mx-auto flex items-center justify-center rounded-2xl bg-white/10">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="w-20 h-20 opacity-90"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+              {/* Album art shrinks while a bottom gauge is open so the gauge fits without growing the card. */}
+              <div className={'aspect-square mx-auto flex items-center justify-center rounded-2xl bg-white/10 transition-[max-height] duration-200 ' + (panel === 'none' ? 'max-h-56' : 'max-h-40')}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="w-16 h-16 opacity-90"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
               </div>
               <p className="mt-4 text-center font-semibold truncate">{base || t('mp_nothing')}</p>
               {/* seek */}
@@ -345,29 +346,33 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 </div>
               )}
               </div>{/* end padded content */}
-              {/* gauge — pops up ABOVE the bottom button bar when a button is tapped */}
-              {panel === 'vol' && (
-                <div className="flex items-center gap-3 px-5 pb-3 text-white">
-                  <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume" className="flex-1 h-1.5 accent-white cursor-pointer" />
-                  <span className="text-xs font-mono tabular-nums text-white/80 w-8 text-right">{Math.round(volume * 100)}</span>
-                </div>
-              )}
-              {panel === 'speed' && (
-                <div className="px-5 pb-3 text-white space-y-2">
-                  <div className="flex items-center gap-3">
-                    <input type="range" min={0.5} max={2} step={0.05} value={speed} onChange={(e) => setSpeed(+e.target.value)} aria-label={t('mp_speed')} className="flex-1 h-1.5 accent-white cursor-pointer" />
-                    <span className="text-xs font-mono tabular-nums text-white/80 w-10 text-right">{speed}×</span>
-                  </div>
-                  <div className="flex flex-wrap justify-center gap-1">
-                    {SPEEDS.map((s) => <button key={s} onClick={() => setSpeed(s)} className={'px-2 h-6 rounded text-[11px] tabular-nums transition ' + (speed === s ? 'bg-white text-brand-700 font-bold' : 'bg-white/15 hover:bg-white/25')}>{s}×</button>)}
-                  </div>
-                </div>
-              )}
-              {panel === 'timer' && (
-                <div className="flex flex-wrap items-center justify-center gap-1 px-5 pb-3 text-white">
-                  {TIMER_MENU.map((m) => <button key={m} onClick={() => setSleepMin(m)} className={'px-2.5 h-7 rounded-full text-xs font-semibold transition ' + (sleepMin === m ? 'bg-white text-brand-700' : 'bg-white/15 hover:bg-white/25')}>{t('ct_min', { n: m })}</button>)}
-                  <button onClick={() => setSleepMin(0)} className={'px-2.5 h-7 rounded-full text-xs font-semibold transition ' + (sleepMin === 0 ? 'bg-white/30' : 'bg-white/15 hover:bg-white/25')}>{t('mp_timer_off')}</button>
-                  {sleepMin > 0 && <span className="text-xs font-mono tabular-nums text-white/80 ml-1">{Math.floor(sleepLeft / 60)}:{String(sleepLeft % 60).padStart(2, '0')}</span>}
+              {/* gauge slot — fixed height (= the album-art shrink) so opening a gauge never resizes the card */}
+              {panel !== 'none' && (
+                <div className="h-16 flex flex-col justify-center overflow-hidden pb-1">
+                  {panel === 'vol' && (
+                    <div className="flex items-center gap-3 px-5 text-white">
+                      <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume" className="flex-1 h-1.5 accent-white cursor-pointer" />
+                      <span className="text-xs font-mono tabular-nums text-white/80 w-8 text-right">{Math.round(volume * 100)}</span>
+                    </div>
+                  )}
+                  {panel === 'speed' && (
+                    <div className="px-5 text-white space-y-2">
+                      <div className="flex items-center gap-3">
+                        <input type="range" min={0.5} max={2} step={0.05} value={speed} onChange={(e) => setSpeed(+e.target.value)} aria-label={t('mp_speed')} className="flex-1 h-1.5 accent-white cursor-pointer" />
+                        <span className="text-xs font-mono tabular-nums text-white/80 w-10 text-right">{speed}×</span>
+                      </div>
+                      <div className="flex flex-wrap justify-center gap-1">
+                        {SPEEDS.map((s) => <button key={s} onClick={() => setSpeed(s)} className={'px-2 h-6 rounded text-[11px] tabular-nums transition ' + (speed === s ? 'bg-white text-brand-700 font-bold' : 'bg-white/15 hover:bg-white/25')}>{s}×</button>)}
+                      </div>
+                    </div>
+                  )}
+                  {panel === 'timer' && (
+                    <div className="flex flex-wrap items-center justify-center gap-1 px-5 text-white">
+                      {TIMER_MENU.map((m) => <button key={m} onClick={() => setSleepMin(m)} className={'px-2.5 h-7 rounded-full text-xs font-semibold transition ' + (sleepMin === m ? 'bg-white text-brand-700' : 'bg-white/15 hover:bg-white/25')}>{t('ct_min', { n: m })}</button>)}
+                      <button onClick={() => setSleepMin(0)} className={'px-2.5 h-7 rounded-full text-xs font-semibold transition ' + (sleepMin === 0 ? 'bg-white/30' : 'bg-white/15 hover:bg-white/25')}>{t('mp_timer_off')}</button>
+                      {sleepMin > 0 && <span className="text-xs font-mono tabular-nums text-white/80 ml-1">{Math.floor(sleepLeft / 60)}:{String(sleepLeft % 60).padStart(2, '0')}</span>}
+                    </div>
+                  )}
                 </div>
               )}
               {/* bottom bar — 소리 / 속도 / 타이머 icon buttons, flat-bottomed and flush to the card edge */}
@@ -375,9 +380,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 <button onClick={() => setPanel((p) => (p === 'vol' ? 'none' : 'vol'))} aria-label={t('mpl_vol')} title={t('mpl_vol')} className={'flex-1 inline-flex items-center justify-center py-3.5 active:opacity-80 transition ' + (panel === 'vol' ? 'bg-white/20' : 'hover:bg-white/10')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">{volume === 0 ? <><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></> : <><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></>}</svg>
                 </button>
-                <button onClick={() => setPanel((p) => (p === 'speed' ? 'none' : 'speed'))} aria-label={t('mp_speed')} title={`${t('mp_speed')} ${speed}×`} className={'flex-1 relative inline-flex items-center justify-center py-3.5 border-l border-white/15 active:opacity-80 transition ' + (panel === 'speed' ? 'bg-white/20' : 'hover:bg-white/10')}>
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M13 2 4.5 12.5H11l-1 9L19.5 11H13z" /></svg>
-                  {speed !== 1 && <span className="absolute top-1 right-1/2 translate-x-[26px] text-[9px] font-bold tabular-nums leading-none">{speed}×</span>}
+                <button onClick={() => setPanel((p) => (p === 'speed' ? 'none' : 'speed'))} aria-label={t('mp_speed')} title={`${t('mp_speed')} ${speed}×`} className={'flex-1 inline-flex items-center justify-center py-3.5 border-l border-white/15 active:opacity-80 transition ' + (panel === 'speed' ? 'bg-white/20' : 'hover:bg-white/10')}>
+                  <span className="text-sm font-bold tabular-nums leading-none">{speed}×</span>
                 </button>
                 <button onClick={() => setPanel((p) => (p === 'timer' ? 'none' : 'timer'))} aria-label={t('mp_timer')} title={t('mp_timer')} className={'flex-1 relative inline-flex items-center justify-center py-3.5 border-l border-white/15 active:opacity-80 transition ' + (sleepMin || panel === 'timer' ? 'bg-white/20' : 'hover:bg-white/10')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /></svg>
