@@ -699,7 +699,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   cluster room instead of cramming into a thin box. object-contain centers the video in the black. */}
               <div ref={boxRef} className={'relative overflow-hidden bg-black w-full flex items-center justify-center '
                 + (fs ? 'h-full ' : 'rounded-xl ')
-                + ((audioOnly || audioMode) ? 'min-h-[50vh] sm:min-h-[260px] ' : (fs ? '' : 'min-h-[50vh] sm:min-h-0 '))}>
+                + ((audioOnly || audioMode) ? 'min-h-[50vh] sm:min-h-[260px] ' : (fs ? '' : 'min-h-[50vh] sm:min-h-[420px] '))}>
               {/* Rotating stage: video + all overlay controls turn together (so the menu rotates with the screen). */}
               <div style={stageStyle} className={stageCls}>
               {/* Native controls hidden — the top tabs + center cluster + bottom bar below are our own. */}
