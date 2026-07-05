@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
+import { useSharedFile } from '@/lib/tools/useSharedFile'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
 const tool = getToolBySlug('unzip')!
@@ -54,6 +55,9 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
     /* eslint-enable @typescript-eslint/no-explicit-any */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Android "Share → ToolBoxy Unzip" (installed PWA): open the .zip shared to us.
+  useSharedFile(load)
 
   // Accept a .zip dropped ANYWHERE on the page (a drop outside the box otherwise let the
   // browser open the file). preventDefault on dragover stops that navigation.

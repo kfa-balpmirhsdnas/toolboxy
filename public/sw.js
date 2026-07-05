@@ -43,10 +43,32 @@ self.addEventListener('activate', (event) => {
   )
 })
 
+// Web Share Target (Android): the OS POSTs the shared file to `<tool>?share-target=1`.
+// Stash it in a cache and redirect to the tool page (GET) with ?shared=1, where the page
+// picks it up (useSharedFile). A page can't receive a POST, so the SW bridges it.
+async function handleShareTarget(request, url) {
+  try {
+    const form = await request.formData()
+    const file = form.get('file')
+    if (file && typeof file.name === 'string') {
+      const headers = new Headers()
+      headers.set('content-type', file.type || 'application/octet-stream')
+      headers.set('x-filename', encodeURIComponent(file.name || 'shared'))
+      const cache = await caches.open('share-target')
+      await cache.put('/__shared-file', new Response(file, { headers }))
+    }
+  } catch (e) { /* ignore — fall through to the redirect so the app still opens */ }
+  return Response.redirect(url.pathname + '?shared=1', 303)
+}
+
 self.addEventListener('fetch', (event) => {
   const req = event.request
-  if (req.method !== 'GET') return
   const url = new URL(req.url)
+  if (req.method === 'POST' && url.searchParams.has('share-target')) {
+    event.respondWith(handleShareTarget(req, url))
+    return
+  }
+  if (req.method !== 'GET') return
 
   if (url.origin !== self.location.origin) {
     if (isCacheableCdn(url)) event.respondWith(cacheFirst(req, CDN_CACHE))
