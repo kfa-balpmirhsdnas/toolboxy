@@ -11,6 +11,10 @@ import { mhList, mhPutMeta, mhPutManyMeta, mhSave, mhSetBlob, mhDelete, mhClear 
 const tool = getToolBySlug('music-player')!
 const AUDIO_RE = /\.(mp3|m4a|aac|flac|ogg|oga|wav|opus|weba|wma|3gp|amr|mid)$/i
 const isAudio = (f: File) => /^audio\//.test(f.type) || AUDIO_RE.test(f.name)
+// Android folder picks often give a blank MIME type + no extension, so a strict audio test drops
+// everything. For folders/drops we instead accept anything that ISN'T clearly non-audio.
+const NOT_AUDIO_RE = /\.(jpe?g|png|gif|webp|heic|heif|bmp|svg|tiff?|ico|mp4|m4v|mov|mkv|avi|webm|flv|wmv|mpe?g|txt|md|pdf|zip|rar|7z|docx?|xlsx?|pptx?|apk|exe|html?|csv|json|xml)$/i
+const maybeAudio = (f: File) => isAudio(f) || (!/^(image|video|text)\//.test(f.type) && !NOT_AUDIO_RE.test(f.name))
 const fmt = (s: number) => { if (!isFinite(s) || s < 0) s = 0; const m = Math.floor(s / 60); const ss = Math.floor(s % 60); return `${m}:${String(ss).padStart(2, '0')}` }
 const fmtSize = (b: number) => (b < 1024 ? b + ' B' : b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(1) + ' MB')
 const SPEEDS = [1, 1.25, 1.5, 2, 0.75]
@@ -139,7 +143,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     // when a mobile media picker returns a blank MIME type / a name without extension. Folders and
     // drag-drop can include anything, so those still filter to audio.
     const all = Array.from(list || [])
-    const files = trusted ? all : all.filter(isAudio)
+    const files = trusted ? all : all.filter(maybeAudio)
     if (!files.length) return
     setHistory((h) => { const seen = new Set(h.map((x) => x.name + '|' + x.size)); const add = files.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f })); return [...add, ...h].slice(0, 100) })
     mhPutManyMeta(files.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type })))
@@ -188,15 +192,15 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   return (
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4 max-w-lg mx-auto">
-        <input ref={inputRef} id="mp-file" type="file" accept="audio/*" multiple className="hidden" onChange={(e) => {
+        <input ref={inputRef} id="mp-file" type="file" multiple className="hidden" onChange={(e) => {
           const fl = Array.from(e.target.files || [])
           setNotice(fl.length ? { msg: `${t('mp_selected')} ${fl.length} · ${fl[0].name} · ${fl[0].type || 'no-type'} · ${fmtSize(fl[0].size)}` } : { msg: t('mp_none_sel'), err: true })
           addFiles(e.target.files, true); e.target.value = ''
         }} />
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <input ref={dirRef} id="mp-folder" type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onChange={(e) => {
-          const fl = Array.from(e.target.files || []); const audio = fl.filter(isAudio)
-          setNotice(fl.length ? { msg: `${t('mp_folder')}: ${fl.length} / audio ${audio.length}`, err: !audio.length } : { msg: t('mp_none_sel'), err: true })
+          const fl = Array.from(e.target.files || []); const audio = fl.filter(maybeAudio)
+          setNotice(fl.length ? { msg: `${t('mp_folder')}: ${fl.length} / audio ${audio.length}${fl[0] ? ` · ex: ${fl[0].name} (${fl[0].type || 'no-type'})` : ''}`, err: !audio.length } : { msg: t('mp_none_sel'), err: true })
           addFiles(e.target.files); e.target.value = ''
         }} />
         {/* Hidden audio engine (keeps playing screen-off; MediaSession drives the lock screen). */}
