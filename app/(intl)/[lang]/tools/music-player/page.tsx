@@ -159,7 +159,14 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     const all = Array.from(list || [])
     const files = trusted ? all : all.filter(maybeAudio)
     if (!files.length) return
-    setHistory((h) => { const seen = new Set(h.map((x) => x.name + '|' + x.size)); const add = files.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f })); return [...add, ...h].slice(0, 100) })
+    setHistory((h) => {
+      // Re-attach the real blob to any metadata-only (dimmed) entry the folder re-supplies, so it turns playable.
+      const byKey = new Map(files.map((f) => [f.name + '|' + f.size, f] as const))
+      const merged = h.map((x) => { const f = byKey.get(x.name + '|' + x.size); return f && !x.file ? { name: x.name, size: x.size, file: f } : x })
+      const seen = new Set(h.map((x) => x.name + '|' + x.size))
+      const add = files.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f }))
+      return [...add, ...merged].slice(0, 100)
+    })
     mhPutManyMeta(files.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type })))
     load(files[0])
   }, [load])
@@ -342,16 +349,18 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   {sleepMin > 0 && <span className="text-xs font-mono tabular-nums text-white/80 ml-1">{Math.floor(sleepLeft / 60)}:{String(sleepLeft % 60).padStart(2, '0')}</span>}
                 </div>
               )}
-              {/* bottom bar — 소리 / 속도 / 타이머, flat-bottomed and flush to the card edge */}
+              {/* bottom bar — 소리 / 속도 / 타이머 icon buttons, flat-bottomed and flush to the card edge */}
               <div className="flex border-t border-white/15 text-white">
-                <button onClick={() => setPanel((p) => (p === 'vol' ? 'none' : 'vol'))} className={'flex-1 inline-flex items-center justify-center gap-1.5 py-3 text-xs font-semibold active:opacity-80 transition ' + (panel === 'vol' ? 'bg-white/20' : 'hover:bg-white/10')}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">{volume === 0 ? <><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></> : <><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></>}</svg>{t('mpl_vol')}
+                <button onClick={() => setPanel((p) => (p === 'vol' ? 'none' : 'vol'))} aria-label={t('mpl_vol')} title={t('mpl_vol')} className={'flex-1 inline-flex items-center justify-center py-3.5 active:opacity-80 transition ' + (panel === 'vol' ? 'bg-white/20' : 'hover:bg-white/10')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">{volume === 0 ? <><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></> : <><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></>}</svg>
                 </button>
-                <button onClick={() => setPanel((p) => (p === 'speed' ? 'none' : 'speed'))} className={'flex-1 inline-flex items-center justify-center gap-1.5 py-3 text-xs font-semibold tabular-nums border-l border-white/15 active:opacity-80 transition ' + (panel === 'speed' ? 'bg-white/20' : 'hover:bg-white/10')}>
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M13 2 4.5 12.5H11l-1 9L19.5 11H13z" /></svg>{t('mp_speed')} {speed}×
+                <button onClick={() => setPanel((p) => (p === 'speed' ? 'none' : 'speed'))} aria-label={t('mp_speed')} title={`${t('mp_speed')} ${speed}×`} className={'flex-1 relative inline-flex items-center justify-center py-3.5 border-l border-white/15 active:opacity-80 transition ' + (panel === 'speed' ? 'bg-white/20' : 'hover:bg-white/10')}>
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M13 2 4.5 12.5H11l-1 9L19.5 11H13z" /></svg>
+                  {speed !== 1 && <span className="absolute top-1 right-1/2 translate-x-[26px] text-[9px] font-bold tabular-nums leading-none">{speed}×</span>}
                 </button>
-                <button onClick={() => setPanel((p) => (p === 'timer' ? 'none' : 'timer'))} className={'flex-1 inline-flex items-center justify-center gap-1.5 py-3 text-xs font-semibold border-l border-white/15 active:opacity-80 transition ' + (sleepMin || panel === 'timer' ? 'bg-white/20' : 'hover:bg-white/10')}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /></svg>{t('mp_timer')}{sleepMin > 0 ? ` ${Math.floor(sleepLeft / 60)}:${String(sleepLeft % 60).padStart(2, '0')}` : ''}
+                <button onClick={() => setPanel((p) => (p === 'timer' ? 'none' : 'timer'))} aria-label={t('mp_timer')} title={t('mp_timer')} className={'flex-1 relative inline-flex items-center justify-center py-3.5 border-l border-white/15 active:opacity-80 transition ' + (sleepMin || panel === 'timer' ? 'bg-white/20' : 'hover:bg-white/10')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /></svg>
+                  {sleepMin > 0 && <span className="absolute top-1 right-1/2 translate-x-[24px] text-[9px] font-mono font-bold tabular-nums leading-none">{Math.floor(sleepLeft / 60)}:{String(sleepLeft % 60).padStart(2, '0')}</span>}
                 </button>
               </div>
             </div>
