@@ -68,7 +68,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
 
   // ---- load a track ----
   const load = useCallback((f: File, advance = false) => {
-    if (!isAudio(f)) return
+    if (/^(image|video|text)\//.test(f.type)) return // clearly not an audio file; otherwise trust it
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || f.name)
     setCur(0)
@@ -131,8 +131,12 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const clearAll = () => { setHistory([]); setSaved(new Set()); setCurFile(null); setUrl((u) => { if (u) URL.revokeObjectURL(u); return '' }); setBase(''); setPlaying(false); try { localStorage.removeItem('mp_saved_v1') } catch { /* ignore */ } mhClear() }
 
   // ---- file inputs / drag-drop ----
-  const addFiles = useCallback((list: FileList | File[] | null) => {
-    const files = Array.from(list || []).filter(isAudio)
+  const addFiles = useCallback((list: FileList | File[] | null, trusted = false) => {
+    // The audio picker (accept="audio/*") already limits the OS to audio, so trust its selection even
+    // when a mobile media picker returns a blank MIME type / a name without extension. Folders and
+    // drag-drop can include anything, so those still filter to audio.
+    const all = Array.from(list || [])
+    const files = trusted ? all : all.filter(isAudio)
     if (!files.length) return
     setHistory((h) => { const seen = new Set(h.map((x) => x.name + '|' + x.size)); const add = files.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f })); return [...add, ...h].slice(0, 100) })
     mhPutManyMeta(files.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type })))
@@ -181,7 +185,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   return (
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4 max-w-lg mx-auto">
-        <input ref={inputRef} type="file" accept="audio/*" multiple className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
+        <input ref={inputRef} type="file" accept="audio/*" multiple className="hidden" onChange={(e) => { addFiles(e.target.files, true); e.target.value = '' }} />
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <input ref={dirRef} type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
         {/* Hidden audio engine (keeps playing screen-off; MediaSession drives the lock screen). */}
