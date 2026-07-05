@@ -8,6 +8,7 @@ import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 import { vhList, vhPutMeta, vhPutManyMeta, vhSave, vhSetBlob, vhSetThumb, vhDelete, vhClear } from '@/lib/tools/videoHistory'
+import { useSharedFile } from '@/lib/tools/useSharedFile'
 
 const tool = getToolBySlug('video-player')!
 // Overlay submenu option sets.
@@ -402,6 +403,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     /* eslint-enable @typescript-eslint/no-explicit-any */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Android "Share → ToolBoxy Video Player": play the shared video.
+  useSharedFile(load)
 
   // Revoke the object URL on unmount.
   useEffect(() => () => { if (url) URL.revokeObjectURL(url) }, [url])

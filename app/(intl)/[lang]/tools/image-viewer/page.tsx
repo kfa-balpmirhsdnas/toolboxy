@@ -6,6 +6,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import ToolbarBar, { toolbarBtn, toolbarDivider } from '@/components/tools/ToolbarBar'
 import { getToolBySlug } from '@/lib/tools/registry'
+import { useSharedFile } from '@/lib/tools/useSharedFile'
 import { trackToolUsed } from '@/lib/gtag'
 import { readExif, type Exif } from '@/lib/exif'
 
@@ -67,6 +68,9 @@ export default function ImageViewerPage() {
     /* eslint-enable @typescript-eslint/no-explicit-any */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Android "Share → ToolBoxy Image Viewer": show the shared image.
+  useSharedFile((f) => addFiles([f]))
 
   // Import images dropped ANYWHERE on the page (a drop outside the box otherwise made the
   // browser open the image). preventDefault on dragover stops that navigation.

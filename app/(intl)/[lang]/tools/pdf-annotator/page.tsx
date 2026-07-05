@@ -6,6 +6,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import ColorSwatchSelect from '@/components/tools/ColorSwatchSelect'
 import { getToolBySlug } from '@/lib/tools/registry'
+import { useSharedFile } from '@/lib/tools/useSharedFile'
 
 const tool = getToolBySlug('pdf-annotator')!
 const WORKER = 'https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs'
@@ -159,6 +160,9 @@ export default function PdfAnnotatorPage({ params }: { params: { lang: string } 
     /* eslint-enable @typescript-eslint/no-explicit-any */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Android "Share → ToolBoxy PDF Annotator": open the shared PDF.
+  useSharedFile(openFile)
 
   // On load, default the zoom so the page fits the viewer width (PC + mobile).
   useEffect(() => {

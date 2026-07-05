@@ -9,6 +9,7 @@ import { loginHref } from '@/lib/auth/redirect'
 import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
+import { useSharedFile } from '@/lib/tools/useSharedFile'
 import { trackToolUsed } from '@/lib/gtag'
 
 const tool = getToolBySlug('online-notepad')!
@@ -281,32 +282,37 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
 
   // "Open with → ToolBoxy Notepad" (installed PWA, Chromium desktop): the OS hands us the chosen
   // text file(s) via the File Handling API — read each into its own new tab named after the file.
+  // Create a new note from a text file (opened via "Open with" on desktop or "Share" on
+  // mobile). Returns the new doc id so callers can activate it.
+  async function openTextFile(file: File): Promise<string | null> {
+    try {
+      const content = await file.text()
+      const base = (file.name.replace(/\.[^.]+$/, '') || 'file').slice(0, 30)
+      const cur = docsRef.current
+      const name = new Set(cur.map((d) => d.name)).has(base) ? uniqueName(cur) : base
+      const d: Doc = { id: uid(), name, text: content, ...DEFAULTS, updatedAt: Date.now(), createdAt: Date.now() }
+      histories.current[d.id] = { hist: [content], idx: 0 }
+      docsRef.current = [...docsRef.current, d]
+      setDocs((ds) => [...ds, d])
+      return d.id
+    } catch { return null }
+  }
+
   useEffect(() => {
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const lq = (window as any).launchQueue
     if (!lq?.setConsumer) return
     lq.setConsumer(async (p: any) => {
-      const handles = p?.files || []
       let firstId: string | null = null
-      for (const h of handles) {
-        try {
-          const file = await h.getFile()
-          const content = await file.text()
-          const base = (file.name.replace(/\.[^.]+$/, '') || 'file').slice(0, 30)
-          const cur = docsRef.current
-          const name = new Set(cur.map((d) => d.name)).has(base) ? uniqueName(cur) : base
-          const d: Doc = { id: uid(), name, text: content, ...DEFAULTS, updatedAt: Date.now(), createdAt: Date.now() }
-          histories.current[d.id] = { hist: [content], idx: 0 }
-          docsRef.current = [...docsRef.current, d]
-          setDocs((ds) => [...ds, d])
-          if (!firstId) firstId = d.id
-        } catch { /* skip unreadable */ }
-      }
+      for (const h of p?.files || []) { try { const id = await openTextFile(await h.getFile()); if (id && !firstId) firstId = id } catch { /* skip unreadable */ } }
       if (firstId) setActiveId(firstId)
     })
     /* eslint-enable @typescript-eslint/no-explicit-any */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Android "Share → ToolBoxy Notepad": open the shared text file as a new note.
+  useSharedFile(async (f) => { const id = await openTextFile(f); if (id) setActiveId(id) })
 
   // Bring another tab's notes into this tab without disrupting active editing
   // (the active doc keeps our newer version via updatedAt during the merge).
