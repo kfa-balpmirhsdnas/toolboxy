@@ -185,9 +185,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   return (
     <ToolLayout tool={tool} lang={lang}>
       <div className="space-y-4 max-w-lg mx-auto">
-        <input ref={inputRef} type="file" accept="audio/*" multiple className="hidden" onChange={(e) => { addFiles(e.target.files, true); e.target.value = '' }} />
+        <input ref={inputRef} id="mp-file" type="file" accept="audio/*" multiple className="hidden" onChange={(e) => { addFiles(e.target.files, true); e.target.value = '' }} />
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        <input ref={dirRef} type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
+        <input ref={dirRef} id="mp-folder" type="file" {...({ webkitdirectory: '', directory: '' } as any)} className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = '' }} />
         {/* Hidden audio engine (keeps playing screen-off; MediaSession drives the lock screen). */}
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <audio ref={audioRef} src={url || undefined} preload="metadata"
@@ -209,13 +209,14 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
 
         {history.length === 0 && !curFile ? (
           /* ---- empty: drop zone ---- */
-          <div onClick={() => inputRef.current?.click()}
-            className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
+          <div className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-14 h-14 mx-auto text-gray-400"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
             <p className="text-sm font-medium text-gray-600 mt-3">{t('mp_drop')}</p>
             <div className="flex justify-center gap-2 mt-4">
-              <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700"><ToolIcon name="plus" className="w-4 h-4" />{t('mp_pick')}</button>
-              <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-200"><ToolIcon name="folder" className="w-4 h-4" />{t('mp_folder')}</button>
+              {/* Native <label htmlFor> — a tap triggers the file input directly, so it works on every mobile
+                  browser (some ignore a programmatic .click() on a hidden input). */}
+              <label htmlFor="mp-file" className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" />{t('mp_pick')}</label>
+              <label htmlFor="mp-folder" className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-200 cursor-pointer"><ToolIcon name="folder" className="w-4 h-4" />{t('mp_folder')}</label>
             </div>
           </div>
         ) : (
@@ -263,8 +264,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   <button key={tab} onClick={() => setHistTab(tab)} className={'px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (histTab === tab ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>{t(tab === 'all' ? 'mp_all' : 'mp_saved')}</button>
                 ))}
                 <span className="ml-auto pr-1 text-xs text-gray-400">{shown.length}</span>
-                <button onClick={() => inputRef.current?.click()} title={t('mp_pick')} className="p-2 text-gray-400 hover:text-brand-600"><ToolIcon name="plus" className="w-4 h-4" /></button>
-                <button onClick={() => dirRef.current?.click()} title={t('mp_folder')} className="p-2 text-gray-400 hover:text-brand-600"><ToolIcon name="folder" className="w-4 h-4" /></button>
+                <label htmlFor="mp-file" title={t('mp_pick')} className="p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" /></label>
+                <label htmlFor="mp-folder" title={t('mp_folder')} className="p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="folder" className="w-4 h-4" /></label>
                 <button onClick={clearAll} title={t('mp_reset')} className="p-2 text-gray-400 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>
               </div>
               {shown.length === 0 ? (
