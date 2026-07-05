@@ -44,6 +44,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const audioRef = useRef<HTMLAudioElement>(null)
   const dragKeyRef = useRef<string | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null) // now-playing card — scroll target on track click
   const inputRef = useRef<HTMLInputElement>(null)
   const dirRef = useRef<HTMLInputElement>(null)
   const positionsRef = useRef<Record<string, number>>({})
@@ -293,7 +294,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
         ) : (
           <>
             {/* ---- Now-playing card ---- */}
-            <div className="rounded-2xl bg-gradient-to-b from-brand-500 to-brand-700 text-white shadow-sm overflow-hidden">
+            <div ref={cardRef} className="rounded-2xl bg-gradient-to-b from-brand-500 to-brand-700 text-white shadow-sm overflow-hidden scroll-mt-16">
               <div className="p-5">
               {/* Album art shrinks while a bottom gauge is open so the gauge fits without growing the card. */}
               <div className={'aspect-square mx-auto flex items-center justify-center rounded-2xl bg-white/10 transition-[max-height] duration-200 ' + (panel === 'none' ? 'max-h-56' : 'max-h-40')}>
@@ -437,7 +438,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                         {reorder
                           ? <div className="flex-1 min-w-0 flex items-center gap-2 select-none">{rowInner}</div>
                           : h.file
-                          ? <button onClick={() => load(h.file!)} className="flex-1 min-w-0 flex items-center gap-2 text-left">{rowInner}</button>
+                          ? <button onClick={() => { load(h.file!); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }} className="flex-1 min-w-0 flex items-center gap-2 text-left">{rowInner}</button>
                           : <label htmlFor="mp-folder" title={t('mp_reopen')} className="flex-1 min-w-0 flex items-center gap-2 text-left cursor-pointer">{rowInner}</label>}
                         {!reorder && (
                           <>
