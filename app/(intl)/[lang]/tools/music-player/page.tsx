@@ -118,6 +118,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const media = () => audioRef.current
   const togglePlay = () => { const a = media(); if (!a || !url) return; if (a.paused) a.play().catch(() => {}); else a.pause() }
   const seekTo = (time: number) => { const a = media(); if (a) a.currentTime = time }
+  const seekBy = (d: number) => { const a = media(); if (a) a.currentTime = Math.max(0, Math.min(a.duration || a.currentTime, a.currentTime + d)) }
   const setVol = (v: number) => { const a = media(); if (a) a.volume = v; setVolume(v) }
   const cycleSpeed = () => { const i = SPEEDS.indexOf(speed); setSpeed(SPEEDS[(i + 1) % SPEEDS.length]) }
 
@@ -283,9 +284,25 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 )}
                 <button onClick={playNext} aria-label="next" className="w-12 h-12 inline-flex items-center justify-center rounded-full hover:bg-white/15 active:scale-95 transition"><svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="m5 4 10 8-10 8z" /><rect x="17.6" y="4" width="2.4" height="16" rx="1" /></svg></button>
                 <button onClick={cycleRepeat} aria-label={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} title={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} className={'w-10 h-10 inline-flex items-center justify-center rounded-full active:scale-95 transition ' + (repeatMode === 'one' || repeatMode === 'all' ? 'bg-white/25' : 'hover:bg-white/15')}>
-                  <span className="relative inline-flex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>{repeatMode === 'one' && <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold">1</span>}</span>
+                  <span className="relative inline-flex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>{(repeatMode === 'one' || repeatMode === 'all') && <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold">{repeatMode === 'all' ? 'A' : '1'}</span>}</span>
                 </button>
               </div>
+              {/* seek row — −30/−10/−5 · +5/+10/+30 (same as the video player) */}
+              {url && (
+                <div className="flex items-center justify-center gap-1 mt-3">
+                  {[30, 10, 5].map((n) => (
+                    <button key={'m' + n} onClick={() => seekBy(-n)} aria-label={`-${n}s`} className="inline-flex items-center gap-0.5 h-8 px-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-[11px] font-bold active:scale-95 transition tabular-nums">
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>{n}
+                    </button>
+                  ))}
+                  <span aria-hidden className="w-8 h-8 rounded-full border border-white/25 shrink-0" />
+                  {[5, 10, 30].map((n) => (
+                    <button key={'p' + n} onClick={() => seekBy(n)} aria-label={`+${n}s`} className="inline-flex items-center gap-0.5 h-8 px-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-[11px] font-bold active:scale-95 transition tabular-nums">
+                      {n}<svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
+                    </button>
+                  ))}
+                </div>
+              )}
               {/* volume + speed + timer */}
               <div className="flex items-center gap-3 mt-4">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0 text-white/80"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /></svg>
