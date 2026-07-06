@@ -516,7 +516,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     {tab === 'all'
                       ? t('mp_all')
                       : <><span className="sm:hidden">{t('mpl_list')}</span><span className="hidden sm:inline">{t('mpl_playlist')}</span></>}
-                    <span className="text-xs font-normal opacity-60 tabular-nums">{tab === 'all' ? allCount : savedCount}</span>
+                    <span className="text-xs font-normal opacity-60 tabular-nums">{tab === 'all' ? allCount : groups.length + 1}</span>
                   </button>
                 ))}
                 <label htmlFor="mp-file" title={t('mp_pick')} className="ml-auto p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" /></label>
@@ -575,7 +575,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                         <span className="flex-1 min-w-0 text-sm font-medium text-gray-800 truncate">{g.name}</span>
                         <span className="text-xs text-gray-400 tabular-nums">{groupSongs(g.id).length}</span>
                       </button>
-                      <button onClick={() => deleteGroup(g.id)} aria-label="delete group" className="p-1.5 shrink-0 text-gray-300 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>
+                      <button onClick={() => { if (window.confirm(t('mpl_del_confirm', { name: g.name }))) deleteGroup(g.id) }} aria-label="delete group" className="p-1.5 shrink-0 text-gray-300 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>
                     </div>
                   ))}
                   {/* + 새 그룹 — at the bottom */}
@@ -664,6 +664,15 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   <button onClick={() => inGroup('fav', menuFor.key, menuFor.file)} className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-gray-800 hover:bg-gray-50">
                     <svg viewBox="0 0 24 24" fill={saved.has(menuFor.key) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0 text-amber-500"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>{saved.has(menuFor.key) ? t('mpl_m_unfav') : t('mpl_m_fav')}
                   </button>
+                  {/* existing playlists → toggle membership */}
+                  {groups.map((g) => {
+                    const inIt = g.keys.includes(menuFor.key)
+                    return (
+                      <button key={g.id} onClick={() => toggleInGroup(g.id, menuFor.key, menuFor.file)} className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-gray-800 hover:bg-gray-50">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={'w-5 h-5 shrink-0 ' + (inIt ? 'text-brand-600' : 'text-gray-400')}><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg><span className="flex-1 min-w-0 truncate">{t(inIt ? 'mpl_m_removefrom' : 'mpl_m_addto', { name: g.name })}</span>
+                      </button>
+                    )
+                  })}
                   {/* 3 · 새 리스트에 추가하기 */}
                   <button onClick={() => setMenuCreating(true)} className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-gray-800 hover:bg-gray-50">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0 text-brand-600"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>{t('mpl_m_newlist')}
