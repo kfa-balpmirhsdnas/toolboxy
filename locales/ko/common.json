@@ -5422,6 +5422,8 @@
     "uz_more": "…외 {n}개 더 보기",
     "uz_less": "접기",
     "uz_extracted": "✓ ‘{folder}’ 폴더에 {n}개 파일을 풀었어요.",
+    "uz_extracting": "압축 푸는 중…",
+    "uz_progress": "압축 푸는 중… {cur} / {total}",
     "uz_write_err": "폴더에 저장하지 못했어요: {msg}",
     "uz_partial": "{n}개 파일은 저장하지 못했어요 (이름에 쓸 수 없는 문자 등). 나머지는 폴더에 저장됐어요.",
     "zf_done": "✓ {n}개 파일을 ‘{name}’(으)로 압축해 내려받았어요.",

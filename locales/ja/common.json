@@ -5395,6 +5395,8 @@
     "uz_more": "他{n}件を表示",
     "uz_less": "閉じる",
     "uz_extracted": "✓ 「{folder}」フォルダに{n}件を展開しました。",
+    "uz_extracting": "展開中…",
+    "uz_progress": "展開中… {cur} / {total}",
     "uz_write_err": "フォルダに保存できませんでした: {msg}",
     "uz_partial": "{n}件のファイルを保存できませんでした（使用できない文字を含む名前など）。残りはフォルダに保存しました。",
     "zf_done": "✓ {n}件を「{name}」に圧縮してダウンロードしました。",

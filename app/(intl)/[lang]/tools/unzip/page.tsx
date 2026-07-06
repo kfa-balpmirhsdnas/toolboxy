@@ -21,6 +21,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
   const [showAll, setShowAll] = useState(false)
   const [makeFolder, setMakeFolder] = useState(true)
   const [done, setDone] = useState<{ folder: string; n: number } | null>(null)
+  const [progress, setProgress] = useState<{ cur: number; total: number; ok: number; fail: number; name: string } | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const LIMIT = 10
 
@@ -108,16 +109,22 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
             target = await root.getDirectoryHandle(folder, { create: true })
             label = `${root.name}/${folder}`
           }
+          const total = entries.length
           let ok = 0; const failed: string[] = []
-          for (const e of entries) {
+          for (let i = 0; i < entries.length; i++) {
+            const e = entries[i]
+            // Live status: current file + running success/fail tally (repaints between awaits).
+            setProgress({ cur: i + 1, total, ok, fail: failed.length, name: e.name })
             try { await writeInto(target, e.name, e.data); ok++ }
             catch (we) { console.error('write failed:', e.name, we); failed.push(e.name) }
           }
+          setProgress(null)
           if (ok === 0) { setError(t('uz_write_err', { msg: failed.length ? failed[0] : '—' })); return }
           setDone({ folder: label, n: ok })
           if (failed.length) setError(t('uz_partial', { n: failed.length }))
           trackToolDownload('unzip', 'folder')
         } catch (err) {
+          setProgress(null)
           // Folder creation / permission failed entirely — tell the user rather than dumping to Downloads.
           setError(t('uz_write_err', { msg: (err as Error)?.message || String(err) }))
         }
@@ -141,7 +148,25 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
             </label>
           </div>
 
-          <button onClick={extractAll} disabled={!entries.length} className="w-full py-3 text-base font-semibold bg-brand-600 text-white rounded-xl hover:bg-brand-700 disabled:opacity-100 inline-flex items-center justify-center gap-2"><ToolIcon name="folder" className="w-5 h-5" />{t('uz_downloadall')}</button>
+          <button onClick={extractAll} disabled={!entries.length || !!progress} className="w-full py-3 text-base font-semibold bg-brand-600 text-white rounded-xl hover:bg-brand-700 disabled:opacity-100 inline-flex items-center justify-center gap-2">
+            {progress
+              ? <><svg viewBox="0 0 24 24" className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.2-8.5" strokeLinecap="round" /></svg>{t('uz_extracting')}</>
+              : <><ToolIcon name="folder" className="w-5 h-5" />{t('uz_downloadall')}</>}
+          </button>
+
+          {/* Live progress — current file + running success/fail tally + a progress bar. */}
+          {progress && (
+            <div className="rounded-xl border border-brand-200 bg-brand-50 p-3 space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium text-brand-800 tabular-nums">{t('uz_progress', { cur: progress.cur, total: progress.total })}</span>
+                <span className="tabular-nums text-xs"><span className="text-green-700">✓ {progress.ok}</span>{progress.fail > 0 && <span className="text-rose-600 ml-2">✕ {progress.fail}</span>}</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-brand-100 overflow-hidden">
+                <div className="h-full bg-brand-600 transition-all" style={{ width: `${Math.round((progress.cur / progress.total) * 100)}%` }} />
+              </div>
+              <p className="text-xs text-gray-500 truncate">{progress.name}</p>
+            </div>
+          )}
 
           {done && <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-xl p-3">{t('uz_extracted', { folder: done.folder, n: done.n })}</p>}
           <div className="rounded-xl border border-gray-100 overflow-hidden">
