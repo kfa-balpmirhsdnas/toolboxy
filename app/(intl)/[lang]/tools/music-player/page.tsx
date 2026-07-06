@@ -46,17 +46,27 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [artUrl, setArtUrl] = useState('') // resolved cover-art URL for the current track
   const [navHi, setNavHi] = useState<'prev' | 'next' | null>(null) // prev/next momentary highlight
   const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [lyricsOn, setLyricsOn] = useState(true) // look up lyrics for the current track (default on)
+  const [lyrics, setLyrics] = useState<string | null>(null) // resolved lyrics text
+  const [toast, setToast] = useState('') // transient message (e.g. sleep-timer stopped)
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [searchOn, setSearchOn] = useState(false) // playlist search box open
+  const [query, setQuery] = useState('') // playlist search text
+  const [durs, setDurs] = useState<Record<string, number>>({}) // per-track duration cache (key → seconds)
   useEffect(() => {
     try {
       setEqEnabled(localStorage.getItem('mp_eq_v1') === '1')
       setDarkMode(localStorage.getItem('mp_dark_v1') === '1')
       setAlbumArt(localStorage.getItem('mp_art_v1') !== '0') // default on
+      setLyricsOn(localStorage.getItem('mp_lyrics_v1') !== '0') // default on
     } catch { /* ignore */ }
   }, [])
   const toggleEq = () => setEqEnabled((v) => { const n = !v; try { localStorage.setItem('mp_eq_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleDark = () => setDarkMode((v) => { const n = !v; try { localStorage.setItem('mp_dark_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleArt = () => setAlbumArt((v) => { const n = !v; try { localStorage.setItem('mp_art_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
+  const toggleLyrics = () => setLyricsOn((v) => { const n = !v; try { localStorage.setItem('mp_lyrics_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const flashNav = (dir: 'prev' | 'next') => { setNavHi(dir); if (navTimer.current) clearTimeout(navTimer.current); navTimer.current = setTimeout(() => setNavHi(null), 3000) }
+  const showToast = (msg: string) => { setToast(msg); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(''), 4500) }
   // Cover art: look the title up on the iTunes Search API (only the title text is sent). Off → no request.
   useEffect(() => {
     if (!albumArt || !base) { setArtUrl(''); return }
@@ -69,6 +79,22 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       .catch(() => { if (alive) setArtUrl('') })
     return () => { alive = false }
   }, [base, albumArt])
+  // Lyrics: needs an "Artist - Title" filename. Looks it up on lyrics.ovh (title/artist text only).
+  useEffect(() => {
+    setLyrics(null)
+    if (!lyricsOn || !base) return
+    const cleaned = base.replace(/[_]+/g, ' ').replace(/\s+/g, ' ').trim()
+    const m = cleaned.split(/\s+[-–—]\s+/)
+    if (m.length < 2) return // no "artist - title" → skip
+    let alive = true
+    const artist = m[0].trim(), title = m.slice(1).join(' - ').replace(/\b(official|audio|lyrics?|mv|hd|4k)\b/gi, '').trim()
+    if (!artist || !title) return
+    fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (alive && d?.lyrics) setLyrics(String(d.lyrics).trim()) })
+      .catch(() => { /* ignore */ })
+    return () => { alive = false }
+  }, [base, lyricsOn])
   const [reorder, setReorder] = useState(false) // playlist reorder mode (drag handle per row)
   const [dragKey, setDragKey] = useState<string | null>(null) // row currently being dragged
   // ---- groups (the 리스트/플레이리스트 tab) ----
@@ -98,10 +124,38 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const posSaveTsRef = useRef(0)
   const sleepRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const savedRef = useRef<Set<string>>(new Set())
+  const durLoadedRef = useRef<Set<string>>(new Set()) // tracks we've already probed for duration
   useEffect(() => { savedRef.current = saved }, [saved])
 
   // ---- persistence: resume positions + starred set + restored list ----
   useEffect(() => { try { const s = localStorage.getItem('mp_pos_v1'); if (s) positionsRef.current = JSON.parse(s) } catch { /* ignore */ } }, [])
+  // Flush the resume position the moment the tab is hidden/closed, so a refresh mid-playback resumes.
+  useEffect(() => {
+    const flush = () => { try { const a = audioRef.current; if (a && curFile && a.currentTime > 0) positionsRef.current[curFile.name + '|' + curFile.size] = a.currentTime; localStorage.setItem('mp_pos_v1', JSON.stringify(positionsRef.current)) } catch { /* ignore */ } }
+    const onVis = () => { if (document.visibilityState === 'hidden') flush() }
+    window.addEventListener('pagehide', flush); document.addEventListener('visibilitychange', onVis)
+    return () => { window.removeEventListener('pagehide', flush); document.removeEventListener('visibilitychange', onVis) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curFile])
+  // Probe each track's duration (once) via a throwaway audio element so the list can show its length.
+  useEffect(() => {
+    const need = history.filter((h) => h.file && !durLoadedRef.current.has(h.name + '|' + h.size)).slice(0, 60)
+    if (!need.length) return
+    let alive = true; let i = 0
+    const el = document.createElement('audio'); el.preload = 'metadata'
+    const next = () => {
+      if (!alive || i >= need.length) return
+      const h = need[i++]; const key = h.name + '|' + h.size; durLoadedRef.current.add(key)
+      const u = URL.createObjectURL(h.file!)
+      const done = (d: number) => { URL.revokeObjectURL(u); if (alive && d > 0 && isFinite(d)) setDurs((p) => ({ ...p, [key]: d })); next() }
+      el.onloadedmetadata = () => done(el.duration || 0)
+      el.onerror = () => done(0)
+      el.src = u
+    }
+    next()
+    return () => { alive = false }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history])
   useEffect(() => { try { const s = localStorage.getItem('mp_saved_v1'); if (s) setSaved(new Set(JSON.parse(s))) } catch { /* ignore */ } }, [])
   useEffect(() => { try { const s = localStorage.getItem('mp_groups_v1'); if (s) setGroups(JSON.parse(s)) } catch { /* ignore */ } }, [])
   useEffect(() => {
@@ -146,7 +200,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   useEffect(() => () => { if (url) URL.revokeObjectURL(url) }, [url])
 
   // Playlist filtered by the open tab; next/prev cycle it (skipping metadata-only entries with no blob).
-  const shown = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
+  const shownAll = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
+  const shown = query.trim() ? shownAll.filter((h) => h.name.toLowerCase().includes(query.trim().toLowerCase())) : shownAll
   const allCount = history.length
   const savedCount = history.filter((h) => saved.has(h.name + '|' + h.size)).length
   const firstPlayable = history.find((h) => h.file) // for the play button when nothing is loaded yet
@@ -319,7 +374,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
         </span>
         <span className="min-w-0">
           <span className={'block truncate text-sm ' + (isCur ? 'font-semibold text-brand-700' : 'text-gray-800') + (h.file ? '' : ' opacity-50')}>{h.name.replace(/\.[^.]+$/, '')}</span>
-          <span className="block text-[11px] text-gray-400">{h.file ? fmtSize(h.size) : t('mp_reopen')}</span>
+          <span className="block text-[11px] text-gray-400 tabular-nums">{h.file ? <>{durs[key] ? <span className="text-gray-500">{fmt(durs[key])}</span> : null}{durs[key] ? ' · ' : ''}{fmtSize(h.size)}</> : t('mp_reopen')}</span>
         </span>
       </>
     )
@@ -341,7 +396,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     // when a mobile media picker returns a blank MIME type / a name without extension. Folders and
     // drag-drop can include anything, so those still filter to audio.
     const all = Array.from(list || [])
-    const files = trusted ? all : all.filter(maybeAudio)
+    const files = (trusted ? all : all.filter(maybeAudio))
+      .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })) // name order, like the file explorer
     if (!files.length) return
     setHistory((h) => {
       // Re-attach the real blob to any metadata-only (dimmed) entry the folder re-supplies, so it turns playable.
@@ -366,7 +422,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     if (sleepRef.current) { clearInterval(sleepRef.current); sleepRef.current = null }
     if (!sleepMin) { setSleepLeft(0); return }
     let left = sleepMin * 60; setSleepLeft(left)
-    sleepRef.current = setInterval(() => { left -= 1; setSleepLeft(left); if (left <= 0) { audioRef.current?.pause(); if (sleepRef.current) clearInterval(sleepRef.current); sleepRef.current = null; setSleepMin(0) } }, 1000)
+    sleepRef.current = setInterval(() => { left -= 1; setSleepLeft(left); if (left <= 0) { audioRef.current?.pause(); if (sleepRef.current) clearInterval(sleepRef.current); sleepRef.current = null; setSleepMin(0); showToast(t('mpl_timer_done')) } }, 1000)
     return () => { if (sleepRef.current) clearInterval(sleepRef.current) }
   }, [sleepMin])
 
@@ -416,6 +472,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
         <audio ref={audioRef} src={url || undefined} preload="metadata"
           onLoadedMetadata={(e) => {
             const a = e.currentTarget; setDur(a.duration); a.playbackRate = speed; a.volume = volume; a.loop = repeatMode === 'one'
+            if (curFile && a.duration > 0 && isFinite(a.duration)) { const k = curFile.name + '|' + curFile.size; durLoadedRef.current.add(k); setDurs((p) => ({ ...p, [k]: a.duration })) }
             if (resumePosRef.current > 1 && a.duration && resumePosRef.current < a.duration - 2) { try { a.currentTime = resumePosRef.current } catch { /* ignore */ } }
             resumePosRef.current = 0
             a.play().catch(() => {})
@@ -431,6 +488,14 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
             if (ms?.setPositionState && a.duration && isFinite(a.duration)) { try { ms.setPositionState({ duration: a.duration, position: Math.min(a.currentTime, a.duration), playbackRate: a.playbackRate || 1 }) } catch { /* ignore */ } }
           }} />
 
+        {/* Transient toast (e.g. the sleep timer stopped playback). */}
+        {toast && (
+          <div className="flex items-center gap-2 rounded-xl bg-gray-900 text-white text-sm px-4 py-2.5 shadow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /></svg>
+            <span className="flex-1">{toast}</span>
+          </div>
+        )}
+
         {/* On-screen diagnostic — only surface real errors; the informational (grey) picks stay hidden. */}
         {notice && notice.err && (
           <div className={'flex items-start gap-2 rounded-xl px-3 py-2 text-xs break-all bg-red-50 text-red-700 border border-red-200'}>
@@ -445,8 +510,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
             {/* ---- Now-playing card ---- */}
             <div ref={cardRef} className={'rounded-2xl text-white shadow-sm overflow-hidden scroll-mt-16 bg-gradient-to-b ' + (darkMode ? 'from-gray-800 to-black' : 'from-brand-500 to-brand-700')}>
               <div className="p-5">
-              {/* Album art shrinks while a bottom gauge is open so the gauge fits without growing the card. */}
-              <div className={'w-full flex items-center justify-center rounded-2xl bg-white/10 overflow-hidden ' + (panel === 'none' ? 'h-80' : 'h-60')}>
+              {/* Album art is a fixed height and the gauge slot below is always reserved, so opening a
+                  submenu never resizes anything (no layout shake). */}
+              <div className="w-full h-60 flex items-center justify-center rounded-2xl bg-white/10 overflow-hidden">
                 {artUrl ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={artUrl} alt="" className="w-full h-full object-cover" onError={() => setArtUrl('')} />
@@ -516,8 +582,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 </div>
               )}
               </div>{/* end padded content */}
-              {/* gauge slot — fixed height (= the album-art shrink) so opening a gauge never resizes the card */}
-              {panel !== 'none' && (
+              {/* gauge slot — ALWAYS reserved (fixed height, empty when closed) so opening a submenu never shifts the layout */}
+              {(
                 <div className="h-20 flex flex-col justify-center overflow-hidden pb-1">
                   {/* All three submenus share the speed-menu layout: slider + value on top, preset chips below. */}
                   {panel === 'vol' && (
@@ -574,6 +640,14 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               </div>
             </div>
 
+            {/* ---- Lyrics (when found via lyrics.ovh; only for "Artist - Title" filenames) ---- */}
+            {lyrics && (
+              <div className="rounded-2xl border border-gray-200 p-4">
+                <p className="text-xs font-semibold text-gray-500 mb-2">{t('mpl_lyrics')}</p>
+                <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700 leading-relaxed max-h-72 overflow-auto">{lyrics}</pre>
+              </div>
+            )}
+
             {/* ---- Playlist (standard list style) ---- */}
             <div ref={playlistRef} className="rounded-2xl border border-gray-200 overflow-hidden scroll-mt-16">
               <div className="flex items-center gap-1 bg-gray-50 px-2 border-b border-gray-200">
@@ -590,15 +664,24 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   </button>
                 ))}
                 <label htmlFor="mp-file" title={t('mp_pick')} className="ml-auto p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" /></label>
+                <button onClick={() => { setSearchOn((s) => !s); if (searchOn) setQuery('') }} aria-label={t('mpl_search')} title={t('mpl_search')} className={'p-2 rounded transition-colors ' + (searchOn ? 'text-brand-600 bg-brand-50' : 'text-gray-400 hover:text-brand-600')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                </button>
                 <label htmlFor="mp-folder" title={t('mp_folder')} className="p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="folder" className="w-4 h-4" /></label>
-                <button onClick={clearAll} title={t('mp_reset')} className="p-2 text-gray-400 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>
+                <button onClick={() => { if (allCount === 0 || window.confirm(t('mpl_clear_confirm'))) clearAll() }} title={t('mp_reset')} className="p-2 text-gray-400 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>
               </div>
+              {searchOn && (
+                <div className="px-2 py-1.5 border-b border-gray-100">
+                  {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+                  <input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('mpl_search')} className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                </div>
+              )}
               {histTab === 'all' ? (
                 /* ---- 전체: every track (reorder · ★ · ✕) ---- */
                 shown.length === 0 ? (
                   <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
                 ) : (
-                  <div ref={listRef} className="divide-y divide-gray-100">
+                  <div ref={listRef} className="divide-y divide-gray-100 max-h-[300px] overflow-y-auto">
                     {shown.map((h) => {
                       const key = h.name + '|' + h.size
                       const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
@@ -697,7 +780,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     groupSongs(openGroup).length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mpl_group_empty')}</p>
                     ) : (
-                      <div ref={groupListRef} className="divide-y divide-gray-100">
+                      <div ref={groupListRef} className="divide-y divide-gray-100 max-h-[300px] overflow-y-auto">
                         {groupSongs(openGroup).map((h) => {
                           const key = h.name + '|' + h.size; const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                           return (
@@ -779,7 +862,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 <button onClick={() => setShowSettings(false)} aria-label="close" className="p-1 -mr-1 text-gray-400 hover:text-gray-600"><ToolIcon name="x" className="w-4 h-4" /></button>
               </div>
               <div className="divide-y divide-gray-100">
-                {([[t('mpl_eq_opt'), eqEnabled, toggleEq], [t('mpl_dark_opt'), darkMode, toggleDark], [t('mpl_art_opt'), albumArt, toggleArt]] as [string, boolean, () => void][]).map(([label, on, toggle], i) => (
+                {([[t('mpl_eq_opt'), eqEnabled, toggleEq], [t('mpl_dark_opt'), darkMode, toggleDark], [t('mpl_art_opt'), albumArt, toggleArt], [t('mpl_lyrics_opt'), lyricsOn, toggleLyrics]] as [string, boolean, () => void][]).map(([label, on, toggle], i) => (
                   <label key={i} className="flex items-center gap-3 px-4 py-3.5 cursor-pointer">
                     <span className="flex-1 min-w-0 text-sm text-gray-800">{label}</span>
                     <button onClick={toggle} role="switch" aria-checked={on} aria-label={label} className={'relative shrink-0 w-11 h-6 rounded-full transition ' + (on ? 'bg-brand-600' : 'bg-gray-300')}>
