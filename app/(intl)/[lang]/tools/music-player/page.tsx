@@ -352,7 +352,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     const loop = () => {
       an.getByteFrequencyData(data)
       const bars = eqWrapRef.current?.children; const refl = eqReflRef.current?.children
-      if (bars) for (let i = 0; i < bars.length; i++) { const bin = Math.min(bins - 1, Math.floor((i / bars.length) * bins * 0.7) + 1); const v = Math.max(0.06, data[bin] / 255); (bars[i] as HTMLElement).style.transform = `scaleY(${v})`; if (refl && refl[i]) (refl[i] as HTMLElement).style.transform = `scaleY(${v})` }
+      if (bars) for (let i = 0; i < bars.length; i++) { const bin = Math.min(bins - 1, Math.floor((i / bars.length) * bins * 0.7) + 1); const v = Math.max(0.05, data[bin] / 255); const h = (v * 100) + '%'; (bars[i] as HTMLElement).style.height = h; if (refl && refl[i]) (refl[i] as HTMLElement).style.height = h }
       eqRafRef.current = requestAnimationFrame(loop)
     }
     eqRafRef.current = requestAnimationFrame(loop)
@@ -642,16 +642,19 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   /* Real audio-synced equalizer: bars driven from frequency data via rAF, each with a
                      small white cap, plus a faint mirrored reflection underneath (like the reference). */
                   <div className="w-full h-36 flex flex-col justify-center px-6" aria-hidden>
-                    <div ref={eqWrapRef} className="flex-1 min-h-0 flex items-end justify-center gap-[3px]">
-                      {Array.from({ length: 28 }).map((_, i) => {
-                        const hue = Math.round(200 + (i / 28) * 160) // teal → blue → violet → pink
-                        return <span key={i} className="flex-1 max-w-[7px] rounded-t-full origin-bottom transition-transform duration-75 ease-out" style={{ height: '100%', transform: 'scaleY(0.06)', background: `linear-gradient(to top, hsl(${hue} 95% 58%), hsl(${(hue + 40) % 360} 95% 70%) 80%, #fff 100%)`, boxShadow: `0 0 8px hsl(${hue} 95% 65% / 0.5)` }} />
+                    {/* Segmented bars: fixed-size boxes stacked bottom-up (VU-meter style). The
+                        repeating-gradient makes the stacked-box pattern; height reveals more boxes. */}
+                    <div ref={eqWrapRef} className="h-24 flex items-end justify-center gap-[3px]">
+                      {Array.from({ length: 24 }).map((_, i) => {
+                        const hue = Math.round(200 + (i / 24) * 160) // teal → blue → violet → pink
+                        return <span key={i} className="flex-1 max-w-[7px] rounded-[1px] transition-[height] duration-75 ease-out" style={{ height: '5%', background: `repeating-linear-gradient(to top, hsl(${hue} 95% 60%) 0, hsl(${hue} 95% 60%) 5px, transparent 5px, transparent 8px)`, boxShadow: `0 0 6px hsl(${hue} 95% 65% / 0.45)` }} />
                       })}
                     </div>
-                    <div ref={eqReflRef} className="flex-1 min-h-0 flex items-start justify-center gap-[3px] opacity-25 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.6),transparent_75%)]">
-                      {Array.from({ length: 28 }).map((_, i) => {
-                        const hue = Math.round(200 + (i / 28) * 160)
-                        return <span key={i} className="flex-1 max-w-[7px] rounded-b-full origin-top transition-transform duration-75 ease-out" style={{ height: '100%', transform: 'scaleY(0.06)', background: `linear-gradient(to bottom, hsl(${hue} 95% 58%), hsl(${(hue + 40) % 360} 95% 70%))` }} />
+                    {/* Reflection: the same stacked boxes mirrored, moving in lockstep (same height). */}
+                    <div ref={eqReflRef} className="h-10 flex items-start justify-center gap-[3px] opacity-40 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.85),transparent_95%)]">
+                      {Array.from({ length: 24 }).map((_, i) => {
+                        const hue = Math.round(200 + (i / 24) * 160)
+                        return <span key={i} className="flex-1 max-w-[7px] rounded-[1px] transition-[height] duration-75 ease-out" style={{ height: '5%', background: `repeating-linear-gradient(to bottom, hsl(${hue} 95% 60%) 0, hsl(${hue} 95% 60%) 5px, transparent 5px, transparent 8px)` }} />
                       })}
                     </div>
                   </div>
@@ -754,6 +757,15 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                         {TIMER_MENU.map((m) => <button key={m} onClick={() => setSleepMin(m)} className={'px-2 h-6 rounded text-[11px] tabular-nums transition ' + (sleepMin === m ? 'bg-white text-brand-700 font-bold' : 'bg-white/15 hover:bg-white/25')}>{t('ct_min', { n: m })}</button>)}
                         <button onClick={() => setSleepMin(0)} className={'px-2 h-6 rounded text-[11px] transition ' + (sleepMin === 0 ? 'bg-white text-brand-700 font-bold' : 'bg-white/15 hover:bg-white/25')}>{t('mp_timer_off')}</button>
                       </div>
+                    </div>
+                  )}
+                  {/* No submenu open → use the reserved slot for the live (synced) lyric line. */}
+                  {panel === 'none' && lyricsLines && activeLyric >= 0 && (
+                    <div className="px-5 text-center text-white select-none" aria-hidden>
+                      {[activeLyric - 1, activeLyric, activeLyric + 1].map((idx, k) => {
+                        const l = lyricsLines[idx]
+                        return <p key={k} className={'truncate h-6 leading-6 transition-all ' + (idx === activeLyric ? 'text-sm font-semibold' : 'text-xs text-white/45')}>{l ? (l.text || '♪') : ''}</p>
+                      })}
                     </div>
                   )}
                 </div>
@@ -894,9 +906,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               ) : (
                 /* ---- 리스트: one group (drill-in) ---- */
                 <div>
-                  <div className="flex items-center gap-1 px-2 py-2 bg-gray-50 border-b border-gray-100">
-                    <button onClick={() => { setOpenGroup(null); setAddMode(false); setReorder(false) }} className="inline-flex items-center gap-1 px-1.5 py-1 text-sm text-gray-500 hover:text-brand-600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6" /></svg>{t('mpl_back')}</button>
-                    <span className="flex-1 min-w-0 text-sm font-semibold text-gray-800 truncate text-center">{groupName(openGroup)}</span>
+                  <div className={'flex items-center gap-1 px-2 py-2 border-b ' + (darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-100')}>
+                    <button onClick={() => { setOpenGroup(null); setAddMode(false); setReorder(false) }} className={'inline-flex items-center gap-1 px-1.5 py-1 text-sm ' + (darkMode ? 'text-gray-400 hover:text-brand-400' : 'text-gray-500 hover:text-brand-600')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6" /></svg>{t('mpl_back')}</button>
+                    <span className={'flex-1 min-w-0 text-sm font-semibold truncate text-center ' + (darkMode ? 'text-gray-100' : 'text-gray-800')}>{groupName(openGroup)}</span>
                     {/* ≡ reorder tracks within this playlist (drag handles appear on the rows) */}
                     {!addMode && groupSongs(openGroup).length > 1 && (
                       <button onClick={() => setReorder((r) => !r)} aria-label={t('mpl_reorder')} title={t('mpl_reorder')} className={'p-1.5 rounded transition-colors ' + (reorder ? 'text-brand-600 bg-brand-50' : 'text-gray-400 hover:text-brand-600')}>
@@ -916,9 +928,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                         {history.slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const member = groupKeys(openGroup).has(key)
                           return (
-                            <button key={key} onClick={() => inGroup(openGroup, key, h.file)} className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-gray-50">
-                              <span className={'w-5 h-5 shrink-0 rounded border inline-flex items-center justify-center ' + (member ? 'bg-brand-600 border-brand-600 text-white' : 'border-gray-300')}>{member && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M20 6 9 17l-5-5" /></svg>}</span>
-                              <span className="flex-1 min-w-0 text-sm text-gray-800 truncate">{h.name.replace(/\.[^.]+$/, '')}</span>
+                            <button key={key} onClick={() => inGroup(openGroup, key, h.file)} className={'w-full flex items-center gap-2 px-3 py-2.5 text-left ' + (darkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50')}>
+                              <span className={'w-5 h-5 shrink-0 rounded border inline-flex items-center justify-center ' + (member ? 'bg-brand-600 border-brand-600 text-white' : darkMode ? 'border-gray-600' : 'border-gray-300')}>{member && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M20 6 9 17l-5-5" /></svg>}</span>
+                              <span className={'flex-1 min-w-0 text-sm truncate ' + (darkMode ? 'text-gray-100' : 'text-gray-800')}>{h.name.replace(/\.[^.]+$/, '')}</span>
                             </button>
                           )
                         })}
