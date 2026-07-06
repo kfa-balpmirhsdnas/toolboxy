@@ -9,7 +9,7 @@ const STORE = 'history'
 const DB_VERSION = 1
 
 export const MH_MAX_BYTES = 200 * 1024 * 1024      // per-file cap for a ★-stored blob (200 MB)
-export const MH_MAX_ITEMS = 1000                   // metadata is tiny, so keep plenty (favorites are never evicted)
+export const MH_MAX_ITEMS = 999                    // metadata is tiny, so keep plenty (favorites are never evicted)
 export const MH_AUTOSAVE_PERFILE = 20 * 1024 * 1024 // auto-cache skips files bigger than this (20 MB)
 
 // Once the browser's storage quota is hit we stop trying to auto-cache blobs (each failed write is

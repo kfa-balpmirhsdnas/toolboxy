@@ -218,7 +218,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     mhList().then((items) => {
       if (!alive || !items.length) return
       const restored = items.map((it) => ({ name: it.name, size: it.size, file: it.blob ? new File([it.blob], it.name, { type: it.type }) : null }))
-      setHistory((h) => { const seen = new Set(h.map((x) => x.name + '|' + x.size)); return [...h, ...restored.filter((r) => !seen.has(r.name + '|' + r.size))].slice(0, 1000) })
+      setHistory((h) => { const seen = new Set(h.map((x) => x.name + '|' + x.size)); return [...h, ...restored.filter((r) => !seen.has(r.name + '|' + r.size))].slice(0, 999) })
     })
     return () => { alive = false }
   }, [])
@@ -245,7 +245,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       // Playing a track that's already in the list keeps its position; only a brand-new file goes on top.
       if (!advance) setHistory((h) => h.some((x) => x.name === f.name && x.size === f.size)
         ? h.map((x) => (x.name === f.name && x.size === f.size ? { name: f.name, size: f.size, file: f } : x))
-        : [{ name: f.name, size: f.size, file: f }, ...h].slice(0, 1000))
+        : [{ name: f.name, size: f.size, file: f }, ...h].slice(0, 999))
       const id = f.name + '|' + f.size
       const meta = { id, name: f.name, size: f.size, type: f.type }
       if (savedRef.current.has(id)) mhSave(meta, f); else if (autoSaveRef.current) mhAutoSave(meta, f); else mhPutMeta(meta)
@@ -513,7 +513,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       const merged = h.map((x) => { const f = byKey.get(x.name + '|' + x.size); return f && !x.file ? { name: x.name, size: x.size, file: f } : x })
       const seen = new Set(h.map((x) => x.name + '|' + x.size))
       const add = files.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f }))
-      return [...add, ...merged].slice(0, 1000)
+      return [...add, ...merged].slice(0, 999)
     })
     mhPutManyMeta(files.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type })))
     if (autoSaveRef.current) mhAutoSaveMany(files) // cache blobs in the background so the whole list replays after refresh
