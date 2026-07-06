@@ -412,7 +412,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 </button>
                 {(['all', 'saved'] as const).map((tab) => (
                   <button key={tab} onClick={() => setHistTab(tab)} className={'inline-flex items-center gap-1 px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (histTab === tab ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>
-                    {t(tab === 'all' ? 'mp_all' : 'mp_saved')}<span className="text-xs font-normal opacity-60 tabular-nums">{tab === 'all' ? allCount : savedCount}</span>
+                    {tab === 'all'
+                      ? t('mp_all')
+                      : <><span className="sm:hidden">{t('mpl_list')}</span><span className="hidden sm:inline">{t('mpl_playlist')}</span></>}
+                    <span className="text-xs font-normal opacity-60 tabular-nums">{tab === 'all' ? allCount : savedCount}</span>
                   </button>
                 ))}
                 <label htmlFor="mp-file" title={t('mp_pick')} className="ml-auto p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" /></label>
@@ -420,7 +423,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 <button onClick={clearAll} title={t('mp_reset')} className="p-2 text-gray-400 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>
               </div>
               {shown.length === 0 ? (
-                <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
+                <p className="text-center text-sm text-gray-400 py-10">{histTab === 'saved' ? t('mpl_pl_empty') : t('mp_empty')}</p>
               ) : (
                 <div ref={listRef} className="divide-y divide-gray-100">
                   {shown.map((h) => {
