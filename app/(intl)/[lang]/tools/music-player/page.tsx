@@ -118,25 +118,32 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     }
     if (!artist || !title) return
     let alive = true
-    const url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}` + (dur > 1 ? `&duration=${Math.round(dur)}` : '')
-    fetch(url)
+    const apply = (d: { syncedLyrics?: string; plainLyrics?: string } | null | undefined): boolean => {
+      if (!alive || !d) return false
+      if (d.syncedLyrics) {
+        const lines: { t: number; text: string }[] = []
+        const re = /\[(\d+):(\d+(?:\.\d+)?)\]/g
+        for (const ln of String(d.syncedLyrics).split('\n')) {
+          const times: number[] = []; let tg: RegExpExecArray | null
+          re.lastIndex = 0
+          while ((tg = re.exec(ln)) !== null) times.push(parseInt(tg[1]) * 60 + parseFloat(tg[2]))
+          if (!times.length) continue
+          const text = ln.replace(/\[[^\]]*\]/g, '').trim()
+          for (const tt of times) lines.push({ t: tt, text })
+        }
+        if (lines.length) { setLyricsLines(lines.sort((a, b) => a.t - b.t)); return true }
+      }
+      if (d.plainLyrics) { setLyrics(String(d.plainLyrics).trim()); return true }
+      return false
+    }
+    // 1) exact lrclib /get, then 2) fuzzy /search fallback (helps CJK titles the exact match misses).
+    fetch(`https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}` + (dur > 1 ? `&duration=${Math.round(dur)}` : ''))
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (!alive || !d) return
-        if (d.syncedLyrics) {
-          const lines: { t: number; text: string }[] = []
-          const re = /\[(\d+):(\d+(?:\.\d+)?)\]/g
-          for (const ln of String(d.syncedLyrics).split('\n')) {
-            const times: number[] = []; let tg: RegExpExecArray | null
-            re.lastIndex = 0
-            while ((tg = re.exec(ln)) !== null) times.push(parseInt(tg[1]) * 60 + parseFloat(tg[2]))
-            if (!times.length) continue
-            const text = ln.replace(/\[[^\]]*\]/g, '').trim()
-            for (const tt of times) lines.push({ t: tt, text })
-          }
-          if (lines.length) { setLyricsLines(lines.sort((a, b) => a.t - b.t)); return }
-        }
-        if (d.plainLyrics) setLyrics(String(d.plainLyrics).trim())
+        if (apply(d)) return
+        return fetch(`https://lrclib.net/api/search?track_name=${encodeURIComponent(title)}&artist_name=${encodeURIComponent(artist)}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((arr: { syncedLyrics?: string; plainLyrics?: string }[] | null) => { if (alive && Array.isArray(arr) && arr.length) apply(arr.find((x) => x.syncedLyrics) || arr.find((x) => x.plainLyrics) || arr[0]) })
       })
       .catch(() => { /* ignore */ })
     return () => { alive = false }
@@ -618,8 +625,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
         )}
 
         {(
-          /* The player is the default screen (even when empty); the play button opens the folder. */
-          <>
+          /* The player is the default screen (even when empty); the play button opens the folder.
+             space-y-px keeps the player and the list box ~1px apart. */
+          <div className="space-y-px">
             {/* ---- Now-playing card ---- */}
             <div ref={cardRef} className={'rounded-2xl text-white shadow-sm overflow-hidden scroll-mt-16 bg-gradient-to-b ' + (darkMode ? 'from-gray-800 to-black' : 'from-brand-500 to-brand-700')}>
               <div className="p-5">
@@ -811,13 +819,13 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 shown.length === 0 ? (
                   <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
                 ) : (
-                  <div ref={listRef} onScroll={onListScroll} className="divide-y divide-gray-100 max-h-[300px] overflow-y-auto">
+                  <div ref={listRef} onScroll={onListScroll} className={'max-h-[300px] overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
                     {shown.slice(0, renderN).map((h) => {
                       const key = h.name + '|' + h.size
                       const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                       const star = saved.has(key)
                       return (
-                        <div key={key} data-key={key} className={'flex items-center gap-2 px-3 py-2.5 transition-colors ' + (dragKey === key ? 'bg-brand-100 shadow-inner' : isCur ? 'bg-brand-50' : '')}>
+                        <div key={key} data-key={key} className={'flex items-center gap-2 px-3 py-2.5 transition-colors ' + (dragKey === key ? 'bg-brand-100 shadow-inner' : isCur ? (darkMode ? 'bg-white/15' : 'bg-brand-50') : '')}>
                           {/* Reorder mode: a drag handle on the LEFT — press & drag it to move the track. */}
                           {reorder && (
                             <button onPointerDown={startDrag(key)} onPointerMove={onDragMove} onPointerUp={endDrag} onPointerCancel={endDrag} aria-label={t('mpl_reorder')} className="p-1.5 -ml-1 shrink-0 text-gray-400 hover:text-brand-600 touch-none select-none cursor-grab active:cursor-grabbing">
@@ -842,24 +850,22 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 )
               ) : openGroup === null ? (
                 /* ---- 리스트: group list (즐겨찾기 first, custom groups, then + 새 그룹 at the bottom) ---- */
-                <div className="divide-y divide-gray-100">
+                <div className={'divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
                   {/* 즐겨찾기 — fixed, can't be deleted */}
-                  <button onClick={() => { setOpenGroup('fav'); setAddMode(false); setReorder(false) }} className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-gray-50">
-                    <span className="w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg bg-amber-50 text-amber-500"><svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg></span>
-                    <span className="flex-1 min-w-0 text-sm font-medium text-gray-800 truncate">{t('mpl_fav')}</span>
-                    <span className="text-xs text-gray-400 tabular-nums">{savedCount}</span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-300"><path d="m9 18 6-6-6-6" /></svg>
+                  <button onClick={() => { setOpenGroup('fav'); setAddMode(false); setReorder(false) }} className={'w-full flex items-center gap-2 px-3 py-2.5 text-left ' + (darkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50')}>
+                    <span className={'w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg text-amber-500 ' + (darkMode ? 'bg-amber-500/15' : 'bg-amber-50')}><svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg></span>
+                    <span className={'flex-1 min-w-0 text-sm font-medium truncate ' + (darkMode ? 'text-gray-100' : 'text-gray-800')}>{t('mpl_fav')}</span>
+                    <span className={'text-xs tabular-nums ' + (darkMode ? 'text-gray-400' : 'text-gray-400')}>{savedCount}</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={'w-4 h-4 ' + (darkMode ? 'text-gray-500' : 'text-gray-300')}><path d="m9 18 6-6-6-6" /></svg>
                   </button>
-                  {/* custom groups */}
+                  {/* custom groups (delete now lives inside the playlist, next to "add tracks") */}
                   {groups.map((g) => (
-                    <div key={g.id} className="flex items-center gap-2 px-3 py-2.5 hover:bg-gray-50">
-                      <button onClick={() => { setOpenGroup(g.id); setAddMode(false); setReorder(false) }} className="flex-1 min-w-0 flex items-center gap-2 text-left">
-                        <span className="w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg bg-gray-100 text-gray-400"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg></span>
-                        <span className="flex-1 min-w-0 text-sm font-medium text-gray-800 truncate">{g.name}</span>
-                        <span className="text-xs text-gray-400 tabular-nums">{groupSongs(g.id).length}</span>
-                      </button>
-                      <button onClick={() => { if (window.confirm(t('mpl_del_confirm', { name: g.name }))) deleteGroup(g.id) }} aria-label="delete group" className="p-1.5 shrink-0 text-gray-300 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>
-                    </div>
+                    <button key={g.id} onClick={() => { setOpenGroup(g.id); setAddMode(false); setReorder(false) }} className={'w-full flex items-center gap-2 px-3 py-2.5 text-left ' + (darkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50')}>
+                      <span className={'w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg text-gray-400 ' + (darkMode ? 'bg-gray-800' : 'bg-gray-100')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg></span>
+                      <span className={'flex-1 min-w-0 text-sm font-medium truncate ' + (darkMode ? 'text-gray-100' : 'text-gray-800')}>{g.name}</span>
+                      <span className="text-xs text-gray-400 tabular-nums">{groupSongs(g.id).length}</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={'w-4 h-4 ' + (darkMode ? 'text-gray-500' : 'text-gray-300')}><path d="m9 18 6-6-6-6" /></svg>
+                    </button>
                   ))}
                   {/* + 새 그룹 — at the bottom */}
                   <div className="p-2">
@@ -888,6 +894,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                       </button>
                     )}
                     {!reorder && <button onClick={() => { setAddMode((a) => !a); setRenderN(80) }} className={'inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg ' + (addMode ? 'bg-brand-600 text-white' : 'text-brand-600 hover:bg-brand-50')}>{addMode ? t('mpl_done') : <><ToolIcon name="plus" className="w-3.5 h-3.5" />{t('mpl_addsongs')}</>}</button>}
+                    {/* Delete this playlist (only for custom ones; 즐겨찾기 can't be deleted) */}
+                    {!reorder && !addMode && openGroup !== 'fav' && <button onClick={() => { const g = groups.find((x) => x.id === openGroup); if (g && window.confirm(t('mpl_del_confirm', { name: g.name }))) deleteGroup(g.id) }} aria-label="delete group" className="p-1.5 shrink-0 text-gray-300 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>}
                   </div>
                   {addMode ? (
                     /* pick which tracks belong to this group */
@@ -910,11 +918,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     groupSongs(openGroup).length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mpl_group_empty')}</p>
                     ) : (
-                      <div ref={groupListRef} onScroll={onListScroll} className="divide-y divide-gray-100 max-h-[300px] overflow-y-auto">
+                      <div ref={groupListRef} onScroll={onListScroll} className={'max-h-[300px] overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
                         {groupSongs(openGroup).slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                           return (
-                            <div key={key} data-key={key} className={'flex items-center gap-2 px-3 py-2.5 transition-colors ' + (dragKey === key ? 'bg-brand-100 shadow-inner' : isCur ? 'bg-brand-50' : '')}>
+                            <div key={key} data-key={key} className={'flex items-center gap-2 px-3 py-2.5 transition-colors ' + (dragKey === key ? 'bg-brand-100 shadow-inner' : isCur ? (darkMode ? 'bg-white/15' : 'bg-brand-50') : '')}>
                               {reorder && (
                                 <button onPointerDown={startDrag(key)} onPointerMove={onGroupDragMove} onPointerUp={endGroupDrag} onPointerCancel={endGroupDrag} aria-label={t('mpl_reorder')} className="p-1.5 -ml-1 shrink-0 text-gray-400 hover:text-brand-600 touch-none select-none cursor-grab active:cursor-grabbing">
                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><line x1="4" y1="8" x2="20" y2="8" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="16" x2="20" y2="16" /></svg>
@@ -933,7 +941,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 </div>
               )}
             </div>
-          </>
+          </div>
         )}
 
         {/* Long-press action menu: play · favorite · add to a new list · delete. */}
@@ -1031,7 +1039,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     return (
                       <button key={g.id} onClick={() => inGroup(g.id, curKey, curFile)} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50">
                         <span className={'w-5 h-5 shrink-0 rounded border inline-flex items-center justify-center ' + (member ? 'bg-brand-600 border-brand-600 text-white' : 'border-gray-300')}>{member && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M20 6 9 17l-5-5" /></svg>}</span>
-                        {g.id === 'fav' && <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 shrink-0 text-amber-500"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>}
+                        {g.id === 'fav'
+                          ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 shrink-0 text-amber-500"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>
+                          : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0 text-gray-400"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>}
                         <span className="flex-1 min-w-0 text-sm text-gray-800 truncate">{g.name}</span>
                       </button>
                     )
