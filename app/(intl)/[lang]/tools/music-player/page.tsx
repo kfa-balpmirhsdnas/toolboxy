@@ -187,6 +187,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const dirRef = useRef<HTMLInputElement>(null)
   const positionsRef = useRef<Record<string, number>>({})
   const resumePosRef = useRef(0)
+  const suppressPlayRef = useRef(false) // set when restoring the last track on refresh (load it paused)
   const posSaveTsRef = useRef(0)
   const sleepRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const savedRef = useRef<Set<string>>(new Set())
@@ -230,8 +231,16 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       if (!alive || !items.length) return
       const restored = items.map((it) => ({ name: it.name, size: it.size, file: it.blob ? new File([it.blob], it.name, { type: it.type }) : null }))
       setHistory((h) => { const seen = new Set(h.map((x) => x.name + '|' + x.size)); return [...h, ...restored.filter((r) => !seen.has(r.name + '|' + r.size))].slice(0, 999) })
+      // Resume-on-refresh: show the last-played track instead of an empty player. If its blob is
+      // cached, load it paused at the saved position; otherwise at least show its title/artist.
+      try {
+        const lastKey = localStorage.getItem('mp_last_v1')
+        const it = lastKey ? restored.find((r) => r.name + '|' + r.size === lastKey) : null
+        if (it) { if (it.file) load(it.file, false, false); else setBase(it.name.replace(/\.[^.]+$/, '') || it.name) }
+      } catch { /* ignore */ }
     })
     return () => { alive = false }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const writePositions = () => { try { localStorage.setItem('mp_pos_v1', JSON.stringify(positionsRef.current)) } catch { /* ignore */ } }
@@ -245,14 +254,16 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const clearPos = () => { const key = curFile ? curFile.name + '|' + curFile.size : ''; if (key && positionsRef.current[key] != null) { delete positionsRef.current[key]; writePositions() } }
 
   // ---- load a track ----
-  const load = useCallback((f: File, advance = false) => {
+  const load = useCallback((f: File, advance = false, autoplay = true) => {
     try {
       if (/^(image|video|text)\//.test(f.type)) { setNotice({ msg: `${f.name} — ${f.type}`, err: true }); return } // clearly not audio
+      suppressPlayRef.current = !autoplay // restore-on-refresh loads the track paused
       setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
       setBase(f.name.replace(/\.[^.]+$/, '') || f.name)
       setCur(0)
       resumePosRef.current = positionsRef.current[f.name + '|' + f.size] || 0
       setCurFile(f)
+      try { localStorage.setItem('mp_last_v1', f.name + '|' + f.size) } catch { /* ignore */ } // remember for resume-on-refresh
       // Playing a track that's already in the list keeps its position; only a brand-new file goes on top.
       if (!advance) setHistory((h) => h.some((x) => x.name === f.name && x.size === f.size)
         ? h.map((x) => (x.name === f.name && x.size === f.size ? { name: f.name, size: f.size, file: f } : x))
@@ -510,7 +521,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
         className="flex-1 min-w-0 flex items-center gap-2 text-left select-none [-webkit-touch-callout:none] [-webkit-user-select:none]">{trackInner(h)}</button>
     : <label htmlFor="mp-folder" title={t('mp_reopen')} className="flex-1 min-w-0 flex items-center gap-2 text-left cursor-pointer">{trackInner(h)}</label>
 
-  const clearAll = () => { setHistory([]); setSaved(new Set()); setCurFile(null); setUrl((u) => { if (u) URL.revokeObjectURL(u); return '' }); setBase(''); setPlaying(false); try { localStorage.removeItem('mp_saved_v1') } catch { /* ignore */ } mhClear() }
+  const clearAll = () => { setHistory([]); setSaved(new Set()); setCurFile(null); setUrl((u) => { if (u) URL.revokeObjectURL(u); return '' }); setBase(''); setPlaying(false); try { localStorage.removeItem('mp_saved_v1'); localStorage.removeItem('mp_last_v1') } catch { /* ignore */ } mhClear() }
 
   // ---- file inputs / drag-drop ----
   const addFiles = useCallback((list: FileList | File[] | null, trusted = false) => {
@@ -599,7 +610,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
             if (curFile && a.duration > 0 && isFinite(a.duration)) { const k = curFile.name + '|' + curFile.size; durLoadedRef.current.add(k); setDurs((p) => ({ ...p, [k]: a.duration })) }
             if (resumePosRef.current > 1 && a.duration && resumePosRef.current < a.duration - 2) { try { a.currentTime = resumePosRef.current } catch { /* ignore */ } }
             resumePosRef.current = 0
-            a.play().catch(() => {})
+            if (suppressPlayRef.current) suppressPlayRef.current = false // restored on refresh → stay paused
+            else a.play().catch(() => {})
           }}
           onPlay={() => { setPlaying(true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'playing' } catch { /* ignore */ } }}
           onPause={(e) => { setPlaying(false); savePos(e.currentTarget.currentTime, true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
