@@ -4246,6 +4246,7 @@
     "mpl_done": "완료",
     "mpl_group_empty": "이 그룹에 담긴 곡이 없어요. ‘곡 추가’로 담으세요",
     "mpl_remove": "그룹에서 빼기",
+    "mpl_gotolist": "목록으로",
     "mp_reopen": "다시 열기",
     "mp_speed": "속도",
     "mp_timer": "취침 타이머",

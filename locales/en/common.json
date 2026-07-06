@@ -3815,6 +3815,7 @@
     "mpl_done": "Done",
     "mpl_group_empty": "No tracks in this group yet. Use “Add tracks”",
     "mpl_remove": "Remove from group",
+    "mpl_gotolist": "Go to list",
     "mp_reopen": "Re-open",
     "mp_speed": "Speed",
     "mp_timer": "Sleep timer",
