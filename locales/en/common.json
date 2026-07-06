@@ -4991,6 +4991,8 @@
     "uz_more": "Show {n} more",
     "uz_less": "Show less",
     "uz_extracted": "✓ Extracted {n} files into the “{folder}” folder.",
+    "uz_write_err": "Couldn't save to the folder: {msg}",
+    "uz_partial": "{n} file(s) couldn't be saved (names with unsupported characters). The rest were saved to the folder.",
     "zf_done": "✓ Compressed {n} files into “{name}” and downloaded it.",
     "uz_makefolder": "Auto-create a folder named after the zip",
     "zf_method": "Compression",

@@ -75,9 +75,13 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
     trackToolDownload('unzip', 'file')
   }
 
+  // Sanitize a single path segment so names illegal on the OS (Windows: \ / : * ? " < > |,
+  // and trailing dots/spaces) don't make getFileHandle/getDirectoryHandle throw.
+  const cleanSeg = (s: string) => s.replace(/[\\/:*?"<>|]+/g, '_').replace(/[. ]+$/, '') || '_'
+
   // Write one entry into a chosen directory, creating sub-folders for nested paths.
   async function writeInto(dir: FileSystemDirectoryHandle, pathStr: string, data: Uint8Array) {
-    const parts = pathStr.split('/').filter(Boolean)
+    const parts = pathStr.split('/').filter(Boolean).map(cleanSeg)
     const fname = parts.pop()!
     let d = dir
     for (const p of parts) d = await d.getDirectoryHandle(p, { create: true })
@@ -87,27 +91,40 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
   }
 
   async function extractAll() {
+    setError(''); setDone(null)
     // Preferred (desktop Chromium): create a folder named after the zip and extract into it.
     const picker = (window as unknown as { showDirectoryPicker?: (o?: object) => Promise<FileSystemDirectoryHandle> }).showDirectoryPicker
     if (picker) {
-      try {
-        const root = await picker({ mode: 'readwrite' })
-        let target = root, label = root.name
-        if (makeFolder) {
-          const folder = (name.replace(/\.zip$/i, '') || 'extracted').replace(/[\\/:*?"<>|]+/g, '_')
-          target = await root.getDirectoryHandle(folder, { create: true })
-          label = `${root.name}/${folder}`
+      let root: FileSystemDirectoryHandle | null = null
+      try { root = await picker({ mode: 'readwrite' }) }
+      catch (err) { if ((err as { name?: string }).name === 'AbortError') return; console.error(err) } // picker unusable → fall back below
+      if (root) {
+        // A folder was chosen: extract into it and NEVER silently dump to Downloads (that split
+        // the output — folder here, files in Downloads — and confused users). Surface failures instead.
+        try {
+          let target = root, label = root.name
+          if (makeFolder) {
+            const folder = cleanSeg(name.replace(/\.zip$/i, '') || 'extracted')
+            target = await root.getDirectoryHandle(folder, { create: true })
+            label = `${root.name}/${folder}`
+          }
+          let ok = 0; const failed: string[] = []
+          for (const e of entries) {
+            try { await writeInto(target, e.name, e.data); ok++ }
+            catch (we) { console.error('write failed:', e.name, we); failed.push(e.name) }
+          }
+          if (ok === 0) { setError(t('uz_write_err', { msg: failed.length ? failed[0] : '—' })); return }
+          setDone({ folder: label, n: ok })
+          if (failed.length) setError(t('uz_partial', { n: failed.length }))
+          trackToolDownload('unzip', 'folder')
+        } catch (err) {
+          // Folder creation / permission failed entirely — tell the user rather than dumping to Downloads.
+          setError(t('uz_write_err', { msg: (err as Error)?.message || String(err) }))
         }
-        for (const e of entries) await writeInto(target, e.name, e.data)
-        setDone({ folder: label, n: entries.length }) // include the picked parent so it's easy to locate
-        trackToolDownload('unzip', 'folder')
         return
-      } catch (err) {
-        if ((err as { name?: string }).name === 'AbortError') return // user cancelled the picker
-        console.error(err) // fall through to per-file download
       }
     }
-    // Fallback (Firefox/Safari/mobile): download each file individually.
+    // Fallback (Firefox/Safari/mobile, or no picker): download each file individually.
     entries.forEach((e, i) => setTimeout(() => download(e), i * 200))
   }
 
