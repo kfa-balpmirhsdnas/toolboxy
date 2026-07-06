@@ -4229,7 +4229,7 @@
     "mpl_search": "検索",
     "mpl_click": "クリックしてフォルダを開く",
     "mpl_addto_pl": "プレイリストに追加",
-    "mpl_clear_list": "ファイル一覧を全て削除",
+    "mpl_clear_list": "一覧＋再生キャッシュを消去",
     "mpl_autosave_opt": "曲を自動保存（更新後すぐ再生）",
     "mpl_storage": "ストレージ使用量: {used} / {total}",
     "mpl_drop_cache": "再生キャッシュを消去（一覧は保持）",

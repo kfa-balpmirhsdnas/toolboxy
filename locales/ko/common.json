@@ -4256,7 +4256,7 @@
     "mpl_search": "검색",
     "mpl_click": "클릭해서 폴더 열기",
     "mpl_addto_pl": "플레이리스트에 추가",
-    "mpl_clear_list": "파일 목록 전체 삭제",
+    "mpl_clear_list": "목록 + 재생 캐시 비우기",
     "mpl_autosave_opt": "곡 자동 저장 (새로고침 후 바로 재생)",
     "mpl_storage": "저장 사용량: {used} / {total}",
     "mpl_drop_cache": "재생 캐시 비우기 (목록 유지)",

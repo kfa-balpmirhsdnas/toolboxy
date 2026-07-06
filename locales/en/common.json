@@ -3825,7 +3825,7 @@
     "mpl_search": "Search",
     "mpl_click": "Click to open a folder",
     "mpl_addto_pl": "Add to playlist",
-    "mpl_clear_list": "Clear the whole file list",
+    "mpl_clear_list": "Clear list + playback cache",
     "mpl_autosave_opt": "Auto-save tracks (replay after refresh)",
     "mpl_storage": "Storage used: {used} / {total}",
     "mpl_drop_cache": "Clear playback cache (keep list)",
