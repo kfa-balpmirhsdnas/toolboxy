@@ -647,14 +647,14 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     <div ref={eqWrapRef} className="h-24 flex items-end justify-center gap-[3px]">
                       {Array.from({ length: 24 }).map((_, i) => {
                         const hue = Math.round(200 + (i / 24) * 160) // teal → blue → violet → pink
-                        return <span key={i} className="flex-1 max-w-[7px] rounded-[1px] transition-[height] duration-75 ease-out" style={{ height: '5%', background: `repeating-linear-gradient(to top, hsl(${hue} 95% 60%) 0, hsl(${hue} 95% 60%) 2.5px, transparent 2.5px, transparent 4px)`, boxShadow: `0 0 6px hsl(${hue} 95% 65% / 0.45)` }} />
+                        return <span key={i} className="flex-1 max-w-[7px] rounded-[1px] transition-[height] duration-75 ease-out" style={{ height: '5%', background: `repeating-linear-gradient(to top, hsl(${hue} 95% 60%) 0, hsl(${hue} 95% 60%) 1.5px, transparent 1.5px, transparent 2.5px)`, boxShadow: `0 0 6px hsl(${hue} 95% 65% / 0.45)` }} />
                       })}
                     </div>
                     {/* Reflection: the same stacked boxes mirrored, moving in lockstep (same height). */}
                     <div ref={eqReflRef} className="h-10 flex items-start justify-center gap-[3px] opacity-40 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.85),transparent_95%)]">
                       {Array.from({ length: 24 }).map((_, i) => {
                         const hue = Math.round(200 + (i / 24) * 160)
-                        return <span key={i} className="flex-1 max-w-[7px] rounded-[1px] transition-[height] duration-75 ease-out" style={{ height: '5%', background: `repeating-linear-gradient(to bottom, hsl(${hue} 95% 60%) 0, hsl(${hue} 95% 60%) 2.5px, transparent 2.5px, transparent 4px)` }} />
+                        return <span key={i} className="flex-1 max-w-[7px] rounded-[1px] transition-[height] duration-75 ease-out" style={{ height: '5%', background: `repeating-linear-gradient(to bottom, hsl(${hue} 95% 60%) 0, hsl(${hue} 95% 60%) 1.5px, transparent 1.5px, transparent 2.5px)` }} />
                       })}
                     </div>
                   </div>
