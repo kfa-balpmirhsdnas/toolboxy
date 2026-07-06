@@ -194,7 +194,6 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const eqRafRef = useRef<number>(0)
   const eqWrapRef = useRef<HTMLDivElement>(null)
   const eqReflRef = useRef<HTMLDivElement>(null) // faint reflection under the equalizer
-  const lyricsBoxRef = useRef<HTMLDivElement>(null)
   const groupsRef = useRef(groups)
   useEffect(() => { groupsRef.current = groups }, [groups])
   const pressRef = useRef<ReturnType<typeof setTimeout> | null>(null) // long-press timer
@@ -394,13 +393,6 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const seekTo = (time: number) => { const a = media(); if (a) a.currentTime = time }
   const seekBy = (d: number) => { const a = media(); if (a) a.currentTime = Math.max(0, Math.min(a.duration || a.currentTime, a.currentTime + d)) }
   const setVol = (v: number) => { const a = media(); if (a) a.volume = v; setVolume(v) }
-
-  // Keep the active synced-lyric line centred in its box (scrolls only the box, not the page).
-  useEffect(() => {
-    if (activeLyric < 0 || !lyricsBoxRef.current) return
-    const box = lyricsBoxRef.current; const el = box.children[activeLyric] as HTMLElement | undefined
-    if (el) box.scrollTo({ top: el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2, behavior: 'smooth' })
-  }, [activeLyric])
 
   // apply speed / volume / loop to the element
   useEffect(() => { const a = audioRef.current; if (a) a.playbackRate = speed }, [speed, url])
@@ -797,13 +789,18 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                       </div>
                     </div>
                   )}
-                  {/* No submenu open → use the reserved slot for the live (synced) lyric line. */}
-                  {panel === 'none' && lyricsLines && activeLyric >= 0 && (
-                    <div className="px-5 text-center text-white select-none" aria-hidden>
-                      {[activeLyric - 1, activeLyric, activeLyric + 1].map((idx, k) => {
-                        const l = lyricsLines[idx]
-                        return <p key={k} className={'truncate h-6 leading-6 transition-all ' + (idx === activeLyric ? 'text-sm font-semibold' : 'text-xs text-white/45')}>{l ? (l.text || '♪') : ''}</p>
-                      })}
+                  {/* No submenu open → the reserved slot shows the lyrics: a synced karaoke line
+                      (prev/current/next) when timed, otherwise the plain lyrics scrolling. */}
+                  {panel === 'none' && (lyricsLines || lyrics) && (
+                    <div className="px-5 h-full flex flex-col justify-center text-center text-white select-none" aria-hidden>
+                      {lyricsLines ? (
+                        (activeLyric >= 0 ? [activeLyric - 1, activeLyric, activeLyric + 1] : [0, 1, 2]).map((idx, k) => {
+                          const l = lyricsLines[idx]
+                          return <p key={k} className={'truncate h-6 leading-6 transition-all ' + (idx === activeLyric ? 'text-sm font-semibold' : 'text-xs text-white/40')}>{l ? (l.text || '♪') : ''}</p>
+                        })
+                      ) : (
+                        <div className="max-h-full overflow-auto whitespace-pre-wrap text-xs leading-5 text-white/70">{lyrics}</div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -829,22 +826,6 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 </button>
               </div>
             </div>
-
-            {/* ---- Lyrics (lrclib.net): time-synced (active line highlighted + auto-scroll) or plain ---- */}
-            {(lyricsLines || lyrics) && (
-              <div className={'rounded-2xl border p-4 ' + (darkMode ? 'bg-gray-900 border-gray-700' : 'border-gray-200')}>
-                <p className={'text-xs font-semibold mb-2 ' + (darkMode ? 'text-gray-400' : 'text-gray-500')}>{t('mpl_lyrics')}</p>
-                {lyricsLines ? (
-                  <div ref={lyricsBoxRef} className="max-h-72 overflow-auto space-y-1.5 py-2">
-                    {lyricsLines.map((l, i) => (
-                      <p key={i} className={'text-center text-sm transition-colors ' + (i === activeLyric ? 'text-brand-500 font-semibold' : darkMode ? 'text-gray-500' : 'text-gray-400')}>{l.text || '♪'}</p>
-                    ))}
-                  </div>
-                ) : (
-                  <pre className={'whitespace-pre-wrap font-sans text-sm leading-relaxed max-h-72 overflow-auto ' + (darkMode ? 'text-gray-300' : 'text-gray-700')}>{lyrics}</pre>
-                )}
-              </div>
-            )}
 
             {/* ---- Playlist (standard list style; dark theme follows the player) ---- */}
             <div ref={playlistRef} className={'rounded-2xl border overflow-hidden scroll-mt-16 ' + (darkMode ? 'bg-gray-900 border-gray-700' : 'border-gray-200')}>
