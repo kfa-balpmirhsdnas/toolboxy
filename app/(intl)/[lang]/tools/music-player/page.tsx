@@ -558,8 +558,13 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       const add = files.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f }))
       return [...add, ...merged].slice(0, 999)
     })
-    mhPutManyMeta(files.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type })))
-    if (autoSaveRef.current) mhAutoSaveMany(files) // cache blobs in the background so the whole list replays after refresh
+    // Write metadata first, THEN the blobs — never concurrently. mhPutManyMeta does a read-modify-write
+    // (it re-writes each row preserving prev.blob); run alongside mhAutoSaveMany it races and, once the DB
+    // isn't empty, its meta-only write lands last and clobbers the just-cached blob — so the 2nd folder
+    // onward silently lost its cache. Chaining guarantees the blob write always lands last.
+    const metas = files.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type }))
+    if (autoSaveRef.current) mhPutManyMeta(metas).then(() => mhAutoSaveMany(files)) // cache blobs so the whole list replays after refresh
+    else mhPutManyMeta(metas)
     setRenderN(80) // only render the first window so a big folder doesn't freeze the UI
     load(files[0])
   }, [load])
