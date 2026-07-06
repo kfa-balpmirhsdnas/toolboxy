@@ -7000,6 +7000,7 @@
     "np_download": "Download .txt",
     "np_save": "Save",
     "np_copied_all": "Copied the whole note to the clipboard.",
+    "np_cut_all": "Cut the whole document.",
     "np_save_txt": "Save this tab as .txt",
     "np_save_zip": "Save all tabs as ZIP",
     "np_copied": "Copied!",

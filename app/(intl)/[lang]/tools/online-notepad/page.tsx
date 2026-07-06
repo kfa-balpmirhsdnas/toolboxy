@@ -166,7 +166,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const [activeId, setActiveId] = useState(first.id)
   const [savedAt, setSavedAt] = useState('')
   const [savingVisible, setSavingVisible] = useState(false) // "saving…" auto-hides after 2s
-  const [copied, setCopied] = useState(false)
+  const [toast, setToast] = useState('') // brief bottom notification (e.g. after cut)
   const [cutDone, setCutDone] = useState(false)
   const [renaming, setRenaming] = useState<string | null>(null)
   const [showFind, setShowFind] = useState(false)
@@ -810,10 +810,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     a.click()
     URL.revokeObjectURL(url)
   }
-  function copy() {
-    if (!text) return
-    navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000)
-  }
   // Cut the whole document: copy to clipboard, then clear. Snapshots the pre-cut text to history first so undo restores it.
   function cut() {
     if (!text) return
@@ -822,6 +818,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     commit(text)
     applyText('', 0)
     setCutDone(true); setTimeout(() => setCutDone(false), 2000)
+    setToast(t('np_cut_all')); setTimeout(() => setToast(''), 2500)
   }
 
   const chars = text.length
@@ -1004,9 +1001,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               <button onClick={redo} disabled={!canRedo} title={t('np_redo')} aria-label={t('np_redo')} className={iconBtn}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M15 14l5-5-5-5" /><path d="M20 9H9a5 5 0 0 0 0 10h1" /></svg>
               </button>
-              <button onClick={copy} disabled={!text} title={t('ui_copy')} aria-label={t('ui_copy')} className={iconBtn}>
-                <ToolIcon name={copied ? 'check' : 'copy'} className="w-4 h-4" />
-              </button>
               <button onClick={cut} disabled={!text} title={t('ui_cut')} aria-label={t('ui_cut')} className={iconBtn}>
                 {cutDone
                   ? <ToolIcon name="check" className="w-4 h-4" />
@@ -1040,6 +1034,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
 
         {/* Mobile display settings — full-width row below the bar (uses the whole width). */}
         {showSettings && <div className="sm:hidden flex items-center gap-2 flex-wrap text-xs text-gray-500">{settingsControls}</div>}
+
+        {/* Brief bottom notification (e.g. after cutting the whole document) */}
+        {toast && (
+          <div role="status" className="fixed left-1/2 -translate-x-1/2 bottom-6 z-50 px-4 py-2 rounded-lg bg-gray-900/90 text-white text-sm shadow-lg pointer-events-none">{toast}</div>
+        )}
 
         {showFind && (
           <div className="flex flex-wrap items-center gap-2 p-2 rounded-xl bg-gray-50 border border-gray-200">
