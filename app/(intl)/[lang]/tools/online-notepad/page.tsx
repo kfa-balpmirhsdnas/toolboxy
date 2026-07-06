@@ -960,7 +960,7 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
         </div>
 
         <div className="flex items-start justify-between gap-3">
-          <div className="flex flex-1 items-center gap-x-3 gap-y-2 flex-wrap sm:flex-nowrap min-w-0">
+          <div className="flex flex-1 items-center gap-x-1.5 gap-y-2 flex-wrap sm:flex-nowrap min-w-0">
             <div className="flex flex-wrap items-center gap-0.5 gap-y-1">
               {/* Settings (cog) — merged: save (txt/zip) on top + auto-convert toggles below */}
               <div className="relative">

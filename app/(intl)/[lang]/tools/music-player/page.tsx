@@ -269,9 +269,12 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const shownAll = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
   const shown = query.trim() ? shownAll.filter((h) => h.name.toLowerCase().includes(query.trim().toLowerCase())) : shownAll
   // Display metadata for the now-playing card: ID3 (local) → iTunes (network) → "Artist - Title" filename.
-  const fnParts = (base || '').split(/\s+[-–—]\s+/)
+  // Drop a leading track-number prefix first (e.g. "005 - 윤하 - 포인트 니모" → "윤하 - 포인트 니모"),
+  // otherwise the number would be parsed as the artist.
+  const cleanBase = (base || '').replace(/^\s*\d{1,3}\s*[.)\-–—]\s+/, '')
+  const fnParts = cleanBase.split(/\s+[-–—]\s+/)
   const coverSrc = id3?.cover || artUrl
-  const dispTitle = id3?.title || itTitle || (fnParts.length >= 2 ? fnParts.slice(1).join(' - ') : base)
+  const dispTitle = id3?.title || itTitle || (fnParts.length >= 2 ? fnParts.slice(1).join(' - ') : cleanBase)
   const dispArtist = id3?.artist || itArtist || (fnParts.length >= 2 ? fnParts[0] : '')
   const activeLyric = lyricsLines ? lyricsLines.reduce((a, l, i) => (l.t <= cur + 0.25 ? i : a), -1) : -1 // current synced line
   const allCount = history.length
@@ -647,14 +650,14 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     <div ref={eqWrapRef} className="h-24 flex items-end justify-center gap-[3px]">
                       {Array.from({ length: 24 }).map((_, i) => {
                         const hue = Math.round(200 + (i / 24) * 160) // teal → blue → violet → pink
-                        return <span key={i} className="flex-1 max-w-[7px] rounded-[1px] transition-[height] duration-75 ease-out" style={{ height: '5%', background: `repeating-linear-gradient(to top, hsl(${hue} 95% 60%) 0, hsl(${hue} 95% 60%) 1.5px, transparent 1.5px, transparent 2.5px)`, boxShadow: `0 0 6px hsl(${hue} 95% 65% / 0.45)` }} />
+                        return <span key={i} className="flex-1 max-w-[7px] rounded-[1px] transition-[height] duration-75 ease-out" style={{ height: '5%', background: `repeating-linear-gradient(to top, hsl(${hue} 95% 60%) 0, hsl(${hue} 95% 60%) 2px, transparent 2px, transparent 3px)`, boxShadow: `0 0 6px hsl(${hue} 95% 65% / 0.45)` }} />
                       })}
                     </div>
                     {/* Reflection: the same stacked boxes mirrored, moving in lockstep (same height). */}
                     <div ref={eqReflRef} className="h-10 flex items-start justify-center gap-[3px] opacity-40 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.85),transparent_95%)]">
                       {Array.from({ length: 24 }).map((_, i) => {
                         const hue = Math.round(200 + (i / 24) * 160)
-                        return <span key={i} className="flex-1 max-w-[7px] rounded-[1px] transition-[height] duration-75 ease-out" style={{ height: '5%', background: `repeating-linear-gradient(to bottom, hsl(${hue} 95% 60%) 0, hsl(${hue} 95% 60%) 1.5px, transparent 1.5px, transparent 2.5px)` }} />
+                        return <span key={i} className="flex-1 max-w-[7px] rounded-[1px] transition-[height] duration-75 ease-out" style={{ height: '5%', background: `repeating-linear-gradient(to bottom, hsl(${hue} 95% 60%) 0, hsl(${hue} 95% 60%) 2px, transparent 2px, transparent 3px)` }} />
                       })}
                     </div>
                   </div>
