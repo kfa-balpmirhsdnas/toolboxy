@@ -123,6 +123,11 @@ const VECTOR = {
     ['circle', { cx: '12', cy: '12', r: '10' }],
     ['path', { d: 'm10 8 6 4-6 4V8z' }],
   ],
+  'music-player': [ // music (lucide)
+    ['path', { d: 'M9 18V5l12-2v13' }],
+    ['circle', { cx: '6', cy: '18', r: '3' }],
+    ['circle', { cx: '18', cy: '16', r: '3' }],
+  ],
   'calculator': [ // calculator (lucide)
     ['rect', { x: '4', y: '2', width: '16', height: '20', rx: '2' }],
     ['line', { x1: '8', x2: '16', y1: '6', y2: '6' }],

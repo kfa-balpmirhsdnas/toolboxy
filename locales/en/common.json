@@ -3818,6 +3818,8 @@
     "mpl_gotolist": "Go to list",
     "mpl_settings": "Settings",
     "mpl_eq_opt": "Show equalizer when there's no album art",
+    "mpl_dark_opt": "Dark mode",
+    "mpl_art_opt": "Auto album art (search by title)",
     "mpl_newlist": "Create new list",
     "mpl_m_play": "Play",
     "mpl_m_fav": "Add to Favorites",

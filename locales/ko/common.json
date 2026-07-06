@@ -4249,6 +4249,8 @@
     "mpl_gotolist": "목록으로",
     "mpl_settings": "설정",
     "mpl_eq_opt": "곡 이미지 없으면 이퀄라이저 표시",
+    "mpl_dark_opt": "다크 모드",
+    "mpl_art_opt": "앨범 표지 자동 표시 (제목으로 검색)",
     "mpl_newlist": "새 리스트 만들기",
     "mpl_m_play": "플레이 하기",
     "mpl_m_fav": "즐겨찾기에 추가하기",

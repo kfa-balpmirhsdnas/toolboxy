@@ -4222,6 +4222,8 @@
     "mpl_gotolist": "リストへ",
     "mpl_settings": "設定",
     "mpl_eq_opt": "アルバムアートがない場合イコライザーを表示",
+    "mpl_dark_opt": "ダークモード",
+    "mpl_art_opt": "アルバムアート自動表示（タイトル検索）",
     "mpl_newlist": "新しいリストを作成",
     "mpl_m_play": "再生する",
     "mpl_m_fav": "お気に入りに追加",

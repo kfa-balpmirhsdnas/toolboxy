@@ -664,11 +664,11 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
       deleteBack(1)
       const loop = () => {
         if (!bsRef.current.active) return
-        deleteBack(Math.min(10, 1 + Math.floor(bsRef.current.tick / 5))) // 1 → 10 chars/tick as it speeds up
+        deleteBack(Math.min(28, 2 + Math.floor(bsRef.current.tick / 2))) // 2 → 28 chars/tick, ramps up fast
         bsRef.current.tick++
-        bsRef.current.timer = setTimeout(loop, 40)
+        bsRef.current.timer = setTimeout(loop, 30)
       }
-      bsRef.current.timer = setTimeout(loop, 300) // hold delay before the accelerating repeat kicks in
+      bsRef.current.timer = setTimeout(loop, 260) // hold delay before the accelerating repeat kicks in
     }
     else if (!mod && !e.nativeEvent.isComposing && e.key === 'Delete') { requestAnimationFrame(renumberAfterDelete) }
   }
