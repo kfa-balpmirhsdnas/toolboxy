@@ -7,6 +7,7 @@ import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 import { mhList, mhPutMeta, mhPutManyMeta, mhSave, mhSetBlob, mhDelete, mhClear } from '@/lib/tools/musicHistory'
+import { readId3 } from '@/lib/tools/id3'
 
 const tool = getToolBySlug('music-player')!
 const AUDIO_RE = /\.(mp3|m4a|aac|flac|ogg|oga|wav|opus|weba|wma|3gp|amr|mid)$/i
@@ -43,7 +44,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [eqEnabled, setEqEnabled] = useState(false) // show an equalizer (instead of the note) while playing
   const [darkMode, setDarkMode] = useState(false) // dark player theme (default off)
   const [albumArt, setAlbumArt] = useState(true) // fetch cover art by title (default on)
-  const [artUrl, setArtUrl] = useState('') // resolved cover-art URL for the current track
+  const [artUrl, setArtUrl] = useState('') // iTunes cover-art URL (fallback)
+  const [itTitle, setItTitle] = useState('') // iTunes title (fallback)
+  const [itArtist, setItArtist] = useState('') // iTunes artist (fallback)
+  const [id3, setId3] = useState<{ title?: string; artist?: string; cover?: string } | null>(null) // local ID3v2 tags
   const [navHi, setNavHi] = useState<'prev' | 'next' | null>(null) // prev/next momentary highlight
   const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [lyricsOn, setLyricsOn] = useState(true) // look up lyrics for the current track (default on)
@@ -67,34 +71,48 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const toggleLyrics = () => setLyricsOn((v) => { const n = !v; try { localStorage.setItem('mp_lyrics_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const flashNav = (dir: 'prev' | 'next') => { setNavHi(dir); if (navTimer.current) clearTimeout(navTimer.current); navTimer.current = setTimeout(() => setNavHi(null), 3000) }
   const showToast = (msg: string) => { setToast(msg); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(''), 4500) }
-  // Cover art: look the title up on the iTunes Search API (only the title text is sent). Off → no request.
+  // ---- Metadata: 1) local ID3v2 tags (primary), 2) iTunes (fallback), 3) filename ----
+  // Primary/local: read the current file's embedded ID3 tags (title/artist + cover). No network.
   useEffect(() => {
-    if (!albumArt || !base) { setArtUrl(''); return }
+    let alive = true; let coverUrl = ''
+    setId3(null)
+    if (curFile) readId3(curFile).then((m) => {
+      if (!alive) return
+      if (m.cover) coverUrl = URL.createObjectURL(m.cover)
+      setId3({ title: m.title, artist: m.artist, cover: coverUrl })
+    }).catch(() => { /* ignore */ })
+    return () => { alive = false; if (coverUrl) URL.revokeObjectURL(coverUrl) }
+  }, [curFile])
+  // Fallback/network: only when album art is on AND the file has no embedded cover — sends title text.
+  useEffect(() => {
+    setArtUrl(''); setItTitle(''); setItArtist('')
+    if (!albumArt || !base || id3?.cover) return
     let alive = true
     const q = base.replace(/[_-]+/g, ' ').replace(/\b(official|audio|lyrics?|mv|hd|4k)\b/gi, '').replace(/\s+/g, ' ').trim().slice(0, 60)
-    if (!q) { setArtUrl(''); return }
+    if (!q) return
     fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=1`)
       .then((r) => r.json())
-      .then((d) => { if (!alive) return; const a = d?.results?.[0]?.artworkUrl100; setArtUrl(a ? String(a).replace('100x100', '600x600') : '') })
-      .catch(() => { if (alive) setArtUrl('') })
+      .then((d) => { if (!alive) return; const r = d?.results?.[0]; if (!r) return; if (r.artworkUrl100) setArtUrl(String(r.artworkUrl100).replace('100x100', '600x600')); setItTitle(r.trackName || ''); setItArtist(r.artistName || '') })
+      .catch(() => { /* ignore */ })
     return () => { alive = false }
-  }, [base, albumArt])
-  // Lyrics: needs an "Artist - Title" filename. Looks it up on lyrics.ovh (title/artist text only).
+  }, [base, albumArt, id3])
+  // Lyrics: prefer ID3 artist/title, else split an "Artist - Title" filename. Looks it up on lyrics.ovh.
   useEffect(() => {
     setLyrics(null)
-    if (!lyricsOn || !base) return
-    const cleaned = base.replace(/[_]+/g, ' ').replace(/\s+/g, ' ').trim()
-    const m = cleaned.split(/\s+[-–—]\s+/)
-    if (m.length < 2) return // no "artist - title" → skip
-    let alive = true
-    const artist = m[0].trim(), title = m.slice(1).join(' - ').replace(/\b(official|audio|lyrics?|mv|hd|4k)\b/gi, '').trim()
+    if (!lyricsOn) return
+    let artist = (id3?.artist || '').trim(), title = (id3?.title || '').trim()
+    if (!artist || !title) {
+      const m = (base || '').replace(/[_]+/g, ' ').replace(/\s+/g, ' ').trim().split(/\s+[-–—]\s+/)
+      if (m.length >= 2) { artist = m[0].trim(); title = m.slice(1).join(' - ').replace(/\b(official|audio|lyrics?|mv|hd|4k)\b/gi, '').trim() }
+    }
     if (!artist || !title) return
+    let alive = true
     fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => { if (alive && d?.lyrics) setLyrics(String(d.lyrics).trim()) })
       .catch(() => { /* ignore */ })
     return () => { alive = false }
-  }, [base, lyricsOn])
+  }, [base, id3, lyricsOn])
   const [reorder, setReorder] = useState(false) // playlist reorder mode (drag handle per row)
   const [dragKey, setDragKey] = useState<string | null>(null) // row currently being dragged
   // ---- groups (the 리스트/플레이리스트 tab) ----
@@ -202,6 +220,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   // Playlist filtered by the open tab; next/prev cycle it (skipping metadata-only entries with no blob).
   const shownAll = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
   const shown = query.trim() ? shownAll.filter((h) => h.name.toLowerCase().includes(query.trim().toLowerCase())) : shownAll
+  // Display metadata for the now-playing card: ID3 (local) → iTunes (network) → "Artist - Title" filename.
+  const fnParts = (base || '').split(/\s+[-–—]\s+/)
+  const coverSrc = id3?.cover || artUrl
+  const dispTitle = id3?.title || itTitle || (fnParts.length >= 2 ? fnParts.slice(1).join(' - ') : base)
+  const dispArtist = id3?.artist || itArtist || (fnParts.length >= 2 ? fnParts[0] : '')
   const allCount = history.length
   const savedCount = history.filter((h) => saved.has(h.name + '|' + h.size)).length
   const firstPlayable = history.find((h) => h.file) // for the play button when nothing is loaded yet
@@ -432,7 +455,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     const ms = typeof navigator !== 'undefined' ? (navigator as any).mediaSession : null
     if (!ms) return
     if (!url) { try { ms.metadata = null } catch { /* ignore */ } return }
-    try { const MM = (window as any).MediaMetadata; if (MM) ms.metadata = new MM({ title: base, artist: 'ToolBoxy', artwork: [{ src: '/icons/music-player.png', sizes: '512x512', type: 'image/png' }] }) } catch { /* ignore */ }
+    try { const MM = (window as any).MediaMetadata; if (MM) ms.metadata = new MM({ title: dispTitle || base, artist: dispArtist || 'ToolBoxy', artwork: [{ src: coverSrc || '/icons/music-player.png', sizes: '512x512', type: coverSrc ? '' : 'image/png' }] }) } catch { /* ignore */ }
     const a = () => audioRef.current
     const set = (action: string, handler: any) => { try { ms.setActionHandler(action, handler) } catch { /* unsupported */ } }
     set('play', () => a()?.play().catch(() => {}))
@@ -445,7 +468,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     return () => { ['play', 'pause', 'previoustrack', 'nexttrack', 'seekbackward', 'seekforward', 'seekto'].forEach((x) => set(x, null)) }
     /* eslint-enable @typescript-eslint/no-explicit-any */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, base])
+  }, [url, base, dispTitle, dispArtist, coverSrc])
 
   // Repeat button now cycles all(A) → one(1) → shuffle → off, so shuffle lives here (its old slot is the timer).
   const cycleRepeat = () => setRepeatMode((m) => (m === 'all' ? 'one' : m === 'one' ? 'shuffle' : m === 'shuffle' ? 'off' : 'all'))
@@ -513,9 +536,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               {/* Album art is a fixed height and the gauge slot below is always reserved, so opening a
                   submenu never resizes anything (no layout shake). */}
               <div className="w-full h-60 flex items-center justify-center rounded-2xl bg-white/10 overflow-hidden">
-                {artUrl ? (
+                {coverSrc ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={artUrl} alt="" className="w-full h-full object-cover" onError={() => setArtUrl('')} />
+                  <img src={coverSrc} alt="" className="w-full h-full object-cover" onError={() => setArtUrl('')} />
                 ) : eqEnabled && playing ? (
                   /* Colorful sound-wave equalizer: many thin bars, spectrum colours, mirrored (grow from centre). */
                   <div className="flex items-center justify-center gap-[3px] h-32 w-full px-6" aria-hidden>
@@ -531,7 +554,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="w-16 h-16 opacity-90"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
                 )}
               </div>
-              <p className="mt-4 text-center font-semibold truncate">{base || t('mp_nothing')}</p>
+              {/* Title + artist (ID3 → iTunes → filename). Artist shows as a smaller second line. */}
+              <div className="mt-4 text-center">
+                <p className="font-semibold truncate">{dispTitle || t('mp_nothing')}</p>
+                {dispArtist && <p className="text-sm text-white/70 truncate mt-0.5">{dispArtist}</p>}
+              </div>
               {/* seek */}
               <input type="range" min={0} max={dur || 0} step={0.1} value={Math.min(cur, dur || 0)} onChange={(e) => seekTo(+e.target.value)} aria-label="seek"
                 className="w-full mt-4 h-1.5 accent-white cursor-pointer" disabled={!url} />
