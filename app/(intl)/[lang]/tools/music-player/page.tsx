@@ -684,7 +684,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                       })}
                     </div>
                     {/* Reflection: the same stacked boxes mirrored, moving in lockstep (same height). */}
-                    <div ref={eqReflRef} className="h-10 flex items-start justify-center gap-[3px] opacity-40 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.85),transparent_95%)]">
+                    <div ref={eqReflRef} className="h-[3.75rem] flex items-start justify-center gap-[3px] opacity-40 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.85),transparent_95%)]">
                       {Array.from({ length: 24 }).map((_, i) => {
                         const hue = Math.round(200 + (i / 24) * 160)
                         return <span key={i} className="flex-1 max-w-[7px] rounded-[1px] transition-[height] duration-75 ease-out" style={{ height: '5%', background: `repeating-linear-gradient(to bottom, hsl(${hue} 95% 60%) 0, hsl(${hue} 95% 60%) 2px, transparent 2px, transparent 3px)` }} />
