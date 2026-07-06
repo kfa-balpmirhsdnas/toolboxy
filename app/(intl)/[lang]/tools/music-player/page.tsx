@@ -47,10 +47,15 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [creating, setCreating] = useState(false) // inline "new group" input open
   const [newName, setNewName] = useState('')
   const [addMode, setAddMode] = useState(false) // group detail: pick songs to add/remove
+  const [menuFor, setMenuFor] = useState<{ key: string; file: File | null; name: string } | null>(null) // long-press "add to group" popup
+  const [menuCreating, setMenuCreating] = useState(false)
+  const [menuNewName, setMenuNewName] = useState('')
 
   const audioRef = useRef<HTMLAudioElement>(null)
   const groupsRef = useRef(groups)
   useEffect(() => { groupsRef.current = groups }, [groups])
+  const pressRef = useRef<ReturnType<typeof setTimeout> | null>(null) // long-press timer
+  const pressStartRef = useRef(0) // when the current press began (to distinguish tap vs long-press on click)
   const dragKeyRef = useRef<string | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null) // now-playing card — scroll target on track click
@@ -220,6 +225,24 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const groupSongs = (id: string) => { const ks = groupKeys(id); return history.filter((h) => ks.has(h.name + '|' + h.size)) }
   const groupName = (id: string) => (id === 'fav' ? t('mpl_fav') : groups.find((g) => g.id === id)?.name || '')
   const inGroup = (id: string, key: string, file: File | null) => (id === 'fav' ? toggleSaved(key, file) : toggleInGroup(id, key, file))
+  // Create a brand-new group from the long-press popup and drop the song straight into it.
+  const createFromMenu = () => {
+    const nm = menuNewName.trim(); if (!nm || !menuFor) { setMenuCreating(false); setMenuNewName(''); return }
+    const key = menuFor.key, file = menuFor.file
+    setGroups((g) => { const ng = [...g, { id: 'g' + Date.now().toString(36), name: nm, keys: [key] }]; saveGroups(ng); return ng })
+    if (file) { const [, sz] = key.split('|'); mhSave({ id: key, name: file.name, size: +sz || file.size, type: file.type }, file) }
+    setMenuNewName(''); setMenuCreating(false)
+  }
+  const closeMenu = () => { setMenuFor(null); setMenuCreating(false); setMenuNewName('') }
+  // Long-press a track → open the "add to group" popup. The play click is suppressed by measuring how
+  // long the press lasted (a held press ≥ 450ms is a long-press, not a tap) — robust to event ordering.
+  const startPress = (h: { name: string; size: number; file: File | null }) => () => {
+    pressStartRef.current = Date.now()
+    if (pressRef.current) clearTimeout(pressRef.current)
+    pressRef.current = setTimeout(() => { pressRef.current = null; setMenuFor({ key: h.name + '|' + h.size, file: h.file, name: h.name }) }, 500)
+  }
+  const cancelPress = () => { if (pressRef.current) { clearTimeout(pressRef.current); pressRef.current = null } }
+  const wasLongPress = () => Date.now() - pressStartRef.current >= 450
 
   // Shared row content (play icon + name/size) reused by the 전체 list and the group views.
   const trackInner = (h: { name: string; size: number; file: File | null }) => {
@@ -239,7 +262,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   }
   // Clickable play/label wrapper: load the track + scroll to the card (dimmed track → re-open folder).
   const trackOpen = (h: { name: string; size: number; file: File | null }) => h.file
-    ? <button onClick={() => { load(h.file!); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }} className="flex-1 min-w-0 flex items-center gap-2 text-left">{trackInner(h)}</button>
+    ? <button
+        onClick={() => { if (wasLongPress()) return; load(h.file!); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
+        onPointerDown={startPress(h)} onPointerUp={cancelPress} onPointerLeave={cancelPress} onPointerCancel={cancelPress}
+        onContextMenu={(e) => e.preventDefault()}
+        className="flex-1 min-w-0 flex items-center gap-2 text-left select-none [-webkit-touch-callout:none]">{trackInner(h)}</button>
     : <label htmlFor="mp-folder" title={t('mp_reopen')} className="flex-1 min-w-0 flex items-center gap-2 text-left cursor-pointer">{trackInner(h)}</label>
 
   const clearAll = () => { setHistory([]); setSaved(new Set()); setCurFile(null); setUrl((u) => { if (u) URL.revokeObjectURL(u); return '' }); setBase(''); setPlaying(false); try { localStorage.removeItem('mp_saved_v1') } catch { /* ignore */ } mhClear() }
@@ -531,20 +558,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   </div>
                 )
               ) : openGroup === null ? (
-                /* ---- 리스트: group list (즐겨찾기 fixed first, then custom groups) ---- */
+                /* ---- 리스트: group list (즐겨찾기 first, custom groups, then + 새 그룹 at the bottom) ---- */
                 <div className="divide-y divide-gray-100">
-                  <div className="p-2">
-                    {creating ? (
-                      <div className="flex items-center gap-2">
-                        {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-                        <input autoFocus value={newName} onChange={(e) => setNewName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') createGroup(); if (e.key === 'Escape') { setCreating(false); setNewName('') } }} placeholder={t('mpl_group_ph')} className="flex-1 min-w-0 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
-                        <button onClick={createGroup} className="px-3 py-1.5 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700">{t('mpl_create')}</button>
-                        <button onClick={() => { setCreating(false); setNewName('') }} aria-label="cancel" className="p-1.5 text-gray-400 hover:text-gray-600"><ToolIcon name="x" className="w-4 h-4" /></button>
-                      </div>
-                    ) : (
-                      <button onClick={() => setCreating(true)} className="w-full inline-flex items-center justify-center gap-1.5 py-2 text-sm font-semibold text-brand-600 hover:bg-brand-50 rounded-lg"><ToolIcon name="plus" className="w-4 h-4" />{t('mpl_newgroup')}</button>
-                    )}
-                  </div>
                   {/* 즐겨찾기 — fixed, can't be deleted */}
                   <button onClick={() => { setOpenGroup('fav'); setAddMode(false) }} className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-gray-50">
                     <span className="w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg bg-amber-50 text-amber-500"><svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg></span>
@@ -563,6 +578,19 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                       <button onClick={() => deleteGroup(g.id)} aria-label="delete group" className="p-1.5 shrink-0 text-gray-300 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>
                     </div>
                   ))}
+                  {/* + 새 그룹 — at the bottom */}
+                  <div className="p-2">
+                    {creating ? (
+                      <div className="flex items-center gap-2">
+                        {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+                        <input autoFocus value={newName} onChange={(e) => setNewName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') createGroup(); if (e.key === 'Escape') { setCreating(false); setNewName('') } }} placeholder={t('mpl_group_ph')} className="flex-1 min-w-0 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                        <button onClick={createGroup} className="px-3 py-1.5 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700">{t('mpl_create')}</button>
+                        <button onClick={() => { setCreating(false); setNewName('') }} aria-label="cancel" className="p-1.5 text-gray-400 hover:text-gray-600"><ToolIcon name="x" className="w-4 h-4" /></button>
+                      </div>
+                    ) : (
+                      <button onClick={() => setCreating(true)} className="w-full inline-flex items-center justify-center gap-1.5 py-2 text-sm font-semibold text-brand-600 hover:bg-brand-50 rounded-lg"><ToolIcon name="plus" className="w-4 h-4" />{t('mpl_newgroup')}</button>
+                    )}
+                  </div>
                 </div>
               ) : (
                 /* ---- 리스트: one group (drill-in) ---- */
@@ -610,6 +638,43 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               )}
             </div>
           </>
+        )}
+
+        {/* Long-press popup: add the track to a group, or make a new list at the bottom. */}
+        {menuFor && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4" onClick={closeMenu}>
+            <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                <span className="flex-1 min-w-0 text-sm font-semibold text-gray-800 truncate">{menuFor.name.replace(/\.[^.]+$/, '')}</span>
+                <button onClick={closeMenu} aria-label="close" className="p-1 -mr-1 text-gray-400 hover:text-gray-600"><ToolIcon name="x" className="w-4 h-4" /></button>
+              </div>
+              {/* existing lists first (즐겨찾기 + custom groups) */}
+              <div className="max-h-72 overflow-auto divide-y divide-gray-100">
+                {[{ id: 'fav', name: t('mpl_fav') }, ...groups].map((g) => {
+                  const member = groupKeys(g.id).has(menuFor.key)
+                  return (
+                    <button key={g.id} onClick={() => inGroup(g.id, menuFor.key, menuFor.file)} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50">
+                      <span className={'w-5 h-5 shrink-0 rounded border inline-flex items-center justify-center ' + (member ? 'bg-brand-600 border-brand-600 text-white' : 'border-gray-300')}>{member && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M20 6 9 17l-5-5" /></svg>}</span>
+                      {g.id === 'fav' && <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 shrink-0 text-amber-500"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>}
+                      <span className="flex-1 min-w-0 text-sm text-gray-800 truncate">{g.name}</span>
+                    </button>
+                  )
+                })}
+              </div>
+              {/* make a new list — at the bottom */}
+              <div className="border-t border-gray-100 p-2">
+                {menuCreating ? (
+                  <div className="flex items-center gap-2">
+                    {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+                    <input autoFocus value={menuNewName} onChange={(e) => setMenuNewName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') createFromMenu(); if (e.key === 'Escape') { setMenuCreating(false); setMenuNewName('') } }} placeholder={t('mpl_group_ph')} className="flex-1 min-w-0 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                    <button onClick={createFromMenu} className="px-3 py-1.5 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700">{t('mpl_create')}</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setMenuCreating(true)} className="w-full inline-flex items-center justify-center gap-1.5 py-2 text-sm font-semibold text-brand-600 hover:bg-brand-50 rounded-lg"><ToolIcon name="plus" className="w-4 h-4" />{t('mpl_newlist')}</button>
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </ToolLayout>

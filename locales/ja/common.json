@@ -4220,6 +4220,7 @@
     "mpl_group_empty": "このグループに曲がありません。「曲を追加」で追加してください",
     "mpl_remove": "グループから外す",
     "mpl_gotolist": "リストへ",
+    "mpl_newlist": "新しいリストを作成",
     "mp_reopen": "再度開く",
     "mp_speed": "速度",
     "mp_timer": "スリープタイマー",
