@@ -96,9 +96,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       .catch(() => { /* ignore */ })
     return () => { alive = false }
   }, [base, albumArt, id3])
-  // Lyrics: prefer ID3 artist/title, else split an "Artist - Title" filename. Looks it up on lyrics.ovh.
+  // Lyrics: prefer ID3 artist/title, else split "Artist - Title". lrclib.net returns TIME-SYNCED
+  // lyrics (LRC) when available (→ highlight the current line) and plain lyrics otherwise.
   useEffect(() => {
-    setLyrics(null)
+    setLyrics(null); setLyricsLines(null)
     if (!lyricsOn) return
     let artist = (id3?.artist || '').trim(), title = (id3?.title || '').trim()
     if (!artist || !title) {
@@ -107,12 +108,30 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     }
     if (!artist || !title) return
     let alive = true
-    fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`)
+    const url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}` + (dur > 1 ? `&duration=${Math.round(dur)}` : '')
+    fetch(url)
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (alive && d?.lyrics) setLyrics(String(d.lyrics).trim()) })
+      .then((d) => {
+        if (!alive || !d) return
+        if (d.syncedLyrics) {
+          const lines: { t: number; text: string }[] = []
+          const re = /\[(\d+):(\d+(?:\.\d+)?)\]/g
+          for (const ln of String(d.syncedLyrics).split('\n')) {
+            const times: number[] = []; let tg: RegExpExecArray | null
+            re.lastIndex = 0
+            while ((tg = re.exec(ln)) !== null) times.push(parseInt(tg[1]) * 60 + parseFloat(tg[2]))
+            if (!times.length) continue
+            const text = ln.replace(/\[[^\]]*\]/g, '').trim()
+            for (const tt of times) lines.push({ t: tt, text })
+          }
+          if (lines.length) { setLyricsLines(lines.sort((a, b) => a.t - b.t)); return }
+        }
+        if (d.plainLyrics) setLyrics(String(d.plainLyrics).trim())
+      })
       .catch(() => { /* ignore */ })
     return () => { alive = false }
-  }, [base, id3, lyricsOn])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [base, id3, lyricsOn, dur])
   const [reorder, setReorder] = useState(false) // playlist reorder mode (drag handle per row)
   const [dragKey, setDragKey] = useState<string | null>(null) // row currently being dragged
   // ---- groups (the 리스트/플레이리스트 tab) ----
@@ -124,8 +143,19 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [menuFor, setMenuFor] = useState<{ key: string; file: File | null; name: string } | null>(null) // long-press "add to group" popup
   const [menuCreating, setMenuCreating] = useState(false)
   const [menuNewName, setMenuNewName] = useState('')
+  const [starMenu, setStarMenu] = useState(false) // ★ bottom-bar: add the current track to a playlist
+  const [lyricsLines, setLyricsLines] = useState<{ t: number; text: string }[] | null>(null) // time-synced lyrics
 
   const audioRef = useRef<HTMLAudioElement>(null)
+  // Web Audio graph for the real (audio-synced) equalizer — only built when the equalizer is enabled.
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const audioCtxRef = useRef<any>(null)
+  const analyserRef = useRef<AnalyserNode | null>(null)
+  const eqSrcRef = useRef<any>(null)
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+  const eqRafRef = useRef<number>(0)
+  const eqWrapRef = useRef<HTMLDivElement>(null)
+  const lyricsBoxRef = useRef<HTMLDivElement>(null)
   const groupsRef = useRef(groups)
   useEffect(() => { groupsRef.current = groups }, [groups])
   const pressRef = useRef<ReturnType<typeof setTimeout> | null>(null) // long-press timer
@@ -225,6 +255,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const coverSrc = id3?.cover || artUrl
   const dispTitle = id3?.title || itTitle || (fnParts.length >= 2 ? fnParts.slice(1).join(' - ') : base)
   const dispArtist = id3?.artist || itArtist || (fnParts.length >= 2 ? fnParts[0] : '')
+  const activeLyric = lyricsLines ? lyricsLines.reduce((a, l, i) => (l.t <= cur + 0.25 ? i : a), -1) : -1 // current synced line
   const allCount = history.length
   const savedCount = history.filter((h) => saved.has(h.name + '|' + h.size)).length
   const firstPlayable = history.find((h) => h.file) // for the play button when nothing is loaded yet
@@ -260,7 +291,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       : history.filter((h) => saved.has(h.name + '|' + h.size))
   function playNext() {
     const list = activeList()
-    if (!list.length) return
+    if (!list.some((x) => x.file)) { dirRef.current?.click(); return } // no songs → open the folder picker
     if (repeatMode === 'shuffle') {
       const pool = list.filter((x) => x.file && x.file !== curFile)
       const pick = pool.length ? pool[Math.floor(Math.random() * pool.length)] : list.find((x) => x.file)
@@ -272,16 +303,54 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   }
   function playPrev() {
     const list = activeList()
-    if (!list.length) return
+    if (!list.some((x) => x.file)) { dirRef.current?.click(); return } // no songs → open the folder picker
     const idx = curFile ? list.findIndex((x) => x.file === curFile) : 0
     for (let step = 1; step <= list.length; step++) { const p = list[(idx - step + list.length) % list.length]; if (p?.file) { load(p.file, true); return } }
   }
 
   const media = () => audioRef.current
-  const togglePlay = () => { const a = media(); if (!a || !url) return; if (a.paused) a.play().catch(() => {}); else a.pause() }
+  // Build the Web Audio graph once (only when the equalizer is on). Routing is permanent for the
+  // element, so we only do it on demand to keep default background playback untouched.
+  const setupEqGraph = () => {
+    if (eqSrcRef.current || !audioRef.current) return
+    try {
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext
+      if (!Ctx) return
+      const ctx = new Ctx()
+      const src = ctx.createMediaElementSource(audioRef.current)
+      const an = ctx.createAnalyser(); an.fftSize = 128; an.smoothingTimeConstant = 0.8
+      src.connect(an); an.connect(ctx.destination)
+      audioCtxRef.current = ctx; analyserRef.current = an; eqSrcRef.current = src
+      /* eslint-enable @typescript-eslint/no-explicit-any */
+    } catch { /* ignore */ }
+  }
+  // Drive the equalizer bars from real frequency data while it's visible and playing.
+  useEffect(() => {
+    if (!eqEnabled || !playing) { if (eqRafRef.current) cancelAnimationFrame(eqRafRef.current); return }
+    if (!analyserRef.current) { setupEqGraph(); audioCtxRef.current?.resume?.() }
+    const an = analyserRef.current; if (!an) return
+    const bins = an.frequencyBinCount; const data = new Uint8Array(bins)
+    const loop = () => {
+      an.getByteFrequencyData(data)
+      const bars = eqWrapRef.current?.children
+      if (bars) for (let i = 0; i < bars.length; i++) { const bin = Math.min(bins - 1, Math.floor((i / bars.length) * bins * 0.7) + 1); const v = data[bin] / 255; (bars[i] as HTMLElement).style.transform = `scaleY(${Math.max(0.06, v)})` }
+      eqRafRef.current = requestAnimationFrame(loop)
+    }
+    eqRafRef.current = requestAnimationFrame(loop)
+    return () => { if (eqRafRef.current) cancelAnimationFrame(eqRafRef.current) }
+  }, [eqEnabled, playing])
+  const togglePlay = () => { const a = media(); if (!a || !url) return; if (a.paused) { if (eqEnabled) { setupEqGraph(); audioCtxRef.current?.resume?.() } a.play().catch(() => {}) } else a.pause() }
   const seekTo = (time: number) => { const a = media(); if (a) a.currentTime = time }
   const seekBy = (d: number) => { const a = media(); if (a) a.currentTime = Math.max(0, Math.min(a.duration || a.currentTime, a.currentTime + d)) }
   const setVol = (v: number) => { const a = media(); if (a) a.volume = v; setVolume(v) }
+
+  // Keep the active synced-lyric line centred in its box (scrolls only the box, not the page).
+  useEffect(() => {
+    if (activeLyric < 0 || !lyricsBoxRef.current) return
+    const box = lyricsBoxRef.current; const el = box.children[activeLyric] as HTMLElement | undefined
+    if (el) box.scrollTo({ top: el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2, behavior: 'smooth' })
+  }, [activeLyric])
 
   // apply speed / volume / loop to the element
   useEffect(() => { const a = audioRef.current; if (a) a.playbackRate = speed }, [speed, url])
@@ -376,6 +445,15 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     setMenuNewName(''); setMenuCreating(false); setMenuFor(null)
   }
   const closeMenu = () => { setMenuFor(null); setMenuCreating(false); setMenuNewName('') }
+  // ★ popup: create a new playlist and drop the CURRENTLY PLAYING track into it.
+  const createForCurrent = () => {
+    const nm = menuNewName.trim(); if (!nm || !curFile) { setMenuCreating(false); setMenuNewName(''); return }
+    const key = curFile.name + '|' + curFile.size
+    setGroups((g) => { const ng = [...g, { id: 'g' + Date.now().toString(36), name: nm, keys: [key] }]; saveGroups(ng); return ng })
+    const [, sz] = key.split('|'); mhSave({ id: key, name: curFile.name, size: +sz || curFile.size, type: curFile.type }, curFile)
+    setMenuNewName(''); setMenuCreating(false)
+  }
+  const closeStar = () => { setStarMenu(false); setMenuCreating(false); setMenuNewName('') }
   // Long-press a track → open the "add to group" popup. The play click is suppressed by measuring how
   // long the press lasted (a held press ≥ 450ms is a long-press, not a tap) — robust to event ordering.
   const startPress = (h: { name: string; size: number; file: File | null }) => () => {
@@ -392,11 +470,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
     return (
       <>
-        <span className={'w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg ' + (isCur && playing ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-400')}>
+        <span className={'w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg ' + (isCur && playing ? 'bg-brand-600 text-white' : darkMode ? 'bg-gray-800 text-gray-500' : 'bg-gray-100 text-gray-400')}>
           {isCur && playing ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg> : <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M8 5v14l11-7z" /></svg>}
         </span>
         <span className="min-w-0">
-          <span className={'block truncate text-sm ' + (isCur ? 'font-semibold text-brand-700' : 'text-gray-800') + (h.file ? '' : ' opacity-50')}>{h.name.replace(/\.[^.]+$/, '')}</span>
+          <span className={'block truncate text-sm ' + (isCur ? 'font-semibold text-brand-500' : darkMode ? 'text-gray-200' : 'text-gray-800') + (h.file ? '' : ' opacity-50')}>{h.name.replace(/\.[^.]+$/, '')}</span>
           <span className="block text-[11px] text-gray-400 tabular-nums">{h.file ? <>{durs[key] ? <span className="text-gray-500">{fmt(durs[key])}</span> : null}{durs[key] ? ' · ' : ''}{fmtSize(h.size)}</> : t('mp_reopen')}</span>
         </span>
       </>
@@ -540,18 +618,19 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={coverSrc} alt="" className="w-full h-full object-cover" onError={() => setArtUrl('')} />
                 ) : eqEnabled && playing ? (
-                  /* Colorful sound-wave equalizer: many thin bars, spectrum colours, mirrored (grow from centre). */
-                  <div className="flex items-center justify-center gap-[3px] h-32 w-full px-6" aria-hidden>
+                  /* Real audio-synced equalizer: bar heights are driven from frequency data via rAF. */
+                  <div ref={eqWrapRef} className="flex items-end justify-center gap-[3px] h-32 w-full px-6" aria-hidden>
                     {Array.from({ length: 28 }).map((_, i) => {
-                      const dur = (0.55 + (i % 6) * 0.14).toFixed(2)
-                      const delay = ((i % 9) * 0.08).toFixed(2)
                       const hue = Math.round(200 + (i / 28) * 160) // teal → blue → violet → pink
-                      return <span key={i} className="flex-1 max-w-[7px] rounded-full origin-center" style={{ height: '100%', background: `linear-gradient(to bottom, hsl(${hue} 95% 72%), hsl(${(hue + 40) % 360} 95% 60%))`, boxShadow: `0 0 8px hsl(${hue} 95% 65% / 0.5)`, animation: `mpeq ${dur}s ease-in-out ${delay}s infinite alternate` }} />
+                      return <span key={i} className="flex-1 max-w-[7px] rounded-full origin-bottom transition-transform duration-75 ease-out" style={{ height: '100%', transform: 'scaleY(0.06)', background: `linear-gradient(to top, hsl(${hue} 95% 72%), hsl(${(hue + 40) % 360} 95% 60%))`, boxShadow: `0 0 8px hsl(${hue} 95% 65% / 0.5)` }} />
                     })}
-                    <style>{'@keyframes mpeq{0%{transform:scaleY(0.12)}100%{transform:scaleY(1)}}'}</style>
                   </div>
                 ) : (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="w-16 h-16 opacity-90"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+                  /* No cover: a music note that opens the folder on click ("Click" prompt when empty). */
+                  <label htmlFor="mp-folder" title={t('mp_folder')} className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="w-16 h-16 opacity-90"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+                    {history.length === 0 && <span className="mt-3 text-sm font-medium text-white/80">{t('mpl_click')}</span>}
+                  </label>
                 )}
               </div>
               {/* Title + artist (ID3 → iTunes → filename). Artist shows as a smaller second line. */}
@@ -664,38 +743,50 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5" /><path d="M5 3 2 6" /><path d="m22 6-3-3" /></svg>
                   {sleepMin > 0 && <span className="absolute top-1 right-1/2 translate-x-[24px] text-[9px] font-mono font-bold tabular-nums leading-none">{Math.floor(sleepLeft / 60)}:{String(sleepLeft % 60).padStart(2, '0')}</span>}
                 </button>
+                {/* ★ — add the CURRENT track to a playlist (opens the popup; disabled when nothing loaded) */}
+                <button onClick={() => setStarMenu(true)} disabled={!curFile} aria-label={t('mpl_addto_pl')} title={t('mpl_addto_pl')} className="flex-1 inline-flex items-center justify-center py-3.5 border-l border-white/15 active:opacity-80 transition hover:bg-white/10 disabled:opacity-40">
+                  <svg viewBox="0 0 24 24" fill={curFile && saved.has(curFile.name + '|' + curFile.size) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>
+                </button>
               </div>
             </div>
 
-            {/* ---- Lyrics (when found via lyrics.ovh; only for "Artist - Title" filenames) ---- */}
-            {lyrics && (
-              <div className="rounded-2xl border border-gray-200 p-4">
-                <p className="text-xs font-semibold text-gray-500 mb-2">{t('mpl_lyrics')}</p>
-                <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700 leading-relaxed max-h-72 overflow-auto">{lyrics}</pre>
+            {/* ---- Lyrics (lrclib.net): time-synced (active line highlighted + auto-scroll) or plain ---- */}
+            {(lyricsLines || lyrics) && (
+              <div className={'rounded-2xl border p-4 ' + (darkMode ? 'bg-gray-900 border-gray-700' : 'border-gray-200')}>
+                <p className={'text-xs font-semibold mb-2 ' + (darkMode ? 'text-gray-400' : 'text-gray-500')}>{t('mpl_lyrics')}</p>
+                {lyricsLines ? (
+                  <div ref={lyricsBoxRef} className="max-h-72 overflow-auto space-y-1.5 py-2">
+                    {lyricsLines.map((l, i) => (
+                      <p key={i} className={'text-center text-sm transition-colors ' + (i === activeLyric ? 'text-brand-500 font-semibold' : darkMode ? 'text-gray-500' : 'text-gray-400')}>{l.text || '♪'}</p>
+                    ))}
+                  </div>
+                ) : (
+                  <pre className={'whitespace-pre-wrap font-sans text-sm leading-relaxed max-h-72 overflow-auto ' + (darkMode ? 'text-gray-300' : 'text-gray-700')}>{lyrics}</pre>
+                )}
               </div>
             )}
 
-            {/* ---- Playlist (standard list style) ---- */}
-            <div ref={playlistRef} className="rounded-2xl border border-gray-200 overflow-hidden scroll-mt-16">
-              <div className="flex items-center gap-1 bg-gray-50 px-2 border-b border-gray-200">
+            {/* ---- Playlist (standard list style; dark theme follows the player) ---- */}
+            <div ref={playlistRef} className={'rounded-2xl border overflow-hidden scroll-mt-16 ' + (darkMode ? 'bg-gray-900 border-gray-700' : 'border-gray-200')}>
+              <div className={'flex items-center gap-1 px-2 border-b ' + (darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200')}>
                 {/* Reorder toggle (≡): tap to move tracks up/down in the list */}
                 <button onClick={() => { setHistTab('all'); setReorder((r) => !r) }} aria-label={t('mpl_reorder')} title={t('mpl_reorder')} className={'p-2 rounded transition-colors ' + (reorder ? 'text-brand-600 bg-brand-50' : 'text-gray-400 hover:text-brand-600')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></svg>
                 </button>
                 {(['all', 'saved'] as const).map((tab) => (
-                  <button key={tab} onClick={() => { setHistTab(tab); setOpenGroup(null); setAddMode(false); setCreating(false); setReorder(false) }} className={'inline-flex items-center gap-1 px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (histTab === tab ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700')}>
+                  <button key={tab} onClick={() => { setHistTab(tab); setOpenGroup(null); setAddMode(false); setCreating(false); setReorder(false) }} className={'inline-flex items-center gap-1 px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (histTab === tab ? (darkMode ? 'border-brand-500 text-brand-400' : 'border-brand-600 text-brand-600') : darkMode ? 'border-transparent text-gray-400 hover:text-gray-200' : 'border-transparent text-gray-500 hover:text-gray-700')}>
                     {tab === 'all'
                       ? t('mp_all')
                       : <><span className="sm:hidden">{t('mpl_list')}</span><span className="hidden sm:inline">{t('mpl_playlist')}</span></>}
                     <span className="text-xs font-normal opacity-60 tabular-nums">{tab === 'all' ? allCount : groups.length + 1}</span>
                   </button>
                 ))}
-                <label htmlFor="mp-file" title={t('mp_pick')} className="ml-auto p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" /></label>
-                <button onClick={() => { setSearchOn((s) => !s); if (searchOn) setQuery('') }} aria-label={t('mpl_search')} title={t('mpl_search')} className={'p-2 rounded transition-colors ' + (searchOn ? 'text-brand-600 bg-brand-50' : 'text-gray-400 hover:text-brand-600')}>
+                {/* search then file-add (swapped) — the clear-all trash moved into Settings */}
+                <button onClick={() => { setSearchOn((s) => !s); if (searchOn) setQuery('') }} aria-label={t('mpl_search')} title={t('mpl_search')} className={'ml-auto p-2 rounded transition-colors ' + (searchOn ? 'text-brand-600 bg-brand-50' : 'text-gray-400 hover:text-brand-600')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
                 </button>
+                <label htmlFor="mp-file" title={t('mp_pick')} className="p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" /></label>
                 <label htmlFor="mp-folder" title={t('mp_folder')} className="p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="folder" className="w-4 h-4" /></label>
-                <button onClick={() => { if (allCount === 0 || window.confirm(t('mpl_clear_confirm'))) clearAll() }} title={t('mp_reset')} className="p-2 text-gray-400 hover:text-red-600"><ToolIcon name="trash" className="w-4 h-4" /></button>
               </div>
               {searchOn && (
                 <div className="px-2 py-1.5 border-b border-gray-100">
@@ -897,10 +988,52 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     </button>
                   </label>
                 ))}
+                {/* Clear the whole file list (moved here from the header trash button) */}
+                <button onClick={() => { if (allCount > 0 && window.confirm(t('mpl_clear_confirm'))) { clearAll(); setShowSettings(false) } }} disabled={allCount === 0} className="w-full flex items-center gap-3 px-4 py-3.5 text-left text-sm text-red-600 hover:bg-red-50 disabled:opacity-40">
+                  <ToolIcon name="trash" className="w-5 h-5 shrink-0" />{t('mpl_clear_list')}
+                </button>
               </div>
             </div>
           </div>
         )}
+
+        {/* ★ popup: add the currently-playing track to a playlist (즐겨찾기 first), or make a new one. */}
+        {starMenu && curFile && (() => {
+          const curKey = curFile.name + '|' + curFile.size
+          return (
+            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4" onClick={closeStar}>
+              <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                  <span className="flex-1 min-w-0 text-sm font-semibold text-gray-800 truncate">{dispTitle}</span>
+                  <button onClick={closeStar} aria-label="close" className="p-1 -mr-1 text-gray-400 hover:text-gray-600"><ToolIcon name="x" className="w-4 h-4" /></button>
+                </div>
+                <div className="max-h-72 overflow-auto divide-y divide-gray-100">
+                  {[{ id: 'fav', name: t('mpl_fav') }, ...groups].map((g) => {
+                    const member = (g.id === 'fav' ? saved.has(curKey) : (groups.find((x) => x.id === g.id)?.keys.includes(curKey) ?? false))
+                    return (
+                      <button key={g.id} onClick={() => inGroup(g.id, curKey, curFile)} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50">
+                        <span className={'w-5 h-5 shrink-0 rounded border inline-flex items-center justify-center ' + (member ? 'bg-brand-600 border-brand-600 text-white' : 'border-gray-300')}>{member && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M20 6 9 17l-5-5" /></svg>}</span>
+                        {g.id === 'fav' && <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 shrink-0 text-amber-500"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>}
+                        <span className="flex-1 min-w-0 text-sm text-gray-800 truncate">{g.name}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+                <div className="border-t border-gray-100 p-2">
+                  {menuCreating ? (
+                    <div className="flex items-center gap-2">
+                      {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+                      <input autoFocus value={menuNewName} onChange={(e) => setMenuNewName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') createForCurrent(); if (e.key === 'Escape') { setMenuCreating(false); setMenuNewName('') } }} placeholder={t('mpl_group_ph')} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                      <button onClick={createForCurrent} className="px-3 py-2 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700">{t('mpl_create')}</button>
+                    </div>
+                  ) : (
+                    <button onClick={() => setMenuCreating(true)} className="w-full inline-flex items-center justify-center gap-1.5 py-2 text-sm font-semibold text-brand-600 hover:bg-brand-50 rounded-lg"><ToolIcon name="plus" className="w-4 h-4" />{t('mpl_newlist')}</button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        })()}
       </div>
     </ToolLayout>
   )
