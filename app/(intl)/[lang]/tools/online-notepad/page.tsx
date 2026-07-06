@@ -209,6 +209,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
   const histories = useRef<Record<string, { hist: string[]; idx: number }>>({ [first.id]: { hist: [''], idx: 0 } })
   const deletedRef = useRef<Tomb>({})
   const commitTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Held-Backspace accelerator: while held, delete faster and faster (more chars per tick).
+  const bsRef = useRef<{ active: boolean; tick: number; timer: ReturnType<typeof setTimeout> | null }>({ active: false, tick: 0, timer: null })
   const ready = useRef(false)
   const [, force] = useState(0)
   const docsRef = useRef(docs)
@@ -603,6 +605,20 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     if (spec.kind === 'num') ({ text: nt, caret } = renumberAt(nt, caret, spec.delim))
     applyText(nt, caret)
   }
+  // Delete `count` chars before the caret (or the current selection) via the caret-preserving path.
+  function deleteBack(count: number) {
+    const ta = taRef.current; if (!ta) return
+    const s = ta.selectionStart, e = ta.selectionEnd; const v = ta.value
+    if (s !== e) { applyText(v.slice(0, s) + v.slice(e), s); return } // a selection → delete it first
+    if (s === 0) { bsRef.current.active = false; return }             // nothing left to delete
+    const ns = Math.max(0, s - count)
+    applyText(v.slice(0, ns) + v.slice(s), ns)
+  }
+  function stopBackspace() {
+    bsRef.current.active = false
+    if (bsRef.current.timer) { clearTimeout(bsRef.current.timer); bsRef.current.timer = null }
+    requestAnimationFrame(renumberAfterDelete)
+  }
   // After a delete, re-sequence the numbered block at the caret (auto-decrement).
   function renumberAfterDelete() {
     const ta = taRef.current; if (!ta) return
@@ -639,8 +655,24 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
     // continue a list.
     else if (!mod && !e.nativeEvent.isComposing && e.key === 'Enter' && !e.shiftKey) { if (convertBeforeCaret('\n') || listEnter()) e.preventDefault() }
     else if (!mod && !e.nativeEvent.isComposing && e.key === ' ') { if (convertBeforeCaret(' ')) e.preventDefault() }
-    else if (!mod && !e.nativeEvent.isComposing && (e.key === 'Backspace' || e.key === 'Delete')) { requestAnimationFrame(renumberAfterDelete) }
+    // Backspace: take over the key-repeat so a held Backspace deletes faster the longer it's held
+    // (initial delete, then after a hold delay an accelerating loop: more chars per tick over time).
+    else if (!mod && !e.nativeEvent.isComposing && e.key === 'Backspace') {
+      e.preventDefault()
+      if (bsRef.current.active) return // OS auto-repeat keydowns — our own loop is already running
+      bsRef.current.active = true; bsRef.current.tick = 0
+      deleteBack(1)
+      const loop = () => {
+        if (!bsRef.current.active) return
+        deleteBack(Math.min(10, 1 + Math.floor(bsRef.current.tick / 5))) // 1 → 10 chars/tick as it speeds up
+        bsRef.current.tick++
+        bsRef.current.timer = setTimeout(loop, 40)
+      }
+      bsRef.current.timer = setTimeout(loop, 300) // hold delay before the accelerating repeat kicks in
+    }
+    else if (!mod && !e.nativeEvent.isComposing && e.key === 'Delete') { requestAnimationFrame(renumberAfterDelete) }
   }
+  function onKeyUp(e: React.KeyboardEvent) { if (e.key === 'Backspace') stopBackspace() }
 
   // Tabs
   function addDoc() {
@@ -1065,7 +1097,9 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
             onInput={(e) => { liveRef.current = e.currentTarget.value }}
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={onKeyDown}
-            onCompositionStart={() => { composingRef.current = true }}
+            onKeyUp={onKeyUp}
+            onBlur={stopBackspace}
+            onCompositionStart={() => { composingRef.current = true; stopBackspace() }}
             onCompositionEnd={() => { composingRef.current = false; flushNow() }}
             // Clicking/tapping into the editor closes the symbol palette. PointerDown (not
             // focus) so inserting a symbol — which programmatically refocuses — keeps it open.
