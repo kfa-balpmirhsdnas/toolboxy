@@ -4994,7 +4994,7 @@
     "uz_extracting": "Extracting…",
     "uz_progress": "Extracting… {cur} / {total}",
     "uz_write_err": "Couldn't save to the folder: {msg}",
-    "uz_partial": "{n} file(s) couldn't be saved (names with unsupported characters). The rest were saved to the folder.",
+    "uz_partial": "{n} file(s) couldn't be saved. The rest were saved to the folder. (reason: {detail})",
     "zf_done": "✓ Compressed {n} files into “{name}” and downloaded it.",
     "uz_makefolder": "Auto-create a folder named after the zip",
     "zf_method": "Compression",

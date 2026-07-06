@@ -76,9 +76,14 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
     trackToolDownload('unzip', 'file')
   }
 
-  // Sanitize a single path segment so names illegal on the OS (Windows: \ / : * ? " < > |,
-  // and trailing dots/spaces) don't make getFileHandle/getDirectoryHandle throw.
-  const cleanSeg = (s: string) => s.replace(/[\\/:*?"<>|]+/g, '_').replace(/[. ]+$/, '') || '_'
+  // Sanitize a single path segment so names the OS rejects don't make the write throw:
+  //  Windows-illegal chars \ / : * ? " < > | · control chars · trailing dots/spaces · device names.
+  const cleanSeg = (s: string) => {
+    let x = s.replace(/[\x00-\x1f\x7f]/g, '').replace(/[\\/:*?"<>|]+/g, '_').replace(/[. ]+$/, '')
+    if (!x) x = '_'
+    if (/^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\.|$)/i.test(x)) x = '_' + x
+    return x
+  }
 
   // Write one entry into a chosen directory, creating sub-folders for nested paths.
   async function writeInto(dir: FileSystemDirectoryHandle, pathStr: string, data: Uint8Array) {
@@ -86,7 +91,13 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
     const fname = parts.pop()!
     let d = dir
     for (const p of parts) d = await d.getDirectoryHandle(p, { create: true })
-    const fh = await d.getFileHandle(fname, { create: true })
+    let fh: FileSystemFileHandle
+    try { fh = await d.getFileHandle(fname, { create: true }) }
+    catch (e) {
+      // A sub-folder already owns this name (zip has both `foo` and `foo/…`) → save as `foo (file)`.
+      if ((e as { name?: string }).name === 'TypeMismatchError') fh = await d.getFileHandle(fname.replace(/(\.[^.]+)?$/, ' (file)$1'), { create: true })
+      else throw e
+    }
     const w = await fh.createWritable()
     await w.write(data as unknown as BufferSource); await w.close()
   }
@@ -110,18 +121,22 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
             label = `${root.name}/${folder}`
           }
           const total = entries.length
-          let ok = 0; const failed: string[] = []
+          let ok = 0; const failed: string[] = []; let firstErr = ''
           for (let i = 0; i < entries.length; i++) {
             const e = entries[i]
             // Live status: current file + running success/fail tally (repaints between awaits).
             setProgress({ cur: i + 1, total, ok, fail: failed.length, name: e.name })
             try { await writeInto(target, e.name, e.data); ok++ }
-            catch (we) { console.error('write failed:', e.name, we); failed.push(e.name) }
+            catch (we) {
+              console.error('write failed:', e.name, we)
+              failed.push(e.name)
+              if (!firstErr) firstErr = `${e.name.split('/').pop()} — ${(we as Error)?.name || ''}: ${(we as Error)?.message || we}`.replace(/:\s*$/, '')
+            }
           }
           setProgress(null)
-          if (ok === 0) { setError(t('uz_write_err', { msg: failed.length ? failed[0] : '—' })); return }
+          if (ok === 0) { setError(t('uz_write_err', { msg: firstErr || '—' })); return }
           setDone({ folder: label, n: ok })
-          if (failed.length) setError(t('uz_partial', { n: failed.length }))
+          if (failed.length) setError(t('uz_partial', { n: failed.length, detail: firstErr }))
           trackToolDownload('unzip', 'folder')
         } catch (err) {
           setProgress(null)
