@@ -4995,6 +4995,7 @@
     "uz_progress": "Extracting… {cur} / {total}",
     "uz_write_err": "Couldn't save to the folder: {msg}",
     "uz_partial": "{n} file(s) couldn't be saved. The rest were saved to the folder. (reason: {detail})",
+    "uz_longpath": "{n} file(s) couldn't be saved because their path exceeds Windows' 260-character limit (Windows' own zip tool fails the same way). Fix: ① uncheck “Auto-create a folder” and ② choose a short location such as directly under C:\\, then retry. If it still fails, enable Windows “Long Paths”.",
     "zf_done": "✓ Compressed {n} files into “{name}” and downloaded it.",
     "uz_makefolder": "Auto-create a folder named after the zip",
     "zf_method": "Compression",

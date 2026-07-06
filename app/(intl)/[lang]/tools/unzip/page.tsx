@@ -121,7 +121,7 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
             label = `${root.name}/${folder}`
           }
           const total = entries.length
-          let ok = 0; const failed: string[] = []; let firstErr = ''
+          let ok = 0; const failed: string[] = []; let firstErr = ''; let longPath = false
           for (let i = 0; i < entries.length; i++) {
             const e = entries[i]
             // Live status: current file + running success/fail tally (repaints between awaits).
@@ -130,13 +130,17 @@ export default function UnzipPage({ params }: { params: { lang: string } }) {
             catch (we) {
               console.error('write failed:', e.name, we)
               failed.push(e.name)
+              // NotFoundError on a create:true write ≈ the full path blew past Windows' 260-char MAX_PATH.
+              if ((we as { name?: string }).name === 'NotFoundError') longPath = true
               if (!firstErr) firstErr = `${e.name.split('/').pop()} — ${(we as Error)?.name || ''}: ${(we as Error)?.message || we}`.replace(/:\s*$/, '')
             }
           }
           setProgress(null)
-          if (ok === 0) { setError(t('uz_write_err', { msg: firstErr || '—' })); return }
+          // Path-length failures need OS-level guidance, not just a raw error string.
+          const failMsg = longPath ? t('uz_longpath', { n: failed.length || total }) : ''
+          if (ok === 0) { setError(failMsg || t('uz_write_err', { msg: firstErr || '—' })); return }
           setDone({ folder: label, n: ok })
-          if (failed.length) setError(t('uz_partial', { n: failed.length, detail: firstErr }))
+          if (failed.length) setError(failMsg || t('uz_partial', { n: failed.length, detail: firstErr }))
           trackToolDownload('unzip', 'folder')
         } catch (err) {
           setProgress(null)
