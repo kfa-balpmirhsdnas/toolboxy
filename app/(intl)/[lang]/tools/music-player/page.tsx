@@ -18,6 +18,27 @@ const NOT_AUDIO_RE = /\.(jpe?g|png|gif|webp|heic|heif|bmp|svg|tiff?|ico|mp4|m4v|
 const maybeAudio = (f: File) => isAudio(f) || (!/^(image|video|text)\//.test(f.type) && !NOT_AUDIO_RE.test(f.name))
 const fmt = (s: number) => { if (!isFinite(s) || s < 0) s = 0; const m = Math.floor(s / 60); const ss = Math.floor(s % 60); return `${m}:${String(ss).padStart(2, '0')}` }
 const fmtSize = (b: number) => (b < 1024 ? b + ' B' : b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(1) + ' MB')
+// Best-effort artist/title from a bare filename — only used when BOTH the ID3 tags and the iTunes
+// lookup come up empty. There's no reliable way to know the order from a filename alone, so we clean
+// the input up and lean on the dominant "Artist - Title" convention. Deliberately conservative:
+//  • split ONLY on a clearly spaced dash-family separator ( - – — · | ~ ). We do NOT split on "," or
+//    "/", because those usually separate multiple artists inside one field ("아이유, 최유리 - 봄날").
+//  • strip a leading track number, bracketed junk tags ([MV], (Official Video), (HD)…), bitrate & URLs.
+//  • only flip the order when a "(Remix)/(Inst.)/(feat. …)" marker sits on the FIRST chunk (that chunk
+//    is clearly the title, so the other side is the artist).
+function parseFileName(raw: string): { artist: string; title: string } {
+  let s = (raw || '').replace(/_/g, ' ').replace(/\s+/g, ' ').trim()
+  s = s.replace(/[[(（【][^)\]）】]*\b(?:official|lyrics?|lyric video|audio|video|mv|m\/v|hd|hq|4k|8k|teaser|가사|자막)\b[^)\]）】]*[)\]）】]/gi, ' ')
+  s = s.replace(/\b\d{2,4}\s?k(?:bps|hz)\b/gi, ' ').replace(/\b(?:www\.\S+|[a-z0-9-]+\.(?:com|net|kr|org|io))\b/gi, ' ')
+  s = s.replace(/[[(（【]\s*[)\]）】]/g, ' ') // drop empty brackets left behind by the strips above
+  s = s.replace(/^\s*\d{1,3}\s*[.)\-–—]\s+/, '') // leading track number: "05.", "005 - ", "12)"
+  s = s.replace(/\s+/g, ' ').trim()
+  const parts = s.split(/\s+[-–—·|~]\s+/).map((p) => p.trim()).filter(Boolean)
+  if (parts.length < 2) return { artist: '', title: s }
+  const titleParen = /\([^)]*\b(?:remix|inst\.?|instrumental|live|ver\.?|version|acoustic|edit|remaster|mix|feat\.?|ft\.?|cover|ost|prod\.?)\b[^)]*\)/i
+  if (parts.length === 2 && titleParen.test(parts[0]) && !titleParen.test(parts[1])) return { artist: parts[1], title: parts[0] }
+  return { artist: parts[0], title: parts.slice(1).join(' - ') }
+}
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2]
 const VOLUMES = [0, 0.25, 0.5, 0.75, 1]
 const TIMER_MENU = [15, 30, 60, 120]
@@ -279,14 +300,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   // Playlist filtered by the open tab; next/prev cycle it (skipping metadata-only entries with no blob).
   const shownAll = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
   const shown = query.trim() ? shownAll.filter((h) => h.name.toLowerCase().includes(query.trim().toLowerCase())) : shownAll
-  // Display metadata for the now-playing card: ID3 (local) → iTunes (network) → "Artist - Title" filename.
-  // Drop a leading track-number prefix first (e.g. "005 - 윤하 - 포인트 니모" → "윤하 - 포인트 니모"),
-  // otherwise the number would be parsed as the artist.
-  const cleanBase = (base || '').replace(/^\s*\d{1,3}\s*[.)\-–—]\s+/, '')
-  const fnParts = cleanBase.split(/\s+[-–—]\s+/)
+  // Display metadata for the now-playing card: ID3 (local) → iTunes (network) → filename heuristic.
+  const nameMeta = parseFileName(base)
   const coverSrc = id3?.cover || artUrl
-  const dispTitle = id3?.title || itTitle || (fnParts.length >= 2 ? fnParts.slice(1).join(' - ') : cleanBase)
-  const dispArtist = id3?.artist || itArtist || (fnParts.length >= 2 ? fnParts[0] : '')
+  const dispTitle = id3?.title || itTitle || nameMeta.title
+  const dispArtist = id3?.artist || itArtist || nameMeta.artist
   const activeLyric = lyricsLines ? lyricsLines.reduce((a, l, i) => (l.t <= cur + 0.25 ? i : a), -1) : -1 // current synced line
   const allCount = history.length
   const savedCount = history.filter((h) => saved.has(h.name + '|' + h.size)).length
