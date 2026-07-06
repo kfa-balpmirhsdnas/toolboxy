@@ -172,6 +172,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   /* eslint-enable @typescript-eslint/no-explicit-any */
   const eqRafRef = useRef<number>(0)
   const eqWrapRef = useRef<HTMLDivElement>(null)
+  const eqReflRef = useRef<HTMLDivElement>(null) // faint reflection under the equalizer
   const lyricsBoxRef = useRef<HTMLDivElement>(null)
   const groupsRef = useRef(groups)
   useEffect(() => { groupsRef.current = groups }, [groups])
@@ -350,8 +351,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     const bins = an.frequencyBinCount; const data = new Uint8Array(bins)
     const loop = () => {
       an.getByteFrequencyData(data)
-      const bars = eqWrapRef.current?.children
-      if (bars) for (let i = 0; i < bars.length; i++) { const bin = Math.min(bins - 1, Math.floor((i / bars.length) * bins * 0.7) + 1); const v = data[bin] / 255; (bars[i] as HTMLElement).style.transform = `scaleY(${Math.max(0.06, v)})` }
+      const bars = eqWrapRef.current?.children; const refl = eqReflRef.current?.children
+      if (bars) for (let i = 0; i < bars.length; i++) { const bin = Math.min(bins - 1, Math.floor((i / bars.length) * bins * 0.7) + 1); const v = Math.max(0.06, data[bin] / 255); (bars[i] as HTMLElement).style.transform = `scaleY(${v})`; if (refl && refl[i]) (refl[i] as HTMLElement).style.transform = `scaleY(${v})` }
       eqRafRef.current = requestAnimationFrame(loop)
     }
     eqRafRef.current = requestAnimationFrame(loop)
@@ -638,12 +639,21 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={coverSrc} alt="" className="w-full h-full object-cover" onError={() => setArtUrl('')} />
                 ) : eqEnabled && playing ? (
-                  /* Real audio-synced equalizer: bar heights are driven from frequency data via rAF. */
-                  <div ref={eqWrapRef} className="flex items-end justify-center gap-[3px] h-32 w-full px-6" aria-hidden>
-                    {Array.from({ length: 28 }).map((_, i) => {
-                      const hue = Math.round(200 + (i / 28) * 160) // teal → blue → violet → pink
-                      return <span key={i} className="flex-1 max-w-[7px] rounded-full origin-bottom transition-transform duration-75 ease-out" style={{ height: '100%', transform: 'scaleY(0.06)', background: `linear-gradient(to top, hsl(${hue} 95% 72%), hsl(${(hue + 40) % 360} 95% 60%))`, boxShadow: `0 0 8px hsl(${hue} 95% 65% / 0.5)` }} />
-                    })}
+                  /* Real audio-synced equalizer: bars driven from frequency data via rAF, each with a
+                     small white cap, plus a faint mirrored reflection underneath (like the reference). */
+                  <div className="w-full h-36 flex flex-col justify-center px-6" aria-hidden>
+                    <div ref={eqWrapRef} className="flex-1 min-h-0 flex items-end justify-center gap-[3px]">
+                      {Array.from({ length: 28 }).map((_, i) => {
+                        const hue = Math.round(200 + (i / 28) * 160) // teal → blue → violet → pink
+                        return <span key={i} className="flex-1 max-w-[7px] rounded-t-full origin-bottom transition-transform duration-75 ease-out" style={{ height: '100%', transform: 'scaleY(0.06)', background: `linear-gradient(to top, hsl(${hue} 95% 58%), hsl(${(hue + 40) % 360} 95% 70%) 80%, #fff 100%)`, boxShadow: `0 0 8px hsl(${hue} 95% 65% / 0.5)` }} />
+                      })}
+                    </div>
+                    <div ref={eqReflRef} className="flex-1 min-h-0 flex items-start justify-center gap-[3px] opacity-25 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.6),transparent_75%)]">
+                      {Array.from({ length: 28 }).map((_, i) => {
+                        const hue = Math.round(200 + (i / 28) * 160)
+                        return <span key={i} className="flex-1 max-w-[7px] rounded-b-full origin-top transition-transform duration-75 ease-out" style={{ height: '100%', transform: 'scaleY(0.06)', background: `linear-gradient(to bottom, hsl(${hue} 95% 58%), hsl(${(hue + 40) % 360} 95% 70%))` }} />
+                      })}
+                    </div>
                   </div>
                 ) : (
                   /* No cover: a music note that opens the folder on click ("Click" prompt when empty). */
@@ -662,11 +672,28 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               <input type="range" min={0} max={dur || 0} step={0.1} value={Math.min(cur, dur || 0)} onChange={(e) => seekTo(+e.target.value)} aria-label="seek"
                 className="w-full mt-4 h-1.5 accent-white cursor-pointer" disabled={!url} />
               <div className="flex justify-between text-xs font-mono text-white/80"><span>{fmt(cur)}</span><span>{fmt(dur)}</span></div>
-              {/* transport */}
+              {/* seek row (−30/−10/−5 · +5/+10/+30) — now ABOVE the transport row */}
+              {url && (
+                <div className="flex items-center justify-center gap-1 mt-3">
+                  {[30, 10, 5].map((n) => (
+                    <button key={'m' + n} onClick={() => seekBy(-n)} aria-label={`-${n}s`} className="inline-flex items-center gap-0.5 h-8 px-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-[11px] font-bold active:scale-95 transition tabular-nums">
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>{n}
+                    </button>
+                  ))}
+                  <span aria-hidden className="w-8 h-8 rounded-full border border-white/25 shrink-0" />
+                  {[5, 10, 30].map((n) => (
+                    <button key={'p' + n} onClick={() => seekBy(n)} aria-label={`+${n}s`} className="inline-flex items-center gap-0.5 h-8 px-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-[11px] font-bold active:scale-95 transition tabular-nums">
+                      {n}<svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {/* transport — repeat · prev · play · next · list (repeat and list swapped) */}
               <div className="flex items-center justify-center gap-3 mt-3 text-white">
-                {/* Jump down to the playlist / group list */}
-                <button onClick={() => playlistRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} aria-label={t('mpl_gotolist')} title={t('mpl_gotolist')} className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-white/25 hover:bg-white/30 active:scale-95 transition">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>
+                <button onClick={cycleRepeat} aria-label={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'shuffle' ? 'mp_shuffle' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} title={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'shuffle' ? 'mp_shuffle' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} className={'w-10 h-10 inline-flex items-center justify-center rounded-full active:scale-95 transition ' + (repeatMode !== 'off' ? 'bg-white/25' : 'hover:bg-white/15')}>
+                  {repeatMode === 'shuffle'
+                    ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></svg>
+                    : <span className="relative inline-flex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>{(repeatMode === 'one' || repeatMode === 'all') && <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold">{repeatMode === 'all' ? 'A' : '1'}</span>}</span>}
                 </button>
                 <button onClick={() => { playPrev(); flashNav('prev') }} aria-label="previous" className={'w-12 h-12 inline-flex items-center justify-center rounded-full active:scale-95 transition ' + (navHi === 'prev' ? 'bg-white/30' : 'hover:bg-white/15')}><svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M19 20 9 12l10-8z" /><rect x="4" y="4" width="2.4" height="16" rx="1" /></svg></button>
                 {url ? (
@@ -685,28 +712,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   </label>
                 )}
                 <button onClick={() => { playNext(); flashNav('next') }} aria-label="next" className={'w-12 h-12 inline-flex items-center justify-center rounded-full active:scale-95 transition ' + (navHi === 'next' ? 'bg-white/30' : 'hover:bg-white/15')}><svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="m5 4 10 8-10 8z" /><rect x="17.6" y="4" width="2.4" height="16" rx="1" /></svg></button>
-                <button onClick={cycleRepeat} aria-label={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'shuffle' ? 'mp_shuffle' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} title={t(repeatMode === 'one' ? 'mp_repeat_one' : repeatMode === 'shuffle' ? 'mp_shuffle' : repeatMode === 'off' ? 'mp_repeat_off' : 'mp_repeat_all')} className={'w-10 h-10 inline-flex items-center justify-center rounded-full active:scale-95 transition ' + (repeatMode !== 'off' ? 'bg-white/25' : 'hover:bg-white/15')}>
-                  {repeatMode === 'shuffle'
-                    ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></svg>
-                    : <span className="relative inline-flex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M2 12a10 10 0 0 1 17-7" /><path d="M22 12a10 10 0 0 1-17 7" /><path d="m19 2 .5 3.3-3.3.5" /><path d="m5 22-.5-3.3 3.3-.5" /></svg>{(repeatMode === 'one' || repeatMode === 'all') && <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold">{repeatMode === 'all' ? 'A' : '1'}</span>}</span>}
+                {/* Jump down to the playlist / group list */}
+                <button onClick={() => playlistRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} aria-label={t('mpl_gotolist')} title={t('mpl_gotolist')} className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-white/25 hover:bg-white/30 active:scale-95 transition">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>
                 </button>
               </div>
-              {/* seek row — −30/−10/−5 · +5/+10/+30 (same as the video player) */}
-              {url && (
-                <div className="flex items-center justify-center gap-1 mt-3">
-                  {[30, 10, 5].map((n) => (
-                    <button key={'m' + n} onClick={() => seekBy(-n)} aria-label={`-${n}s`} className="inline-flex items-center gap-0.5 h-8 px-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-[11px] font-bold active:scale-95 transition tabular-nums">
-                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6z" /></svg>{n}
-                    </button>
-                  ))}
-                  <span aria-hidden className="w-8 h-8 rounded-full border border-white/25 shrink-0" />
-                  {[5, 10, 30].map((n) => (
-                    <button key={'p' + n} onClick={() => seekBy(n)} aria-label={`+${n}s`} className="inline-flex items-center gap-0.5 h-8 px-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-[11px] font-bold active:scale-95 transition tabular-nums">
-                      {n}<svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M13 6v12l8.5-6L13 6zM4 6l8.5 6L4 18z" /></svg>
-                    </button>
-                  ))}
-                </div>
-              )}
               </div>{/* end padded content */}
               {/* gauge slot — ALWAYS reserved (fixed height, empty when closed) so opening a submenu never shifts the layout */}
               {(

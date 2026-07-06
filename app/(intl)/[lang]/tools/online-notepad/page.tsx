@@ -965,23 +965,10 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-1 items-center gap-x-3 gap-y-2 flex-wrap sm:flex-nowrap min-w-0">
             <div className="flex flex-wrap items-center gap-0.5 gap-y-1">
-              {/* Save — custom dropdown (.txt for this tab / ZIP for all tabs) */}
-              <div className="relative">
-                {openMenu === 'save' && <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />}
-                <button type="button" onClick={() => setOpenMenu(openMenu === 'save' ? null : 'save')} title={t('np_save')} aria-label={t('np_save')} aria-pressed={openMenu === 'save'} className={'relative z-20 ' + iconBtn + (openMenu === 'save' ? ' bg-brand-50 text-brand-600' : '')}>
-                  <ToolIcon name="download" className="w-4 h-4" />
-                </button>
-                {openMenu === 'save' && (
-                  <div className="absolute z-30 mt-1 left-0 w-52 max-w-[calc(100vw-1.5rem)] bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-sm">
-                    <button type="button" onClick={() => { download(); setOpenMenu(null) }} disabled={!text}
-                      className="flex items-center gap-2 w-full px-3 py-1.5 text-left hover:bg-gray-50 disabled:opacity-40 text-gray-700">
-                      <ToolIcon name="download" className="w-4 h-4 text-brand-600 shrink-0" />{t('np_save_txt')}</button>
-                    <button type="button" onClick={() => { zipDownload(); setOpenMenu(null) }} disabled={docs.every((d) => !d.text)}
-                      className="flex items-center gap-2 w-full px-3 py-1.5 text-left hover:bg-gray-50 disabled:opacity-40 text-gray-700">
-                      <ToolIcon name="archive" className="w-4 h-4 text-gray-500 shrink-0" />{t('np_save_zip')}</button>
-                  </div>
-                )}
-              </div>
+              {/* Settings — merged: opens the panel that holds save (txt/zip) + display options */}
+              <button type="button" onClick={() => { setShowSettings((s) => !s); setShowFind(false); setShowChars(false); setOpenMenu(null) }} title={t('np_settings')} aria-label={t('np_settings')} aria-pressed={showSettings} className={iconBtn + (showSettings ? ' bg-brand-50 text-brand-600' : '')}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="4" x2="4" y1="21" y2="14" /><line x1="4" x2="4" y1="10" y2="3" /><line x1="12" x2="12" y1="21" y2="12" /><line x1="12" x2="12" y1="8" y2="3" /><line x1="20" x2="20" y1="21" y2="16" /><line x1="20" x2="20" y1="12" y2="3" /><line x1="1" x2="7" y1="14" y2="14" /><line x1="9" x2="15" y1="8" y2="8" /><line x1="17" x2="23" y1="16" y2="16" /></svg>
+              </button>
               <span className="w-px h-5 bg-gray-200 mx-0.5" />
               <button onClick={undo} disabled={!canUndo} title={t('np_undo')} aria-label={t('np_undo')} className={iconBtn}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 14 4 9l5-5" /><path d="M4 9h11a5 5 0 0 1 0 10h-1" /></svg>
@@ -1029,14 +1016,6 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
                 )}
               </div>
             </div>
-            <span className="w-px h-5 bg-gray-200" />
-            {/* Mobile-only gear: the display settings are hidden until tapped. */}
-            <button onClick={() => { setShowSettings((s) => !s); setShowFind(false); setShowChars(false) }} title={t('np_settings')} aria-label={t('np_settings')} aria-pressed={showSettings} className={'sm:hidden ' + iconBtn + (showSettings ? ' bg-brand-50 text-brand-600' : '')}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="4" x2="4" y1="21" y2="14" /><line x1="4" x2="4" y1="10" y2="3" /><line x1="12" x2="12" y1="21" y2="12" /><line x1="12" x2="12" y1="8" y2="3" /><line x1="20" x2="20" y1="21" y2="16" /><line x1="20" x2="20" y1="12" y2="3" /><line x1="1" x2="7" y1="14" y2="14" /><line x1="9" x2="15" y1="8" y2="8" /><line x1="17" x2="23" y1="16" y2="16" /></svg>
-            </button>
-            {/* Display settings — inline on desktop; on mobile they move to a full-width row
-                below the bar (so the save-time on the right doesn't squeeze them). */}
-            <div className="hidden sm:flex items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500">{settingsControls}</div>
           </div>
           <div className="flex items-center gap-2 shrink-0 min-h-7">
             {/* Show the save status only when the tab has content; "saving…" auto-hides after 3s. */}
@@ -1048,8 +1027,20 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           </div>
         </div>
 
-        {/* Mobile display settings — full-width row below the bar (uses the whole width). */}
-        {showSettings && <div className="sm:hidden flex items-center gap-2 flex-wrap text-xs text-gray-500">{settingsControls}</div>}
+        {/* Merged settings panel — save (txt/zip) on top, then display options. */}
+        {showSettings && (
+          <div className="flex flex-col gap-2.5 p-2.5 rounded-xl bg-gray-50 border border-gray-200">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <button type="button" onClick={() => download()} disabled={!text}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-medium text-gray-700 hover:border-brand-300 hover:text-brand-600 disabled:opacity-40 disabled:pointer-events-none">
+                <ToolIcon name="download" className="w-4 h-4 text-brand-600 shrink-0" />{t('np_save_txt')}</button>
+              <button type="button" onClick={() => zipDownload()} disabled={docs.every((d) => !d.text)}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-medium text-gray-700 hover:border-brand-300 hover:text-brand-600 disabled:opacity-40 disabled:pointer-events-none">
+                <ToolIcon name="archive" className="w-4 h-4 text-gray-500 shrink-0" />{t('np_save_zip')}</button>
+            </div>
+            <div className="flex items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500">{settingsControls}</div>
+          </div>
+        )}
 
         {showFind && (
           <div className="flex flex-wrap items-center gap-2 p-2 rounded-xl bg-gray-50 border border-gray-200">
