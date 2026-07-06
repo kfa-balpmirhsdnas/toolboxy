@@ -231,7 +231,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     const key = menuFor.key, file = menuFor.file
     setGroups((g) => { const ng = [...g, { id: 'g' + Date.now().toString(36), name: nm, keys: [key] }]; saveGroups(ng); return ng })
     if (file) { const [, sz] = key.split('|'); mhSave({ id: key, name: file.name, size: +sz || file.size, type: file.type }, file) }
-    setMenuNewName(''); setMenuCreating(false)
+    setMenuNewName(''); setMenuCreating(false); setMenuFor(null)
   }
   const closeMenu = () => { setMenuFor(null); setMenuCreating(false); setMenuNewName('') }
   // Long-press a track → open the "add to group" popup. The play click is suppressed by measuring how
@@ -239,7 +239,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const startPress = (h: { name: string; size: number; file: File | null }) => () => {
     pressStartRef.current = Date.now()
     if (pressRef.current) clearTimeout(pressRef.current)
-    pressRef.current = setTimeout(() => { pressRef.current = null; setMenuFor({ key: h.name + '|' + h.size, file: h.file, name: h.name }) }, 500)
+    pressRef.current = setTimeout(() => { pressRef.current = null; try { window.getSelection()?.removeAllRanges() } catch { /* ignore */ } setMenuFor({ key: h.name + '|' + h.size, file: h.file, name: h.name }) }, 500)
   }
   const cancelPress = () => { if (pressRef.current) { clearTimeout(pressRef.current); pressRef.current = null } }
   const wasLongPress = () => Date.now() - pressStartRef.current >= 450
@@ -266,7 +266,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
         onClick={() => { if (wasLongPress()) return; load(h.file!); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
         onPointerDown={startPress(h)} onPointerUp={cancelPress} onPointerLeave={cancelPress} onPointerCancel={cancelPress}
         onContextMenu={(e) => e.preventDefault()}
-        className="flex-1 min-w-0 flex items-center gap-2 text-left select-none [-webkit-touch-callout:none]">{trackInner(h)}</button>
+        className="flex-1 min-w-0 flex items-center gap-2 text-left select-none [-webkit-touch-callout:none] [-webkit-user-select:none]">{trackInner(h)}</button>
     : <label htmlFor="mp-folder" title={t('mp_reopen')} className="flex-1 min-w-0 flex items-center gap-2 text-left cursor-pointer">{trackInner(h)}</label>
 
   const clearAll = () => { setHistory([]); setSaved(new Set()); setCurFile(null); setUrl((u) => { if (u) URL.revokeObjectURL(u); return '' }); setBase(''); setPlaying(false); try { localStorage.removeItem('mp_saved_v1') } catch { /* ignore */ } mhClear() }
@@ -640,39 +640,40 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
           </>
         )}
 
-        {/* Long-press popup: add the track to a group, or make a new list at the bottom. */}
+        {/* Long-press action menu: play · favorite · add to a new list · delete. */}
         {menuFor && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4" onClick={closeMenu}>
-            <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4 select-none" onClick={closeMenu}>
+            <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl overflow-hidden select-none" onClick={(e) => e.stopPropagation()}>
               <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
                 <span className="flex-1 min-w-0 text-sm font-semibold text-gray-800 truncate">{menuFor.name.replace(/\.[^.]+$/, '')}</span>
                 <button onClick={closeMenu} aria-label="close" className="p-1 -mr-1 text-gray-400 hover:text-gray-600"><ToolIcon name="x" className="w-4 h-4" /></button>
               </div>
-              {/* existing lists first (즐겨찾기 + custom groups) */}
-              <div className="max-h-72 overflow-auto divide-y divide-gray-100">
-                {[{ id: 'fav', name: t('mpl_fav') }, ...groups].map((g) => {
-                  const member = groupKeys(g.id).has(menuFor.key)
-                  return (
-                    <button key={g.id} onClick={() => inGroup(g.id, menuFor.key, menuFor.file)} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50">
-                      <span className={'w-5 h-5 shrink-0 rounded border inline-flex items-center justify-center ' + (member ? 'bg-brand-600 border-brand-600 text-white' : 'border-gray-300')}>{member && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M20 6 9 17l-5-5" /></svg>}</span>
-                      {g.id === 'fav' && <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 shrink-0 text-amber-500"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>}
-                      <span className="flex-1 min-w-0 text-sm text-gray-800 truncate">{g.name}</span>
-                    </button>
-                  )
-                })}
-              </div>
-              {/* make a new list — at the bottom */}
-              <div className="border-t border-gray-100 p-2">
-                {menuCreating ? (
-                  <div className="flex items-center gap-2">
-                    {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-                    <input autoFocus value={menuNewName} onChange={(e) => setMenuNewName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') createFromMenu(); if (e.key === 'Escape') { setMenuCreating(false); setMenuNewName('') } }} placeholder={t('mpl_group_ph')} className="flex-1 min-w-0 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
-                    <button onClick={createFromMenu} className="px-3 py-1.5 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700">{t('mpl_create')}</button>
-                  </div>
-                ) : (
-                  <button onClick={() => setMenuCreating(true)} className="w-full inline-flex items-center justify-center gap-1.5 py-2 text-sm font-semibold text-brand-600 hover:bg-brand-50 rounded-lg"><ToolIcon name="plus" className="w-4 h-4" />{t('mpl_newlist')}</button>
-                )}
-              </div>
+              {menuCreating ? (
+                <div className="p-3 flex items-center gap-2">
+                  {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+                  <input autoFocus value={menuNewName} onChange={(e) => setMenuNewName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') createFromMenu(); if (e.key === 'Escape') { setMenuCreating(false); setMenuNewName('') } }} placeholder={t('mpl_group_ph')} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                  <button onClick={createFromMenu} className="px-3 py-2 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700">{t('mpl_create')}</button>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-100">
+                  {/* 1 · 플레이 하기 */}
+                  <button onClick={() => { if (menuFor.file) { load(menuFor.file); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) } closeMenu() }} disabled={!menuFor.file} className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-gray-800 hover:bg-gray-50 disabled:opacity-40">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 shrink-0 text-brand-600"><path d="M8 5v14l11-7z" /></svg>{t('mpl_m_play')}
+                  </button>
+                  {/* 2 · 즐겨찾기에 추가/빼기 */}
+                  <button onClick={() => inGroup('fav', menuFor.key, menuFor.file)} className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-gray-800 hover:bg-gray-50">
+                    <svg viewBox="0 0 24 24" fill={saved.has(menuFor.key) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0 text-amber-500"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>{saved.has(menuFor.key) ? t('mpl_m_unfav') : t('mpl_m_fav')}
+                  </button>
+                  {/* 3 · 새 리스트에 추가하기 */}
+                  <button onClick={() => setMenuCreating(true)} className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-gray-800 hover:bg-gray-50">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0 text-brand-600"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>{t('mpl_m_newlist')}
+                  </button>
+                  {/* 4 · 삭제하기 */}
+                  <button onClick={() => { removeItem(menuFor.key); closeMenu() }} className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50">
+                    <ToolIcon name="trash" className="w-5 h-5 shrink-0" />{t('mpl_m_delete')}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
