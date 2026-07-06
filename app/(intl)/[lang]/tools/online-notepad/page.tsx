@@ -965,10 +965,38 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-1 items-center gap-x-3 gap-y-2 flex-wrap sm:flex-nowrap min-w-0">
             <div className="flex flex-wrap items-center gap-0.5 gap-y-1">
-              {/* Settings (cog) — merged: opens the panel with save (txt/zip) + display options */}
-              <button type="button" onClick={() => { setShowSettings((s) => !s); setShowFind(false); setShowChars(false); setOpenMenu(null) }} title={t('np_settings')} aria-label={t('np_settings')} aria-pressed={showSettings} className={iconBtn + (showSettings ? ' bg-brand-50 text-brand-600' : '')}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
-              </button>
+              {/* Settings (cog) — merged: save (txt/zip) on top + auto-convert toggles below */}
+              <div className="relative">
+                {openMenu === 'save' && <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />}
+                <button type="button" onClick={() => setOpenMenu(openMenu === 'save' ? null : 'save')} title={t('np_save')} aria-label={t('np_save')} aria-pressed={openMenu === 'save'} className={'relative z-20 ' + iconBtn + (openMenu === 'save' ? ' bg-brand-50 text-brand-600' : '')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>
+                </button>
+                {openMenu === 'save' && (
+                  <div className="absolute z-30 mt-1 left-0 w-60 max-w-[calc(100vw-1.5rem)] bg-white border border-gray-200 rounded-lg shadow-lg py-1 text-sm">
+                    <button type="button" onClick={() => { download(); setOpenMenu(null) }} disabled={!text}
+                      className="flex items-center gap-2 w-full px-3 py-1.5 text-left hover:bg-gray-50 disabled:opacity-40 text-gray-700">
+                      <ToolIcon name="download" className="w-4 h-4 text-brand-600 shrink-0" />{t('np_save_txt')}</button>
+                    <button type="button" onClick={() => { zipDownload(); setOpenMenu(null) }} disabled={docs.every((d) => !d.text)}
+                      className="flex items-center gap-2 w-full px-3 py-1.5 text-left hover:bg-gray-50 disabled:opacity-40 text-gray-700">
+                      <ToolIcon name="archive" className="w-4 h-4 text-gray-500 shrink-0" />{t('np_save_zip')}</button>
+                    <div className="my-1 border-t border-gray-100" />
+                    <p className="px-3 py-1 text-xs font-medium text-gray-400">{t('np_autoconvert')}</p>
+                    {([
+                      ['symbol', t('np_ac_symbol'), '--- === -> <-'],
+                      ['link', t('np_ac_link'), 'www.a.com → 🔗'],
+                      ['bullet', t('np_ac_bullet'), '1. 1> * @'],
+                    ] as const).map(([key, label, hint]) => (
+                      <label key={key} className="flex items-start gap-2 px-3 py-1.5 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" checked={autoConv[key]} onChange={(e) => setAutoConv((p) => ({ ...p, [key]: e.target.checked }))} className="mt-0.5 w-4 h-4 accent-brand-600 shrink-0" />
+                        <span className="min-w-0">
+                          <span className="text-gray-700">{label}</span>
+                          <span className="block text-[11px] text-gray-400 font-mono truncate">{hint}</span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
               <span className="w-px h-5 bg-gray-200 mx-0.5" />
               <button onClick={undo} disabled={!canUndo} title={t('np_undo')} aria-label={t('np_undo')} className={iconBtn}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M9 14 4 9l5-5" /><path d="M4 9h11a5 5 0 0 1 0 10h-1" /></svg>
@@ -990,32 +1018,15 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
               <button onClick={() => { setShowChars((s) => !s); setShowFind(false); setShowSettings(false) }} title={t('np_symbols')} aria-label={t('np_symbols')} aria-pressed={showChars} className={iconBtn + (showChars ? ' bg-brand-50 text-brand-600' : '')}>
                 <span className="block w-4 h-4 text-base leading-4 text-center">※</span>
               </button>
-              {/* Auto-convert toggles — custom dropdown with checkboxes */}
-              <div className="relative">
-                {openMenu === 'auto' && <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />}
-                <button type="button" onClick={() => setOpenMenu(openMenu === 'auto' ? null : 'auto')} title={t('np_autoconvert')} aria-label={t('np_autoconvert')} aria-pressed={openMenu === 'auto'} className={'relative z-20 ' + iconBtn + (openMenu === 'auto' ? ' bg-brand-50 text-brand-600' : '')}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>
-                </button>
-                {openMenu === 'auto' && (
-                  <div className="absolute z-30 mt-1 left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 w-60 max-w-[calc(100vw-1.5rem)] bg-white border border-gray-200 rounded-lg shadow-lg py-1.5 text-sm">
-                    <p className="px-3 py-1 text-xs font-medium text-gray-400">{t('np_autoconvert')}</p>
-                    {([
-                      ['symbol', t('np_ac_symbol'), '--- === -> <-'],
-                      ['link', t('np_ac_link'), 'www.a.com → 🔗'],
-                      ['bullet', t('np_ac_bullet'), '1. 1> * @'],
-                    ] as const).map(([key, label, hint]) => (
-                      <label key={key} className="flex items-start gap-2 px-3 py-1.5 hover:bg-gray-50 cursor-pointer">
-                        <input type="checkbox" checked={autoConv[key]} onChange={(e) => setAutoConv((p) => ({ ...p, [key]: e.target.checked }))} className="mt-0.5 w-4 h-4 accent-brand-600 shrink-0" />
-                        <span className="min-w-0">
-                          <span className="text-gray-700">{label}</span>
-                          <span className="block text-[11px] text-gray-400 font-mono truncate">{hint}</span>
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
+            <span className="w-px h-5 bg-gray-200" />
+            {/* Mobile-only gear: the display settings are hidden until tapped. */}
+            <button onClick={() => { setShowSettings((s) => !s); setShowFind(false); setShowChars(false) }} title={t('np_settings')} aria-label={t('np_settings')} aria-pressed={showSettings} className={'sm:hidden ' + iconBtn + (showSettings ? ' bg-brand-50 text-brand-600' : '')}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="4" x2="4" y1="21" y2="14" /><line x1="4" x2="4" y1="10" y2="3" /><line x1="12" x2="12" y1="21" y2="12" /><line x1="12" x2="12" y1="8" y2="3" /><line x1="20" x2="20" y1="21" y2="16" /><line x1="20" x2="20" y1="12" y2="3" /><line x1="1" x2="7" y1="14" y2="14" /><line x1="9" x2="15" y1="8" y2="8" /><line x1="17" x2="23" y1="16" y2="16" /></svg>
+            </button>
+            {/* Display settings — inline on desktop; on mobile they move to a full-width row
+                below the bar (so the save-time on the right doesn't squeeze them). */}
+            <div className="hidden sm:flex items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500">{settingsControls}</div>
           </div>
           <div className="flex items-center gap-2 shrink-0 min-h-7">
             {/* Show the save status only when the tab has content; "saving…" auto-hides after 3s. */}
@@ -1027,20 +1038,8 @@ export default function OnlineNotepadPage({ params }: { params: { lang: string }
           </div>
         </div>
 
-        {/* Merged settings panel — save (txt/zip) on top, then display options. */}
-        {showSettings && (
-          <div className="flex flex-col gap-2.5 p-2.5 rounded-xl bg-gray-50 border border-gray-200">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <button type="button" onClick={() => download()} disabled={!text}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-medium text-gray-700 hover:border-brand-300 hover:text-brand-600 disabled:opacity-40 disabled:pointer-events-none">
-                <ToolIcon name="download" className="w-4 h-4 text-brand-600 shrink-0" />{t('np_save_txt')}</button>
-              <button type="button" onClick={() => zipDownload()} disabled={docs.every((d) => !d.text)}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-medium text-gray-700 hover:border-brand-300 hover:text-brand-600 disabled:opacity-40 disabled:pointer-events-none">
-                <ToolIcon name="archive" className="w-4 h-4 text-gray-500 shrink-0" />{t('np_save_zip')}</button>
-            </div>
-            <div className="flex items-center gap-x-2.5 gap-y-1.5 flex-wrap text-xs text-gray-500">{settingsControls}</div>
-          </div>
-        )}
+        {/* Mobile display settings — full-width row below the bar (uses the whole width). */}
+        {showSettings && <div className="sm:hidden flex items-center gap-2 flex-wrap text-xs text-gray-500">{settingsControls}</div>}
 
         {showFind && (
           <div className="flex flex-wrap items-center gap-2 p-2 rounded-xl bg-gray-50 border border-gray-200">
