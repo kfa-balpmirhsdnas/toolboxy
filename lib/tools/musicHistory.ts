@@ -8,8 +8,13 @@ const DB_NAME = 'toolboxy-music'
 const STORE = 'history'
 const DB_VERSION = 1
 
-export const MH_MAX_BYTES = 200 * 1024 * 1024 // per-file cap for a stored blob (200 MB)
-export const MH_MAX_ITEMS = 200               // metadata is tiny, so keep plenty (favorites are never evicted)
+export const MH_MAX_BYTES = 200 * 1024 * 1024      // per-file cap for a ★-stored blob (200 MB)
+export const MH_MAX_ITEMS = 300                    // metadata is tiny, so keep plenty (favorites are never evicted)
+export const MH_AUTOSAVE_PERFILE = 40 * 1024 * 1024 // auto-cache skips files bigger than this (40 MB)
+
+// Once the browser's storage quota is hit we stop trying to auto-cache blobs (each failed write is
+// wasted work). Reset when the user frees space (clear list / drop cache).
+let autoFull = false
 
 export type MHItem = { id: string; name: string; size: number; type: string; ts: number; blob?: Blob }
 
@@ -101,5 +106,56 @@ export async function mhDelete(id: string): Promise<void> {
 }
 
 export async function mhClear(): Promise<void> {
+  autoFull = false
   try { store(await openDB(), 'readwrite').clear() } catch { /* ignore */ }
+}
+
+// ---- Auto-cache: keep the audio blob for every added/played track so the whole list replays after
+// a refresh. Bounded by the browser's own storage quota — on QuotaExceededError we stop (fail soft),
+// the metadata is still kept (the row survives, just dimmed). No manual byte budget = no extra reads.
+export async function mhAutoSave(meta: { id: string; name: string; size: number; type: string }, blob: Blob): Promise<void> {
+  if (blob.size > MH_AUTOSAVE_PERFILE || autoFull) { await mhPutMeta(meta); return }
+  try {
+    const db = await openDB()
+    await new Promise<void>((res, rej) => {
+      const tx = db.transaction(STORE, 'readwrite')
+      tx.objectStore(STORE).put({ id: meta.id, name: meta.name, size: meta.size, type: meta.type, ts: Date.now(), blob })
+      tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error)
+    })
+  } catch (e) { if ((e as { name?: string })?.name === 'QuotaExceededError') autoFull = true; try { await mhPutMeta(meta) } catch { /* ignore */ } }
+}
+
+// Batch auto-cache (e.g. a whole folder). Small chunks per transaction so a quota error only loses one
+// chunk (partial success is kept) and no single transaction gets huge.
+export async function mhAutoSaveMany(files: File[]): Promise<void> {
+  if (autoFull) return
+  const CHUNK = 4
+  for (let i = 0; i < files.length; i += CHUNK) {
+    if (autoFull) break
+    const chunk = files.slice(i, i + CHUNK).filter((f) => f.size <= MH_AUTOSAVE_PERFILE)
+    if (!chunk.length) continue
+    try {
+      const db = await openDB()
+      await new Promise<void>((res, rej) => {
+        const tx = db.transaction(STORE, 'readwrite'); const st = tx.objectStore(STORE); const base = Date.now()
+        chunk.forEach((f, k) => st.put({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type, ts: base - i - k, blob: f }))
+        tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error)
+      })
+    } catch (e) { if ((e as { name?: string })?.name === 'QuotaExceededError') autoFull = true; break }
+  }
+}
+
+// Drop every cached audio blob but KEEP the metadata — the list stays (rows dimmed), space is freed.
+export async function mhDropBlobs(): Promise<void> {
+  autoFull = false
+  try {
+    const all = await mhList()
+    const st = store(await openDB(), 'readwrite')
+    for (const it of all) if (it.blob) st.put({ id: it.id, name: it.name, size: it.size, type: it.type, ts: it.ts })
+  } catch { /* ignore */ }
+}
+
+// Origin storage usage/quota (cheap — no blob reads) for the settings readout.
+export async function mhStorageUsage(): Promise<{ usage: number; quota: number }> {
+  try { const nav = navigator as unknown as { storage?: { estimate?: () => Promise<{ usage?: number; quota?: number }> } }; const e = await nav.storage?.estimate?.(); return { usage: e?.usage || 0, quota: e?.quota || 0 } } catch { return { usage: 0, quota: 0 } }
 }

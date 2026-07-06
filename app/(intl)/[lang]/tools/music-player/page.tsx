@@ -6,7 +6,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
-import { mhList, mhPutMeta, mhPutManyMeta, mhSave, mhSetBlob, mhDelete, mhClear } from '@/lib/tools/musicHistory'
+import { mhList, mhPutMeta, mhPutManyMeta, mhSave, mhSetBlob, mhDelete, mhClear, mhAutoSave, mhAutoSaveMany, mhDropBlobs, mhStorageUsage } from '@/lib/tools/musicHistory'
 import { readId3 } from '@/lib/tools/id3'
 
 const tool = getToolBySlug('music-player')!
@@ -50,6 +50,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [id3, setId3] = useState<{ title?: string; artist?: string; cover?: string } | null>(null) // local ID3v2 tags
   const [navHi, setNavHi] = useState<'prev' | 'next' | null>(null) // prev/next momentary highlight
   const navTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [autoSave, setAutoSave] = useState(true) // cache added/played tracks so the list replays after refresh (default on)
+  const autoSaveRef = useRef(true)
+  useEffect(() => { autoSaveRef.current = autoSave }, [autoSave])
+  const [usage, setUsage] = useState<{ usage: number; quota: number } | null>(null) // storage readout for settings
   const [lyricsOn, setLyricsOn] = useState(true) // look up lyrics for the current track (default on)
   const [lyrics, setLyrics] = useState<string | null>(null) // resolved lyrics text
   const [toast, setToast] = useState('') // transient message (e.g. sleep-timer stopped)
@@ -63,14 +67,17 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       setDarkMode(localStorage.getItem('mp_dark_v1') === '1')
       setAlbumArt(localStorage.getItem('mp_art_v1') !== '0') // default on
       setLyricsOn(localStorage.getItem('mp_lyrics_v1') !== '0') // default on
+      setAutoSave(localStorage.getItem('mp_autosave_v1') !== '0') // default on
     } catch { /* ignore */ }
   }, [])
+  const toggleAutoSave = () => setAutoSave((v) => { const n = !v; try { localStorage.setItem('mp_autosave_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleEq = () => setEqEnabled((v) => { const n = !v; try { localStorage.setItem('mp_eq_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleDark = () => setDarkMode((v) => { const n = !v; try { localStorage.setItem('mp_dark_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleArt = () => setAlbumArt((v) => { const n = !v; try { localStorage.setItem('mp_art_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleLyrics = () => setLyricsOn((v) => { const n = !v; try { localStorage.setItem('mp_lyrics_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const flashNav = (dir: 'prev' | 'next') => { setNavHi(dir); if (navTimer.current) clearTimeout(navTimer.current); navTimer.current = setTimeout(() => setNavHi(null), 3000) }
   const showToast = (msg: string) => { setToast(msg); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(''), 4500) }
+  useEffect(() => { if (showSettings) mhStorageUsage().then(setUsage) }, [showSettings])
   // ---- Metadata: 1) local ID3v2 tags (primary), 2) iTunes (fallback), 3) filename ----
   // Primary/local: read the current file's embedded ID3 tags (title/artist + cover). No network.
   useEffect(() => {
@@ -211,7 +218,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     mhList().then((items) => {
       if (!alive || !items.length) return
       const restored = items.map((it) => ({ name: it.name, size: it.size, file: it.blob ? new File([it.blob], it.name, { type: it.type }) : null }))
-      setHistory((h) => { const seen = new Set(h.map((x) => x.name + '|' + x.size)); return [...h, ...restored.filter((r) => !seen.has(r.name + '|' + r.size))].slice(0, 100) })
+      setHistory((h) => { const seen = new Set(h.map((x) => x.name + '|' + x.size)); return [...h, ...restored.filter((r) => !seen.has(r.name + '|' + r.size))].slice(0, 300) })
     })
     return () => { alive = false }
   }, [])
@@ -238,10 +245,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       // Playing a track that's already in the list keeps its position; only a brand-new file goes on top.
       if (!advance) setHistory((h) => h.some((x) => x.name === f.name && x.size === f.size)
         ? h.map((x) => (x.name === f.name && x.size === f.size ? { name: f.name, size: f.size, file: f } : x))
-        : [{ name: f.name, size: f.size, file: f }, ...h].slice(0, 100))
+        : [{ name: f.name, size: f.size, file: f }, ...h].slice(0, 300))
       const id = f.name + '|' + f.size
       const meta = { id, name: f.name, size: f.size, type: f.type }
-      if (savedRef.current.has(id)) mhSave(meta, f); else mhPutMeta(meta)
+      if (savedRef.current.has(id)) mhSave(meta, f); else if (autoSaveRef.current) mhAutoSave(meta, f); else mhPutMeta(meta)
       trackToolUsed('music-player')
     } catch (e) { setNotice({ msg: `load: ${(e as Error)?.message || e}`, err: true }) }
   }, [])
@@ -506,9 +513,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       const merged = h.map((x) => { const f = byKey.get(x.name + '|' + x.size); return f && !x.file ? { name: x.name, size: x.size, file: f } : x })
       const seen = new Set(h.map((x) => x.name + '|' + x.size))
       const add = files.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f }))
-      return [...add, ...merged].slice(0, 100)
+      return [...add, ...merged].slice(0, 300)
     })
     mhPutManyMeta(files.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type })))
+    if (autoSaveRef.current) mhAutoSaveMany(files) // cache blobs in the background so the whole list replays after refresh
     load(files[0])
   }, [load])
   useEffect(() => {
@@ -980,7 +988,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 <button onClick={() => setShowSettings(false)} aria-label="close" className="p-1 -mr-1 text-gray-400 hover:text-gray-600"><ToolIcon name="x" className="w-4 h-4" /></button>
               </div>
               <div className="divide-y divide-gray-100">
-                {([[t('mpl_eq_opt'), eqEnabled, toggleEq], [t('mpl_dark_opt'), darkMode, toggleDark], [t('mpl_art_opt'), albumArt, toggleArt], [t('mpl_lyrics_opt'), lyricsOn, toggleLyrics]] as [string, boolean, () => void][]).map(([label, on, toggle], i) => (
+                {([[t('mpl_autosave_opt'), autoSave, toggleAutoSave], [t('mpl_eq_opt'), eqEnabled, toggleEq], [t('mpl_dark_opt'), darkMode, toggleDark], [t('mpl_art_opt'), albumArt, toggleArt], [t('mpl_lyrics_opt'), lyricsOn, toggleLyrics]] as [string, boolean, () => void][]).map(([label, on, toggle], i) => (
                   <label key={i} className="flex items-center gap-3 px-4 py-3.5 cursor-pointer">
                     <span className="flex-1 min-w-0 text-sm text-gray-800">{label}</span>
                     <button onClick={toggle} role="switch" aria-checked={on} aria-label={label} className={'relative shrink-0 w-11 h-6 rounded-full transition ' + (on ? 'bg-brand-600' : 'bg-gray-300')}>
@@ -988,6 +996,12 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     </button>
                   </label>
                 ))}
+                {/* Storage used (whole origin) — helps the user understand the auto-save cache */}
+                {usage && usage.usage > 0 && <p className="px-4 py-2 text-xs text-gray-400">{t('mpl_storage', { used: fmtSize(usage.usage), total: usage.quota ? fmtSize(usage.quota) : '—' })}</p>}
+                {/* Drop cached audio but keep the list (rows dim, space freed) */}
+                <button onClick={() => { if (window.confirm(t('mpl_drop_confirm'))) { mhDropBlobs().then(() => mhStorageUsage().then(setUsage)); setHistory((h) => h.map((x) => (saved.has(x.name + '|' + x.size) ? x : { ...x, file: null }))) } }} className="w-full flex items-center gap-3 px-4 py-3.5 text-left text-sm text-gray-700 hover:bg-gray-50">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0"><path d="M21 12a9 9 0 1 1-6.2-8.5" /><path d="M21 3v6h-6" /></svg>{t('mpl_drop_cache')}
+                </button>
                 {/* Clear the whole file list (moved here from the header trash button) */}
                 <button onClick={() => { if (allCount > 0 && window.confirm(t('mpl_clear_confirm'))) { clearAll(); setShowSettings(false) } }} disabled={allCount === 0} className="w-full flex items-center gap-3 px-4 py-3.5 text-left text-sm text-red-600 hover:bg-red-50 disabled:opacity-40">
                   <ToolIcon name="trash" className="w-5 h-5 shrink-0" />{t('mpl_clear_list')}
