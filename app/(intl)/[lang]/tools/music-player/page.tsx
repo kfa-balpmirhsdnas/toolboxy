@@ -17,7 +17,8 @@ const NOT_AUDIO_RE = /\.(jpe?g|png|gif|webp|heic|heif|bmp|svg|tiff?|ico|mp4|m4v|
 const maybeAudio = (f: File) => isAudio(f) || (!/^(image|video|text)\//.test(f.type) && !NOT_AUDIO_RE.test(f.name))
 const fmt = (s: number) => { if (!isFinite(s) || s < 0) s = 0; const m = Math.floor(s / 60); const ss = Math.floor(s % 60); return `${m}:${String(ss).padStart(2, '0')}` }
 const fmtSize = (b: number) => (b < 1024 ? b + ' B' : b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(1) + ' MB')
-const SPEEDS = [1, 1.25, 1.5, 2, 0.75]
+const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2]
+const VOLUMES = [0, 0.25, 0.5, 0.75, 1]
 const TIMER_MENU = [15, 30, 60, 120]
 
 export default function MusicPlayerPage({ params: { lang } }: { params: { lang: string } }) {
@@ -297,7 +298,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
             <div ref={cardRef} className="rounded-2xl bg-gradient-to-b from-brand-500 to-brand-700 text-white shadow-sm overflow-hidden scroll-mt-16">
               <div className="p-5">
               {/* Album art shrinks while a bottom gauge is open so the gauge fits without growing the card. */}
-              <div className={'aspect-square mx-auto flex items-center justify-center rounded-2xl bg-white/10 transition-[max-height] duration-200 ' + (panel === 'none' ? 'max-h-56' : 'max-h-40')}>
+              <div className={'aspect-square mx-auto flex items-center justify-center rounded-2xl bg-white/10 ' + (panel === 'none' ? 'max-h-56' : 'max-h-36')}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="w-16 h-16 opacity-90"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
               </div>
               <p className="mt-4 text-center font-semibold truncate">{base || t('mp_nothing')}</p>
@@ -349,11 +350,17 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               </div>{/* end padded content */}
               {/* gauge slot — fixed height (= the album-art shrink) so opening a gauge never resizes the card */}
               {panel !== 'none' && (
-                <div className="h-16 flex flex-col justify-center overflow-hidden pb-1">
+                <div className="h-20 flex flex-col justify-center overflow-hidden pb-1">
+                  {/* All three submenus share the speed-menu layout: slider + value on top, preset chips below. */}
                   {panel === 'vol' && (
-                    <div className="flex items-center gap-3 px-5 text-white">
-                      <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume" className="flex-1 h-1.5 accent-white cursor-pointer" />
-                      <span className="text-xs font-mono tabular-nums text-white/80 w-8 text-right">{Math.round(volume * 100)}</span>
+                    <div className="px-5 text-white space-y-2">
+                      <div className="flex items-center gap-3">
+                        <input type="range" min={0} max={1} step={0.05} value={volume} onChange={(e) => setVol(+e.target.value)} aria-label="volume" className="flex-1 h-1.5 accent-white cursor-pointer" />
+                        <span className="text-xs font-mono tabular-nums text-white/80 w-10 text-right">{Math.round(volume * 100)}%</span>
+                      </div>
+                      <div className="flex flex-wrap justify-center gap-1">
+                        {VOLUMES.map((v) => <button key={v} onClick={() => setVol(v)} className={'px-2 h-6 rounded text-[11px] tabular-nums transition ' + (volume === v ? 'bg-white text-brand-700 font-bold' : 'bg-white/15 hover:bg-white/25')}>{Math.round(v * 100)}</button>)}
+                      </div>
                     </div>
                   )}
                   {panel === 'speed' && (
@@ -368,10 +375,15 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     </div>
                   )}
                   {panel === 'timer' && (
-                    <div className="flex flex-wrap items-center justify-center gap-1 px-5 text-white">
-                      {TIMER_MENU.map((m) => <button key={m} onClick={() => setSleepMin(m)} className={'px-2.5 h-7 rounded-full text-xs font-semibold transition ' + (sleepMin === m ? 'bg-white text-brand-700' : 'bg-white/15 hover:bg-white/25')}>{t('ct_min', { n: m })}</button>)}
-                      <button onClick={() => setSleepMin(0)} className={'px-2.5 h-7 rounded-full text-xs font-semibold transition ' + (sleepMin === 0 ? 'bg-white/30' : 'bg-white/15 hover:bg-white/25')}>{t('mp_timer_off')}</button>
-                      {sleepMin > 0 && <span className="text-xs font-mono tabular-nums text-white/80 ml-1">{Math.floor(sleepLeft / 60)}:{String(sleepLeft % 60).padStart(2, '0')}</span>}
+                    <div className="px-5 text-white space-y-2">
+                      <div className="flex items-center gap-3">
+                        <input type="range" min={0} max={120} step={5} value={sleepMin} onChange={(e) => setSleepMin(+e.target.value)} aria-label={t('mp_timer')} className="flex-1 h-1.5 accent-white cursor-pointer" />
+                        <span className="text-xs font-mono tabular-nums text-white/80 w-12 text-right">{sleepMin > 0 ? `${Math.floor(sleepLeft / 60)}:${String(sleepLeft % 60).padStart(2, '0')}` : t('mp_timer_off')}</span>
+                      </div>
+                      <div className="flex flex-wrap justify-center gap-1">
+                        {TIMER_MENU.map((m) => <button key={m} onClick={() => setSleepMin(m)} className={'px-2 h-6 rounded text-[11px] tabular-nums transition ' + (sleepMin === m ? 'bg-white text-brand-700 font-bold' : 'bg-white/15 hover:bg-white/25')}>{t('ct_min', { n: m })}</button>)}
+                        <button onClick={() => setSleepMin(0)} className={'px-2 h-6 rounded text-[11px] transition ' + (sleepMin === 0 ? 'bg-white text-brand-700 font-bold' : 'bg-white/15 hover:bg-white/25')}>{t('mp_timer_off')}</button>
+                      </div>
                     </div>
                   )}
                 </div>
