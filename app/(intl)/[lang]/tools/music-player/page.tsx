@@ -61,6 +61,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [searchOn, setSearchOn] = useState(false) // playlist search box open
   const [query, setQuery] = useState('') // playlist search text
   const [durs, setDurs] = useState<Record<string, number>>({}) // per-track duration cache (key → seconds)
+  const [renderN, setRenderN] = useState(80) // rows actually rendered (grows on scroll → big folders never freeze the UI)
+  const onListScroll = (e: React.UIEvent<HTMLDivElement>) => { const el = e.currentTarget; if (el.scrollTop + el.clientHeight >= el.scrollHeight - 120) setRenderN((n) => n + 80) }
   useEffect(() => {
     try {
       setEqEnabled(localStorage.getItem('mp_eq_v1') === '1')
@@ -78,6 +80,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const flashNav = (dir: 'prev' | 'next') => { setNavHi(dir); if (navTimer.current) clearTimeout(navTimer.current); navTimer.current = setTimeout(() => setNavHi(null), 3000) }
   const showToast = (msg: string) => { setToast(msg); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(''), 4500) }
   useEffect(() => { if (showSettings) mhStorageUsage().then(setUsage) }, [showSettings])
+  useEffect(() => { setRenderN(80) }, [histTab, query]) // restart the render window when the tab/search changes
   // ---- Metadata: 1) local ID3v2 tags (primary), 2) iTunes (fallback), 3) filename ----
   // Primary/local: read the current file's embedded ID3 tags (title/artist + cover). No network.
   useEffect(() => {
@@ -517,6 +520,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     })
     mhPutManyMeta(files.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type })))
     if (autoSaveRef.current) mhAutoSaveMany(files) // cache blobs in the background so the whole list replays after refresh
+    setRenderN(80) // only render the first window so a big folder doesn't freeze the UI
     load(files[0])
   }, [load])
   useEffect(() => {
@@ -807,8 +811,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 shown.length === 0 ? (
                   <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
                 ) : (
-                  <div ref={listRef} className="divide-y divide-gray-100 max-h-[300px] overflow-y-auto">
-                    {shown.map((h) => {
+                  <div ref={listRef} onScroll={onListScroll} className="divide-y divide-gray-100 max-h-[300px] overflow-y-auto">
+                    {shown.slice(0, renderN).map((h) => {
                       const key = h.name + '|' + h.size
                       const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                       const star = saved.has(key)
@@ -883,15 +887,15 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></svg>
                       </button>
                     )}
-                    {!reorder && <button onClick={() => { setAddMode((a) => !a) }} className={'inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg ' + (addMode ? 'bg-brand-600 text-white' : 'text-brand-600 hover:bg-brand-50')}>{addMode ? t('mpl_done') : <><ToolIcon name="plus" className="w-3.5 h-3.5" />{t('mpl_addsongs')}</>}</button>}
+                    {!reorder && <button onClick={() => { setAddMode((a) => !a); setRenderN(80) }} className={'inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg ' + (addMode ? 'bg-brand-600 text-white' : 'text-brand-600 hover:bg-brand-50')}>{addMode ? t('mpl_done') : <><ToolIcon name="plus" className="w-3.5 h-3.5" />{t('mpl_addsongs')}</>}</button>}
                   </div>
                   {addMode ? (
                     /* pick which tracks belong to this group */
                     history.length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
                     ) : (
-                      <div className="divide-y divide-gray-100 max-h-80 overflow-auto">
-                        {history.map((h) => {
+                      <div onScroll={onListScroll} className="divide-y divide-gray-100 max-h-80 overflow-auto">
+                        {history.slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const member = groupKeys(openGroup).has(key)
                           return (
                             <button key={key} onClick={() => inGroup(openGroup, key, h.file)} className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-gray-50">
@@ -906,8 +910,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     groupSongs(openGroup).length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mpl_group_empty')}</p>
                     ) : (
-                      <div ref={groupListRef} className="divide-y divide-gray-100 max-h-[300px] overflow-y-auto">
-                        {groupSongs(openGroup).map((h) => {
+                      <div ref={groupListRef} onScroll={onListScroll} className="divide-y divide-gray-100 max-h-[300px] overflow-y-auto">
+                        {groupSongs(openGroup).slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                           return (
                             <div key={key} data-key={key} className={'flex items-center gap-2 px-3 py-2.5 transition-colors ' + (dragKey === key ? 'bg-brand-100 shadow-inner' : isCur ? 'bg-brand-50' : '')}>
