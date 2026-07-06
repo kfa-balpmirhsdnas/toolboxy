@@ -3816,6 +3816,8 @@
     "mpl_group_empty": "No tracks in this playlist yet. Use “Add tracks”",
     "mpl_remove": "Remove from group",
     "mpl_gotolist": "Go to list",
+    "mpl_settings": "Settings",
+    "mpl_eq_opt": "Show equalizer when there's no album art",
     "mpl_newlist": "Create new list",
     "mpl_m_play": "Play",
     "mpl_m_fav": "Add to Favorites",

@@ -38,7 +38,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [histTab, setHistTab] = useState<'all' | 'saved'>('all')
   const [saved, setSaved] = useState<Set<string>>(() => new Set())
   const [notice, setNotice] = useState<{ msg: string; err?: boolean } | null>(null) // on-screen diagnostic (surface real errors)
-  const [panel, setPanel] = useState<'none' | 'vol' | 'speed' | 'timer'>('none') // which bottom gauge is open
+  const [panel, setPanel] = useState<'none' | 'vol' | 'speed' | 'timer' | 'settings'>('none') // which bottom gauge is open
+  const [eqEnabled, setEqEnabled] = useState(false) // show an equalizer (instead of the note) while playing
+  useEffect(() => { try { setEqEnabled(localStorage.getItem('mp_eq_v1') === '1') } catch { /* ignore */ } }, [])
+  const toggleEq = () => setEqEnabled((v) => { const n = !v; try { localStorage.setItem('mp_eq_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const [reorder, setReorder] = useState(false) // playlist reorder mode (drag handle per row)
   const [dragKey, setDragKey] = useState<string | null>(null) // row currently being dragged
   // ---- groups (the 리스트/플레이리스트 tab) ----
@@ -58,6 +61,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const pressStartRef = useRef(0) // when the current press began (to distinguish tap vs long-press on click)
   const dragKeyRef = useRef<string | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const groupListRef = useRef<HTMLDivElement>(null) // playlist song list — reorder container
   const cardRef = useRef<HTMLDivElement>(null) // now-playing card — scroll target on track click
   const playlistRef = useRef<HTMLDivElement>(null) // playlist card — scroll target for the list button
   const inputRef = useRef<HTMLInputElement>(null)
@@ -220,9 +224,42 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       return ng
     })
   }
-  // Songs of a group, in playlist order (즐겨찾기 = the ★ set).
+  // Songs of a group, in the playlist's OWN order (custom = keys order · 즐겨찾기 = ★ insertion order).
   const groupKeys = (id: string) => (id === 'fav' ? saved : new Set(groups.find((g) => g.id === id)?.keys || []))
-  const groupSongs = (id: string) => { const ks = groupKeys(id); return history.filter((h) => ks.has(h.name + '|' + h.size)) }
+  const groupSongs = (id: string) => {
+    const byKey = new Map(history.map((h) => [h.name + '|' + h.size, h] as const))
+    const order = id === 'fav' ? Array.from(saved) : (groups.find((g) => g.id === id)?.keys || [])
+    return order.map((k) => byKey.get(k)).filter((h): h is { name: string; size: number; file: File | null } => !!h)
+  }
+  // Reorder a track within a playlist (drag): move `fromKey` to `toKey`'s slot. Updates the live
+  // ref synchronously (so consecutive drag-moves are consistent); persistence happens once on drop.
+  const reorderGroup = (id: string, fromKey: string, toKey: string) => {
+    if (id === 'fav') {
+      const arr = Array.from(savedRef.current); const i = arr.indexOf(fromKey), j = arr.indexOf(toKey)
+      if (i < 0 || j < 0 || i === j) return
+      arr.splice(j, 0, arr.splice(i, 1)[0])
+      const n = new Set(arr); savedRef.current = n; setSaved(n)
+    } else {
+      const gs = groupsRef.current; const gi = gs.findIndex((g) => g.id === id); if (gi < 0) return
+      const arr = [...gs[gi].keys]; const i = arr.indexOf(fromKey), j = arr.indexOf(toKey)
+      if (i < 0 || j < 0 || i === j) return
+      arr.splice(j, 0, arr.splice(i, 1)[0])
+      const ng = [...gs]; ng[gi] = { ...gs[gi], keys: arr }; groupsRef.current = ng; setGroups(ng)
+    }
+  }
+  const onGroupDragMove = (e: React.PointerEvent) => {
+    const from = dragKeyRef.current; if (!from || !openGroup) return
+    const rows = Array.from(groupListRef.current?.children || []) as HTMLElement[]
+    let over: string | null = null
+    for (const row of rows) { const r = row.getBoundingClientRect(); if (e.clientY >= r.top && e.clientY <= r.bottom) { over = row.dataset.key || null; break } }
+    if (over && over !== from) reorderGroup(openGroup, from, over)
+  }
+  // Drop: persist the playlist's new order once, from the ref (avoids write-in-updater quirks).
+  const endGroupDrag = (e: React.PointerEvent) => {
+    endDrag(e)
+    if (openGroup === 'fav') { try { localStorage.setItem('mp_saved_v1', JSON.stringify(Array.from(savedRef.current))) } catch { /* ignore */ } }
+    else if (openGroup) saveGroups(groupsRef.current)
+  }
   const groupName = (id: string) => (id === 'fav' ? t('mpl_fav') : groups.find((g) => g.id === id)?.name || '')
   const inGroup = (id: string, key: string, file: File | null) => (id === 'fav' ? toggleSaved(key, file) : toggleInGroup(id, key, file))
   // Create a brand-new group from the long-press popup and drop the song straight into it.
@@ -395,8 +432,17 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
             <div ref={cardRef} className="rounded-2xl bg-gradient-to-b from-brand-500 to-brand-700 text-white shadow-sm overflow-hidden scroll-mt-16">
               <div className="p-5">
               {/* Album art shrinks while a bottom gauge is open so the gauge fits without growing the card. */}
-              <div className={'w-full flex items-center justify-center rounded-2xl bg-white/10 ' + (panel === 'none' ? 'h-80' : 'h-60')}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="w-16 h-16 opacity-90"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+              <div className={'w-full flex items-center justify-center rounded-2xl bg-white/10 overflow-hidden ' + (panel === 'none' ? 'h-80' : 'h-60')}>
+                {eqEnabled && playing ? (
+                  <div className="flex items-end justify-center gap-1.5 h-24" aria-hidden>
+                    {[0.7, 1.0, 0.55, 1.2, 0.8, 1.1, 0.6].map((d, i) => (
+                      <span key={i} className="w-2.5 h-full rounded-full bg-white/90 origin-bottom" style={{ animation: `mpeq ${d}s ease-in-out ${(i * 0.11).toFixed(2)}s infinite alternate` }} />
+                    ))}
+                    <style>{'@keyframes mpeq{0%{transform:scaleY(0.18)}100%{transform:scaleY(1)}}'}</style>
+                  </div>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="w-16 h-16 opacity-90"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+                )}
               </div>
               <p className="mt-4 text-center font-semibold truncate">{base || t('mp_nothing')}</p>
               {/* seek */}
@@ -487,11 +533,22 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                       </div>
                     </div>
                   )}
+                  {panel === 'settings' && (
+                    <div className="px-5 flex items-center justify-between gap-3 text-white">
+                      <span className="text-sm min-w-0">{t('mpl_eq_opt')}</span>
+                      <button onClick={toggleEq} role="switch" aria-checked={eqEnabled} aria-label={t('mpl_eq_opt')} className={'relative shrink-0 w-11 h-6 rounded-full transition ' + (eqEnabled ? 'bg-white' : 'bg-white/25')}>
+                        <span className={'absolute top-0.5 w-5 h-5 rounded-full transition-all ' + (eqEnabled ? 'left-[22px] bg-brand-600' : 'left-0.5 bg-white')} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
-              {/* bottom bar — 소리 / 속도 / 타이머 icon buttons, flat-bottomed and flush to the card edge */}
+              {/* bottom bar — 설정 / 소리 / 속도 / 타이머 icon buttons, flat-bottomed and flush to the card edge */}
               <div className="flex border-t border-white/15 text-white">
-                <button onClick={() => setPanel((p) => (p === 'vol' ? 'none' : 'vol'))} aria-label={t('mpl_vol')} title={t('mpl_vol')} className={'flex-1 inline-flex items-center justify-center py-3.5 active:opacity-80 transition ' + (panel === 'vol' ? 'bg-white/20' : 'hover:bg-white/10')}>
+                <button onClick={() => setPanel((p) => (p === 'settings' ? 'none' : 'settings'))} aria-label={t('mpl_settings')} title={t('mpl_settings')} className={'flex-1 inline-flex items-center justify-center py-3.5 active:opacity-80 transition ' + (panel === 'settings' ? 'bg-white/20' : 'hover:bg-white/10')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
+                </button>
+                <button onClick={() => setPanel((p) => (p === 'vol' ? 'none' : 'vol'))} aria-label={t('mpl_vol')} title={t('mpl_vol')} className={'flex-1 inline-flex items-center justify-center py-3.5 border-l border-white/15 active:opacity-80 transition ' + (panel === 'vol' ? 'bg-white/20' : 'hover:bg-white/10')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">{volume === 0 ? <><path d="M11 5 6 9H2v6h4l5 4z" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></> : <><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a9 9 0 0 1 0 14" /></>}</svg>
                 </button>
                 <button onClick={() => setPanel((p) => (p === 'speed' ? 'none' : 'speed'))} aria-label={t('mp_speed')} title={`${t('mp_speed')} ${speed}×`} className={'flex-1 inline-flex items-center justify-center py-3.5 border-l border-white/15 active:opacity-80 transition ' + (panel === 'speed' ? 'bg-white/20' : 'hover:bg-white/10')}>
@@ -561,7 +618,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 /* ---- 리스트: group list (즐겨찾기 first, custom groups, then + 새 그룹 at the bottom) ---- */
                 <div className="divide-y divide-gray-100">
                   {/* 즐겨찾기 — fixed, can't be deleted */}
-                  <button onClick={() => { setOpenGroup('fav'); setAddMode(false) }} className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-gray-50">
+                  <button onClick={() => { setOpenGroup('fav'); setAddMode(false); setReorder(false) }} className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-gray-50">
                     <span className="w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg bg-amber-50 text-amber-500"><svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg></span>
                     <span className="flex-1 min-w-0 text-sm font-medium text-gray-800 truncate">{t('mpl_fav')}</span>
                     <span className="text-xs text-gray-400 tabular-nums">{savedCount}</span>
@@ -570,7 +627,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   {/* custom groups */}
                   {groups.map((g) => (
                     <div key={g.id} className="flex items-center gap-2 px-3 py-2.5 hover:bg-gray-50">
-                      <button onClick={() => { setOpenGroup(g.id); setAddMode(false) }} className="flex-1 min-w-0 flex items-center gap-2 text-left">
+                      <button onClick={() => { setOpenGroup(g.id); setAddMode(false); setReorder(false) }} className="flex-1 min-w-0 flex items-center gap-2 text-left">
                         <span className="w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg bg-gray-100 text-gray-400"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg></span>
                         <span className="flex-1 min-w-0 text-sm font-medium text-gray-800 truncate">{g.name}</span>
                         <span className="text-xs text-gray-400 tabular-nums">{groupSongs(g.id).length}</span>
@@ -595,10 +652,16 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               ) : (
                 /* ---- 리스트: one group (drill-in) ---- */
                 <div>
-                  <div className="flex items-center gap-2 px-2 py-2 bg-gray-50 border-b border-gray-100">
-                    <button onClick={() => { setOpenGroup(null); setAddMode(false) }} className="inline-flex items-center gap-1 px-1.5 py-1 text-sm text-gray-500 hover:text-brand-600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6" /></svg>{t('mpl_back')}</button>
+                  <div className="flex items-center gap-1 px-2 py-2 bg-gray-50 border-b border-gray-100">
+                    <button onClick={() => { setOpenGroup(null); setAddMode(false); setReorder(false) }} className="inline-flex items-center gap-1 px-1.5 py-1 text-sm text-gray-500 hover:text-brand-600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6" /></svg>{t('mpl_back')}</button>
                     <span className="flex-1 min-w-0 text-sm font-semibold text-gray-800 truncate text-center">{groupName(openGroup)}</span>
-                    <button onClick={() => setAddMode((a) => !a)} className={'inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg ' + (addMode ? 'bg-brand-600 text-white' : 'text-brand-600 hover:bg-brand-50')}>{addMode ? t('mpl_done') : <><ToolIcon name="plus" className="w-3.5 h-3.5" />{t('mpl_addsongs')}</>}</button>
+                    {/* ≡ reorder tracks within this playlist (drag handles appear on the rows) */}
+                    {!addMode && groupSongs(openGroup).length > 1 && (
+                      <button onClick={() => setReorder((r) => !r)} aria-label={t('mpl_reorder')} title={t('mpl_reorder')} className={'p-1.5 rounded transition-colors ' + (reorder ? 'text-brand-600 bg-brand-50' : 'text-gray-400 hover:text-brand-600')}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></svg>
+                      </button>
+                    )}
+                    {!reorder && <button onClick={() => { setAddMode((a) => !a) }} className={'inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg ' + (addMode ? 'bg-brand-600 text-white' : 'text-brand-600 hover:bg-brand-50')}>{addMode ? t('mpl_done') : <><ToolIcon name="plus" className="w-3.5 h-3.5" />{t('mpl_addsongs')}</>}</button>}
                   </div>
                   {addMode ? (
                     /* pick which tracks belong to this group */
@@ -621,13 +684,20 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     groupSongs(openGroup).length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mpl_group_empty')}</p>
                     ) : (
-                      <div className="divide-y divide-gray-100">
+                      <div ref={groupListRef} className="divide-y divide-gray-100">
                         {groupSongs(openGroup).map((h) => {
                           const key = h.name + '|' + h.size; const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                           return (
-                            <div key={key} className={'flex items-center gap-2 px-3 py-2.5 ' + (isCur ? 'bg-brand-50' : '')}>
-                              {trackOpen(h)}
-                              <button onClick={() => inGroup(openGroup, key, h.file)} aria-label={t('mpl_remove')} title={t('mpl_remove')} className="p-1.5 shrink-0 text-gray-300 hover:text-red-600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="9" /><line x1="8" y1="12" x2="16" y2="12" /></svg></button>
+                            <div key={key} data-key={key} className={'flex items-center gap-2 px-3 py-2.5 transition-colors ' + (dragKey === key ? 'bg-brand-100 shadow-inner' : isCur ? 'bg-brand-50' : '')}>
+                              {reorder && (
+                                <button onPointerDown={startDrag(key)} onPointerMove={onGroupDragMove} onPointerUp={endGroupDrag} onPointerCancel={endGroupDrag} aria-label={t('mpl_reorder')} className="p-1.5 -ml-1 shrink-0 text-gray-400 hover:text-brand-600 touch-none select-none cursor-grab active:cursor-grabbing">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><line x1="4" y1="8" x2="20" y2="8" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="16" x2="20" y2="16" /></svg>
+                                </button>
+                              )}
+                              {reorder
+                                ? <div className="flex-1 min-w-0 flex items-center gap-2 select-none">{trackInner(h)}</div>
+                                : trackOpen(h)}
+                              {!reorder && <button onClick={() => inGroup(openGroup, key, h.file)} aria-label={t('mpl_remove')} title={t('mpl_remove')} className="p-1.5 shrink-0 text-gray-300 hover:text-red-600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="9" /><line x1="8" y1="12" x2="16" y2="12" /></svg></button>}
                             </div>
                           )
                         })}

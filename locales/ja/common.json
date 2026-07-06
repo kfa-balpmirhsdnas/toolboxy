@@ -4220,6 +4220,8 @@
     "mpl_group_empty": "このプレイリストに曲がありません。「曲を追加」で追加してください",
     "mpl_remove": "グループから外す",
     "mpl_gotolist": "リストへ",
+    "mpl_settings": "設定",
+    "mpl_eq_opt": "アルバムアートがない場合イコライザーを表示",
     "mpl_newlist": "新しいリストを作成",
     "mpl_m_play": "再生する",
     "mpl_m_fav": "お気に入りに追加",

@@ -4247,6 +4247,8 @@
     "mpl_group_empty": "이 플레이리스트에 담긴 곡이 없어요. ‘곡 추가’로 담으세요",
     "mpl_remove": "그룹에서 빼기",
     "mpl_gotolist": "목록으로",
+    "mpl_settings": "설정",
+    "mpl_eq_opt": "곡 이미지 없으면 이퀄라이저 표시",
     "mpl_newlist": "새 리스트 만들기",
     "mpl_m_play": "플레이 하기",
     "mpl_m_fav": "즐겨찾기에 추가하기",
