@@ -96,6 +96,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [lyricsNonce, setLyricsNonce] = useState(0) // bump to re-run the lyrics search (manual refresh)
   const forceLyricsRef = useRef(false) // next lyrics run should bypass the cache
   const refreshLyrics = () => { forceLyricsRef.current = true; setLyricsNonce((n) => n + 1) }
+  const [hasLyrics, setHasLyrics] = useState<Set<string>>(new Set()) // track keys whose lyrics are cached → "L" in the list
+  const markHasLyrics = (key: string) => setHasLyrics((prev) => { if (!key || prev.has(key)) return prev; const n = new Set(prev); n.add(key); try { localStorage.setItem('mp_haslyrics_v1', JSON.stringify(Array.from(n))) } catch { /* ignore */ } return n })
   const [toast, setToast] = useState('') // transient message (e.g. sleep-timer stopped)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [searchOn, setSearchOn] = useState(false) // playlist search box open
@@ -113,6 +115,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       setNormalize(localStorage.getItem('mp_norm_v1') !== '0') // default on
       const g = localStorage.getItem('mp_gain_v1'); if (g) gainRef.current = JSON.parse(g)
       const m = localStorage.getItem('mp_meta_v1'); if (m) setMetaOv(JSON.parse(m))
+      const hl = localStorage.getItem('mp_haslyrics_v1'); if (hl) setHasLyrics(new Set(JSON.parse(hl)))
     } catch { /* ignore */ }
   }, [])
   // Save a per-track title/artist override (from the stage-3 edit); triggers a fresh lyrics search.
@@ -162,6 +165,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     const artist = (o?.artist || id3?.artist || '').trim() || fromName.artist
     const title = (o?.title || id3?.title || '').trim() || fromName.title
     if (!title) return
+    const myKey = curFile ? curFile.name + '|' + curFile.size : ''
     setLyricsStatus('loading'); setLyricsStage(1)
     const force = forceLyricsRef.current; forceLyricsRef.current = false
     const ac = new AbortController()
@@ -172,7 +176,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       const got = await Promise.race([fetchLyrics(artist, title, dur, s1.signal, force), new Promise<null>((res) => setTimeout(() => res(null), 9000))])
       s1.abort() // stop any stage-1 requests still in flight (hit found, timed out, or missed)
       if (ac.signal.aborted) return
-      if (got) { setLyricsLines(got.synced); setLyrics(got.plain); setLyricsStatus('done'); return }
+      if (got) { setLyricsLines(got.synced); setLyrics(got.plain); setLyricsStatus('done'); markHasLyrics(myKey); return }
       setLyricsStage(2)
       const hits = await searchByTitle(title, dur, ac.signal) // (2/3) title only (length-filtered) → pick from
       if (ac.signal.aborted) return
@@ -592,7 +596,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
         </span>
         <span className="min-w-0">
           <span className={'block truncate text-sm ' + (isCur ? 'font-semibold text-brand-500' : darkMode ? 'text-gray-200' : 'text-gray-800') + (h.file ? '' : ' opacity-50')}>{h.name.replace(/\.[^.]+$/, '')}</span>
-          <span className="block text-[11px] text-gray-400 tabular-nums">{h.file ? <>{durs[key] ? <span className="text-gray-500">{fmt(durs[key])}</span> : null}{durs[key] ? ' · ' : ''}{fmtSize(h.size)}</> : t('mp_reopen')}</span>
+          <span className="block text-[11px] text-gray-400 tabular-nums">{h.file ? <>{durs[key] ? <span className="text-gray-500">{fmt(durs[key])}</span> : null}{durs[key] ? ' · ' : ''}{fmtSize(h.size)}{hasLyrics.has(key) && <span className="ml-1 font-bold text-brand-500" title={t('mpl_lyrics')}>L</span>}</> : t('mp_reopen')}</span>
         </span>
       </>
     )
@@ -1207,13 +1211,21 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               {/* 3/3 — edit the song's title/artist, save the override, and search with it */}
               <div className="p-3 border-b border-gray-100 space-y-2">
                 <p className="text-xs font-medium text-gray-400">{t('mpl_lyrics_edit')}</p>
-                <div className="flex items-center gap-2">
-                  <span className="w-9 shrink-0 text-xs text-gray-500">{t('mpl_title')}</span>
-                  <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-9 shrink-0 text-xs text-gray-500">{t('mpl_artist')}</span>
-                  <input value={editArtist} onChange={(e) => setEditArtist(e.target.value)} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                <div className="flex items-stretch gap-2">
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-9 shrink-0 text-xs text-gray-500">{t('mpl_title')}</span>
+                      <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} onFocus={(e) => { const el = e.currentTarget; requestAnimationFrame(() => { try { el.setSelectionRange(el.value.length, el.value.length) } catch { /* ignore */ } }) }} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-9 shrink-0 text-xs text-gray-500">{t('mpl_artist')}</span>
+                      <input value={editArtist} onChange={(e) => setEditArtist(e.target.value)} onFocus={(e) => { const el = e.currentTarget; requestAnimationFrame(() => { try { el.setSelectionRange(el.value.length, el.value.length) } catch { /* ignore */ } }) }} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                    </div>
+                  </div>
+                  {/* swap the 제목 ↔ 가수 fields */}
+                  <button onClick={() => { const tt = editTitle; setEditTitle(editArtist); setEditArtist(tt) }} aria-label={t('mpl_lyrics_swap')} title={t('mpl_lyrics_swap')} className="shrink-0 w-9 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:text-brand-600 hover:border-brand-300">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m3 8 4-4 4 4" /><path d="M7 4v16" /><path d="m21 16-4 4-4-4" /><path d="M17 20V4" /></svg>
+                  </button>
                 </div>
                 <button onClick={() => { setTrackMeta(curFile.name + '|' + curFile.size, editTitle, editArtist); setLyricsPicker(false) }} disabled={!editTitle.trim()} className="w-full py-2 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-40">{t('mpl_lyrics_search_btn')}</button>
               </div>
@@ -1232,7 +1244,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                               {h.result.synced && <span className="shrink-0 text-[10px] font-bold text-brand-600 bg-brand-50 rounded px-1 py-0.5">SYNC</span>}
                             </p>
                           </div>
-                          <button onClick={() => { setLyricsLines(h.result.synced); setLyrics(h.result.plain); setLyricsStatus('done'); cacheLyrics(dispArtist, dispTitle, h.result); setLyricsPicker(false) }} className="shrink-0 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">{t('mpl_lyrics_use')}</button>
+                          <button onClick={() => { setLyricsLines(h.result.synced); setLyrics(h.result.plain); setLyricsStatus('done'); cacheLyrics(dispArtist, dispTitle, h.result); if (curFile) markHasLyrics(curFile.name + '|' + curFile.size); setLyricsPicker(false) }} className="shrink-0 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">{t('mpl_lyrics_use')}</button>
                         </div>
                       ))}
                     </div>
