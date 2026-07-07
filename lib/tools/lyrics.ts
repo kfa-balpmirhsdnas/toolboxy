@@ -142,7 +142,10 @@ export async function fetchLyrics(rawArtist: string, rawTitle: string, duration?
 }
 
 // Stage 2: title-only search → a list of candidate songs (with lyrics) for the user to pick from.
-export async function searchByTitle(rawTitle: string, signal?: AbortSignal): Promise<LyricsHit[]> {
+// When the original track's duration is known, drop results that differ by more than a minute — those
+// are almost certainly a different version (remix / live / wrong song) with mismatched timings.
+const DUR_TOLERANCE = 60
+export async function searchByTitle(rawTitle: string, duration?: number, signal?: AbortSignal): Promise<LyricsHit[]> {
   const title = cleanForLyrics(rawTitle)
   if (!title) return []
   const arr = await jsonFetch(`${SEARCH}?track_name=${encodeURIComponent(title)}`, signal)
@@ -151,6 +154,7 @@ export async function searchByTitle(rawTitle: string, signal?: AbortSignal): Pro
   const seen = new Set<string>()
   const hits: LyricsHit[] = []
   for (const x of rows) {
+    if (duration && duration > 1 && x.duration && Math.abs(x.duration - duration) > DUR_TOLERANCE) continue // length mismatch → skip
     const result = pick(x)
     if (!result) continue
     const k = (x.artistName || '') + '|' + (x.trackName || '')

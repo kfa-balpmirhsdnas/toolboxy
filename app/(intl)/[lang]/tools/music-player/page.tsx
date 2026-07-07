@@ -170,7 +170,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       if (ac.signal.aborted) return
       if (got) { setLyricsLines(got.synced); setLyrics(got.plain); setLyricsStatus('done'); return }
       setLyricsStage(2)
-      const hits = await searchByTitle(title, ac.signal) // (2/3) title only → results to pick from
+      const hits = await searchByTitle(title, dur, ac.signal) // (2/3) title only (length-filtered) → pick from
       if (ac.signal.aborted) return
       setLyricsHits(hits); setLyricsStatus('done')
     })()
@@ -1185,13 +1185,16 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     <p className="px-4 pt-3 pb-1 text-xs font-medium text-gray-400">{t('mpl_lyrics_pick')}</p>
                     <div className="divide-y divide-gray-100">
                       {lyricsHits.map((h) => (
-                        <button key={h.id} onClick={() => { setLyricsLines(h.result.synced); setLyrics(h.result.plain); setLyricsStatus('done'); cacheLyrics(dispArtist, dispTitle, h.result); setLyricsPicker(false) }} className="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-gray-50">
-                          <span className="flex-1 min-w-0">
-                            <span className="block text-sm text-gray-800 truncate">{h.title}</span>
-                            <span className="block text-xs text-gray-400 truncate">{h.artist}{h.album ? ' · ' + h.album : ''}{h.duration ? ' · ' + fmt(h.duration) : ''}</span>
-                          </span>
-                          {h.result.synced && <span className="shrink-0 text-[10px] font-bold text-brand-600 bg-brand-50 rounded px-1.5 py-0.5">SYNC</span>}
-                        </button>
+                        <div key={h.id} className="flex items-center gap-2 px-4 py-2.5">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-gray-800 truncate">{h.title}</p>
+                            <p className="text-xs text-gray-400 truncate">
+                              {h.artist}{h.album ? ' · ' + h.album : ''}{h.duration ? ' · ' + fmt(h.duration) : ''}
+                              {h.result.synced && <span className="ml-1.5 text-[10px] font-bold text-brand-600 bg-brand-50 rounded px-1 py-0.5 align-middle">SYNC</span>}
+                            </p>
+                          </div>
+                          <button onClick={() => { setLyricsLines(h.result.synced); setLyrics(h.result.plain); setLyricsStatus('done'); cacheLyrics(dispArtist, dispTitle, h.result); setLyricsPicker(false) }} className="shrink-0 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">{t('mpl_lyrics_use')}</button>
+                        </div>
                       ))}
                     </div>
                   </>
