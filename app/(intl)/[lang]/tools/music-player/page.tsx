@@ -171,18 +171,25 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     return () => { alive = false; if (coverUrl) URL.revokeObjectURL(coverUrl) }
   }, [curFile])
   // Fallback/network: only when album art is on AND the file has no embedded cover — sends title text.
+  // A user-edited title/artist (metaOv) is the query when present, so fixing the info in the edit
+  // dialog immediately re-searches the cover with it; otherwise fall back to the cleaned filename.
   useEffect(() => {
     setArtUrl(''); setItTitle(''); setItArtist('')
     if (!albumArt || !base || id3?.cover) return
     let alive = true
-    const q = base.replace(/[_-]+/g, ' ').replace(/\b(official|audio|lyrics?|mv|hd|4k)\b/gi, '').replace(/\s+/g, ' ').trim().slice(0, 60)
+    const o = curFile ? metaOv[curFile.name + '|' + curFile.size] : undefined
+    const q = (o?.title
+      ? ((o.artist ? o.artist + ' ' : '') + o.title)
+      : base.replace(/[_-]+/g, ' ').replace(/\b(official|audio|lyrics?|mv|hd|4k)\b/gi, '').replace(/\s+/g, ' ')
+    ).trim().slice(0, 60)
     if (!q) return
     fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=1`)
       .then((r) => r.json())
       .then((d) => { if (!alive) return; const r = d?.results?.[0]; if (!r) return; if (r.artworkUrl100) setArtUrl(String(r.artworkUrl100).replace('100x100', '600x600')); setItTitle(r.trackName || ''); setItArtist(r.artistName || '') })
       .catch(() => { /* ignore */ })
     return () => { alive = false }
-  }, [base, albumArt, id3])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [base, albumArt, id3, metaOv])
   // Lyrics via lib/tools/lyrics (lrclib.net): prefer ID3 artist/title, else the filename heuristic.
   // The module strips lyric/cover markers before querying and returns synced lines or plain text.
   useEffect(() => {
