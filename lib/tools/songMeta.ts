@@ -1,7 +1,7 @@
 // Shared song-metadata helpers: the filename → artist/title parser (originally built for the music
 // player) and the iTunes lookup used for album art. Used by music-player AND mp3-tag-editor so the
 // two tools recognise names identically.
-import { cleanForLyrics } from './lyrics'
+import { cleanForLyrics, quotedSplit } from './lyrics'
 
 // Best-effort artist/title from a bare filename. There's no reliable way to know the order from a
 // filename alone, so we clean the input up and lean on the dominant "Artist - Title" convention.
@@ -22,7 +22,13 @@ export function parseFileName(raw: string): { artist: string; title: string } {
   // Also strip lyric/cover markers ("가사", "lyrics", "(COVER)", "Official Lyrics", "| 가사/lyrics"…);
   // keep the original if a chunk is nothing but markers, so we never end up empty.
   const clean = (x: string) => cleanForLyrics(x) || x
-  if (parts.length < 2) return { artist: '', title: clean(s) }
+  if (parts.length < 2) {
+    // No dash separator → 「배성식 오무이 '내일도 인생'」 rule: a quoted run at the end is the title
+    // (quotes dropped), the text before it the artist.
+    const q = quotedSplit(s)
+    if (q) return q
+    return { artist: '', title: clean(s) }
+  }
   const titleParen = /\([^)]*\b(?:remix|inst\.?|instrumental|live|ver\.?|version|acoustic|edit|remaster|mix|feat\.?|ft\.?|cover|ost|prod\.?)\b[^)]*\)/i
   if (parts.length === 2 && titleParen.test(parts[0]) && !titleParen.test(parts[1])) return { artist: clean(parts[1]), title: clean(parts[0]) }
   return { artist: clean(parts[0]), title: clean(parts.slice(1).join(' - ')) }
