@@ -12,7 +12,8 @@
     "signup": "Sign up free",
     "dashboard": "Dashboard",
     "logout": "Log Out",
-    "install": "Install app"
+    "install": "Install app",
+    "install_manual": "Open the browser menu (⋮) and choose \"Install app\" or \"Add to Home screen\"."
   },
   "categories": {
     "pdf": "PDF",
