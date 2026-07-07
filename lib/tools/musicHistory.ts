@@ -155,7 +155,16 @@ export async function mhDropBlobs(): Promise<void> {
   } catch { /* ignore */ }
 }
 
-// Origin storage usage/quota (cheap — no blob reads) for the settings readout.
+// Cached-audio usage for the settings readout. We sum the ACTUAL cached blob bytes (Blob.size is
+// metadata — no bytes are read) instead of navigator.storage.estimate().usage, which under-reports
+// IndexedDB badly (e.g. 0.4 MB reported for 10 MB of blobs) and so barely moved when the cache was
+// cleared. quota still comes from estimate().
 export async function mhStorageUsage(): Promise<{ usage: number; quota: number }> {
-  try { const nav = navigator as unknown as { storage?: { estimate?: () => Promise<{ usage?: number; quota?: number }> } }; const e = await nav.storage?.estimate?.(); return { usage: e?.usage || 0, quota: e?.quota || 0 } } catch { return { usage: 0, quota: 0 } }
+  try {
+    const all = await mhList()
+    const usage = all.reduce((s, it) => s + (it.blob ? (it.size || it.blob.size || 0) : 0), 0)
+    const nav = navigator as unknown as { storage?: { estimate?: () => Promise<{ quota?: number }> } }
+    const e = await nav.storage?.estimate?.()
+    return { usage, quota: e?.quota || 0 }
+  } catch { return { usage: 0, quota: 0 } }
 }
