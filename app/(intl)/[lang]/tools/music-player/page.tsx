@@ -245,6 +245,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [menuNewName, setMenuNewName] = useState('')
   const [starMenu, setStarMenu] = useState(false) // ★ bottom-bar: add the current track to a playlist
   const [starTouched, setStarTouched] = useState(false) // did the user tap a row? (cancels the auto-favorite)
+  // ---- multi-select (long-press a row → checkboxes → 즐겨찾기 / 리스트추가 / 삭제) ----
+  const [selMode, setSelMode] = useState(false)
+  const [selKeys, setSelKeys] = useState<Set<string>>(new Set())
+  const [selSheet, setSelSheet] = useState(false) // "리스트 추가" target picker for the selection
+  const [selNewName, setSelNewName] = useState('')
   const [lyricsLines, setLyricsLines] = useState<{ t: number; text: string }[] | null>(null) // time-synced lyrics
 
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -620,6 +625,44 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     setMenuNewName(''); setMenuCreating(false); setMenuFor(null)
   }
   const closeMenu = () => { setMenuFor(null); setMenuCreating(false); setMenuNewName('') }
+  // ---- multi-select actions ----
+  const toggleSel = (key: string) => setSelKeys((prev) => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n })
+  const exitSel = () => { setSelMode(false); setSelKeys(new Set()); setSelSheet(false); setSelNewName('') }
+  const selItems = () => history.filter((h) => selKeys.has(h.name + '|' + h.size))
+  // ★ add every selected track to 즐겨찾기 (never un-favorites; metadata-only rows are skipped)
+  const selFav = () => {
+    let n = 0
+    for (const h of selItems()) { const key = h.name + '|' + h.size; if (h.file && !saved.has(key)) { toggleSaved(key, h.file); n++ } }
+    setNotice({ msg: t('mpl_msel_faved', { n }) }); exitSel()
+  }
+  // add the selection to an existing playlist (blobs persist so the group replays after refresh)
+  const addSelToGroup = (id: string) => {
+    const items = selItems()
+    const name = groups.find((x) => x.id === id)?.name || ''
+    setGroups((g) => {
+      const gi = g.findIndex((x) => x.id === id); if (gi < 0) return g
+      const have = new Set(g[gi].keys)
+      const add = items.map((h) => h.name + '|' + h.size).filter((k) => !have.has(k))
+      if (!add.length) return g
+      const ng = [...g]; ng[gi] = { ...g[gi], keys: [...g[gi].keys, ...add] }; saveGroups(ng); return ng
+    })
+    for (const h of items) if (h.file) mhSave({ id: h.name + '|' + h.size, name: h.name, size: h.size, type: h.file.type }, h.file)
+    setNotice({ msg: t('mpl_msel_added', { n: items.length, name }) }); exitSel()
+  }
+  // create a brand-new playlist holding the whole selection
+  const createGroupFromSel = () => {
+    const nm = selNewName.trim(); if (!nm) return
+    const items = selItems()
+    const keys = items.map((h) => h.name + '|' + h.size)
+    setGroups((g) => { const ng = [...g, { id: 'g' + Date.now().toString(36), name: nm, keys }]; saveGroups(ng); return ng })
+    for (const h of items) if (h.file) mhSave({ id: h.name + '|' + h.size, name: h.name, size: h.size, type: h.file.type }, h.file)
+    setNotice({ msg: t('mpl_msel_added', { n: keys.length, name: nm }) }); exitSel()
+  }
+  const selDelete = () => {
+    const n = selKeys.size
+    if (!n || !window.confirm(t('mpl_msel_del_confirm', { n }))) return
+    selKeys.forEach((k) => removeItem(k)); exitSel()
+  }
   // ★ popup: create a new playlist and drop the CURRENTLY PLAYING track into it.
   const createForCurrent = () => {
     const nm = menuNewName.trim(); if (!nm || !curFile) { setMenuCreating(false); setMenuNewName(''); return }
@@ -640,12 +683,18 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     return () => clearTimeout(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [starMenu, starTouched, curFile, saved])
-  // Long-press a track → open the "add to group" popup. The play click is suppressed by measuring how
-  // long the press lasted (a held press ≥ 450ms is a long-press, not a tap) — robust to event ordering.
+  // Long-press a track → enter multi-select mode with that row selected (tap more rows, then act via
+  // the 즐겨찾기/리스트추가/삭제 bar). The play click is suppressed by measuring how long the press
+  // lasted (a held press ≥ 450ms is a long-press, not a tap) — robust to event ordering.
   const startPress = (h: { name: string; size: number; file: File | null }) => () => {
     pressStartRef.current = Date.now()
     if (pressRef.current) clearTimeout(pressRef.current)
-    pressRef.current = setTimeout(() => { pressRef.current = null; try { window.getSelection()?.removeAllRanges() } catch { /* ignore */ } setMenuFor({ key: h.name + '|' + h.size, file: h.file, name: h.name }) }, 500)
+    pressRef.current = setTimeout(() => {
+      pressRef.current = null
+      try { window.getSelection()?.removeAllRanges() } catch { /* ignore */ }
+      setSelMode(true)
+      setSelKeys((prev) => { const n = new Set(prev); n.add(h.name + '|' + h.size); return n })
+    }, 500)
   }
   const cancelPress = () => { if (pressRef.current) { clearTimeout(pressRef.current); pressRef.current = null } }
   const wasLongPress = () => Date.now() - pressStartRef.current >= 450
@@ -663,9 +712,16 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       : (fn.artist ? fn.artist + ' - ' + fn.title : fn.title) || h.name.replace(/\.[^.]+$/, '')
     return (
       <>
+        {selMode ? (
+          /* select mode: the play icon becomes a checkbox */
+          <span className={'w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg transition-colors ' + (selKeys.has(key) ? 'bg-brand-600 text-white' : darkMode ? 'bg-gray-800 text-gray-600' : 'bg-gray-100 text-gray-300')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m5 13 4 4L19 7" /></svg>
+          </span>
+        ) : (
         <span className={'w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg ' + (isCur && playing ? 'bg-brand-600 text-white' : darkMode ? 'bg-gray-800 text-gray-500' : 'bg-gray-100 text-gray-400')}>
           {isCur && playing ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg> : <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M8 5v14l11-7z" /></svg>}
         </span>
+        )}
         <span className="min-w-0">
           <span className={'block truncate text-sm ' + (isCur ? 'font-semibold text-brand-500' : darkMode ? 'text-gray-200' : 'text-gray-800') + (h.file ? '' : ' opacity-50')}>{displayName}</span>
           <span className="block text-[11px] text-gray-400 tabular-nums">{h.file ? <>{durs[key] ? <span className="text-gray-500">{fmt(durs[key])}</span> : null}{durs[key] ? ' · ' : ''}{fmtSize(h.size)}
@@ -677,9 +733,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     )
   }
   // Clickable play/label wrapper: load the track + scroll to the card (dimmed track → re-open folder).
-  const trackOpen = (h: { name: string; size: number; file: File | null }) => h.file
+  // In select mode a tap toggles the row's selection instead of playing.
+  const trackOpen = (h: { name: string; size: number; file: File | null }) => h.file || selMode
     ? <button
-        onClick={() => { if (wasLongPress()) return; load(h.file!); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
+        onClick={() => { if (selMode) { if (!wasLongPress()) toggleSel(h.name + '|' + h.size); return } if (wasLongPress()) return; load(h.file!); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
         onPointerDown={startPress(h)} onPointerUp={cancelPress} onPointerLeave={cancelPress} onPointerCancel={cancelPress}
         onContextMenu={(e) => e.preventDefault()}
         className="flex-1 min-w-0 flex items-center gap-2 text-left select-none [-webkit-touch-callout:none] [-webkit-user-select:none]">{trackInner(h)}</button>
@@ -1013,9 +1070,25 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
 
             {/* ---- Playlist (standard list style; dark theme follows the player) ---- */}
             <div ref={playlistRef} className={'rounded-2xl border overflow-hidden scroll-mt-16 ' + (darkMode ? 'bg-gray-900 border-gray-700' : 'border-gray-200')}>
+              {selMode ? (
+                /* ---- multi-select action bar (replaces the tab header while selecting) ---- */
+                <div className={'flex items-center gap-1 px-1.5 py-1.5 border-b ' + (darkMode ? 'bg-gray-800 border-gray-700' : 'bg-brand-50/70 border-gray-200')}>
+                  <button onClick={exitSel} aria-label="cancel" className={'p-2 ' + (darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600')}><ToolIcon name="x" className="w-4 h-4" /></button>
+                  <span className={'flex-1 min-w-0 text-sm font-bold tabular-nums ' + (darkMode ? 'text-gray-100' : 'text-gray-800')}>{t('mpl_msel_count', { n: selKeys.size })}</span>
+                  <button onClick={selFav} disabled={!selKeys.size} className="inline-flex items-center gap-1 px-2 py-1.5 text-xs font-semibold rounded-lg text-amber-600 hover:bg-amber-100 disabled:opacity-40">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>{t('mpl_fav')}
+                  </button>
+                  <button onClick={() => setSelSheet(true)} disabled={!selKeys.size} className="inline-flex items-center gap-1 px-2 py-1.5 text-xs font-semibold rounded-lg text-brand-600 hover:bg-brand-100 disabled:opacity-40">
+                    <ToolIcon name="plus" className="w-3.5 h-3.5" />{t('mpl_msel_add')}
+                  </button>
+                  <button onClick={selDelete} disabled={!selKeys.size} className="inline-flex items-center gap-1 px-2 py-1.5 text-xs font-semibold rounded-lg text-red-600 hover:bg-red-50 disabled:opacity-40">
+                    <ToolIcon name="trash" className="w-3.5 h-3.5" />{t('mpl_msel_del')}
+                  </button>
+                </div>
+              ) : (
               <div className={'flex items-center gap-1 px-2 border-b ' + (darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200')}>
                 {/* Reorder toggle (≡): tap to move tracks up/down in the list */}
-                <button onClick={() => { setHistTab('all'); setReorder((r) => !r) }} aria-label={t('mpl_reorder')} title={t('mpl_reorder')} className={'p-2 rounded transition-colors ' + (reorder ? 'text-brand-600 bg-brand-50' : 'text-gray-400 hover:text-brand-600')}>
+                <button onClick={() => { setHistTab('all'); setReorder((r) => !r); exitSel() }} aria-label={t('mpl_reorder')} title={t('mpl_reorder')} className={'p-2 rounded transition-colors ' + (reorder ? 'text-brand-600 bg-brand-50' : 'text-gray-400 hover:text-brand-600')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></svg>
                 </button>
                 {(['all', 'saved'] as const).map((tab) => (
@@ -1033,6 +1106,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 <label htmlFor="mp-file" title={t('mp_pick')} className="p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" /></label>
                 <label htmlFor="mp-folder" title={t('mp_folder')} className="p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="folder" className="w-4 h-4" /></label>
               </div>
+              )}
               {searchOn && (
                 <div className="px-2 py-1.5 border-b border-gray-100">
                   {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
@@ -1050,7 +1124,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                       const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                       const star = saved.has(key)
                       return (
-                        <div key={key} data-key={key} className={'flex items-center gap-2 px-3 py-2.5 transition-colors ' + (dragKey === key ? 'bg-brand-100 shadow-inner' : isCur ? (darkMode ? 'bg-white/15' : 'bg-brand-50') : '')}>
+                        <div key={key} data-key={key} className={'flex items-center gap-2 px-3 py-2.5 transition-colors ' + (dragKey === key ? 'bg-brand-100 shadow-inner' : selMode && selKeys.has(key) ? (darkMode ? 'bg-brand-500/20' : 'bg-brand-50') : isCur ? (darkMode ? 'bg-white/15' : 'bg-brand-50') : '')}>
                           {/* Reorder mode: a drag handle on the LEFT — press & drag it to move the track. */}
                           {reorder && (
                             <button onPointerDown={startDrag(key)} onPointerMove={onDragMove} onPointerUp={endDrag} onPointerCancel={endDrag} aria-label={t('mpl_reorder')} className="p-1.5 -ml-1 shrink-0 text-gray-400 hover:text-brand-600 touch-none select-none cursor-grab active:cursor-grabbing">
@@ -1060,7 +1134,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                           {reorder
                             ? <div className="flex-1 min-w-0 flex items-center gap-2 select-none">{trackInner(h)}</div>
                             : trackOpen(h)}
-                          {!reorder && (
+                          {!reorder && !selMode && (
                             <>
                               <button onClick={() => toggleSaved(key, h.file)} disabled={!h.file && !star} aria-label={t('mp_saved')} className={'p-1.5 shrink-0 disabled:opacity-30 ' + (star ? 'text-amber-500' : 'text-gray-300 hover:text-amber-500')}>
                                 <svg viewBox="0 0 24 24" fill={star ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>
@@ -1149,7 +1223,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                         {groupSongs(openGroup).slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                           return (
-                            <div key={key} data-key={key} className={'flex items-center gap-2 px-3 py-2.5 transition-colors ' + (dragKey === key ? 'bg-brand-100 shadow-inner' : isCur ? (darkMode ? 'bg-white/15' : 'bg-brand-50') : '')}>
+                            <div key={key} data-key={key} className={'flex items-center gap-2 px-3 py-2.5 transition-colors ' + (dragKey === key ? 'bg-brand-100 shadow-inner' : selMode && selKeys.has(key) ? (darkMode ? 'bg-brand-500/20' : 'bg-brand-50') : isCur ? (darkMode ? 'bg-white/15' : 'bg-brand-50') : '')}>
                               {reorder && (
                                 <button onPointerDown={startDrag(key)} onPointerMove={onGroupDragMove} onPointerUp={endGroupDrag} onPointerCancel={endGroupDrag} aria-label={t('mpl_reorder')} className="p-1.5 -ml-1 shrink-0 text-gray-400 hover:text-brand-600 touch-none select-none cursor-grab active:cursor-grabbing">
                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><line x1="4" y1="8" x2="20" y2="8" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="16" x2="20" y2="16" /></svg>
@@ -1158,7 +1232,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                               {reorder
                                 ? <div className="flex-1 min-w-0 flex items-center gap-2 select-none">{trackInner(h)}</div>
                                 : trackOpen(h)}
-                              {!reorder && <button onClick={() => inGroup(openGroup, key, h.file)} aria-label={t('mpl_remove')} title={t('mpl_remove')} className="p-1.5 shrink-0 text-gray-300 hover:text-red-600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="9" /><line x1="8" y1="12" x2="16" y2="12" /></svg></button>}
+                              {!reorder && !selMode && <button onClick={() => inGroup(openGroup, key, h.file)} aria-label={t('mpl_remove')} title={t('mpl_remove')} className="p-1.5 shrink-0 text-gray-300 hover:text-red-600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="12" cy="12" r="9" /><line x1="8" y1="12" x2="16" y2="12" /></svg></button>}
                             </div>
                           )
                         })}
@@ -1167,6 +1241,34 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   )}
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Multi-select "리스트 추가": pick the playlist the selected tracks go into (or create one). */}
+        {selSheet && selMode && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4" onClick={() => setSelSheet(false)}>
+            <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl overflow-hidden max-h-[70vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                <span className="flex-1 min-w-0 text-sm font-semibold text-gray-800 truncate">{t('mpl_msel_add_title', { n: selKeys.size })}</span>
+                <button onClick={() => setSelSheet(false)} aria-label="close" className="p-1 -mr-1 text-gray-400 hover:text-gray-600"><ToolIcon name="x" className="w-4 h-4" /></button>
+              </div>
+              <div className="flex-1 overflow-auto divide-y divide-gray-100">
+                <button onClick={selFav} className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-gray-800 hover:bg-gray-50">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0 text-amber-500"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>{t('mpl_fav')}
+                </button>
+                {groups.map((g) => (
+                  <button key={g.id} onClick={() => addSelToGroup(g.id)} className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-gray-800 hover:bg-gray-50">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0 text-gray-400"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>
+                    <span className="flex-1 min-w-0 truncate">{g.name}</span>
+                    <span className="text-xs text-gray-400 tabular-nums">{g.keys.length}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="p-2 border-t border-gray-100 flex items-center gap-2">
+                <input value={selNewName} onChange={(e) => setSelNewName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') createGroupFromSel() }} placeholder={t('mpl_group_ph')} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                <button onClick={createGroupFromSel} disabled={!selNewName.trim()} className="px-3 py-2 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-40">{t('mpl_create')}</button>
+              </div>
             </div>
           </div>
         )}
