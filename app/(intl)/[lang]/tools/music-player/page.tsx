@@ -785,9 +785,17 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   </label>
                 )}
               </div>
-              {/* Title + artist (ID3 → iTunes → filename). Artist shows as a smaller second line. */}
+              {/* Title + artist (override → ID3 → iTunes → filename). Artist shows as a smaller second line.
+                  The pencil edits the title/artist (saved as a per-track override + re-searches lyrics). */}
               <div className="mt-4 text-center">
-                <p className="font-semibold truncate">{dispTitle || t('mp_nothing')}</p>
+                <div className="flex items-center justify-center gap-1.5 min-w-0">
+                  <p className="font-semibold truncate">{dispTitle || t('mp_nothing')}</p>
+                  {url && (
+                    <button onClick={() => { setEditTitle(dispTitle); setEditArtist(dispArtist); setLyricsPicker(true) }} aria-label={t('mpl_lyrics_edit')} title={t('mpl_lyrics_edit')} className="shrink-0 p-0.5 text-white/50 hover:text-white active:scale-90 transition">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+                    </button>
+                  )}
+                </div>
                 {dispArtist && <p className="text-sm text-white/70 truncate mt-0.5">{dispArtist}</p>}
               </div>
               {/* seek */}
