@@ -110,6 +110,35 @@ export async function mhClear(): Promise<void> {
   try { store(await openDB(), 'readwrite').clear() } catch { /* ignore */ }
 }
 
+// ---- Per-track title/artist overrides in IndexedDB (own DB) so they survive an app reinstall the
+// same way the cached tracks do — localStorage was getting wiped while IndexedDB persisted.
+const ODB = 'toolboxy-music-meta'
+const OSTORE = 'meta'
+function openMetaDB(): Promise<IDBDatabase | null> {
+  return new Promise((resolve) => {
+    try {
+      if (typeof indexedDB === 'undefined') { resolve(null); return }
+      const req = indexedDB.open(ODB, 1)
+      req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains(OSTORE)) req.result.createObjectStore(OSTORE, { keyPath: 'key' }) }
+      req.onsuccess = () => resolve(req.result)
+      req.onerror = () => resolve(null)
+    } catch { resolve(null) }
+  })
+}
+export async function mhGetOverrides(): Promise<Record<string, { title?: string; artist?: string }>> {
+  try {
+    const db = await openMetaDB(); if (!db) return {}
+    return await new Promise((resolve) => {
+      const rq = db.transaction(OSTORE, 'readonly').objectStore(OSTORE).getAll()
+      rq.onsuccess = () => { const o: Record<string, { title?: string; artist?: string }> = {}; for (const r of rq.result as { key: string; title?: string; artist?: string }[]) o[r.key] = { title: r.title, artist: r.artist }; resolve(o) }
+      rq.onerror = () => resolve({})
+    })
+  } catch { return {} }
+}
+export function mhSetOverride(key: string, title: string, artist: string): void {
+  openMetaDB().then((db) => { try { db?.transaction(OSTORE, 'readwrite').objectStore(OSTORE).put({ key, title, artist, ts: Date.now() }) } catch { /* ignore */ } })
+}
+
 // Total cached-audio bytes (Blob.size is metadata — no bytes are read). `exclude` skips those ids.
 export async function cachedBytes(exclude?: Set<string>): Promise<number> {
   try { const all = await mhList(); return all.reduce((s, it) => s + (it.blob && !(exclude && exclude.has(it.id)) ? (it.size || it.blob.size || 0) : 0), 0) } catch { return 0 }
