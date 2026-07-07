@@ -132,6 +132,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const flashNav = (dir: 'prev' | 'next') => { setNavHi(dir); if (navTimer.current) clearTimeout(navTimer.current); navTimer.current = setTimeout(() => setNavHi(null), 3000) }
   const showToast = (msg: string) => { setToast(msg); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(''), 4500) }
   useEffect(() => { if (showSettings) mhStorageUsage().then(setUsage) }, [showSettings])
+  // Ask for PERSISTENT storage so the browser doesn't silently evict our cached audio blobs under
+  // storage pressure (that was the "저장이 지워지는 곡들" on refresh). Granted automatically for
+  // installed PWAs / engaged sites; a no-op if already persisted or unsupported.
+  useEffect(() => { try { const st = (navigator as unknown as { storage?: { persist?: () => Promise<boolean>; persisted?: () => Promise<boolean> } }).storage; st?.persisted?.().then((p) => { if (!p) st.persist?.().catch(() => {}) }).catch(() => {}) } catch { /* ignore */ } }, [])
   useEffect(() => { setRenderN(80) }, [histTab, query]) // restart the render window when the tab/search changes
   // ---- Metadata: 1) local ID3v2 tags (primary), 2) iTunes (fallback), 3) filename ----
   // Primary/local: read the current file's embedded ID3 tags (title/artist + cover). No network.
@@ -237,8 +241,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       }
       break
     }
+    // NOTE: intentionally NOT depending on renderN — it grows as the USER scrolls down, and re-running
+    // this then would yank the list back to the current track. Only re-scroll on track/tab/group change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [curFile, histTab, openGroup, renderN])
+  }, [curFile, histTab, openGroup])
   const inputRef = useRef<HTMLInputElement>(null)
   const dirRef = useRef<HTMLInputElement>(null)
   const positionsRef = useRef<Record<string, number>>({})
