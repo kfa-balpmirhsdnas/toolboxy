@@ -8,7 +8,7 @@ import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 import { mhList, mhPutMeta, mhPutManyMeta, mhSave, mhSetBlob, mhDelete, mhClear, mhAutoSave, mhAutoSaveMany, mhDropBlobs, mhStorageUsage } from '@/lib/tools/musicHistory'
 import { readId3 } from '@/lib/tools/id3'
-import { fetchLyrics, cleanForLyrics } from '@/lib/tools/lyrics'
+import { fetchLyrics, cleanForLyrics, searchByTitle, cacheLyrics, type LyricsHit } from '@/lib/tools/lyrics'
 import { measureRms, gainForRms } from '@/lib/tools/loudness'
 
 const tool = getToolBySlug('music-player')!
@@ -87,6 +87,12 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [lyricsOn, setLyricsOn] = useState(true) // look up lyrics for the current track (default on)
   const [lyrics, setLyrics] = useState<string | null>(null) // resolved lyrics text
   const [lyricsStatus, setLyricsStatus] = useState<'idle' | 'loading' | 'done'>('idle') // searching / found-or-not
+  const [lyricsStage, setLyricsStage] = useState(1) // which of the 3 search stages is running (progress)
+  const [lyricsHits, setLyricsHits] = useState<LyricsHit[] | null>(null) // stage-2 title-only results to pick from
+  const [lyricsPicker, setLyricsPicker] = useState(false) // "직접 찾기" dialog open
+  const [metaOv, setMetaOv] = useState<Record<string, { title?: string; artist?: string }>>({}) // per-track title/artist overrides
+  const [editTitle, setEditTitle] = useState('') // stage-3 edit inputs
+  const [editArtist, setEditArtist] = useState('')
   const [toast, setToast] = useState('') // transient message (e.g. sleep-timer stopped)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [searchOn, setSearchOn] = useState(false) // playlist search box open
@@ -103,8 +109,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       setAutoSave(localStorage.getItem('mp_autosave_v1') !== '0') // default on
       setNormalize(localStorage.getItem('mp_norm_v1') !== '0') // default on
       const g = localStorage.getItem('mp_gain_v1'); if (g) gainRef.current = JSON.parse(g)
+      const m = localStorage.getItem('mp_meta_v1'); if (m) setMetaOv(JSON.parse(m))
     } catch { /* ignore */ }
   }, [])
+  // Save a per-track title/artist override (from the stage-3 edit); triggers a fresh lyrics search.
+  const setTrackMeta = (key: string, title: string, artist: string) => setMetaOv((prev) => { const n = { ...prev, [key]: { title: title.trim(), artist: artist.trim() } }; try { localStorage.setItem('mp_meta_v1', JSON.stringify(n)) } catch { /* ignore */ } return n })
   const toggleNormalize = () => setNormalize((v) => { const n = !v; try { localStorage.setItem('mp_norm_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleAutoSave = () => setAutoSave((v) => { const n = !v; try { localStorage.setItem('mp_autosave_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleEq = () => setEqEnabled((v) => { const n = !v; try { localStorage.setItem('mp_eq_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
@@ -143,21 +152,27 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   // Lyrics via lib/tools/lyrics (lrclib.net): prefer ID3 artist/title, else the filename heuristic.
   // The module strips lyric/cover markers before querying and returns synced lines or plain text.
   useEffect(() => {
-    setLyrics(null); setLyricsLines(null); setLyricsStatus('idle')
+    setLyrics(null); setLyricsLines(null); setLyricsHits(null); setLyricsStatus('idle'); setLyricsStage(1)
     if (!lyricsOn) return
+    const o = curFile ? metaOv[curFile.name + '|' + curFile.size] : undefined
     const fromName = parseFileName(base)
-    const artist = (id3?.artist || '').trim() || fromName.artist
-    const title = (id3?.title || '').trim() || fromName.title
-    if (!artist || !title) return
-    setLyricsStatus('loading')
+    const artist = (o?.artist || id3?.artist || '').trim() || fromName.artist
+    const title = (o?.title || id3?.title || '').trim() || fromName.title
+    if (!title) return
+    setLyricsStatus('loading'); setLyricsStage(1)
     const ac = new AbortController()
-    fetchLyrics(artist, title, dur, ac.signal).then((res) => {
+    ;(async () => {
+      const got = await fetchLyrics(artist, title, dur, ac.signal) // (1/3) title + artist (with candidates)
       if (ac.signal.aborted) return
-      setLyricsLines(res?.synced || null); setLyrics(res?.plain || null); setLyricsStatus('done')
-    })
+      if (got) { setLyricsLines(got.synced); setLyrics(got.plain); setLyricsStatus('done'); return }
+      setLyricsStage(2)
+      const hits = await searchByTitle(title, ac.signal) // (2/3) title only → results to pick from
+      if (ac.signal.aborted) return
+      setLyricsHits(hits); setLyricsStatus('done')
+    })()
     return () => ac.abort()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [base, id3, lyricsOn, dur])
+  }, [base, id3, lyricsOn, dur, metaOv])
   const [reorder, setReorder] = useState(false) // playlist reorder mode (drag handle per row)
   const [dragKey, setDragKey] = useState<string | null>(null) // row currently being dragged
   // ---- groups (the 리스트/플레이리스트 tab) ----
@@ -288,11 +303,12 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   // Playlist filtered by the open tab; next/prev cycle it (skipping metadata-only entries with no blob).
   const shownAll = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
   const shown = query.trim() ? shownAll.filter((h) => h.name.toLowerCase().includes(query.trim().toLowerCase())) : shownAll
-  // Display metadata for the now-playing card: ID3 (local) → iTunes (network) → filename heuristic.
+  // Display metadata for the now-playing card: user override → ID3 (local) → iTunes → filename heuristic.
   const nameMeta = parseFileName(base)
+  const ovr = curFile ? metaOv[curFile.name + '|' + curFile.size] : undefined
   const coverSrc = id3?.cover || artUrl
-  const dispTitle = id3?.title || itTitle || nameMeta.title
-  const dispArtist = id3?.artist || itArtist || nameMeta.artist
+  const dispTitle = ovr?.title || id3?.title || itTitle || nameMeta.title
+  const dispArtist = ovr?.artist || id3?.artist || itArtist || nameMeta.artist
   const activeLyric = lyricsLines ? lyricsLines.reduce((a, l, i) => (l.t <= cur + 0.25 ? i : a), -1) : -1 // current synced line
   const allCount = history.length
   const savedCount = history.filter((h) => saved.has(h.name + '|' + h.size)).length
@@ -823,7 +839,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   {/* No submenu open → the reserved slot shows the lyrics: a synced karaoke line
                       (prev/current/next) when timed, plain lyrics scrolling, or a searching / not-found note. */}
                   {panel === 'none' && lyricsStatus !== 'idle' && (
-                    <div className="px-5 h-full flex flex-col justify-center text-center text-white select-none" aria-hidden>
+                    <div className="px-5 h-full flex flex-col justify-center text-center text-white select-none">
                       {lyricsLines ? (
                         (activeLyric >= 0 ? [activeLyric - 1, activeLyric, activeLyric + 1] : [0, 1, 2]).map((idx, k) => {
                           const l = lyricsLines[idx]
@@ -831,8 +847,13 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                         })
                       ) : lyrics ? (
                         <div className="max-h-full overflow-auto whitespace-pre-wrap text-xs leading-5 text-white/70">{lyrics}</div>
+                      ) : lyricsStatus === 'loading' ? (
+                        <p className="text-xs text-white/55">{t('mpl_lyrics_searching')} ({lyricsStage}/3)</p>
                       ) : (
-                        <p className="text-xs text-white/55">{lyricsStatus === 'loading' ? t('mpl_lyrics_searching') : t('mpl_lyrics_none')}</p>
+                        <div className="space-y-1.5">
+                          <p className="text-xs text-white/55">{t('mpl_lyrics_none')}</p>
+                          <button onClick={() => { setEditTitle(dispTitle); setEditArtist(dispArtist); setLyricsPicker(true) }} className="pointer-events-auto inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 text-xs font-semibold">{t('mpl_lyrics_find')}{lyricsHits && lyricsHits.length ? ` (${lyricsHits.length})` : ''}</button>
+                        </div>
                       )}
                     </div>
                   )}
@@ -1137,6 +1158,46 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
             </div>
           )
         })()}
+
+        {/* 직접 찾기: pick from title-only results (2/3) or edit the title/artist (3/3) → re-search. */}
+        {lyricsPicker && curFile && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4" onClick={() => setLyricsPicker(false)}>
+            <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl overflow-hidden max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                <span className="flex-1 min-w-0 text-sm font-semibold text-gray-800 truncate">{t('mpl_lyrics_find')}</span>
+                <button onClick={() => setLyricsPicker(false)} aria-label="close" className="p-1 -mr-1 text-gray-400 hover:text-gray-600"><ToolIcon name="x" className="w-4 h-4" /></button>
+              </div>
+              {/* 3/3 — edit the song's title/artist, save the override, and search with it */}
+              <div className="p-3 border-b border-gray-100 space-y-2">
+                <p className="text-xs font-medium text-gray-400">{t('mpl_lyrics_edit')}</p>
+                <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder={t('mpl_title')} className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                <input value={editArtist} onChange={(e) => setEditArtist(e.target.value)} placeholder={t('mpl_artist')} className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                <button onClick={() => { setTrackMeta(curFile.name + '|' + curFile.size, editTitle, editArtist); setLyricsPicker(false) }} disabled={!editTitle.trim()} className="w-full py-2 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-40">{t('mpl_lyrics_search_btn')}</button>
+              </div>
+              {/* 2/3 — pick the right song from the title-only search results */}
+              <div className="flex-1 overflow-auto">
+                {lyricsHits && lyricsHits.length ? (
+                  <>
+                    <p className="px-4 pt-3 pb-1 text-xs font-medium text-gray-400">{t('mpl_lyrics_pick')}</p>
+                    <div className="divide-y divide-gray-100">
+                      {lyricsHits.map((h) => (
+                        <button key={h.id} onClick={() => { setLyricsLines(h.result.synced); setLyrics(h.result.plain); setLyricsStatus('done'); cacheLyrics(dispArtist, dispTitle, h.result); setLyricsPicker(false) }} className="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-gray-50">
+                          <span className="flex-1 min-w-0">
+                            <span className="block text-sm text-gray-800 truncate">{h.title}</span>
+                            <span className="block text-xs text-gray-400 truncate">{h.artist}{h.album ? ' · ' + h.album : ''}{h.duration ? ' · ' + fmt(h.duration) : ''}</span>
+                          </span>
+                          {h.result.synced && <span className="shrink-0 text-[10px] font-bold text-brand-600 bg-brand-50 rounded px-1.5 py-0.5">SYNC</span>}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <p className="px-4 py-6 text-center text-sm text-gray-400">{t('mpl_lyrics_no_results')}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </ToolLayout>
   )
