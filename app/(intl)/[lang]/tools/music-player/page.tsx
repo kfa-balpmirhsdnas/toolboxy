@@ -605,13 +605,17 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const trackInner = (h: { name: string; size: number; file: File | null }) => {
     const key = h.name + '|' + h.size
     const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
+    // Show the user's saved title/artist override (from mp_meta_v1, already in memory) instead of the
+    // raw filename when one exists — so edits appear in the list too, not just the player.
+    const ov = metaOv[key]
+    const displayName = ov?.title ? (ov.artist ? ov.artist + ' - ' + ov.title : ov.title) : h.name.replace(/\.[^.]+$/, '')
     return (
       <>
         <span className={'w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-lg ' + (isCur && playing ? 'bg-brand-600 text-white' : darkMode ? 'bg-gray-800 text-gray-500' : 'bg-gray-100 text-gray-400')}>
           {isCur && playing ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg> : <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M8 5v14l11-7z" /></svg>}
         </span>
         <span className="min-w-0">
-          <span className={'block truncate text-sm ' + (isCur ? 'font-semibold text-brand-500' : darkMode ? 'text-gray-200' : 'text-gray-800') + (h.file ? '' : ' opacity-50')}>{h.name.replace(/\.[^.]+$/, '')}</span>
+          <span className={'block truncate text-sm ' + (isCur ? 'font-semibold text-brand-500' : darkMode ? 'text-gray-200' : 'text-gray-800') + (h.file ? '' : ' opacity-50')}>{displayName}</span>
           <span className="block text-[11px] text-gray-400 tabular-nums">{h.file ? <>{durs[key] ? <span className="text-gray-500">{fmt(durs[key])}</span> : null}{durs[key] ? ' · ' : ''}{fmtSize(h.size)}
             {hasCover.has(key) && <span className="ml-1 font-bold text-brand-500" title={t('mpl_art_opt')}>C</span>}
             {hasLyrics.has(key) && <span className="ml-0.5 font-bold text-brand-500" title={t('mpl_lyrics')}>L</span>}
