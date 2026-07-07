@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { readId3Full, buildId3v23, writeMp3, EMPTY_FIELDS, type Id3Fields, type Id3Full } from '@/lib/tools/id3'
+import { parseFileName, parseTrackNo, searchItunesSong, fetchArtBytes } from '@/lib/tools/songMeta'
+import { quotedSplit } from '@/lib/tools/lyrics'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
 const tool = getToolBySlug('mp3-tag-editor')!
@@ -14,10 +16,22 @@ const GENRES = ['Pop', 'Rock', 'Hip-Hop', 'R&B', 'Dance', 'Electronic', 'Jazz', 
 
 const fmtBytes = (b: number) => (b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(0) + ' KB' : (b / 1048576).toFixed(1) + ' MB')
 
-// Filename auto-fill patterns: value → parser. "01 - 아티스트 - 제목", "아티스트 - 제목", "01 - 제목".
-type NamePattern = 'tat' | 'at' | 'tt'
+// Filename auto-fill patterns. 'smart' runs the music player's shared parser (lib/tools/songMeta:
+// junk-marker/track-number stripping, conservative "Artist - Title" split, quoted-title fallback);
+// the fixed patterns remain for when the user knows the exact layout.
+type NamePattern = 'smart' | 'tat' | 'at' | 'tt'
 function parseByPattern(name: string, pat: NamePattern): Partial<Id3Fields> {
   const base = name.replace(/\.[^.]+$/, '').trim()
+  if (pat === 'smart') {
+    const out: Partial<Id3Fields> = {}
+    const tr = parseTrackNo(base)
+    if (tr) out.track = tr
+    let pf: { artist: string; title: string } | null = parseFileName(base)
+    if (!pf.artist) { const q = quotedSplit(base); if (q) pf = q } // 「가수들 '제목'」 filenames
+    if (pf.title) out.title = pf.title
+    if (pf.artist) out.artist = pf.artist
+    return out
+  }
   const parts = base.split(/\s*-\s*/)
   if (pat === 'tat' && parts.length >= 3 && /^\d{1,3}$/.test(parts[0])) return { track: String(parseInt(parts[0], 10)), artist: parts[1], title: parts.slice(2).join(' - ') }
   if (pat === 'at' && parts.length >= 2) return { artist: parts[0], title: parts.slice(1).join(' - ') }
@@ -44,7 +58,8 @@ export default function Mp3TagEditorPage({ params }: { params: { lang: string } 
   const [items, setItems] = useState<Item[]>([])
   const [selId, setSelId] = useState('')
   const [advOpen, setAdvOpen] = useState(false)
-  const [pattern, setPattern] = useState<NamePattern>('tat')
+  const [pattern, setPattern] = useState<NamePattern>('smart')
+  const [artBusy, setArtBusy] = useState(false) // auto album-art lookup in progress
   const [renameOut, setRenameOut] = useState(false) // save as "아티스트 - 제목.mp3"
   const [notice, setNotice] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -119,12 +134,35 @@ export default function Mp3TagEditorPage({ params }: { params: { lang: string } 
     }))
     setNotice(t('mte_applied_all'))
   }
-  function fillFromNames() {
-    setItems((prev) => prev.map((it) => {
+  async function fillFromNames() {
+    if (artBusy) return
+    // 1) fields from the filename (shared music-player parser or a fixed pattern)
+    const updates = new Map<string, Partial<Id3Fields>>()
+    for (const it of itemsRef.current) {
       const got = parseByPattern(it.file.name, pattern)
-      if (!Object.keys(got).length) return it
-      return { ...it, fields: { ...it.fields, ...got }, dirty: true }
-    }))
+      if (Object.keys(got).length) updates.set(it.id, got)
+    }
+    if (updates.size) setItems((prev) => prev.map((it) => (updates.has(it.id) ? { ...it, fields: { ...it.fields, ...updates.get(it.id)! }, dirty: true } : it)))
+    // 2) auto album art via the music player's iTunes module — only files still without a cover,
+    //    queried with the just-filled artist+title (embedded art is never overwritten).
+    setArtBusy(true); setNotice(t('mte_art_searching'))
+    let added = 0
+    try {
+      for (const it of itemsRef.current) {
+        if (it.cover) continue
+        const f = { ...it.fields, ...(updates.get(it.id) || {}) }
+        const term = ((f.artist || '') + ' ' + (f.title || it.file.name.replace(/\.[^.]+$/, ''))).trim()
+        const hit = await searchItunesSong(term)
+        if (!hit || !hit.artUrl) continue
+        const art = await fetchArtBytes(hit.artUrl)
+        if (!art) continue
+        patch(it.id, { cover: art, coverUrl: URL.createObjectURL(new Blob([art.data as unknown as BlobPart], { type: art.mime })), dirty: true })
+        added++
+      }
+    } finally {
+      setArtBusy(false)
+      setNotice(added ? t('mte_art_found', { n: added }) : '')
+    }
   }
 
   // ---- Save ----
@@ -228,11 +266,12 @@ export default function Mp3TagEditorPage({ params }: { params: { lang: string } 
                 <label className={labelCls}>{t('mte_fill_from_name')}</label>
                 <div className="flex gap-2">
                   <select value={pattern} onChange={(e) => setPattern(e.target.value as NamePattern)} className="flex-1 min-w-0 px-2 py-2 rounded-xl border border-gray-200 text-sm bg-white">
+                    <option value="smart">{t('mte_pat_smart')}</option>
                     <option value="tat">01 - {t('mpl_artist')} - {t('mpl_title')}</option>
                     <option value="at">{t('mpl_artist')} - {t('mpl_title')}</option>
                     <option value="tt">01 - {t('mpl_title')}</option>
                   </select>
-                  <button onClick={fillFromNames} className="px-3 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-200">{t('mte_apply')}</button>
+                  <button onClick={fillFromNames} disabled={artBusy} className="px-3 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-200 disabled:opacity-40">{artBusy ? '…' : t('mte_apply')}</button>
                 </div>
                 <label className="flex items-center gap-2 text-xs text-gray-500 pt-1">
                   <input type="checkbox" checked={renameOut} onChange={(e) => setRenameOut(e.target.checked)} className="rounded" />

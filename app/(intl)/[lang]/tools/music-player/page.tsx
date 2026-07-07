@@ -9,6 +9,7 @@ import { trackToolUsed } from '@/lib/gtag'
 import { mhList, mhPutMeta, mhPutManyMeta, mhSave, mhSetBlob, mhDelete, mhClear, mhAutoSave, mhAutoSaveMany, mhDropBlobs, mhStorageUsage } from '@/lib/tools/musicHistory'
 import { readId3 } from '@/lib/tools/id3'
 import { fetchLyrics, cleanForLyrics, searchByTitle, cacheLyrics, quotedSplit, type LyricsHit } from '@/lib/tools/lyrics'
+import { parseFileName, searchItunesSong } from '@/lib/tools/songMeta'
 import { measureRms, gainForRms } from '@/lib/tools/loudness'
 
 const tool = getToolBySlug('music-player')!
@@ -20,30 +21,8 @@ const NOT_AUDIO_RE = /\.(jpe?g|png|gif|webp|heic|heif|bmp|svg|tiff?|ico|mp4|m4v|
 const maybeAudio = (f: File) => isAudio(f) || (!/^(image|video|text)\//.test(f.type) && !NOT_AUDIO_RE.test(f.name))
 const fmt = (s: number) => { if (!isFinite(s) || s < 0) s = 0; const m = Math.floor(s / 60); const ss = Math.floor(s % 60); return `${m}:${String(ss).padStart(2, '0')}` }
 const fmtSize = (b: number) => (b < 1024 ? b + ' B' : b < 1024 * 1024 ? (b / 1024).toFixed(0) + ' KB' : (b / 1024 / 1024).toFixed(1) + ' MB')
-// Best-effort artist/title from a bare filename — only used when BOTH the ID3 tags and the iTunes
-// lookup come up empty. There's no reliable way to know the order from a filename alone, so we clean
-// the input up and lean on the dominant "Artist - Title" convention. Deliberately conservative:
-//  • split ONLY on a clearly spaced dash-family separator ( - – — · | ~ ). We do NOT split on "," or
-//    "/", because those usually separate multiple artists inside one field ("아이유, 최유리 - 봄날").
-//  • strip a leading track number, bracketed junk tags ([MV], (Official Video), (HD)…), bitrate & URLs.
-//  • only flip the order when a "(Remix)/(Inst.)/(feat. …)" marker sits on the FIRST chunk (that chunk
-//    is clearly the title, so the other side is the artist).
-function parseFileName(raw: string): { artist: string; title: string } {
-  let s = (raw || '').replace(/_/g, ' ').replace(/\s+/g, ' ').trim()
-  s = s.replace(/[[(（【][^)\]）】]*\b(?:official|lyrics?|lyric video|audio|video|mv|m\/v|hd|hq|4k|8k|teaser|가사|자막)\b[^)\]）】]*[)\]）】]/gi, ' ')
-  s = s.replace(/\b\d{2,4}\s?k(?:bps|hz)\b/gi, ' ').replace(/\b(?:www\.\S+|[a-z0-9-]+\.(?:com|net|kr|org|io))\b/gi, ' ')
-  s = s.replace(/[[(（【]\s*[)\]）】]/g, ' ') // drop empty brackets left behind by the strips above
-  s = s.replace(/^\s*\d{1,3}\s*[.)\-–—]\s+/, '') // leading track number: "05.", "005 - ", "12)"
-  s = s.replace(/\s+/g, ' ').trim()
-  const parts = s.split(/\s+[-–—·|~]\s+/).map((p) => p.trim()).filter(Boolean)
-  // Also strip lyric/cover markers ("가사", "lyrics", "(COVER)", "Official Lyrics", "| 가사/lyrics"…);
-  // keep the original if a chunk is nothing but markers, so we never end up empty.
-  const clean = (x: string) => cleanForLyrics(x) || x
-  if (parts.length < 2) return { artist: '', title: clean(s) }
-  const titleParen = /\([^)]*\b(?:remix|inst\.?|instrumental|live|ver\.?|version|acoustic|edit|remaster|mix|feat\.?|ft\.?|cover|ost|prod\.?)\b[^)]*\)/i
-  if (parts.length === 2 && titleParen.test(parts[0]) && !titleParen.test(parts[1])) return { artist: clean(parts[1]), title: clean(parts[0]) }
-  return { artist: clean(parts[0]), title: clean(parts.slice(1).join(' - ')) }
-}
+// parseFileName (filename → artist/title) now lives in lib/tools/songMeta so the mp3-tag-editor
+// recognises names with the exact same rules. Only used when BOTH ID3 and iTunes come up empty.
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2]
 const VOLUMES = [0, 0.25, 0.5, 0.75, 1]
 const TIMER_MENU = [15, 30, 60, 120]
@@ -196,12 +175,12 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     const q = (o?.title
       ? ((o.artist ? o.artist + ' ' : '') + o.title)
       : base.replace(/[_-]+/g, ' ').replace(/\b(official|audio|lyrics?|mv|hd|4k)\b/gi, '').replace(/\s+/g, ' ')
-    ).trim().slice(0, 60)
-    if (!q) return
-    fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=1`)
-      .then((r) => r.json())
-      .then((d) => { if (!alive) return; const r = d?.results?.[0]; if (!r) return; if (r.artworkUrl100) setArtUrl(String(r.artworkUrl100).replace('100x100', '600x600')); setItTitle(r.trackName || ''); setItArtist(r.artistName || '') })
-      .catch(() => { /* ignore */ })
+    ).trim()
+    searchItunesSong(q).then((r) => {
+      if (!alive || !r) return
+      if (r.artUrl) setArtUrl(r.artUrl)
+      setItTitle(r.title); setItArtist(r.artist)
+    })
     return () => { alive = false }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [base, albumArt, id3, metaOv])
