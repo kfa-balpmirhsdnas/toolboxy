@@ -48,6 +48,20 @@ const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2]
 const VOLUMES = [0, 0.25, 0.5, 0.75, 1]
 const TIMER_MENU = [15, 30, 60, 120]
 
+// Android applies its select-all AFTER our focus handler, so a focus-time caret move alone
+// doesn't stick (the edit-info inputs still opened fully selected on the Fold). Collapse any
+// full selection shortly after focus AND after each tap; a click mid-text keeps its position,
+// and a deliberate long-press → "select all" from the context menu still works.
+const collapseSelectAll = (el: HTMLInputElement) => {
+  try { if (el.value && el.selectionStart === 0 && el.selectionEnd === el.value.length) el.setSelectionRange(el.value.length, el.value.length) } catch { /* ignore */ }
+}
+const noSelectAllProps = {
+  // Multiple backstops: Android applies its select-all anywhere between focus and the soft
+  // keyboard opening (~300ms), and rAF can be throttled — cover the whole window.
+  onFocus: (e: React.FocusEvent<HTMLInputElement>) => { const el = e.currentTarget; requestAnimationFrame(() => collapseSelectAll(el)); for (const ms of [80, 300]) setTimeout(() => { if (document.activeElement === el) collapseSelectAll(el) }, ms) },
+  onPointerUp: (e: React.PointerEvent<HTMLInputElement>) => { const el = e.currentTarget; setTimeout(() => { if (document.activeElement === el) collapseSelectAll(el) }, 0) },
+}
+
 export default function MusicPlayerPage({ params: { lang } }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const [url, setUrl] = useState('')
@@ -1273,11 +1287,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   <div className="flex-1 min-w-0 space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="w-9 shrink-0 text-xs text-gray-500">{t('mpl_title')}</span>
-                      <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} onFocus={(e) => { const el = e.currentTarget; requestAnimationFrame(() => { try { el.setSelectionRange(el.value.length, el.value.length) } catch { /* ignore */ } }) }} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                      <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} {...noSelectAllProps} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="w-9 shrink-0 text-xs text-gray-500">{t('mpl_artist')}</span>
-                      <input value={editArtist} onChange={(e) => setEditArtist(e.target.value)} onFocus={(e) => { const el = e.currentTarget; requestAnimationFrame(() => { try { el.setSelectionRange(el.value.length, el.value.length) } catch { /* ignore */ } }) }} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                      <input value={editArtist} onChange={(e) => setEditArtist(e.target.value)} {...noSelectAllProps} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
                     </div>
                   </div>
                   {/* swap the 제목 ↔ 가수 fields */}
