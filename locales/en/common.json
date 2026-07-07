@@ -3833,6 +3833,7 @@
     "mpl_lyrics_save": "Save",
     "mpl_lyrics_use": "Select",
     "mpl_lyrics_refresh": "Refresh lyrics",
+    "mpl_lyrics_cancel": "Stop search",
     "mpl_lyrics_swap": "Swap title/artist",
     "mpl_title": "Title",
     "mpl_artist": "Artist",

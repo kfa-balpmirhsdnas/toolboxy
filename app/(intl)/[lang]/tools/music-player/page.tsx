@@ -99,7 +99,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [editArtist, setEditArtist] = useState('')
   const [lyricsNonce, setLyricsNonce] = useState(0) // bump to re-run the lyrics search (manual refresh)
   const forceLyricsRef = useRef(false) // next lyrics run should bypass the cache
+  const lyricsAcRef = useRef<AbortController | null>(null) // the in-flight lyrics search (for the stop button)
   const refreshLyrics = () => { forceLyricsRef.current = true; setLyricsNonce((n) => n + 1) }
+  const cancelLyrics = () => { lyricsAcRef.current?.abort(); setLyricsStatus('done') } // stop the search → show not-found + 직접 찾기
   const [hasLyrics, setHasLyrics] = useState<Set<string>>(new Set()) // track keys whose lyrics are cached → "L" in the list
   const markHasLyrics = (key: string) => setHasLyrics((prev) => { if (!key || prev.has(key)) return prev; const n = new Set(prev); n.add(key); try { localStorage.setItem('mp_haslyrics_v1', JSON.stringify(Array.from(n))) } catch { /* ignore */ } return n })
   const [hasCover, setHasCover] = useState<Set<string>>(new Set()) // track keys that have cover art → "C" in the list
@@ -180,7 +182,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     const myKey = curFile ? curFile.name + '|' + curFile.size : ''
     setLyricsStatus('loading'); setLyricsStage(1)
     const force = forceLyricsRef.current; forceLyricsRef.current = false
-    const ac = new AbortController()
+    const ac = new AbortController(); lyricsAcRef.current = ac
     ;(async () => {
       // (1/3) title + artist (with candidates), capped at 9s so a slow/hung lrclib still advances to (2/3)
       const s1 = new AbortController()
@@ -190,7 +192,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       if (ac.signal.aborted) return
       if (got) { setLyricsLines(got.synced); setLyrics(got.plain); setLyricsStatus('done'); markHasLyrics(myKey); return }
       setLyricsStage(2)
-      const hits = await searchByTitle(title, dur, ac.signal) // (2/3) title only (length-filtered) → pick from
+      // (2/3) title only (length-filtered) → pick from. Capped at 12s so a hung lrclib /search doesn't
+      // sit on "(2/3)" for over a minute.
+      const hits = await Promise.race([searchByTitle(title, dur, ac.signal), new Promise<never[]>((res) => setTimeout(() => res([]), 12000))])
       if (ac.signal.aborted) return
       setLyricsHits(hits); setLyricsStatus('done')
     })()
@@ -872,11 +876,17 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               {/* gauge slot — ALWAYS reserved (fixed height, empty when closed) so opening a submenu never shifts the layout */}
               {(
                 <div className="relative h-20 flex flex-col justify-center overflow-hidden pb-1">
-                  {/* 가사 새로고침 — force a fresh lyrics search (bypasses the cache) */}
+                  {/* While searching → stop button; otherwise → refresh (force a fresh search) */}
                   {panel === 'none' && lyricsStatus !== 'idle' && (
-                    <button onClick={refreshLyrics} aria-label={t('mpl_lyrics_refresh')} title={t('mpl_lyrics_refresh')} className="absolute top-0.5 right-2.5 z-10 p-1 text-white/45 hover:text-white active:scale-90 transition">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M21 12a9 9 0 1 1-6.2-8.5" /><path d="M21 3v6h-6" /></svg>
-                    </button>
+                    lyricsStatus === 'loading' ? (
+                      <button onClick={cancelLyrics} aria-label={t('mpl_lyrics_cancel')} title={t('mpl_lyrics_cancel')} className="absolute top-0.5 right-2.5 z-10 p-1 text-white/60 hover:text-white active:scale-90 transition">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><rect x="5" y="5" width="14" height="14" rx="2" /></svg>
+                      </button>
+                    ) : (
+                      <button onClick={refreshLyrics} aria-label={t('mpl_lyrics_refresh')} title={t('mpl_lyrics_refresh')} className="absolute top-0.5 right-2.5 z-10 p-1 text-white/45 hover:text-white active:scale-90 transition">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M21 12a9 9 0 1 1-6.2-8.5" /><path d="M21 3v6h-6" /></svg>
+                      </button>
+                    )
                   )}
                   {/* All three submenus share the speed-menu layout: slider + value on top, preset chips below. */}
                   {panel === 'vol' && (
