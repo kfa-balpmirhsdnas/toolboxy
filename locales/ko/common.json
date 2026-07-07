@@ -12,8 +12,7 @@
     "signup": "무료가입",
     "dashboard": "대시보드",
     "logout": "로그아웃",
-    "install": "앱 설치",
-    "install_manual": "브라우저 메뉴(⋮)에서 '앱 설치' 또는 '홈 화면에 추가'를 선택하세요."
+    "install": "앱 설치"
   },
   "categories": {
     "pdf": "PDF",
