@@ -108,7 +108,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [lyricsStage, setLyricsStage] = useState(1) // which of the 3 search stages is running (progress)
   const [lyricsHits, setLyricsHits] = useState<LyricsHit[] | null>(null) // stage-2 title-only results to pick from
   const [lyricsPicker, setLyricsPicker] = useState(false) // "직접 찾기" dialog open
-  const [metaOv, setMetaOv] = useState<Record<string, { title?: string; artist?: string }>>({}) // per-track title/artist overrides
+  const [metaOv, setMetaOv] = useState<Record<string, { title?: string; artist?: string; auto?: boolean }>>({}) // per-track title/artist overrides (auto = discovered, not user-typed)
   const [editTitle, setEditTitle] = useState('') // stage-3 edit inputs
   const [editArtist, setEditArtist] = useState('')
   const [lyricsNonce, setLyricsNonce] = useState(0) // bump to re-run the lyrics search (manual refresh)
@@ -144,6 +144,21 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   }, [])
   // Save a per-track title/artist override (from the stage-3 edit); triggers a fresh lyrics search.
   const setTrackMeta = (key: string, title: string, artist: string) => setMetaOv((prev) => { const n = { ...prev, [key]: { title: title.trim(), artist: artist.trim() } }; try { localStorage.setItem('mp_meta_v1', JSON.stringify(n)) } catch { /* ignore */ } return n })
+  // Auto-discovered titles (ID3 / iTunes / quoted-split lyrics hit) are mirrored into metaOv too, so
+  // the LIST shows what the player shows — and it survives a refresh. Manual edits always win;
+  // `strong` sources (ID3, quoted hit) may replace an earlier auto value, weak ones (iTunes) only
+  // fill an empty slot. Equality guard prevents write loops (metaOv is an effect dep elsewhere).
+  const setAutoMeta = (key: string, title: string, artist: string, strong: boolean) => setMetaOv((prev) => {
+    const ex = prev[key]
+    const ti = title.trim(); const ar = artist.trim()
+    if (!key || !ti) return prev
+    if (ex && !ex.auto) return prev                                        // user-typed → never touch
+    if (ex && !strong) return prev                                         // weak source never replaces
+    if (ex && ex.title === ti && (ex.artist || '') === ar) return prev     // no change → no write
+    const n = { ...prev, [key]: { title: ti, artist: ar, auto: true } }
+    try { localStorage.setItem('mp_meta_v1', JSON.stringify(n)) } catch { /* ignore */ }
+    return n
+  })
   const toggleNormalize = () => setNormalize((v) => { const n = !v; try { localStorage.setItem('mp_norm_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleAutoSave = () => setAutoSave((v) => { const n = !v; try { localStorage.setItem('mp_autosave_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleEq = () => setEqEnabled((v) => { const n = !v; try { localStorage.setItem('mp_eq_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
@@ -227,7 +242,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
           const got2 = await Promise.race([fetchLyrics(q.artist, q.title, dur, s2.signal, force), new Promise<null>((res) => setTimeout(() => res(null), 9000))])
           s2.abort()
           if (ac.signal.aborted) return
-          if (got2) { setLyricsLines(got2.synced); setLyrics(got2.plain); setLyricsStatus('done'); markHasLyrics(myKey); return }
+          // A hit with the quoted pair confirms it — show it as the track's title/artist too (player + list).
+          if (got2) { setLyricsLines(got2.synced); setLyrics(got2.plain); setLyricsStatus('done'); markHasLyrics(myKey); setAutoMeta(myKey, q.title, q.artist, true); return }
           hits = await Promise.race([searchByTitle(q.title, dur, ac.signal), new Promise<never[]>((res) => setTimeout(() => res([]), 12000))])
           if (ac.signal.aborted) return
         }
@@ -398,6 +414,15 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const cleanDisp = (s: string) => cleanForLyrics(s) || s
   const dispTitle = ovr?.title || cleanDisp(id3?.title || itTitle || nameMeta.title)
   const dispArtist = ovr?.artist || cleanDisp(id3?.artist || itArtist || nameMeta.artist)
+  // Once a real source (ID3 strong / iTunes weak) resolves the title, mirror it into metaOv so the
+  // playlist rows update along with the player (they render from metaOv, not from id3/iTunes state).
+  useEffect(() => {
+    if (!curFile) return
+    const key = curFile.name + '|' + curFile.size
+    if (id3?.title?.trim()) setAutoMeta(key, cleanDisp(id3.title.trim()), cleanDisp((id3.artist || '').trim()), true)
+    else if (itTitle.trim()) setAutoMeta(key, cleanDisp(itTitle.trim()), cleanDisp(itArtist.trim()), false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curFile, id3, itTitle, itArtist])
   // Remember tracks that have cover art (ID3 or fetched) so the list can show a "C" badge.
   useEffect(() => { if (curFile && coverSrc) markHasCover(curFile.name + '|' + curFile.size)
     // eslint-disable-next-line react-hooks/exhaustive-deps
