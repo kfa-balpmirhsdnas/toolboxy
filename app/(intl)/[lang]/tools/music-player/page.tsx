@@ -324,6 +324,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       setBase(f.name.replace(/\.[^.]+$/, '') || f.name)
       setCur(0)
       resumePosRef.current = positionsRef.current[f.name + '|' + f.size] || 0
+      // Clear the previous track's cover/metadata SYNCHRONOUSLY so coverSrc isn't briefly stale on the
+      // render where curFile changes — otherwise the "C" badge got marked from the old track's cover.
+      setId3(null); setArtUrl(''); setItTitle(''); setItArtist('')
       setCurFile(f)
       try { localStorage.setItem('mp_last_v1', f.name + '|' + f.size) } catch { /* ignore */ } // remember for resume-on-refresh
       // Playing a track that's already in the list keeps its position; only a brand-new file goes on top.
