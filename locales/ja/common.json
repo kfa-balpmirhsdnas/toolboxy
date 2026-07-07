@@ -4233,6 +4233,8 @@
     "mpl_lyrics_pick": "検索結果から選択",
     "mpl_lyrics_no_results": "検索結果がありません。",
     "mpl_lyrics_search_btn": "この情報で歌詞を再検索",
+    "mpl_edit_info": "曲情報を編集",
+    "mpl_lyrics_save": "保存",
     "mpl_lyrics_use": "選択",
     "mpl_lyrics_refresh": "歌詞を再取得",
     "mpl_lyrics_swap": "タイトルと歌手を入れ替え",

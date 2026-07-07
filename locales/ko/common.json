@@ -4260,6 +4260,8 @@
     "mpl_lyrics_pick": "검색 결과에서 선택",
     "mpl_lyrics_no_results": "검색 결과가 없어요.",
     "mpl_lyrics_search_btn": "이 정보로 가사 재검색",
+    "mpl_edit_info": "곡 정보 수정",
+    "mpl_lyrics_save": "저장",
     "mpl_lyrics_use": "선택",
     "mpl_lyrics_refresh": "가사 새로고침",
     "mpl_lyrics_swap": "제목↔가수 바꾸기",

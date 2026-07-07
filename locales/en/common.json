@@ -3829,6 +3829,8 @@
     "mpl_lyrics_pick": "Pick from search results",
     "mpl_lyrics_no_results": "No search results.",
     "mpl_lyrics_search_btn": "Re-search lyrics with this",
+    "mpl_edit_info": "Edit song info",
+    "mpl_lyrics_save": "Save",
     "mpl_lyrics_use": "Select",
     "mpl_lyrics_refresh": "Refresh lyrics",
     "mpl_lyrics_swap": "Swap title/artist",

@@ -800,7 +800,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 <div className="flex items-center justify-center gap-1.5 min-w-0">
                   <p className="font-semibold truncate">{dispTitle || t('mp_nothing')}</p>
                   {url && (
-                    <button onClick={() => { setEditTitle(dispTitle); setEditArtist(dispArtist); setLyricsPicker(true) }} aria-label={t('mpl_lyrics_edit')} title={t('mpl_lyrics_edit')} className="shrink-0 p-0.5 text-white/50 hover:text-white active:scale-90 transition">
+                    <button onClick={() => { setEditTitle(dispTitle); setEditArtist(dispArtist); setLyricsPicker(true) }} aria-label={t('mpl_edit_info')} title={t('mpl_edit_info')} className="shrink-0 p-0.5 text-white/50 hover:text-white active:scale-90 transition">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
                     </button>
                   )}
@@ -1232,12 +1232,12 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
           <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4" onClick={() => setLyricsPicker(false)}>
             <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl overflow-hidden max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
               <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
-                <span className="flex-1 min-w-0 text-sm font-semibold text-gray-800 truncate">{t('mpl_lyrics_find')}</span>
+                <span className="flex-1 min-w-0 text-sm font-semibold text-gray-800 truncate">{t('mpl_edit_info')}</span>
                 <button onClick={() => setLyricsPicker(false)} aria-label="close" className="p-1 -mr-1 text-gray-400 hover:text-gray-600"><ToolIcon name="x" className="w-4 h-4" /></button>
               </div>
-              {/* 3/3 — edit the song's title/artist, save the override, and search with it */}
+              {/* Edit the song's title/artist → saved as a per-track override (fixes the display; the
+                  lyrics search re-runs in the background as a side effect). */}
               <div className="p-3 border-b border-gray-100 space-y-2">
-                <p className="text-xs font-medium text-gray-400">{t('mpl_lyrics_edit')}</p>
                 <div className="flex items-stretch gap-2">
                   <div className="flex-1 min-w-0 space-y-2">
                     <div className="flex items-center gap-2">
@@ -1254,7 +1254,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m3 8 4-4 4 4" /><path d="M7 4v16" /><path d="m21 16-4 4-4-4" /><path d="M17 20V4" /></svg>
                   </button>
                 </div>
-                <button onClick={() => { setTrackMeta(curFile.name + '|' + curFile.size, editTitle, editArtist); setLyricsPicker(false) }} disabled={!editTitle.trim()} className="w-full py-2 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-40">{t('mpl_lyrics_search_btn')}</button>
+                <button onClick={() => { setTrackMeta(curFile.name + '|' + curFile.size, editTitle, editArtist); setLyricsPicker(false) }} disabled={!editTitle.trim()} className="w-full py-2 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-40">{t('mpl_lyrics_save')}</button>
               </div>
               {/* 2/3 — pick the right song from the title-only search results */}
               <div className="flex-1 overflow-auto">
