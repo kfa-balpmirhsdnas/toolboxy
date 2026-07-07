@@ -160,6 +160,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [menuCreating, setMenuCreating] = useState(false)
   const [menuNewName, setMenuNewName] = useState('')
   const [starMenu, setStarMenu] = useState(false) // ★ bottom-bar: add the current track to a playlist
+  const [starTouched, setStarTouched] = useState(false) // did the user tap a row? (cancels the auto-favorite)
   const [lyricsLines, setLyricsLines] = useState<{ t: number; text: string }[] | null>(null) // time-synced lyrics
 
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -474,6 +475,17 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     setMenuNewName(''); setMenuCreating(false)
   }
   const closeStar = () => { setStarMenu(false); setMenuCreating(false); setMenuNewName('') }
+  // ★ popup: if the user opens it and doesn't pick anything within 5s, default to 즐겨찾기 and close.
+  useEffect(() => {
+    if (!starMenu || starTouched || !curFile) return
+    const id = setTimeout(() => {
+      const key = curFile.name + '|' + curFile.size
+      if (!saved.has(key)) toggleSaved(key, curFile) // add to favorites (never un-favorite)
+      closeStar()
+    }, 5000)
+    return () => clearTimeout(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [starMenu, starTouched, curFile, saved])
   // Long-press a track → open the "add to group" popup. The play click is suppressed by measuring how
   // long the press lasted (a held press ≥ 450ms is a long-press, not a tap) — robust to event ordering.
   const startPress = (h: { name: string; size: number; file: File | null }) => () => {
@@ -799,7 +811,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   {sleepMin > 0 && <span className="absolute top-1 right-1/2 translate-x-[24px] text-[9px] font-mono font-bold tabular-nums leading-none">{Math.floor(sleepLeft / 60)}:{String(sleepLeft % 60).padStart(2, '0')}</span>}
                 </button>
                 {/* ★ — add the CURRENT track to a playlist (opens the popup; disabled when nothing loaded) */}
-                <button onClick={() => setStarMenu(true)} disabled={!curFile} aria-label={t('mpl_addto_pl')} title={t('mpl_addto_pl')} className="flex-1 inline-flex items-center justify-center py-3.5 border-l border-white/15 active:opacity-80 transition hover:bg-white/10 disabled:opacity-40">
+                <button onClick={() => { setStarTouched(false); setStarMenu(true) }} disabled={!curFile} aria-label={t('mpl_addto_pl')} title={t('mpl_addto_pl')} className="flex-1 inline-flex items-center justify-center py-3.5 border-l border-white/15 active:opacity-80 transition hover:bg-white/10 disabled:opacity-40">
                   <svg viewBox="0 0 24 24" fill={curFile && saved.has(curFile.name + '|' + curFile.size) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>
                 </button>
               </div>
@@ -1057,7 +1069,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   {[{ id: 'fav', name: t('mpl_fav') }, ...groups].map((g) => {
                     const member = (g.id === 'fav' ? saved.has(curKey) : (groups.find((x) => x.id === g.id)?.keys.includes(curKey) ?? false))
                     return (
-                      <button key={g.id} onClick={() => inGroup(g.id, curKey, curFile)} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50">
+                      <button key={g.id} onClick={() => { setStarTouched(true); inGroup(g.id, curKey, curFile) }} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50">
                         <span className={'w-5 h-5 shrink-0 rounded border inline-flex items-center justify-center ' + (member ? 'bg-brand-600 border-brand-600 text-white' : 'border-gray-300')}>{member && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3"><path d="M20 6 9 17l-5-5" /></svg>}</span>
                         {g.id === 'fav'
                           ? <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 shrink-0 text-amber-500"><path d="M12 17.3 6.2 20l1.1-6.4L2.6 9l6.4-.9L12 2.3l3 5.8 6.4.9-4.7 4.6 1.1 6.4z" /></svg>
@@ -1075,7 +1087,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                       <button onClick={createForCurrent} className="px-3 py-2 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700">{t('mpl_create')}</button>
                     </div>
                   ) : (
-                    <button onClick={() => setMenuCreating(true)} className="w-full inline-flex items-center justify-center gap-1.5 py-2 text-sm font-semibold text-brand-600 hover:bg-brand-50 rounded-lg"><ToolIcon name="plus" className="w-4 h-4" />{t('mpl_newlist')}</button>
+                    <button onClick={() => { setStarTouched(true); setMenuCreating(true) }} className="w-full inline-flex items-center justify-center gap-1.5 py-2 text-sm font-semibold text-brand-600 hover:bg-brand-50 rounded-lg"><ToolIcon name="plus" className="w-4 h-4" />{t('mpl_newlist')}</button>
                   )}
                 </div>
               </div>
