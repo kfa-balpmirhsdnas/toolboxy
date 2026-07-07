@@ -3829,6 +3829,7 @@
     "mpl_addto_pl": "Add to playlist",
     "mpl_clear_list": "Clear list + playback cache",
     "mpl_autosave_opt": "Auto-save tracks (replay after refresh)",
+    "mpl_norm_opt": "Auto volume normalization (even loudness)",
     "mpl_storage": "Storage used: {used} / {total}",
     "mpl_drop_cache": "Clear playback cache (keep list)",
     "mpl_drop_confirm": "Clear the cached audio? The list stays, but you'll need to re-open the folder to play.",

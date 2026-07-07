@@ -9,6 +9,7 @@ import { trackToolUsed } from '@/lib/gtag'
 import { mhList, mhPutMeta, mhPutManyMeta, mhSave, mhSetBlob, mhDelete, mhClear, mhAutoSave, mhAutoSaveMany, mhDropBlobs, mhStorageUsage } from '@/lib/tools/musicHistory'
 import { readId3 } from '@/lib/tools/id3'
 import { fetchLyrics, cleanForLyrics } from '@/lib/tools/lyrics'
+import { measureRms, gainForRms } from '@/lib/tools/loudness'
 
 const tool = getToolBySlug('music-player')!
 const AUDIO_RE = /\.(mp3|m4a|aac|flac|ogg|oga|wav|opus|weba|wma|3gp|amr|mid)$/i
@@ -79,6 +80,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const autoSaveRef = useRef(true)
   useEffect(() => { autoSaveRef.current = autoSave }, [autoSave])
   const [usage, setUsage] = useState<{ usage: number; quota: number } | null>(null) // storage readout for settings
+  const [normalize, setNormalize] = useState(true) // volume auto-normalization (downward, via audio.volume; default on)
+  const gainRef = useRef<Record<string, number>>({}) // per-track key → normalization gain (≤1), cached
+  const curGainRef = useRef(1) // gain currently applied to the playing track
+  const volumeRef = useRef(1) // latest master volume (avoids stale closures when applying gain)
   const [lyricsOn, setLyricsOn] = useState(true) // look up lyrics for the current track (default on)
   const [lyrics, setLyrics] = useState<string | null>(null) // resolved lyrics text
   const [lyricsStatus, setLyricsStatus] = useState<'idle' | 'loading' | 'done'>('idle') // searching / found-or-not
@@ -96,8 +101,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       setAlbumArt(localStorage.getItem('mp_art_v1') !== '0') // default on
       setLyricsOn(localStorage.getItem('mp_lyrics_v1') !== '0') // default on
       setAutoSave(localStorage.getItem('mp_autosave_v1') !== '0') // default on
+      setNormalize(localStorage.getItem('mp_norm_v1') !== '0') // default on
+      const g = localStorage.getItem('mp_gain_v1'); if (g) gainRef.current = JSON.parse(g)
     } catch { /* ignore */ }
   }, [])
+  const toggleNormalize = () => setNormalize((v) => { const n = !v; try { localStorage.setItem('mp_norm_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleAutoSave = () => setAutoSave((v) => { const n = !v; try { localStorage.setItem('mp_autosave_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleEq = () => setEqEnabled((v) => { const n = !v; try { localStorage.setItem('mp_eq_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleDark = () => setDarkMode((v) => { const n = !v; try { localStorage.setItem('mp_dark_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
@@ -373,7 +381,38 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const togglePlay = () => { const a = media(); if (!a || !url) return; if (a.paused) { if (eqEnabled) { setupEqGraph(); audioCtxRef.current?.resume?.() } a.play().catch(() => {}) } else a.pause() }
   const seekTo = (time: number) => { const a = media(); if (a) a.currentTime = time }
   const seekBy = (d: number) => { const a = media(); if (a) a.currentTime = Math.max(0, Math.min(a.duration || a.currentTime, a.currentTime + d)) }
-  const setVol = (v: number) => { const a = media(); if (a) a.volume = v; setVolume(v) }
+  // Effective element volume = master volume × the track's normalization gain (≤1).
+  const applyVol = () => { const a = media(); if (a) a.volume = volumeRef.current * curGainRef.current }
+  const setVol = (v: number) => { volumeRef.current = v; setVolume(v); const a = media(); if (a) a.volume = v * curGainRef.current }
+  useEffect(() => { volumeRef.current = volume }, [volume])
+  // Volume normalization: apply the current track's cached gain (measuring it if needed), then
+  // pre-analyze the NEXT track in the background so its gain is ready before it plays.
+  useEffect(() => {
+    const key = curFile ? curFile.name + '|' + curFile.size : ''
+    curGainRef.current = normalize && key ? (gainRef.current[key] ?? 1) : 1
+    applyVol()
+    if (!normalize || !curFile) return
+    let alive = true
+    const ac = new AbortController()
+    const analyze = async (f: File | null | undefined) => {
+      if (!f) return
+      const k = f.name + '|' + f.size
+      if (gainRef.current[k] != null) return // measured once, then cached forever
+      const rms = await measureRms(f, ac.signal)
+      if (!alive || rms == null) return
+      gainRef.current[k] = gainForRms(rms)
+      try { localStorage.setItem('mp_gain_v1', JSON.stringify(gainRef.current)) } catch { /* ignore */ }
+      if (curFile && curFile.name + '|' + curFile.size === k) { curGainRef.current = gainRef.current[k]; applyVol() }
+    }
+    analyze(curFile).then(() => {
+      if (!alive) return
+      const idx = history.findIndex((h) => curFile && h.name === curFile.name && h.size === curFile.size)
+      const next = (idx >= 0 ? history.slice(idx + 1) : history).find((h) => h.file)
+      analyze(next?.file)
+    })
+    return () => { alive = false; ac.abort() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curFile, normalize])
 
   // apply speed / volume / loop to the element
   useEffect(() => { const a = audioRef.current; if (a) a.playbackRate = speed }, [speed, url])
@@ -613,7 +652,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <audio ref={audioRef} src={url || undefined} preload="metadata"
           onLoadedMetadata={(e) => {
-            const a = e.currentTarget; setDur(a.duration); a.playbackRate = speed; a.volume = volume; a.loop = repeatMode === 'one'
+            const a = e.currentTarget; setDur(a.duration); a.playbackRate = speed; a.volume = volume * curGainRef.current; a.loop = repeatMode === 'one'
             if (curFile && a.duration > 0 && isFinite(a.duration)) { const k = curFile.name + '|' + curFile.size; durLoadedRef.current.add(k); setDurs((p) => ({ ...p, [k]: a.duration })) }
             if (resumePosRef.current > 1 && a.duration && resumePosRef.current < a.duration - 2) { try { a.currentTime = resumePosRef.current } catch { /* ignore */ } }
             resumePosRef.current = 0
@@ -1036,7 +1075,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 <button onClick={() => setShowSettings(false)} aria-label="close" className="p-1 -mr-1 text-gray-400 hover:text-gray-600"><ToolIcon name="x" className="w-4 h-4" /></button>
               </div>
               <div className="divide-y divide-gray-100">
-                {([[t('mpl_autosave_opt'), autoSave, toggleAutoSave], [t('mpl_eq_opt'), eqEnabled, toggleEq], [t('mpl_dark_opt'), darkMode, toggleDark], [t('mpl_art_opt'), albumArt, toggleArt], [t('mpl_lyrics_opt'), lyricsOn, toggleLyrics]] as [string, boolean, () => void][]).map(([label, on, toggle], i) => (
+                {([[t('mpl_autosave_opt'), autoSave, toggleAutoSave], [t('mpl_norm_opt'), normalize, toggleNormalize], [t('mpl_eq_opt'), eqEnabled, toggleEq], [t('mpl_dark_opt'), darkMode, toggleDark], [t('mpl_art_opt'), albumArt, toggleArt], [t('mpl_lyrics_opt'), lyricsOn, toggleLyrics]] as [string, boolean, () => void][]).map(([label, on, toggle], i) => (
                   <label key={i} className="flex items-center gap-3 px-4 py-3.5 cursor-pointer">
                     <span className="flex-1 min-w-0 text-sm text-gray-800">{label}</span>
                     <button onClick={toggle} role="switch" aria-checked={on} aria-label={label} className={'relative shrink-0 w-11 h-6 rounded-full transition ' + (on ? 'bg-brand-600' : 'bg-gray-300')}>
