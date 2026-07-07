@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
@@ -8,6 +8,8 @@ import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
 
 const tool = getToolBySlug('image-to-pdf')!
+
+type Item = { id: string; file: File; url: string }
 
 function toPngBytes(file: File): Promise<{ bytes: Uint8Array; w: number; h: number }> {
   return new Promise((resolve, reject) => {
@@ -28,25 +30,70 @@ function toPngBytes(file: File): Promise<{ bytes: Uint8Array; w: number; h: numb
   })
 }
 
+const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36)
+
 export default function ImageToPdfPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
-  const [files, setFiles] = useState<File[]>([])
+  const [items, setItems] = useState<Item[]>([])
   const [loading, setLoading] = useState(false)
+  const [sort, setSort] = useState<{ by: 'name' | 'date'; dir: 1 | -1 } | null>(null) // current sort (null = manual order)
+  const [dragId, setDragId] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const itemsRef = useRef<Item[]>([])
+  itemsRef.current = items
+  // long-press → drag: so a normal touch still scrolls the page
+  const pressRef = useRef<{ id: string; x: number; y: number; timer: ReturnType<typeof setTimeout> | null; active: boolean } | null>(null)
 
   function add(list: FileList | null) {
     if (!list) return
-    setFiles((f) => [...f, ...Array.from(list).filter((x) => x.type.startsWith('image/'))])
+    const imgs = Array.from(list).filter((x) => x.type.startsWith('image/')).map((f) => ({ id: uid(), file: f, url: URL.createObjectURL(f) }))
+    if (!imgs.length) return
+    setItems((prev) => [...prev, ...imgs]); setSort(null)
     trackToolUsed('image-to-pdf')
   }
+  function remove(id: string) {
+    setItems((prev) => { const it = prev.find((x) => x.id === id); if (it) URL.revokeObjectURL(it.url); return prev.filter((x) => x.id !== id) })
+  }
+  useEffect(() => () => { itemsRef.current.forEach((it) => URL.revokeObjectURL(it.url)) }, []) // revoke all on unmount
+
+  // Sort by name or date; clicking the active kind again flips the direction.
+  function applySort(by: 'name' | 'date') {
+    const dir: 1 | -1 = sort && sort.by === by ? (sort.dir === 1 ? -1 : 1) : 1
+    setSort({ by, dir })
+    setItems((prev) => [...prev].sort((a, b) => dir * (by === 'name'
+      ? a.file.name.localeCompare(b.file.name, undefined, { numeric: true, sensitivity: 'base' })
+      : a.file.lastModified - b.file.lastModified)))
+  }
+
+  // ---- drag-to-reorder (pointer events: works on touch + mouse) ----
+  const onPointerDown = (id: string) => (e: React.PointerEvent) => {
+    const timer = setTimeout(() => { if (pressRef.current) { pressRef.current.active = true; setDragId(id) } }, 280)
+    pressRef.current = { id, x: e.clientX, y: e.clientY, timer, active: false }
+  }
+  const onGridPointerMove = (e: React.PointerEvent) => {
+    const p = pressRef.current; if (!p) return
+    if (!p.active) { if (Math.hypot(e.clientX - p.x, e.clientY - p.y) > 12 && p.timer) { clearTimeout(p.timer); pressRef.current = null } return } // moved first → it's a scroll
+    e.preventDefault()
+    const over = (document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null)?.closest('[data-id]') as HTMLElement | null
+    const overId = over?.dataset.id
+    if (overId && overId !== p.id) {
+      setItems((prev) => {
+        const from = prev.findIndex((x) => x.id === p.id); const to = prev.findIndex((x) => x.id === overId)
+        if (from < 0 || to < 0) return prev
+        const n = [...prev]; const [m] = n.splice(from, 1); n.splice(to, 0, m); return n
+      })
+      setSort(null)
+    }
+  }
+  const endDrag = () => { const p = pressRef.current; if (p?.timer) clearTimeout(p.timer); pressRef.current = null; setDragId(null) }
 
   async function build() {
-    if (!files.length) return
+    if (!items.length) return
     setLoading(true)
     try {
       const { PDFDocument } = await import('pdf-lib')
       const pdf = await PDFDocument.create()
-      for (const file of files) {
+      for (const { file } of items) {
         const { bytes, w, h } = await toPngBytes(file)
         const png = await pdf.embedPng(bytes)
         const page = pdf.addPage([w, h])
@@ -62,6 +109,16 @@ export default function ImageToPdfPage({ params }: { params: { lang: string } })
     } finally {
       setLoading(false)
     }
+  }
+
+  const sortChip = (by: 'name' | 'date', label: string) => {
+    const active = sort?.by === by
+    return (
+      <button type="button" onClick={() => applySort(by)}
+        className={'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors ' + (active ? 'bg-brand-50 border-brand-300 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300')}>
+        {label}{active && <span className="leading-none">{sort!.dir === 1 ? '↑' : '↓'}</span>}
+      </button>
+    )
   }
 
   return (
@@ -80,20 +137,35 @@ export default function ImageToPdfPage({ params }: { params: { lang: string } })
           </div>
         </div>
 
-        {files.length > 0 && (
-          <div className="space-y-2">
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-              {files.map((f, i) => (
-                <div key={i} className="relative group">
-                  <img src={URL.createObjectURL(f)} alt={f.name} className="w-full h-16 object-cover rounded-lg border border-gray-200" />
-                  <button onClick={() => setFiles((fs) => fs.filter((_, j) => j !== i))}
-                    className="absolute -top-1.5 -right-1.5 bg-gray-800 text-white rounded-full w-5 h-5 text-xs opacity-0 group-hover:opacity-100 inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button>
+        {items.length > 0 && (
+          <div className="space-y-2.5">
+            {/* sort + reorder hint */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs text-gray-400 mr-0.5">{t('itp_sort')}</span>
+              {sortChip('name', t('itp_sort_name'))}
+              {sortChip('date', t('itp_sort_date'))}
+              <span className="ml-auto text-[11px] text-gray-400">{t('itp_reorder')}</span>
+            </div>
+
+            <div onPointerMove={onGridPointerMove} onPointerUp={endDrag} onPointerCancel={endDrag}
+              className={'grid grid-cols-4 sm:grid-cols-6 gap-2 ' + (dragId ? 'touch-none select-none' : '')}>
+              {items.map((it, i) => (
+                <div key={it.id} data-id={it.id} onPointerDown={onPointerDown(it.id)}
+                  className={'group relative rounded-lg ' + (dragId === it.id ? 'opacity-40 ring-2 ring-brand-400' : '') + (dragId ? '' : ' cursor-grab')}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={it.url} alt={it.file.name}
+                    className={'w-full h-16 object-cover rounded-lg border border-gray-200 bg-white transition-transform duration-150 origin-center ' + (dragId ? '' : 'group-hover:scale-[2.3] group-hover:z-30 group-hover:relative group-hover:shadow-2xl group-hover:border-brand-300')} />
+                  {/* page number */}
+                  <span className="absolute bottom-0.5 left-0.5 px-1 rounded bg-black/55 text-white text-[9px] font-bold leading-tight pointer-events-none">{i + 1}</span>
+                  <button onClick={() => remove(it.id)} onPointerDown={(e) => e.stopPropagation()}
+                    className="absolute -top-1.5 -right-1.5 z-20 bg-gray-800 text-white rounded-full w-5 h-5 text-xs opacity-0 group-hover:opacity-100 inline-flex items-center justify-center" aria-label="remove"><ToolIcon name="x" className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
+
             <button onClick={build} disabled={loading}
               className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-40 transition-colors">
-              {loading ? t('itp_building') : t('itp_create',{n:files.length})}
+              {loading ? t('itp_building') : t('itp_create', { n: items.length })}
             </button>
           </div>
         )}
