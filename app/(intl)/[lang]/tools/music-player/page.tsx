@@ -162,7 +162,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     setLyricsStatus('loading'); setLyricsStage(1)
     const ac = new AbortController()
     ;(async () => {
-      const got = await fetchLyrics(artist, title, dur, ac.signal) // (1/3) title + artist (with candidates)
+      // (1/3) title + artist (with candidates), capped at 9s so a slow/hung lrclib still advances to (2/3)
+      const s1 = new AbortController()
+      const onAbort = () => s1.abort(); ac.signal.addEventListener('abort', onAbort)
+      const got = await Promise.race([fetchLyrics(artist, title, dur, s1.signal), new Promise<null>((res) => setTimeout(() => res(null), 9000))])
+      s1.abort() // stop any stage-1 requests still in flight (hit found, timed out, or missed)
       if (ac.signal.aborted) return
       if (got) { setLyricsLines(got.synced); setLyrics(got.plain); setLyricsStatus('done'); return }
       setLyricsStage(2)

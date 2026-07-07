@@ -95,15 +95,29 @@ function putCached(key: string, val: LyricsResult): void {
 }
 
 const jsonFetch = async (url: string, signal?: AbortSignal): Promise<unknown> => { try { const r = await fetch(url, { signal }); return r.ok ? await r.json() : null } catch { return null } }
+const pickAny = (d: unknown): LyricsResult | null => Array.isArray(d) ? pick((d as LrcRow[]).find((x) => x.syncedLyrics) || (d as LrcRow[]).find((x) => x.plainLyrics) || (d as LrcRow[])[0]) : pick(d as LrcRow)
 
-// One artist attempt: exact /get (with duration), /get without duration, then fuzzy /search.
-async function searchOne(title: string, artist: string, duration?: number, signal?: AbortSignal): Promise<LyricsResult | null> {
-  if (!artist || !title) return null
+// Resolve with the FIRST task that yields lyrics, or null once all have finished. Runs them in
+// parallel so a slow lrclib doesn't make the whole thing serialize (that was pinning stage 1 at 30s+).
+function firstHit(tasks: Promise<LyricsResult | null>[]): Promise<LyricsResult | null> {
+  return new Promise((resolve) => {
+    let pending = tasks.length
+    if (!pending) { resolve(null); return }
+    let done = false
+    const settle = (r: LyricsResult | null) => { if (done) return; if (r) { done = true; resolve(r) } else if (--pending === 0) resolve(null) }
+    tasks.forEach((p) => p.then(settle, () => settle(null)))
+  })
+}
+
+// One artist attempt: exact /get (with duration), /get without duration, and fuzzy /search — all fired
+// in parallel, first hit wins.
+function searchOne(title: string, artist: string, duration?: number, signal?: AbortSignal): Promise<LyricsResult | null> {
+  if (!artist || !title) return Promise.resolve(null)
   const a = encodeURIComponent(artist), t = encodeURIComponent(title)
-  let got = pick(await jsonFetch(`${GET}?artist_name=${a}&track_name=${t}${duration && duration > 1 ? `&duration=${Math.round(duration)}` : ''}`, signal) as LrcRow)
-  if (!got && duration && duration > 1) got = pick(await jsonFetch(`${GET}?artist_name=${a}&track_name=${t}`, signal) as LrcRow)
-  if (!got) { const arr = await jsonFetch(`${SEARCH}?track_name=${t}&artist_name=${a}`, signal); if (Array.isArray(arr) && arr.length) got = pick((arr as LrcRow[]).find((x) => x.syncedLyrics) || (arr as LrcRow[]).find((x) => x.plainLyrics) || (arr as LrcRow[])[0]) }
-  return got
+  const urls = [`${GET}?artist_name=${a}&track_name=${t}${duration && duration > 1 ? `&duration=${Math.round(duration)}` : ''}`]
+  if (duration && duration > 1) urls.push(`${GET}?artist_name=${a}&track_name=${t}`)
+  urls.push(`${SEARCH}?track_name=${t}&artist_name=${a}`)
+  return firstHit(urls.map((u) => jsonFetch(u, signal).then(pickAny)))
 }
 
 // Persist a found result under the clean artist|title key (used when the user picks/edits manually).
@@ -121,12 +135,10 @@ export async function fetchLyrics(rawArtist: string, rawTitle: string, duration?
   const cached = await getCached(key)
   if (cached && (cached.synced || cached.plain)) return cached // DB hit → no network
   const cands = [...artistCandidates(rawArtist), primary].filter((v, i, arr) => v && arr.indexOf(v) === i).slice(0, 3)
-  for (const artist of cands) {
-    if (signal?.aborted) return null
-    const got = await searchOne(title, artist, duration, signal)
-    if (got) { putCached(key, got); return got }
-  }
-  return null
+  if (!cands.length) return null
+  const got = await firstHit(cands.map((c) => searchOne(title, c, duration, signal))) // all candidates in parallel
+  if (got) putCached(key, got)
+  return got
 }
 
 // Stage 2: title-only search → a list of candidate songs (with lyrics) for the user to pick from.
