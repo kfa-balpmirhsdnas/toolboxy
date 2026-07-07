@@ -110,11 +110,17 @@ export async function mhClear(): Promise<void> {
   try { store(await openDB(), 'readwrite').clear() } catch { /* ignore */ }
 }
 
-// ---- Auto-cache: keep the audio blob for every added/played track so the whole list replays after
-// a refresh. Bounded by the browser's own storage quota — on QuotaExceededError we stop (fail soft),
-// the metadata is still kept (the row survives, just dimmed). No manual byte budget = no extra reads.
-export async function mhAutoSave(meta: { id: string; name: string; size: number; type: string }, blob: Blob): Promise<void> {
+// Total cached-audio bytes (Blob.size is metadata — no bytes are read). `exclude` skips those ids.
+export async function cachedBytes(exclude?: Set<string>): Promise<number> {
+  try { const all = await mhList(); return all.reduce((s, it) => s + (it.blob && !(exclude && exclude.has(it.id)) ? (it.size || it.blob.size || 0) : 0), 0) } catch { return 0 }
+}
+
+// ---- Auto-cache: keep the audio blob for every added/played track so the whole list replays after a
+// refresh. Bounded by the browser's quota (QuotaExceededError → stop, keep metadata) AND, when set, a
+// user-chosen total cap in bytes (`cap`, 0 = unlimited). Over the cap → keep metadata only.
+export async function mhAutoSave(meta: { id: string; name: string; size: number; type: string }, blob: Blob, cap = 0): Promise<void> {
   if (blob.size > MH_AUTOSAVE_PERFILE || autoFull) { await mhPutMeta(meta); return }
+  if (cap > 0 && (await cachedBytes(new Set([meta.id]))) + blob.size > cap) { await mhPutMeta(meta); return } // over the user cap
   try {
     const db = await openDB()
     await new Promise<void>((res, rej) => {
@@ -126,13 +132,20 @@ export async function mhAutoSave(meta: { id: string; name: string; size: number;
 }
 
 // Batch auto-cache (e.g. a whole folder). Small chunks per transaction so a quota error only loses one
-// chunk (partial success is kept) and no single transaction gets huge.
-export async function mhAutoSaveMany(files: File[]): Promise<void> {
+// chunk (partial success is kept) and no single transaction gets huge. Stops at the user cap too.
+export async function mhAutoSaveMany(files: File[], cap = 0): Promise<void> {
   if (autoFull) return
+  const batch = new Set(files.map((f) => f.name + '|' + f.size))
+  let total = cap > 0 ? await cachedBytes(batch) : 0 // existing cached bytes, excluding this batch
   const CHUNK = 4
   for (let i = 0; i < files.length; i += CHUNK) {
     if (autoFull) break
-    const chunk = files.slice(i, i + CHUNK).filter((f) => f.size <= MH_AUTOSAVE_PERFILE)
+    const chunk: File[] = []
+    for (const f of files.slice(i, i + CHUNK)) {
+      if (f.size > MH_AUTOSAVE_PERFILE) continue
+      if (cap > 0 && total + f.size > cap) continue // over the user cap → leave metadata only
+      chunk.push(f); total += f.size
+    }
     if (!chunk.length) continue
     try {
       const db = await openDB()
@@ -161,8 +174,7 @@ export async function mhDropBlobs(): Promise<void> {
 // cleared. quota still comes from estimate().
 export async function mhStorageUsage(): Promise<{ usage: number; quota: number }> {
   try {
-    const all = await mhList()
-    const usage = all.reduce((s, it) => s + (it.blob ? (it.size || it.blob.size || 0) : 0), 0)
+    const usage = await cachedBytes()
     const nav = navigator as unknown as { storage?: { estimate?: () => Promise<{ quota?: number }> } }
     const e = await nav.storage?.estimate?.()
     return { usage, quota: e?.quota || 0 }

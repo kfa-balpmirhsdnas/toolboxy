@@ -79,6 +79,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [autoSave, setAutoSave] = useState(true) // cache added/played tracks so the list replays after refresh (default on)
   const autoSaveRef = useRef(true)
   useEffect(() => { autoSaveRef.current = autoSave }, [autoSave])
+  const [autoCap, setAutoCap] = useState(0) // auto-save total cap in bytes (0 = unlimited)
+  const autoCapRef = useRef(0)
+  useEffect(() => { autoCapRef.current = autoCap }, [autoCap])
+  const setAutoSaveCap = (bytes: number) => { setAutoCap(bytes); try { localStorage.setItem('mp_autocap_v1', String(bytes)) } catch { /* ignore */ } }
   const [usage, setUsage] = useState<{ usage: number; quota: number } | null>(null) // storage readout for settings
   const [normalize, setNormalize] = useState(true) // volume auto-normalization (downward, via audio.volume; default on)
   const gainRef = useRef<Record<string, number>>({}) // per-track key → normalization gain (≤1), cached
@@ -119,6 +123,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       const m = localStorage.getItem('mp_meta_v1'); if (m) setMetaOv(JSON.parse(m))
       const hl = localStorage.getItem('mp_haslyrics_v1'); if (hl) setHasLyrics(new Set(JSON.parse(hl)))
       const hc = localStorage.getItem('mp_hascover_v1'); if (hc) setHasCover(new Set(JSON.parse(hc)))
+      const cap = localStorage.getItem('mp_autocap_v1'); if (cap) setAutoCap(+cap || 0)
     } catch { /* ignore */ }
   }, [])
   // Save a per-track title/artist override (from the stage-3 edit); triggers a fresh lyrics search.
@@ -335,7 +340,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
         : [{ name: f.name, size: f.size, file: f }, ...h].slice(0, 999))
       const id = f.name + '|' + f.size
       const meta = { id, name: f.name, size: f.size, type: f.type }
-      if (savedRef.current.has(id)) mhSave(meta, f); else if (autoSaveRef.current) mhAutoSave(meta, f); else mhPutMeta(meta)
+      if (savedRef.current.has(id)) mhSave(meta, f); else if (autoSaveRef.current) mhAutoSave(meta, f, autoCapRef.current); else mhPutMeta(meta)
       trackToolUsed('music-player')
     } catch (e) { setNotice({ msg: `load: ${(e as Error)?.message || e}`, err: true }) }
   }, [])
@@ -657,7 +662,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     // isn't empty, its meta-only write lands last and clobbers the just-cached blob — so the 2nd folder
     // onward silently lost its cache. Chaining guarantees the blob write always lands last.
     const metas = files.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type }))
-    if (autoSaveRef.current) mhPutManyMeta(metas).then(() => mhAutoSaveMany(files)) // cache blobs so the whole list replays after refresh
+    if (autoSaveRef.current) mhPutManyMeta(metas).then(() => mhAutoSaveMany(files, autoCapRef.current)) // cache blobs so the whole list replays after refresh
     else mhPutManyMeta(metas)
     setRenderN(80) // only render the first window so a big folder doesn't freeze the UI
     load(files[0])
@@ -1177,8 +1182,16 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     </button>
                   </label>
                 ))}
-                {/* Storage used (whole origin) — helps the user understand the auto-save cache */}
-                {usage && usage.usage > 0 && <p className="px-4 py-2 text-xs text-gray-400">{t('mpl_storage', { used: fmtSize(usage.usage), total: usage.quota ? fmtSize(usage.quota) : '—' })}</p>}
+                {/* Cached-audio usage + adjustable auto-save cap */}
+                <div className="px-4 py-2 space-y-1.5">
+                  {usage && <p className="text-xs text-gray-400">{t('mpl_storage', { used: fmtSize(usage.usage), total: autoCap > 0 ? fmtSize(autoCap) : (usage.quota ? fmtSize(usage.quota) : '—') })}</p>}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[11px] text-gray-400 mr-0.5">{t('mpl_autocap')}</span>
+                    {([[0, t('mpl_cap_unlimited')], [512 * 1024 * 1024, '512MB'], [1024 * 1024 * 1024, '1GB'], [2 * 1024 * 1024 * 1024, '2GB']] as [number, string][]).map(([v, label]) => (
+                      <button key={v} onClick={() => setAutoSaveCap(v)} className={'px-2 h-6 rounded text-[11px] font-semibold transition ' + (autoCap === v ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')}>{label}</button>
+                    ))}
+                  </div>
+                </div>
                 {/* Drop cached audio but keep the list (rows dim, space freed) */}
                 <button onClick={() => { if (window.confirm(t('mpl_drop_confirm'))) { mhDropBlobs().then(() => mhStorageUsage().then(setUsage)); setHistory((h) => h.map((x) => (saved.has(x.name + '|' + x.size) ? x : { ...x, file: null }))) } }} className="w-full flex items-center gap-3 px-4 py-3.5 text-left text-sm text-gray-700 hover:bg-gray-50">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0"><path d="M21 12a9 9 0 1 1-6.2-8.5" /><path d="M21 3v6h-6" /></svg>{t('mpl_drop_cache')}

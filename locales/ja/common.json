@@ -4247,6 +4247,8 @@
     "mpl_autosave_opt": "曲を自動保存（更新後すぐ再生）",
     "mpl_norm_opt": "音量の自動正規化（曲間の音量を均一に）",
     "mpl_storage": "ストレージ使用量: {used} / {total}",
+    "mpl_autocap": "自動保存の上限",
+    "mpl_cap_unlimited": "無制限",
     "mpl_drop_cache": "再生キャッシュを消去（一覧は保持）",
     "mpl_drop_confirm": "キャッシュした音源を消去しますか？一覧は残りますが、再生には再度フォルダを開く必要があります。",
     "mpl_timer_done": "スリープタイマーで再生を停止しました",

@@ -3843,6 +3843,8 @@
     "mpl_autosave_opt": "Auto-save tracks (replay after refresh)",
     "mpl_norm_opt": "Auto volume normalization (even loudness)",
     "mpl_storage": "Storage used: {used} / {total}",
+    "mpl_autocap": "Auto-save cap",
+    "mpl_cap_unlimited": "Unlimited",
     "mpl_drop_cache": "Clear playback cache (keep list)",
     "mpl_drop_confirm": "Clear the cached audio? The list stays, but you'll need to re-open the folder to play.",
     "mpl_timer_done": "Sleep timer stopped playback",
