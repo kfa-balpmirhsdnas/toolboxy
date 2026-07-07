@@ -215,6 +215,23 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const groupListRef = useRef<HTMLDivElement>(null) // playlist song list — reorder container
   const cardRef = useRef<HTMLDivElement>(null) // now-playing card — scroll target on track click
   const playlistRef = useRef<HTMLDivElement>(null) // playlist card — scroll target for the list button
+  // Keep the now-playing track visible in the list below: scroll ITS container (not the page) so the
+  // row comes into view when it isn't already. Runs on track change / tab / group / window grow.
+  useEffect(() => {
+    if (!curFile) return
+    const key = curFile.name + '|' + curFile.size
+    for (const c of [listRef.current, groupListRef.current]) {
+      if (!c) continue
+      const row = Array.from(c.children).find((el) => (el as HTMLElement).dataset.key === key) as HTMLElement | undefined
+      if (!row) continue
+      const cr = c.getBoundingClientRect(), rr = row.getBoundingClientRect()
+      if (rr.top < cr.top || rr.bottom > cr.bottom) { // only if off-screen within the list
+        c.scrollTo({ top: Math.max(0, c.scrollTop + (rr.top - cr.top) - (c.clientHeight - row.clientHeight) / 2), behavior: 'smooth' })
+      }
+      break
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curFile, histTab, openGroup, renderN])
   const inputRef = useRef<HTMLInputElement>(null)
   const dirRef = useRef<HTMLInputElement>(null)
   const positionsRef = useRef<Record<string, number>>({})
@@ -1210,9 +1227,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                         <div key={h.id} className="flex items-center gap-2 px-4 py-2.5">
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-800 truncate">{h.title}</p>
-                            <p className="text-xs text-gray-400 truncate">
-                              {h.artist}{h.album ? ' · ' + h.album : ''}{h.duration ? ' · ' + fmt(h.duration) : ''}
-                              {h.result.synced && <span className="ml-1.5 text-[10px] font-bold text-brand-600 bg-brand-50 rounded px-1 py-0.5 align-middle">SYNC</span>}
+                            <p className="flex items-center gap-1 min-w-0 text-xs text-gray-400">
+                              <span className="truncate">{h.artist}{h.album ? ' · ' + h.album : ''}{h.duration ? ' · ' + fmt(h.duration) : ''}</span>
+                              {h.result.synced && <span className="shrink-0 text-[10px] font-bold text-brand-600 bg-brand-50 rounded px-1 py-0.5">SYNC</span>}
                             </p>
                           </div>
                           <button onClick={() => { setLyricsLines(h.result.synced); setLyrics(h.result.plain); setLyricsStatus('done'); cacheLyrics(dispArtist, dispTitle, h.result); setLyricsPicker(false) }} className="shrink-0 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">{t('mpl_lyrics_use')}</button>
