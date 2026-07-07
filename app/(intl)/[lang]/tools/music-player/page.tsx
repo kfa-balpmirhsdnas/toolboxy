@@ -311,8 +311,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const nameMeta = parseFileName(base)
   const ovr = curFile ? metaOv[curFile.name + '|' + curFile.size] : undefined
   const coverSrc = id3?.cover || artUrl
-  const dispTitle = ovr?.title || id3?.title || itTitle || nameMeta.title
-  const dispArtist = ovr?.artist || id3?.artist || itArtist || nameMeta.artist
+  // Strip lyric/cover markers ("(Lyrics)", "(COVER)"…) from the shown title too — the filename is
+  // already cleaned, but ID3/iTunes titles aren't. A user override is shown exactly as typed.
+  const cleanDisp = (s: string) => cleanForLyrics(s) || s
+  const dispTitle = ovr?.title || cleanDisp(id3?.title || itTitle || nameMeta.title)
+  const dispArtist = ovr?.artist || cleanDisp(id3?.artist || itArtist || nameMeta.artist)
   const activeLyric = lyricsLines ? lyricsLines.reduce((a, l, i) => (l.t <= cur + 0.25 ? i : a), -1) : -1 // current synced line
   const allCount = history.length
   const savedCount = history.filter((h) => saved.has(h.name + '|' + h.size)).length
@@ -1174,8 +1177,14 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               {/* 3/3 — edit the song's title/artist, save the override, and search with it */}
               <div className="p-3 border-b border-gray-100 space-y-2">
                 <p className="text-xs font-medium text-gray-400">{t('mpl_lyrics_edit')}</p>
-                <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder={t('mpl_title')} className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
-                <input value={editArtist} onChange={(e) => setEditArtist(e.target.value)} placeholder={t('mpl_artist')} className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                <div className="flex items-center gap-2">
+                  <span className="w-9 shrink-0 text-xs text-gray-500">{t('mpl_title')}</span>
+                  <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-9 shrink-0 text-xs text-gray-500">{t('mpl_artist')}</span>
+                  <input value={editArtist} onChange={(e) => setEditArtist(e.target.value)} className="flex-1 min-w-0 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400" />
+                </div>
                 <button onClick={() => { setTrackMeta(curFile.name + '|' + curFile.size, editTitle, editArtist); setLyricsPicker(false) }} disabled={!editTitle.trim()} className="w-full py-2 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-40">{t('mpl_lyrics_search_btn')}</button>
               </div>
               {/* 2/3 — pick the right song from the title-only search results */}
