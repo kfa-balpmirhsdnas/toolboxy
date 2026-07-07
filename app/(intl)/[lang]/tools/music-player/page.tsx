@@ -93,6 +93,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [metaOv, setMetaOv] = useState<Record<string, { title?: string; artist?: string }>>({}) // per-track title/artist overrides
   const [editTitle, setEditTitle] = useState('') // stage-3 edit inputs
   const [editArtist, setEditArtist] = useState('')
+  const [lyricsNonce, setLyricsNonce] = useState(0) // bump to re-run the lyrics search (manual refresh)
+  const forceLyricsRef = useRef(false) // next lyrics run should bypass the cache
+  const refreshLyrics = () => { forceLyricsRef.current = true; setLyricsNonce((n) => n + 1) }
   const [toast, setToast] = useState('') // transient message (e.g. sleep-timer stopped)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [searchOn, setSearchOn] = useState(false) // playlist search box open
@@ -160,12 +163,13 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     const title = (o?.title || id3?.title || '').trim() || fromName.title
     if (!title) return
     setLyricsStatus('loading'); setLyricsStage(1)
+    const force = forceLyricsRef.current; forceLyricsRef.current = false
     const ac = new AbortController()
     ;(async () => {
       // (1/3) title + artist (with candidates), capped at 9s so a slow/hung lrclib still advances to (2/3)
       const s1 = new AbortController()
       const onAbort = () => s1.abort(); ac.signal.addEventListener('abort', onAbort)
-      const got = await Promise.race([fetchLyrics(artist, title, dur, s1.signal), new Promise<null>((res) => setTimeout(() => res(null), 9000))])
+      const got = await Promise.race([fetchLyrics(artist, title, dur, s1.signal, force), new Promise<null>((res) => setTimeout(() => res(null), 9000))])
       s1.abort() // stop any stage-1 requests still in flight (hit found, timed out, or missed)
       if (ac.signal.aborted) return
       if (got) { setLyricsLines(got.synced); setLyrics(got.plain); setLyricsStatus('done'); return }
@@ -176,7 +180,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     })()
     return () => ac.abort()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [base, id3, lyricsOn, dur, metaOv])
+  }, [base, id3, lyricsOn, dur, metaOv, lyricsNonce])
   const [reorder, setReorder] = useState(false) // playlist reorder mode (drag handle per row)
   const [dragKey, setDragKey] = useState<string | null>(null) // row currently being dragged
   // ---- groups (the 리스트/플레이리스트 tab) ----
@@ -807,7 +811,13 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
               </div>{/* end padded content */}
               {/* gauge slot — ALWAYS reserved (fixed height, empty when closed) so opening a submenu never shifts the layout */}
               {(
-                <div className="h-20 flex flex-col justify-center overflow-hidden pb-1">
+                <div className="relative h-20 flex flex-col justify-center overflow-hidden pb-1">
+                  {/* 가사 새로고침 — force a fresh lyrics search (bypasses the cache) */}
+                  {panel === 'none' && lyricsStatus !== 'idle' && (
+                    <button onClick={refreshLyrics} aria-label={t('mpl_lyrics_refresh')} title={t('mpl_lyrics_refresh')} className="absolute top-0.5 right-2.5 z-10 p-1 text-white/45 hover:text-white active:scale-90 transition">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M21 12a9 9 0 1 1-6.2-8.5" /><path d="M21 3v6h-6" /></svg>
+                    </button>
+                  )}
                   {/* All three submenus share the speed-menu layout: slider + value on top, preset chips below. */}
                   {panel === 'vol' && (
                     <div className="px-5 text-white space-y-2">
@@ -848,9 +858,12 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   {panel === 'none' && lyricsStatus !== 'idle' && (
                     <div className="px-5 h-full flex flex-col justify-center text-center text-white select-none">
                       {lyricsLines ? (
-                        (activeLyric >= 0 ? [activeLyric - 1, activeLyric, activeLyric + 1] : [0, 1, 2]).map((idx, k) => {
+                        (activeLyric >= 0 ? [activeLyric - 1, activeLyric, activeLyric + 1] : [0, 1, 2]).map((idx) => {
                           const l = lyricsLines[idx]
-                          return <p key={k} className={'truncate h-6 leading-6 transition-all ' + (idx === activeLyric ? 'text-sm font-semibold' : 'text-xs text-white/40')}>{l ? (l.text || '♪') : ''}</p>
+                          // key by the actual line index (not the slot position) so switching tracks/lines
+                          // unmounts old lines cleanly instead of reusing an element mid-transition (which
+                          // left the old highlight stuck ~halfway faded).
+                          return <p key={idx} className={'truncate h-6 leading-6 transition-all ' + (idx === activeLyric ? 'text-sm font-semibold' : 'text-xs text-white/40')}>{l ? (l.text || '♪') : ''}</p>
                         })
                       ) : lyrics ? (
                         <div className="max-h-full overflow-auto whitespace-pre-wrap text-xs leading-5 text-white/70">{lyrics}</div>

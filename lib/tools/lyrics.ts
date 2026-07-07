@@ -126,14 +126,14 @@ export function cacheLyrics(rawArtist: string, rawTitle: string, val: LyricsResu
   if (key.length > 1) putCached(key, val)
 }
 
-// Stage 1: cache → try each artist candidate (title+artist) until one hits.
-export async function fetchLyrics(rawArtist: string, rawTitle: string, duration?: number, signal?: AbortSignal): Promise<LyricsResult | null> {
+// Stage 1: cache → try each artist candidate (title+artist) until one hits. `force` skips the cache
+// read (used by the manual "가사 새로고침"), but a fresh hit still overwrites the cache.
+export async function fetchLyrics(rawArtist: string, rawTitle: string, duration?: number, signal?: AbortSignal, force?: boolean): Promise<LyricsResult | null> {
   const title = cleanForLyrics(rawTitle)
   if (!title) return null
   const primary = cleanForLyrics(rawArtist)
   const key = (primary + '|' + title).toLowerCase()
-  const cached = await getCached(key)
-  if (cached && (cached.synced || cached.plain)) return cached // DB hit → no network
+  if (!force) { const cached = await getCached(key); if (cached && (cached.synced || cached.plain)) return cached } // DB hit → no network
   const cands = [...artistCandidates(rawArtist), primary].filter((v, i, arr) => v && arr.indexOf(v) === i).slice(0, 3)
   if (!cands.length) return null
   const got = await firstHit(cands.map((c) => searchOne(title, c, duration, signal))) // all candidates in parallel
