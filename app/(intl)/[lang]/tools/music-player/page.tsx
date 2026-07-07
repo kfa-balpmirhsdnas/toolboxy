@@ -813,7 +813,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
 
   return (
     <ToolLayout tool={tool} lang={lang}>
-      <div className="space-y-4 max-w-lg mx-auto">
+      <div className="space-y-4 max-w-lg lg:max-w-none mx-auto">
         {/* accept="audio/*" is the clean audio filter on desktop / Chrome. On Samsung Internet ANY
             audio-flavoured accept opens a capture chooser (camera/recorder) rather than a file browser,
             so those users use 폴더 열기 (webkitdirectory), which reliably opens the real file browser. */}
@@ -868,10 +868,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
 
         {(
           /* The player is the default screen (even when empty); the play button opens the folder.
-             space-y-px keeps the player and the list box ~1px apart. */
-          <div className="space-y-px">
+             space-y-px keeps the player and the list box ~1px apart on mobile; on desktop (lg) the
+             two become side-by-side columns — playlist LEFT, player RIGHT. */
+          <div className="space-y-px lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4 lg:items-start">
             {/* ---- Now-playing card ---- */}
-            <div ref={cardRef} className={'rounded-2xl text-white shadow-sm overflow-hidden scroll-mt-16 bg-gradient-to-b ' + (darkMode ? 'from-gray-800 to-black' : 'from-brand-500 to-brand-700')}>
+            <div ref={cardRef} className={'lg:order-2 rounded-2xl text-white shadow-sm overflow-hidden scroll-mt-16 bg-gradient-to-b ' + (darkMode ? 'from-gray-800 to-black' : 'from-brand-500 to-brand-700')}>
               <div className="p-5">
               {/* Album art is a fixed height and the gauge slot below is always reserved, so opening a
                   submenu never resizes anything (no layout shake). */}
@@ -1069,7 +1070,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
             </div>
 
             {/* ---- Playlist (standard list style; dark theme follows the player) ---- */}
-            <div ref={playlistRef} className={'rounded-2xl border overflow-hidden scroll-mt-16 ' + (darkMode ? 'bg-gray-900 border-gray-700' : 'border-gray-200')}>
+            <div ref={playlistRef} className={'lg:order-1 rounded-2xl border overflow-hidden scroll-mt-16 ' + (darkMode ? 'bg-gray-900 border-gray-700' : 'border-gray-200')}>
               {selMode ? (
                 /* ---- multi-select action bar (replaces the tab header while selecting) ---- */
                 <div className={'flex items-center gap-1 px-1.5 py-1.5 border-b ' + (darkMode ? 'bg-gray-800 border-gray-700' : 'bg-brand-50/70 border-gray-200')}>
@@ -1118,7 +1119,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 shown.length === 0 ? (
                   <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
                 ) : (
-                  <div ref={listRef} onScroll={onListScroll} className={'max-h-[300px] overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
+                  <div ref={listRef} onScroll={onListScroll} className={'max-h-[300px] lg:max-h-[560px] overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
                     {shown.slice(0, renderN).map((h) => {
                       const key = h.name + '|' + h.size
                       const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
@@ -1219,7 +1220,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     groupSongs(openGroup).length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mpl_group_empty')}</p>
                     ) : (
-                      <div ref={groupListRef} onScroll={onListScroll} className={'max-h-[300px] overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
+                      <div ref={groupListRef} onScroll={onListScroll} className={'max-h-[300px] lg:max-h-[560px] overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
                         {groupSongs(openGroup).slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                           return (
