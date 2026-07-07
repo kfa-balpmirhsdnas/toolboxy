@@ -8,6 +8,7 @@ import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 import { mhList, mhPutMeta, mhPutManyMeta, mhSave, mhSetBlob, mhDelete, mhClear, mhAutoSave, mhAutoSaveMany, mhDropBlobs, mhStorageUsage } from '@/lib/tools/musicHistory'
 import { readId3 } from '@/lib/tools/id3'
+import { fetchLyrics, cleanForLyrics } from '@/lib/tools/lyrics'
 
 const tool = getToolBySlug('music-player')!
 const AUDIO_RE = /\.(mp3|m4a|aac|flac|ogg|oga|wav|opus|weba|wma|3gp|amr|mid)$/i
@@ -34,10 +35,13 @@ function parseFileName(raw: string): { artist: string; title: string } {
   s = s.replace(/^\s*\d{1,3}\s*[.)\-–—]\s+/, '') // leading track number: "05.", "005 - ", "12)"
   s = s.replace(/\s+/g, ' ').trim()
   const parts = s.split(/\s+[-–—·|~]\s+/).map((p) => p.trim()).filter(Boolean)
-  if (parts.length < 2) return { artist: '', title: s }
+  // Also strip lyric/cover markers ("가사", "lyrics", "(COVER)", "Official Lyrics", "| 가사/lyrics"…);
+  // keep the original if a chunk is nothing but markers, so we never end up empty.
+  const clean = (x: string) => cleanForLyrics(x) || x
+  if (parts.length < 2) return { artist: '', title: clean(s) }
   const titleParen = /\([^)]*\b(?:remix|inst\.?|instrumental|live|ver\.?|version|acoustic|edit|remaster|mix|feat\.?|ft\.?|cover|ost|prod\.?)\b[^)]*\)/i
-  if (parts.length === 2 && titleParen.test(parts[0]) && !titleParen.test(parts[1])) return { artist: parts[1], title: parts[0] }
-  return { artist: parts[0], title: parts.slice(1).join(' - ') }
+  if (parts.length === 2 && titleParen.test(parts[0]) && !titleParen.test(parts[1])) return { artist: clean(parts[1]), title: clean(parts[0]) }
+  return { artist: clean(parts[0]), title: clean(parts.slice(1).join(' - ')) }
 }
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2]
 const VOLUMES = [0, 0.25, 0.5, 0.75, 1]
@@ -127,47 +131,21 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       .catch(() => { /* ignore */ })
     return () => { alive = false }
   }, [base, albumArt, id3])
-  // Lyrics: prefer ID3 artist/title, else split "Artist - Title". lrclib.net returns TIME-SYNCED
-  // lyrics (LRC) when available (→ highlight the current line) and plain lyrics otherwise.
+  // Lyrics via lib/tools/lyrics (lrclib.net): prefer ID3 artist/title, else the filename heuristic.
+  // The module strips lyric/cover markers before querying and returns synced lines or plain text.
   useEffect(() => {
     setLyrics(null); setLyricsLines(null)
     if (!lyricsOn) return
-    let artist = (id3?.artist || '').trim(), title = (id3?.title || '').trim()
-    if (!artist || !title) {
-      const m = (base || '').replace(/[_]+/g, ' ').replace(/\s+/g, ' ').trim().split(/\s+[-–—]\s+/)
-      if (m.length >= 2) { artist = m[0].trim(); title = m.slice(1).join(' - ').replace(/\b(official|audio|lyrics?|mv|hd|4k)\b/gi, '').trim() }
-    }
+    const fromName = parseFileName(base)
+    const artist = (id3?.artist || '').trim() || fromName.artist
+    const title = (id3?.title || '').trim() || fromName.title
     if (!artist || !title) return
-    let alive = true
-    const apply = (d: { syncedLyrics?: string; plainLyrics?: string } | null | undefined): boolean => {
-      if (!alive || !d) return false
-      if (d.syncedLyrics) {
-        const lines: { t: number; text: string }[] = []
-        const re = /\[(\d+):(\d+(?:\.\d+)?)\]/g
-        for (const ln of String(d.syncedLyrics).split('\n')) {
-          const times: number[] = []; let tg: RegExpExecArray | null
-          re.lastIndex = 0
-          while ((tg = re.exec(ln)) !== null) times.push(parseInt(tg[1]) * 60 + parseFloat(tg[2]))
-          if (!times.length) continue
-          const text = ln.replace(/\[[^\]]*\]/g, '').trim()
-          for (const tt of times) lines.push({ t: tt, text })
-        }
-        if (lines.length) { setLyricsLines(lines.sort((a, b) => a.t - b.t)); return true }
-      }
-      if (d.plainLyrics) { setLyrics(String(d.plainLyrics).trim()); return true }
-      return false
-    }
-    // 1) exact lrclib /get, then 2) fuzzy /search fallback (helps CJK titles the exact match misses).
-    fetch(`https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}` + (dur > 1 ? `&duration=${Math.round(dur)}` : ''))
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (apply(d)) return
-        return fetch(`https://lrclib.net/api/search?track_name=${encodeURIComponent(title)}&artist_name=${encodeURIComponent(artist)}`)
-          .then((r) => (r.ok ? r.json() : null))
-          .then((arr: { syncedLyrics?: string; plainLyrics?: string }[] | null) => { if (alive && Array.isArray(arr) && arr.length) apply(arr.find((x) => x.syncedLyrics) || arr.find((x) => x.plainLyrics) || arr[0]) })
-      })
-      .catch(() => { /* ignore */ })
-    return () => { alive = false }
+    const ac = new AbortController()
+    fetchLyrics(artist, title, dur, ac.signal).then((res) => {
+      if (ac.signal.aborted || !res) return
+      setLyricsLines(res.synced); setLyrics(res.plain)
+    })
+    return () => ac.abort()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [base, id3, lyricsOn, dur])
   const [reorder, setReorder] = useState(false) // playlist reorder mode (drag handle per row)
