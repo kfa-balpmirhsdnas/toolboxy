@@ -24,15 +24,15 @@ export function artistCandidates(raw: string): string[] {
   return out.slice(0, 3)
 }
 
-// "배성식 오무이 '내일도 인생'" — when a filename ENDS with a quoted run, the quoted part is almost
-// always the title and the text before it the artist(s). Used as a last-resort re-search after every
-// normal attempt failed. Requires both sides to be non-empty; straight/curly/CJK quotes all count.
+// "배성식 오무이 '내일도 인생'", "WOODZ 'NA NA NA' [Color Coded Eng] ｜ ShadowByYoongi" — a quoted
+// run with text in front of it: the quoted part is the title, the text before it the artist(s), and
+// EVERYTHING after the closing quote (bracket junk, "｜ channel" tails…) is ignored. The opening
+// quote must follow whitespace so apostrophes inside words ("Don't") can never trigger a split.
 export function quotedSplit(raw: string): { artist: string; title: string } | null {
   const s = cleanForLyrics(raw)
-  // Bracketed tails after the closing quote — "(Live)", "[MV]" — are allowed and ignored.
-  const m = s.match(/^(.+?)\s*['‘’"“”「『]([^'‘’"“”」』]{1,80})['‘’"“”」』]\s*(?:[[(（【][^)\]）】]*[)\]）】]\s*)*$/)
+  const m = s.match(/^(.+?)\s['‘’"“”「『]([^'‘’"“”」』]{1,80})['‘’"“”」』](?=[\s\])）】,.!?]|$)/)
   if (!m) return null
-  const artist = m[1].trim()
+  const artist = m[1].replace(/[\s\-–—·|~｜]+$/, '').trim() // drop a trailing separator ("아이유 - '…'")
   const title = m[2].trim()
   return artist && title ? { artist, title } : null
 }
