@@ -98,6 +98,8 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const refreshLyrics = () => { forceLyricsRef.current = true; setLyricsNonce((n) => n + 1) }
   const [hasLyrics, setHasLyrics] = useState<Set<string>>(new Set()) // track keys whose lyrics are cached → "L" in the list
   const markHasLyrics = (key: string) => setHasLyrics((prev) => { if (!key || prev.has(key)) return prev; const n = new Set(prev); n.add(key); try { localStorage.setItem('mp_haslyrics_v1', JSON.stringify(Array.from(n))) } catch { /* ignore */ } return n })
+  const [hasCover, setHasCover] = useState<Set<string>>(new Set()) // track keys that have cover art → "C" in the list
+  const markHasCover = (key: string) => setHasCover((prev) => { if (!key || prev.has(key)) return prev; const n = new Set(prev); n.add(key); try { localStorage.setItem('mp_hascover_v1', JSON.stringify(Array.from(n))) } catch { /* ignore */ } return n })
   const [toast, setToast] = useState('') // transient message (e.g. sleep-timer stopped)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [searchOn, setSearchOn] = useState(false) // playlist search box open
@@ -116,6 +118,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       const g = localStorage.getItem('mp_gain_v1'); if (g) gainRef.current = JSON.parse(g)
       const m = localStorage.getItem('mp_meta_v1'); if (m) setMetaOv(JSON.parse(m))
       const hl = localStorage.getItem('mp_haslyrics_v1'); if (hl) setHasLyrics(new Set(JSON.parse(hl)))
+      const hc = localStorage.getItem('mp_hascover_v1'); if (hc) setHasCover(new Set(JSON.parse(hc)))
     } catch { /* ignore */ }
   }, [])
   // Save a per-track title/artist override (from the stage-3 edit); triggers a fresh lyrics search.
@@ -341,6 +344,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const cleanDisp = (s: string) => cleanForLyrics(s) || s
   const dispTitle = ovr?.title || cleanDisp(id3?.title || itTitle || nameMeta.title)
   const dispArtist = ovr?.artist || cleanDisp(id3?.artist || itArtist || nameMeta.artist)
+  // Remember tracks that have cover art (ID3 or fetched) so the list can show a "C" badge.
+  useEffect(() => { if (curFile && coverSrc) markHasCover(curFile.name + '|' + curFile.size)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curFile, coverSrc])
   const activeLyric = lyricsLines ? lyricsLines.reduce((a, l, i) => (l.t <= cur + 0.25 ? i : a), -1) : -1 // current synced line
   const allCount = history.length
   const savedCount = history.filter((h) => saved.has(h.name + '|' + h.size)).length
@@ -596,7 +603,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
         </span>
         <span className="min-w-0">
           <span className={'block truncate text-sm ' + (isCur ? 'font-semibold text-brand-500' : darkMode ? 'text-gray-200' : 'text-gray-800') + (h.file ? '' : ' opacity-50')}>{h.name.replace(/\.[^.]+$/, '')}</span>
-          <span className="block text-[11px] text-gray-400 tabular-nums">{h.file ? <>{durs[key] ? <span className="text-gray-500">{fmt(durs[key])}</span> : null}{durs[key] ? ' · ' : ''}{fmtSize(h.size)}{hasLyrics.has(key) && <span className="ml-1 font-bold text-brand-500" title={t('mpl_lyrics')}>L</span>}</> : t('mp_reopen')}</span>
+          <span className="block text-[11px] text-gray-400 tabular-nums">{h.file ? <>{durs[key] ? <span className="text-gray-500">{fmt(durs[key])}</span> : null}{durs[key] ? ' · ' : ''}{fmtSize(h.size)}
+            {hasCover.has(key) && <span className="ml-1 font-bold text-brand-500" title={t('mpl_art_opt')}>C</span>}
+            {hasLyrics.has(key) && <span className="ml-0.5 font-bold text-brand-500" title={t('mpl_lyrics')}>L</span>}
+            {(saved.has(key) || groups.some((g) => g.keys.includes(key))) && <span className="ml-0.5 font-bold text-brand-500" title={t('mpl_playlist')}>P</span>}</> : t('mp_reopen')}</span>
         </span>
       </>
     )
