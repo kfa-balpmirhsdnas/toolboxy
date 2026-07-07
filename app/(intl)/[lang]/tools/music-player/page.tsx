@@ -6,7 +6,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
-import { mhList, mhPutMeta, mhPutManyMeta, mhSave, mhSetBlob, mhDelete, mhClear, mhAutoSave, mhAutoSaveMany, mhDropBlobs, mhStorageUsage, mhGetOverrides, mhSetOverride } from '@/lib/tools/musicHistory'
+import { mhList, mhPutMeta, mhPutManyMeta, mhSave, mhSetBlob, mhDelete, mhClear, mhAutoSave, mhAutoSaveMany, mhDropBlobs, mhStorageUsage } from '@/lib/tools/musicHistory'
 import { readId3 } from '@/lib/tools/id3'
 import { fetchLyrics, cleanForLyrics, searchByTitle, cacheLyrics, type LyricsHit } from '@/lib/tools/lyrics'
 import { measureRms, gainForRms } from '@/lib/tools/loudness'
@@ -120,16 +120,14 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       setAutoSave(localStorage.getItem('mp_autosave_v1') !== '0') // default on
       setNormalize(localStorage.getItem('mp_norm_v1') !== '0') // default on
       const g = localStorage.getItem('mp_gain_v1'); if (g) gainRef.current = JSON.parse(g)
-      const m = localStorage.getItem('mp_meta_v1'); if (m) { const p = JSON.parse(m) as Record<string, { title?: string; artist?: string }>; setMetaOv(p); for (const [k, v] of Object.entries(p)) mhSetOverride(k, v.title || '', v.artist || '') } // migrate legacy localStorage overrides → IndexedDB (durable)
+      const m = localStorage.getItem('mp_meta_v1'); if (m) setMetaOv(JSON.parse(m))
       const hl = localStorage.getItem('mp_haslyrics_v1'); if (hl) setHasLyrics(new Set(JSON.parse(hl)))
       const hc = localStorage.getItem('mp_hascover_v1'); if (hc) setHasCover(new Set(JSON.parse(hc)))
       const cap = localStorage.getItem('mp_autocap_v1'); if (cap) setAutoCap(+cap || 0)
     } catch { /* ignore */ }
   }, [])
-  // Overrides also live in IndexedDB (survives an app reinstall like the cached tracks do).
-  useEffect(() => { mhGetOverrides().then((o) => { if (Object.keys(o).length) setMetaOv((prev) => ({ ...o, ...prev })) }) }, [])
-  // Save a per-track title/artist override (from the edit dialog); triggers a fresh lyrics search.
-  const setTrackMeta = (key: string, title: string, artist: string) => setMetaOv((prev) => { const n = { ...prev, [key]: { title: title.trim(), artist: artist.trim() } }; try { localStorage.setItem('mp_meta_v1', JSON.stringify(n)) } catch { /* ignore */ } mhSetOverride(key, title.trim(), artist.trim()); return n })
+  // Save a per-track title/artist override (from the stage-3 edit); triggers a fresh lyrics search.
+  const setTrackMeta = (key: string, title: string, artist: string) => setMetaOv((prev) => { const n = { ...prev, [key]: { title: title.trim(), artist: artist.trim() } }; try { localStorage.setItem('mp_meta_v1', JSON.stringify(n)) } catch { /* ignore */ } return n })
   const toggleNormalize = () => setNormalize((v) => { const n = !v; try { localStorage.setItem('mp_norm_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleAutoSave = () => setAutoSave((v) => { const n = !v; try { localStorage.setItem('mp_autosave_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleEq = () => setEqEnabled((v) => { const n = !v; try { localStorage.setItem('mp_eq_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
