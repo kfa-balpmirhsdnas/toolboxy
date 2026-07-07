@@ -24,6 +24,19 @@ export function artistCandidates(raw: string): string[] {
   return out.slice(0, 3)
 }
 
+// "배성식 오무이 '내일도 인생'" — when a filename ENDS with a quoted run, the quoted part is almost
+// always the title and the text before it the artist(s). Used as a last-resort re-search after every
+// normal attempt failed. Requires both sides to be non-empty; straight/curly/CJK quotes all count.
+export function quotedSplit(raw: string): { artist: string; title: string } | null {
+  const s = cleanForLyrics(raw)
+  // Bracketed tails after the closing quote — "(Live)", "[MV]" — are allowed and ignored.
+  const m = s.match(/^(.+?)\s*['‘’"“”「『]([^'‘’"“”」』]{1,80})['‘’"“”」』]\s*(?:[[(（【][^)\]）】]*[)\]）】]\s*)*$/)
+  if (!m) return null
+  const artist = m[1].trim()
+  const title = m[2].trim()
+  return artist && title ? { artist, title } : null
+}
+
 // Strip lyric/cover/site markers that break the lrclib match. Safe to run on an artist or a title.
 export function cleanForLyrics(s: string): string {
   // NOTE: \b (word boundary) does NOT work around Hangul (Korean isn't a \w char), so Korean markers

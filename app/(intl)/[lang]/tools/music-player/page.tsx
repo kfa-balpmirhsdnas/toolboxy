@@ -8,7 +8,7 @@ import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed } from '@/lib/gtag'
 import { mhList, mhPutMeta, mhPutManyMeta, mhSave, mhSetBlob, mhDelete, mhClear, mhAutoSave, mhAutoSaveMany, mhDropBlobs, mhStorageUsage } from '@/lib/tools/musicHistory'
 import { readId3 } from '@/lib/tools/id3'
-import { fetchLyrics, cleanForLyrics, searchByTitle, cacheLyrics, type LyricsHit } from '@/lib/tools/lyrics'
+import { fetchLyrics, cleanForLyrics, searchByTitle, cacheLyrics, quotedSplit, type LyricsHit } from '@/lib/tools/lyrics'
 import { measureRms, gainForRms } from '@/lib/tools/loudness'
 
 const tool = getToolBySlug('music-player')!
@@ -215,8 +215,23 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       setLyricsStage(2)
       // (2/3) title only (length-filtered) → pick from. Capped at 12s so a hung lrclib /search doesn't
       // sit on "(2/3)" for over a minute.
-      const hits = await Promise.race([searchByTitle(title, dur, ac.signal), new Promise<never[]>((res) => setTimeout(() => res([]), 12000))])
+      let hits = await Promise.race([searchByTitle(title, dur, ac.signal), new Promise<never[]>((res) => setTimeout(() => res([]), 12000))])
       if (ac.signal.aborted) return
+      if (!hits.length) {
+        // Everything failed → 「가수들 '제목'」 rule: a filename ending in a quoted run is re-split
+        // (front = artist, quoted = title) and both stages are retried with that pair.
+        const q = quotedSplit(base)
+        if (q && (q.title !== title || q.artist !== artist)) {
+          const s2 = new AbortController()
+          ac.signal.addEventListener('abort', () => s2.abort())
+          const got2 = await Promise.race([fetchLyrics(q.artist, q.title, dur, s2.signal, force), new Promise<null>((res) => setTimeout(() => res(null), 9000))])
+          s2.abort()
+          if (ac.signal.aborted) return
+          if (got2) { setLyricsLines(got2.synced); setLyrics(got2.plain); setLyricsStatus('done'); markHasLyrics(myKey); return }
+          hits = await Promise.race([searchByTitle(q.title, dur, ac.signal), new Promise<never[]>((res) => setTimeout(() => res([]), 12000))])
+          if (ac.signal.aborted) return
+        }
+      }
       setLyricsHits(hits); setLyricsStatus('done')
     })()
     return () => ac.abort()
