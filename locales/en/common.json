@@ -3822,6 +3822,8 @@
     "mpl_art_opt": "Auto album art (server lookup by title)",
     "mpl_lyrics_opt": "Auto lyrics (server lookup by title)",
     "mpl_lyrics": "Lyrics",
+    "mpl_lyrics_searching": "Searching for lyrics…",
+    "mpl_lyrics_none": "No lyrics found.",
     "mpl_search": "Search",
     "mpl_click": "Click to open a folder",
     "mpl_addto_pl": "Add to playlist",

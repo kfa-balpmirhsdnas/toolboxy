@@ -4253,6 +4253,8 @@
     "mpl_art_opt": "앨범 표지 자동 표시 (서버에서 제목으로 검색)",
     "mpl_lyrics_opt": "가사 자동 표시 (서버에서 제목으로 검색)",
     "mpl_lyrics": "가사",
+    "mpl_lyrics_searching": "가사를 검색중입니다...",
+    "mpl_lyrics_none": "가사를 찾지 못했어요.",
     "mpl_search": "검색",
     "mpl_click": "클릭해서 폴더 열기",
     "mpl_addto_pl": "플레이리스트에 추가",

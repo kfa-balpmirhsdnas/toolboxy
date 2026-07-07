@@ -4226,6 +4226,8 @@
     "mpl_art_opt": "アルバムアート自動表示（サーバーでタイトル検索）",
     "mpl_lyrics_opt": "歌詞を自動表示（サーバーでタイトル検索）",
     "mpl_lyrics": "歌詞",
+    "mpl_lyrics_searching": "歌詞を検索中...",
+    "mpl_lyrics_none": "歌詞が見つかりませんでした。",
     "mpl_search": "検索",
     "mpl_click": "クリックしてフォルダを開く",
     "mpl_addto_pl": "プレイリストに追加",

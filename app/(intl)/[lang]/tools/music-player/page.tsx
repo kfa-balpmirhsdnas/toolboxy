@@ -81,6 +81,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [usage, setUsage] = useState<{ usage: number; quota: number } | null>(null) // storage readout for settings
   const [lyricsOn, setLyricsOn] = useState(true) // look up lyrics for the current track (default on)
   const [lyrics, setLyrics] = useState<string | null>(null) // resolved lyrics text
+  const [lyricsStatus, setLyricsStatus] = useState<'idle' | 'loading' | 'done'>('idle') // searching / found-or-not
   const [toast, setToast] = useState('') // transient message (e.g. sleep-timer stopped)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [searchOn, setSearchOn] = useState(false) // playlist search box open
@@ -134,16 +135,17 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   // Lyrics via lib/tools/lyrics (lrclib.net): prefer ID3 artist/title, else the filename heuristic.
   // The module strips lyric/cover markers before querying and returns synced lines or plain text.
   useEffect(() => {
-    setLyrics(null); setLyricsLines(null)
+    setLyrics(null); setLyricsLines(null); setLyricsStatus('idle')
     if (!lyricsOn) return
     const fromName = parseFileName(base)
     const artist = (id3?.artist || '').trim() || fromName.artist
     const title = (id3?.title || '').trim() || fromName.title
     if (!artist || !title) return
+    setLyricsStatus('loading')
     const ac = new AbortController()
     fetchLyrics(artist, title, dur, ac.signal).then((res) => {
-      if (ac.signal.aborted || !res) return
-      setLyricsLines(res.synced); setLyrics(res.plain)
+      if (ac.signal.aborted) return
+      setLyricsLines(res?.synced || null); setLyrics(res?.plain || null); setLyricsStatus('done')
     })
     return () => ac.abort()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -780,16 +782,18 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     </div>
                   )}
                   {/* No submenu open → the reserved slot shows the lyrics: a synced karaoke line
-                      (prev/current/next) when timed, otherwise the plain lyrics scrolling. */}
-                  {panel === 'none' && (lyricsLines || lyrics) && (
+                      (prev/current/next) when timed, plain lyrics scrolling, or a searching / not-found note. */}
+                  {panel === 'none' && lyricsStatus !== 'idle' && (
                     <div className="px-5 h-full flex flex-col justify-center text-center text-white select-none" aria-hidden>
                       {lyricsLines ? (
                         (activeLyric >= 0 ? [activeLyric - 1, activeLyric, activeLyric + 1] : [0, 1, 2]).map((idx, k) => {
                           const l = lyricsLines[idx]
                           return <p key={k} className={'truncate h-6 leading-6 transition-all ' + (idx === activeLyric ? 'text-sm font-semibold' : 'text-xs text-white/40')}>{l ? (l.text || '♪') : ''}</p>
                         })
-                      ) : (
+                      ) : lyrics ? (
                         <div className="max-h-full overflow-auto whitespace-pre-wrap text-xs leading-5 text-white/70">{lyrics}</div>
+                      ) : (
+                        <p className="text-xs text-white/55">{lyricsStatus === 'loading' ? t('mpl_lyrics_searching') : t('mpl_lyrics_none')}</p>
                       )}
                     </div>
                   )}
