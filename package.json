@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/fetch-powerball.mjs && next build",
+    "build": "node scripts/fetch-powerball.mjs && node scripts/copy-pandoc.mjs && next build",
     "start": "next start",
     "lint": "next lint",
-    "fetch:powerball": "node scripts/fetch-powerball.mjs"
+    "fetch:powerball": "node scripts/fetch-powerball.mjs",
+    "predev": "node scripts/copy-pandoc.mjs"
   },
   "dependencies": {
+    "@bjorn3/browser_wasi_shim": "^0.4.2",
     "@cantoo/pdf-lib": "^2.7.1",
     "@ffmpeg/ffmpeg": "^0.12.10",
     "@ffmpeg/util": "^0.12.1",
@@ -32,6 +34,7 @@
     "lucide-react": "^0.408.0",
     "next": "14.2.5",
     "next-intl": "^3.17.2",
+    "pandoc-wasm": "^1.1.0",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^4.4.168",
     "qrcode": "^1.5.4",

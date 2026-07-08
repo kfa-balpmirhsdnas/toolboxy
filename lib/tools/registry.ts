@@ -67,6 +67,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'docx-to-odt',category:'file',also:['text'],added:'2026-07-09',phase:1,isPro:false,isNew:true,tags:['docx odt 변환','워드 odt 변환','docx 변환기','오픈오피스 변환','odt 파일 변환','워드 문서 변환','docx to odt','word to odt','convert docx to odt','odt converter','openoffice converter','docx odt変換','ワード odt変換','odt変換'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'workout-timer',category:'health',also:['time'],added:'2026-07-09',phase:1,isPro:false,isNew:true,tags:['운동 타이머','인터벌 타이머','홈트 타이머','타바타 타이머','복근 운동 타이머','세트 타이머','workout timer','interval timer','tabata timer','hiit timer','home workout timer','exercise timer','運動タイマー','インターバルタイマー','タバタタイマー','筋トレタイマー'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'mp3-tag-editor',category:'audio',also:['file'],added:'2026-07-08',phase:1,isPro:false,isNew:true,tags:['mp3 태그 편집','id3 태그 편집기','mp3 제목 수정','앨범아트 변경','mp3 앨범 표지 넣기','mp3 정보 수정','mp3 tag editor','id3 tag editor','edit mp3 metadata','album art editor','change album cover','mp3 title artist editor','MP3タグ編集','ID3タグ編集','アルバムアート変更'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'mp4-to-mp3',category:'video',also:['audio'],added:'2026-07-08',phase:1,isPro:false,isNew:true,tags:['mp4 mp3 변환','동영상 mp3 변환','영상 음원 추출','동영상 음악 추출','mp4 음악 추출','mp4 to mp3','video to mp3','convert mp4 to mp3','extract mp3 from video','mov to mp3','webm to mp3','mkv to mp3','MP4 MP3変換','動画 MP3変換','動画から音声を抽出'],maxFileSizeMB:{free:0,pro:0} },
