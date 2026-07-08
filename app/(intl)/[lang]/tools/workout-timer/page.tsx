@@ -124,7 +124,17 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
     } catch { /* ignore */ }
   }
   const speaking = () => voiceRef.current && ttsOk()
-  const cueCountdown = (n: number) => { if (speaking()) speak(String(n)); else beep(880, 110) }
+  // Per-second countdown numbers: DON'T cancel whatever is playing (announcements finish),
+  // just skip this second if the voice is still busy — it picks the count back up next second.
+  const speakNum = (n: number) => {
+    if (!speaking()) return
+    try {
+      if (speechSynthesis.speaking) return
+      const u = new SpeechSynthesisUtterance(String(n))
+      u.lang = speechLang; u.rate = 1.15
+      speechSynthesis.speak(u)
+    } catch { /* ignore */ }
+  }
   const cueSwitch = () => { if (!speaking()) beep(1318, 420); buzz(200) }
   const cueDone = () => { if (speaking()) speak(t('wkt_v_done')); else { beep(880, 160); beep(1108, 160, 0.18); beep(1318, 400, 0.36) } buzz([180, 80, 180, 80, 320]) }
   // Phase announcement, spoken right as a segment begins.
@@ -185,10 +195,20 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
     const leftS = Math.ceil((segEndAtRef.current - now) / 1000)
     setLeft(leftS)
     setTotalLeft(leftS + remainingAfter(segIdxRef.current))
-    if (leftS <= 3 && leftS >= 1 && lastBeepRef.current !== leftS) { lastBeepRef.current = leftS; cueCountdown(leftS); buzz(60) }
-    // spoken halfway mark on longer work segments (≥20s) — a little company mid-set
-    const seg = segsRef.current[segIdxRef.current]
-    if (seg.ph === 'work' && seg.dur >= 20 && leftS === Math.ceil(seg.dur / 2) && lastBeepRef.current !== leftS && speaking()) { lastBeepRef.current = leftS; speak(t('wkt_v_half')) }
+    if (leftS >= 1 && lastBeepRef.current !== leftS) {
+      lastBeepRef.current = leftS
+      const seg = segsRef.current[segIdxRef.current]
+      if (speaking()) {
+        // FULL spoken countdown, every second of every segment. The halfway cheer on longer work
+        // segments replaces that second's number; the first second is left to the phase announcement.
+        const isHalf = seg.ph === 'work' && seg.dur >= 20 && leftS === Math.ceil(seg.dur / 2)
+        if (isHalf) speak(t('wkt_v_half'))
+        else if (leftS < seg.dur) speakNum(leftS)
+      } else if (leftS <= 3) {
+        beep(880, 110) // voice off → the original 3-2-1 beeps
+      }
+      if (leftS <= 3) buzz(60)
+    }
   }
 
   const startTicking = () => { if (tickRef.current) clearInterval(tickRef.current); tickRef.current = setInterval(tick, 100) }
