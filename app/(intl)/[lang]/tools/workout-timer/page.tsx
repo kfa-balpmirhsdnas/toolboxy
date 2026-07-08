@@ -38,6 +38,7 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
   const [rounds, setRounds] = useState(1)
   const [sound, setSound] = useState(true)
   const [vib, setVib] = useState(true)
+  const [voice, setVoice] = useState(true) // spoken narration (Web Speech API)
   const [phase, setPhase] = useState<Phase>('idle')
   const [running, setRunning] = useState(false)
   const [left, setLeft] = useState(0)          // seconds left in the current segment
@@ -58,6 +59,7 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
   const acRef = useRef<AudioContext | null>(null)
   const soundRef = useRef(sound); soundRef.current = sound
   const vibRef = useRef(vib); vibRef.current = vib
+  const voiceRef = useRef(voice); voiceRef.current = voice
   const runningRef = useRef(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const wakeRef = useRef<any>(null)
@@ -70,6 +72,7 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
       const o = JSON.parse(localStorage.getItem('wkt_opts_v1') || '{}')
       if (typeof o.sound === 'boolean') setSound(o.sound)
       if (typeof o.vib === 'boolean') setVib(o.vib)
+      if (typeof o.voice === 'boolean') setVoice(o.voice)
       const r = localStorage.getItem('wkt_routines_v1'); if (r) setRoutines(JSON.parse(r))
     } catch { /* ignore */ }
     const q = new URLSearchParams(window.location.search).get('ex')
@@ -77,9 +80,10 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   // Options persist at the point of change (a save-effect would clobber them on StrictMode remount).
-  const saveOpts = (s: boolean, v: boolean) => { try { localStorage.setItem('wkt_opts_v1', JSON.stringify({ sound: s, vib: v })) } catch { /* ignore */ } }
-  const toggleSound = () => setSound((s) => { saveOpts(!s, vibRef.current); return !s })
-  const toggleVib = () => setVib((v) => { saveOpts(soundRef.current, !v); return !v })
+  const saveOpts = (s: boolean, v: boolean, vo: boolean) => { try { localStorage.setItem('wkt_opts_v1', JSON.stringify({ sound: s, vib: v, voice: vo })) } catch { /* ignore */ } }
+  const toggleSound = () => setSound((s) => { saveOpts(!s, vibRef.current, voiceRef.current); return !s })
+  const toggleVib = () => setVib((v) => { saveOpts(soundRef.current, !v, voiceRef.current); return !v })
+  const toggleVoice = () => setVoice((v) => { saveOpts(soundRef.current, vibRef.current, !v); if (v) try { speechSynthesis.cancel() } catch { /* ignore */ } return !v })
 
   function pickExercise(id: string, updateUrl = true) {
     const e = EXERCISES.find((x) => x.id === id)
@@ -105,9 +109,31 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
     } catch { /* ignore */ }
   }
   const buzz = (pattern: number | number[]) => { if (vibRef.current) try { navigator.vibrate?.(pattern) } catch { /* ignore */ } }
-  const cueCountdown = () => beep(880, 110)
-  const cueSwitch = () => { beep(1318, 420); buzz(200) }
-  const cueDone = () => { beep(880, 160); beep(1108, 160, 0.18); beep(1318, 400, 0.36); buzz([180, 80, 180, 80, 320]) }
+  // ---- voice narration (Web Speech API — built-in TTS, no assets). When it's on, spoken cues
+  // replace the overlapping beeps (vibration stays); iOS unlock comes free since the first speak
+  // happens inside the start tap. ----
+  const ttsOk = () => typeof window !== 'undefined' && 'speechSynthesis' in window
+  const speechLang = lang === 'ko' ? 'ko-KR' : lang === 'ja' ? 'ja-JP' : 'en-US'
+  const speak = (text: string) => {
+    if (!voiceRef.current || !ttsOk()) return
+    try {
+      speechSynthesis.cancel() // narration is short + time-critical: never queue behind stale lines
+      const u = new SpeechSynthesisUtterance(text)
+      u.lang = speechLang; u.rate = 1.05
+      speechSynthesis.speak(u)
+    } catch { /* ignore */ }
+  }
+  const speaking = () => voiceRef.current && ttsOk()
+  const cueCountdown = (n: number) => { if (speaking()) speak(String(n)); else beep(880, 110) }
+  const cueSwitch = () => { if (!speaking()) beep(1318, 420); buzz(200) }
+  const cueDone = () => { if (speaking()) speak(t('wkt_v_done')); else { beep(880, 160); beep(1108, 160, 0.18); beep(1318, 400, 0.36) } buzz([180, 80, 180, 80, 320]) }
+  // Phase announcement, spoken right as a segment begins.
+  const narrateSeg = (seg: Seg) => {
+    if (!speaking()) return
+    if (seg.ph === 'prep') speak(t('wkt_v_prep'))
+    else if (seg.ph === 'work') speak(segsRef.current.filter((s) => s.ph === 'work').length > 1 ? t('wkt_v_work', { n: seg.set }) : t('wkt_v_go'))
+    else speak(t('wkt_v_rest'))
+  }
 
   // ---- wake lock (keep the screen on while running) ----
   const acquireWake = async () => { try { wakeRef.current = await (navigator as unknown as { wakeLock?: { request: (t: string) => Promise<unknown> } }).wakeLock?.request('screen') } catch { /* unsupported → ignore */ } }
@@ -142,6 +168,7 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
     setSegInfo({ set: seg.set, round: seg.round })
     setLeft(seg.dur)
     setTotalLeft(seg.dur + remainingAfter(idx))
+    narrateSeg(seg)
   }
 
   const tick = () => {
@@ -158,7 +185,10 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
     const leftS = Math.ceil((segEndAtRef.current - now) / 1000)
     setLeft(leftS)
     setTotalLeft(leftS + remainingAfter(segIdxRef.current))
-    if (leftS <= 3 && leftS >= 1 && lastBeepRef.current !== leftS) { lastBeepRef.current = leftS; cueCountdown(); buzz(60) }
+    if (leftS <= 3 && leftS >= 1 && lastBeepRef.current !== leftS) { lastBeepRef.current = leftS; cueCountdown(leftS); buzz(60) }
+    // spoken halfway mark on longer work segments (≥20s) — a little company mid-set
+    const seg = segsRef.current[segIdxRef.current]
+    if (seg.ph === 'work' && seg.dur >= 20 && leftS === Math.ceil(seg.dur / 2) && lastBeepRef.current !== leftS && speaking()) { lastBeepRef.current = leftS; speak(t('wkt_v_half')) }
   }
 
   const startTicking = () => { if (tickRef.current) clearInterval(tickRef.current); tickRef.current = setInterval(tick, 100) }
@@ -181,14 +211,15 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
     startTicking()
     acquireWake()
   }
-  const pause = () => { pausedMsRef.current = Math.max(0, segEndAtRef.current - Date.now()); stopTicking(); runningRef.current = false; setRunning(false); releaseWake() }
+  const stopSpeech = () => { if (ttsOk()) try { speechSynthesis.cancel() } catch { /* ignore */ } }
+  const pause = () => { pausedMsRef.current = Math.max(0, segEndAtRef.current - Date.now()); stopTicking(); runningRef.current = false; setRunning(false); releaseWake(); stopSpeech() }
   const resume = () => {
     try { acRef.current?.resume?.() } catch { /* ignore */ }
     segEndAtRef.current = Date.now() + pausedMsRef.current
     runningRef.current = true; setRunning(true)
     startTicking(); acquireWake()
   }
-  const reset = () => { stopTicking(); runningRef.current = false; setRunning(false); setPhase('idle'); setLeft(0); setTotalLeft(0); setSegInfo({ set: 0, round: 1 }); releaseWake() }
+  const reset = () => { stopTicking(); runningRef.current = false; setRunning(false); setPhase('idle'); setLeft(0); setTotalLeft(0); setSegInfo({ set: 0, round: 1 }); releaseWake(); stopSpeech() }
   const finish = () => { stopTicking(); runningRef.current = false; setRunning(false); setPhase('done'); setLeft(0); setTotalLeft(0); cueDone(); releaseWake() }
   useEffect(() => () => stopTicking(), [])
 
@@ -357,7 +388,7 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
             <>
               <div className="fixed inset-0 z-30" onClick={() => setOptsOpen(false)} />
               <div className="absolute top-12 right-2.5 z-40 w-48 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden text-gray-700">
-                {([['sound', sound, toggleSound, t('wkt_sound')], ['vib', vib, toggleVib, t('wkt_vibrate')]] as const).map(([key, on, toggle, label]) => (
+                {([['sound', sound, toggleSound, t('wkt_sound')], ['vib', vib, toggleVib, t('wkt_vibrate')], ['voice', voice, toggleVoice, t('wkt_voice')]] as const).map(([key, on, toggle, label]) => (
                   <button key={key} onClick={toggle} className="w-full flex items-center justify-between gap-2 px-3.5 py-3 text-sm font-semibold hover:bg-gray-50">
                     <span>{label}</span>
                     <span className={'relative w-9 h-5 rounded-full transition-colors ' + (on ? 'bg-brand-600' : 'bg-gray-300')} aria-hidden>
