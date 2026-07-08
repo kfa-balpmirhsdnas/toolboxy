@@ -18,6 +18,53 @@ type Routine = { name: string; ex: string; prep: number; work: number; rest: num
 const fmt = (s: number) => { const m = Math.floor(Math.max(0, s) / 60); const ss = Math.max(0, s) % 60; return m > 0 ? `${m}:${String(ss).padStart(2, '0')}` : String(ss) }
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
 
+// Fun/motivating one-liners spoken during REST (diet·health·workout themed). Spoken-only content,
+// so they live here rather than in the UI-string namespaces.
+const QUOTES: Record<'ko' | 'ja' | 'en', string[]> = {
+  ko: [
+    '오늘 흘린 땀은 내일의 자신감이에요',
+    '치킨은 도망가지 않아요. 하지만 뱃살도 안 도망가요',
+    '복근은 주방에서 만들어진대요. 오늘 저녁 살살 부탁해요',
+    '지금 쉬는 것도 운동의 일부예요',
+    '어제의 나보다 딱 하나만 더',
+    '근육은 배신하지 않아요',
+    '천천히 가도 괜찮아요. 멈추지만 않으면 돼요',
+    '물 한 잔 마시는 것도 잊지 마세요',
+    '오늘 운동한 당신, 내일 거울이 알아봐요',
+    '다이어트는 내일부터라고요? 이미 시작했잖아요',
+    '운동은 몸에 하는 저축이에요. 이자는 건강으로 붙어요',
+    '시작한 당신이 제일 멋져요',
+  ],
+  en: [
+    'Sweat today, shine tomorrow',
+    "The chicken isn't running away. But neither is that belly",
+    'Abs are made in the kitchen, so go easy at dinner',
+    'Resting is part of the workout too',
+    'Just one more than yesterday',
+    'Muscles never betray you',
+    'Slow is fine. Stopping is the only problem',
+    "Don't forget a sip of water",
+    'Your mirror will notice tomorrow',
+    'Diet starts tomorrow? You already started',
+    'Exercise is a deposit. The interest is health',
+    'You showed up. That was the hardest part',
+  ],
+  ja: [
+    '今日の汗は明日の自信です',
+    'チキンは逃げません。でもお腹のお肉も逃げませんよ',
+    '腹筋はキッチンで作られるそうです。夕食はほどほどに',
+    '休むのもトレーニングのうちです',
+    '昨日の自分よりあと一回だけ',
+    '筋肉は裏切りません',
+    'ゆっくりでも大丈夫。止まらなければいいんです',
+    '水分補給も忘れずに',
+    '明日の鏡が気づいてくれますよ',
+    'ダイエットは明日から？もう始まっていますよ',
+    '運動は貯金、利息は健康です',
+    '始めたあなたが一番かっこいいです',
+  ],
+}
+
 // Phase → full-card colour (text labels always shown alongside — colour-blind safe).
 const PHASE_BG: Record<Phase, string> = {
   idle: 'bg-gradient-to-b from-gray-700 to-gray-900',
@@ -137,12 +184,24 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
   }
   const cueSwitch = () => { if (!speaking()) beep(1318, 420); buzz(200) }
   const cueDone = () => { if (speaking()) speak(t('wkt_v_done')); else { beep(880, 160); beep(1108, 160, 0.18); beep(1318, 400, 0.36) } buzz([180, 80, 180, 80, 320]) }
-  // Phase announcement, spoken right as a segment begins.
+  // Phase announcement, spoken right as a segment begins. Rest segments (≥10s) get a random
+  // diet/health one-liner QUEUED after "쉬세요" (no cancel → it plays right after; the per-second
+  // count skips while it talks and resumes on its own).
+  const lastQuoteRef = useRef(-1)
   const narrateSeg = (seg: Seg) => {
     if (!speaking()) return
     if (seg.ph === 'prep') speak(t('wkt_v_prep'))
     else if (seg.ph === 'work') speak(segsRef.current.filter((s) => s.ph === 'work').length > 1 ? t('wkt_v_work', { n: seg.set }) : t('wkt_v_go'))
-    else speak(t('wkt_v_rest'))
+    else {
+      speak(t('wkt_v_rest'))
+      if (seg.dur >= 10) {
+        const list = QUOTES[lang === 'ko' ? 'ko' : lang === 'ja' ? 'ja' : 'en']
+        let i = Math.floor(Math.random() * list.length)
+        if (i === lastQuoteRef.current) i = (i + 1) % list.length
+        lastQuoteRef.current = i
+        try { const u = new SpeechSynthesisUtterance(list[i]); u.lang = speechLang; u.rate = 1.05; speechSynthesis.speak(u) } catch { /* ignore */ }
+      }
+    }
   }
 
   // ---- wake lock (keep the screen on while running) ----
@@ -445,7 +504,8 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
               {!running && active && (
                 <button onClick={resume} className="px-8 py-3 rounded-2xl bg-white text-gray-900 text-base font-extrabold shadow active:scale-95 transition">{t('wkt_resume')}</button>
               )}
-              {(active || phase === 'done') && (
+              {/* 리셋 is only offered while PAUSED (mid-run it invites fat-finger aborts) */}
+              {!running && active && (
                 <button onClick={reset} className="px-4 py-3 rounded-2xl bg-white/15 text-white text-sm font-bold hover:bg-white/25 active:scale-95 transition inline-flex items-center gap-1"><ToolIcon name="refresh" className="w-4 h-4" />{t('wkt_reset')}</button>
               )}
             </div>
