@@ -119,6 +119,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
       const hl = localStorage.getItem('mp_haslyrics_v1'); if (hl) setHasLyrics(new Set(JSON.parse(hl)))
       const hc = localStorage.getItem('mp_hascover_v1'); if (hc) setHasCover(new Set(JSON.parse(hc)))
       const cap = localStorage.getItem('mp_autocap_v1'); if (cap) setAutoCap(+cap || 0)
+      // Playback options survive a refresh: repeat mode, speed, volume.
+      const rm = localStorage.getItem('mp_repeat_v1'); if (rm === 'off' || rm === 'one' || rm === 'all' || rm === 'shuffle') setRepeatMode(rm)
+      const sp = parseFloat(localStorage.getItem('mp_speed_v1') || ''); if (sp >= 0.5 && sp <= 2) setSpeed(sp)
+      const vo = parseFloat(localStorage.getItem('mp_vol_v1') || ''); if (vo >= 0 && vo <= 1) { setVolume(vo); volumeRef.current = vo }
     } catch { /* ignore */ }
   }, [])
   // Save a per-track title/artist override (from the stage-3 edit); triggers a fresh lyrics search.
@@ -501,7 +505,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const seekBy = (d: number) => { const a = media(); if (a) a.currentTime = Math.max(0, Math.min(a.duration || a.currentTime, a.currentTime + d)) }
   // Effective element volume = master volume × the track's normalization gain (≤1).
   const applyVol = () => { const a = media(); if (a) a.volume = volumeRef.current * curGainRef.current }
-  const setVol = (v: number) => { volumeRef.current = v; setVolume(v); const a = media(); if (a) a.volume = v * curGainRef.current }
+  const setVol = (v: number) => { volumeRef.current = v; setVolume(v); const a = media(); if (a) a.volume = v * curGainRef.current; try { localStorage.setItem('mp_vol_v1', String(v)) } catch { /* ignore */ } }
   useEffect(() => { volumeRef.current = volume }, [volume])
   // Volume normalization: apply the current track's cached gain (measuring it if needed), then
   // pre-analyze the NEXT track in the background so its gain is ready before it plays.
@@ -535,6 +539,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   // apply speed / volume / loop to the element
   useEffect(() => { const a = audioRef.current; if (a) a.playbackRate = speed }, [speed, url])
   useEffect(() => { const a = audioRef.current; if (a) a.loop = repeatMode === 'one' }, [repeatMode, url])
+  // Playback options persist at the point of change (like the settings toggles) — a mount-time
+  // persist effect would clobber the stored values with the defaults under StrictMode double-mount.
+  const changeSpeed = (v: number) => { setSpeed(v); try { localStorage.setItem('mp_speed_v1', String(v)) } catch { /* ignore */ } }
 
   // ---- ★ save (persist the audio blob so it replays in one click) ----
   const toggleSaved = useCallback((key: string, file: File | null) => {
@@ -809,7 +816,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   }, [url, base, dispTitle, dispArtist, coverSrc])
 
   // Repeat button now cycles all(A) → one(1) → shuffle → off, so shuffle lives here (its old slot is the timer).
-  const cycleRepeat = () => setRepeatMode((m) => (m === 'all' ? 'one' : m === 'one' ? 'shuffle' : m === 'shuffle' ? 'off' : 'all'))
+  const cycleRepeat = () => setRepeatMode((m) => { const n = m === 'all' ? 'one' : m === 'one' ? 'shuffle' : m === 'shuffle' ? 'off' : 'all'; try { localStorage.setItem('mp_repeat_v1', n) } catch { /* ignore */ } return n })
 
   return (
     <ToolLayout tool={tool} lang={lang}>
@@ -871,7 +878,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
              space-y-px keeps the player and the list box ~1px apart on phones; from 700px (unfolded
              Fold/Flip inner screens, tablets, PC) the two become side-by-side columns — playlist
              LEFT, player RIGHT. (lg: was too high — a Fold's inner screen is ~750-830 CSS px.) */
-          <div className="space-y-px min-[700px]:space-y-0 min-[700px]:grid min-[700px]:grid-cols-2 min-[700px]:gap-4 min-[700px]:items-start">
+          <div className="space-y-px min-[700px]:space-y-0 min-[700px]:grid min-[700px]:grid-cols-2 min-[700px]:gap-4">
             {/* ---- Now-playing card ---- */}
             <div ref={cardRef} className={'min-[700px]:order-2 rounded-2xl text-white shadow-sm overflow-hidden scroll-mt-16 bg-gradient-to-b ' + (darkMode ? 'from-gray-800 to-black' : 'from-brand-500 to-brand-700')}>
               <div className="p-5">
@@ -1002,11 +1009,11 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   {panel === 'speed' && (
                     <div className="px-5 text-white space-y-2">
                       <div className="flex items-center gap-3">
-                        <input type="range" min={0.5} max={2} step={0.05} value={speed} onChange={(e) => setSpeed(+e.target.value)} aria-label={t('mp_speed')} className="flex-1 h-1.5 accent-white cursor-pointer" />
+                        <input type="range" min={0.5} max={2} step={0.05} value={speed} onChange={(e) => changeSpeed(+e.target.value)} aria-label={t('mp_speed')} className="flex-1 h-1.5 accent-white cursor-pointer" />
                         <span className="text-xs font-mono tabular-nums text-white/80 w-10 text-right">{speed}×</span>
                       </div>
                       <div className="flex flex-wrap justify-center gap-1">
-                        {SPEEDS.map((s) => <button key={s} onClick={() => setSpeed(s)} className={'px-2 h-6 rounded text-[11px] tabular-nums transition ' + (speed === s ? 'bg-white text-brand-700 font-bold' : 'bg-white/15 hover:bg-white/25')}>{s}×</button>)}
+                        {SPEEDS.map((s) => <button key={s} onClick={() => changeSpeed(s)} className={'px-2 h-6 rounded text-[11px] tabular-nums transition ' + (speed === s ? 'bg-white text-brand-700 font-bold' : 'bg-white/15 hover:bg-white/25')}>{s}×</button>)}
                       </div>
                     </div>
                   )}
@@ -1071,7 +1078,9 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
             </div>
 
             {/* ---- Playlist (standard list style; dark theme follows the player) ---- */}
-            <div ref={playlistRef} className={'min-[700px]:order-1 rounded-2xl border overflow-hidden scroll-mt-16 ' + (darkMode ? 'bg-gray-900 border-gray-700' : 'border-gray-200')}>
+            {/* h-0 + min-h-full: the list contributes nothing to the grid row height (the player alone
+                sets it) and then stretches to exactly that height — 목록 높이 = 플레이어 높이. */}
+            <div ref={playlistRef} className={'min-[700px]:order-1 min-[700px]:h-0 min-[700px]:min-h-full min-[700px]:flex min-[700px]:flex-col rounded-2xl border overflow-hidden scroll-mt-16 ' + (darkMode ? 'bg-gray-900 border-gray-700' : 'border-gray-200')}>
               {selMode ? (
                 /* ---- multi-select action bar (replaces the tab header while selecting) ---- */
                 <div className={'flex items-center gap-1 px-1.5 py-1.5 border-b ' + (darkMode ? 'bg-gray-800 border-gray-700' : 'bg-brand-50/70 border-gray-200')}>
@@ -1122,7 +1131,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 shown.length === 0 ? (
                   <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
                 ) : (
-                  <div ref={listRef} onScroll={onListScroll} className={'max-h-[300px] min-[700px]:max-h-[560px] overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
+                  <div ref={listRef} onScroll={onListScroll} className={'max-h-[300px] min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
                     {shown.slice(0, renderN).map((h) => {
                       const key = h.name + '|' + h.size
                       const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
@@ -1186,7 +1195,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 </div>
               ) : (
                 /* ---- 리스트: one group (drill-in) ---- */
-                <div>
+                <div className="min-[700px]:flex-1 min-[700px]:min-h-0 min-[700px]:flex min-[700px]:flex-col">
                   <div className={'flex items-center gap-1 px-2 py-2 border-b ' + (darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-100')}>
                     <button onClick={() => { setOpenGroup(null); setAddMode(false); setReorder(false) }} className={'inline-flex items-center gap-1 px-1.5 py-1 text-sm ' + (darkMode ? 'text-gray-400 hover:text-brand-400' : 'text-gray-500 hover:text-brand-600')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6" /></svg>{t('mpl_back')}</button>
                     <span className={'flex-1 min-w-0 text-sm font-semibold truncate text-center ' + (darkMode ? 'text-gray-100' : 'text-gray-800')}>{groupName(openGroup)}</span>
@@ -1206,7 +1215,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     history.length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
                     ) : (
-                      <div onScroll={onListScroll} className="divide-y divide-gray-100 max-h-80 overflow-auto">
+                      <div onScroll={onListScroll} className="divide-y divide-gray-100 max-h-80 min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-auto">
                         {history.slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const member = groupKeys(openGroup).has(key)
                           const ov = metaOv[key]; const fn = parseFileName(h.name.replace(/\.[^.]+$/, ''))
@@ -1223,7 +1232,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     groupSongs(openGroup).length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mpl_group_empty')}</p>
                     ) : (
-                      <div ref={groupListRef} onScroll={onListScroll} className={'max-h-[300px] min-[700px]:max-h-[560px] overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
+                      <div ref={groupListRef} onScroll={onListScroll} className={'max-h-[300px] min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
                         {groupSongs(openGroup).slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                           return (
