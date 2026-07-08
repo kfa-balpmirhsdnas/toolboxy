@@ -1093,11 +1093,13 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 <button onClick={() => { setHistTab('all'); setReorder((r) => !r); exitSel() }} aria-label={t('mpl_reorder')} title={t('mpl_reorder')} className={'p-2 rounded transition-colors ' + (reorder ? 'text-brand-600 bg-brand-50' : 'text-gray-400 hover:text-brand-600')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></svg>
                 </button>
+                {/* In the two-column (≥700px) layout each column is narrow, so the tabs go compact:
+                    short "리스트" label and the count wraps onto its own line (no header overflow). */}
                 {(['all', 'saved'] as const).map((tab) => (
-                  <button key={tab} onClick={() => { setHistTab(tab); setOpenGroup(null); setAddMode(false); setCreating(false); setReorder(false) }} className={'inline-flex items-center gap-1 px-3 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ' + (histTab === tab ? (darkMode ? 'border-brand-500 text-brand-400' : 'border-brand-600 text-brand-600') : darkMode ? 'border-transparent text-gray-400 hover:text-gray-200' : 'border-transparent text-gray-500 hover:text-gray-700')}>
+                  <button key={tab} onClick={() => { setHistTab(tab); setOpenGroup(null); setAddMode(false); setCreating(false); setReorder(false) }} className={'inline-flex items-center shrink-0 whitespace-nowrap gap-1 px-2 py-2.5 min-[700px]:flex-col min-[700px]:gap-0 min-[700px]:py-1 min-[700px]:leading-tight text-sm font-semibold border-b-2 -mb-px transition-colors ' + (histTab === tab ? (darkMode ? 'border-brand-500 text-brand-400' : 'border-brand-600 text-brand-600') : darkMode ? 'border-transparent text-gray-400 hover:text-gray-200' : 'border-transparent text-gray-500 hover:text-gray-700')}>
                     {tab === 'all'
                       ? t('mp_all')
-                      : <><span className="sm:hidden">{t('mpl_list')}</span><span className="hidden sm:inline">{t('mpl_playlist')}</span></>}
+                      : <><span className="sm:hidden min-[700px]:inline">{t('mpl_list')}</span><span className="hidden sm:inline min-[700px]:hidden">{t('mpl_playlist')}</span></>}
                     <span className="text-xs font-normal opacity-60 tabular-nums">{tab === 'all' ? allCount : groups.length + 1}</span>
                   </button>
                 ))}
