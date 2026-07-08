@@ -46,6 +46,7 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
   const [routines, setRoutines] = useState<Routine[]>([])
   const [routineName, setRoutineName] = useState('')
   const [ddOpen, setDdOpen] = useState<'' | 'level' | 'ex'>('') // mobile custom dropdowns
+  const [optsOpen, setOptsOpen] = useState(false) // ⚙ sound/vibration popover
 
   const segsRef = useRef<Seg[]>([])
   const segIdxRef = useRef(0)
@@ -278,8 +279,28 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
         </div>
 
         {/* ---- Big timer card (whole card takes the phase colour; label text alongside) ---- */}
-        <div className={'rounded-2xl text-white shadow-sm overflow-hidden transition-colors ' + PHASE_BG[phase]}>
-          <div className="p-6 text-center select-none">
+        <div className={'rounded-2xl text-white shadow-sm transition-colors relative ' + PHASE_BG[phase]}>
+          {/* ⚙ sound / vibration — custom popover from the card's top-right corner */}
+          <button onClick={() => setOptsOpen((v) => !v)} aria-label={t('wkt_options')} title={t('wkt_options')}
+            className={'absolute top-2.5 right-2.5 z-20 p-2 rounded-lg transition ' + (optsOpen ? 'bg-white/25 text-white' : 'text-white/60 hover:text-white hover:bg-white/15')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>
+          </button>
+          {optsOpen && (
+            <>
+              <div className="fixed inset-0 z-30" onClick={() => setOptsOpen(false)} />
+              <div className="absolute top-12 right-2.5 z-40 w-48 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden text-gray-700">
+                {([['sound', sound, toggleSound, t('wkt_sound')], ['vib', vib, toggleVib, t('wkt_vibrate')]] as const).map(([key, on, toggle, label]) => (
+                  <button key={key} onClick={toggle} className="w-full flex items-center justify-between gap-2 px-3.5 py-3 text-sm font-semibold hover:bg-gray-50">
+                    <span>{label}</span>
+                    <span className={'relative w-9 h-5 rounded-full transition-colors ' + (on ? 'bg-brand-600' : 'bg-gray-300')} aria-hidden>
+                      <span className={'absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ' + (on ? 'left-[18px]' : 'left-0.5')} />
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          <div className="p-6 text-center select-none rounded-2xl overflow-hidden">
             <p className="text-sm font-bold tracking-widest uppercase opacity-90">{phaseLabel}{ex && phase !== 'idle' ? ` · ${exName(ex, lang)}` : ''}</p>
             {/* Animated form guide, synced to the timer: moves during WORK, freezes otherwise */}
             {ex && <ExerciseFigure exId={ex.id} active={running && phase === 'work'} className="mx-auto mt-1 -mb-1 w-44 h-24 text-white/90" />}
@@ -308,11 +329,6 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
               {(active || phase === 'done') && (
                 <button onClick={reset} className="px-4 py-3 rounded-2xl bg-white/15 text-white text-sm font-bold hover:bg-white/25 active:scale-95 transition inline-flex items-center gap-1"><ToolIcon name="refresh" className="w-4 h-4" />{t('wkt_reset')}</button>
               )}
-            </div>
-            {/* sound / vibration toggles */}
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <button onClick={toggleSound} className={'px-3 py-1.5 rounded-lg text-xs font-semibold transition ' + (sound ? 'bg-white/25' : 'bg-white/10 opacity-60 line-through')}>{t('wkt_sound')}</button>
-              <button onClick={toggleVib} className={'px-3 py-1.5 rounded-lg text-xs font-semibold transition ' + (vib ? 'bg-white/25' : 'bg-white/10 opacity-60 line-through')}>{t('wkt_vibrate')}</button>
             </div>
           </div>
         </div>
