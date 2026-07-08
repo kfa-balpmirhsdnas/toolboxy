@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
+import ExerciseFigure from '@/components/tools/ExerciseFigure'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { EXERCISES, exName, exDescKey, type Exercise } from '@/lib/tools/exercises'
 import { trackToolUsed } from '@/lib/gtag'
@@ -239,6 +240,8 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
         <div className={'rounded-2xl text-white shadow-sm overflow-hidden transition-colors ' + PHASE_BG[phase]}>
           <div className="p-6 text-center select-none">
             <p className="text-sm font-bold tracking-widest uppercase opacity-90">{phaseLabel}{ex && phase !== 'idle' ? ` · ${exName(ex, lang)}` : ''}</p>
+            {/* Animated form guide, synced to the timer: moves during WORK, freezes otherwise */}
+            {ex && <ExerciseFigure exId={ex.id} active={running && phase === 'work'} className="mx-auto mt-1 -mb-1 w-44 h-24 text-white/90" />}
             <p className="text-7xl font-black tabular-nums leading-tight my-2">{active || phase === 'done' ? fmt(left) : fmt(work)}</p>
             <div className="flex items-center justify-center gap-3 text-xs font-semibold opacity-90 tabular-nums">
               <span>{t('wkt_set')} {active ? Math.max(1, segInfo.set) : '—'}/{sets}</span>
