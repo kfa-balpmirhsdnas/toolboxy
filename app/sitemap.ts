@@ -37,12 +37,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   )
 
-  // Every tool, every language.
+  // Every tool, every language. No lastModified: stamping every deploy's build time on all
+  // ~360 tools made the signal meaningless (Google distrusts an always-fresh lastmod and then
+  // ignores it — omitting is the documented recommendation when the real date isn't tracked).
+  // changeFrequency is ignored by Google/Bing either way; weekly just reads truthfully.
   const toolUrls = LANGS.flatMap((lang) =>
     TOOLS.map((tool) => ({
       url: `${BASE_URL}/${lang}/tools/${tool.slug}`,
-      lastModified: now,
-      changeFrequency: 'monthly' as const,
+      changeFrequency: 'weekly' as const,
       priority: 0.8,
     })),
   )
@@ -51,7 +53,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // (en/ja consolidate onto /ko). Submit just the /ko URLs.
   const idiomUrls = IDIOMS.map((i) => ({
     url: `${BASE_URL}/ko/tools/gosaseongeo/${encodeURIComponent(i.reading)}`,
-    lastModified: now,
     changeFrequency: 'monthly' as const,
     priority: 0.6,
   }))
