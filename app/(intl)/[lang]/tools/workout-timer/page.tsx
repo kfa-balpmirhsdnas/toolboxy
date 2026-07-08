@@ -47,6 +47,7 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
   const [routineName, setRoutineName] = useState('')
   const [ddOpen, setDdOpen] = useState<'' | 'level' | 'ex'>('') // mobile custom dropdowns
   const [optsOpen, setOptsOpen] = useState(false) // ⚙ sound/vibration popover
+  const [secOpen, setSecOpen] = useState<'' | 'opts' | 'save' | 'guide'>('') // collapsible sections (one at a time)
 
   const segsRef = useRef<Seg[]>([])
   const segIdxRef = useRef(0)
@@ -204,6 +205,15 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
   const active = phase !== 'idle' && phase !== 'done'
   const shownEx = levelFilter ? EXERCISES.filter((e) => e.level === levelFilter) : EXERCISES
 
+  // Collapsible-section header: title left, a live summary hint + chevron right.
+  const secBtn = (id: 'opts' | 'save' | 'guide', title: string, hint?: string) => (
+    <button onClick={() => setSecOpen((s) => (s === id ? '' : id))} className="w-full flex items-center gap-2 px-3.5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">
+      <span className="flex-1 min-w-0 truncate text-left">{title}</span>
+      {hint && <span className="shrink-0 text-xs font-normal text-gray-400 tabular-nums">{hint}</span>}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={'w-4 h-4 shrink-0 text-gray-400 transition-transform ' + (secOpen === id ? 'rotate-180' : '')}><path d="m6 9 6 6 6-6" /></svg>
+    </button>
+  )
+
   const stepper = (label: string, value: number, set: (v: number) => void, lo: number, hi: number, step = 5) => (
     <div className="flex items-center justify-between gap-2 py-1.5">
       <span className="text-sm text-gray-600">{label}</span>
@@ -278,6 +288,64 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
           </div>
         </div>
 
+        {/* ---- Collapsible sections (설정·루틴·설명) — moved above the timer, collapsed by default ---- */}
+        <div className="rounded-xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+          {/* 타이머 설정 */}
+          <div>
+            {secBtn('opts', t('wkt_sec_opts'), `${work}s / ${rest}s × ${sets}${rounds > 1 ? ` × ${rounds}R` : ''}`)}
+            {secOpen === 'opts' && (
+              <div className="px-3 py-1.5 divide-y divide-gray-100 border-t border-gray-100">
+                {stepper(t('wkt_prep_s'), prep, setPrep, 0, 60, 5)}
+                {stepper(t('wkt_work_s'), work, setWork, 5, 600, 5)}
+                {stepper(t('wkt_rest_s'), rest, setRest, 0, 300, 5)}
+                {stepper(t('wkt_sets'), sets, setSets, 1, 20, 1)}
+                {stepper(t('wkt_rounds'), rounds, setRounds, 1, 10, 1)}
+              </div>
+            )}
+          </div>
+          {/* 루틴 저장/불러오기 */}
+          <div>
+            {secBtn('save', t('wkt_sec_save'), routines.length ? String(routines.length) : '')}
+            {secOpen === 'save' && (
+              <div className="border-t border-gray-100">
+                <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border-b border-gray-100">
+                  <input value={routineName} onChange={(e) => setRoutineName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') saveRoutine() }} placeholder={t('wkt_routine_ph')} className="flex-1 min-w-0 px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-brand-400" />
+                  <button onClick={saveRoutine} disabled={!routineName.trim()} className="px-3 py-1.5 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-40">{t('wkt_save')}</button>
+                </div>
+                {routines.length === 0 ? (
+                  <p className="text-center text-xs text-gray-400 py-4">{t('wkt_no_routines')}</p>
+                ) : (
+                  <div className="divide-y divide-gray-100">
+                    {routines.map((r) => {
+                      const rex = EXERCISES.find((e) => e.id === r.ex)
+                      return (
+                        <div key={r.name} className="flex items-center gap-2 px-3 py-2">
+                          <button onClick={() => loadRoutine(r)} disabled={running} className="flex-1 min-w-0 text-left disabled:opacity-40">
+                            <span className="block text-sm font-semibold text-gray-800 truncate">{r.name}</span>
+                            <span className="block text-[11px] text-gray-400 tabular-nums">{rex ? exName(rex, lang) + ' · ' : ''}{r.work}s / {r.rest}s × {r.sets}{r.rounds > 1 ? ` × ${r.rounds}R` : ''}</span>
+                          </button>
+                          <button onClick={() => saveRoutines(routines.filter((x) => x.name !== r.name))} aria-label="delete" className="p-1.5 shrink-0 text-gray-300 hover:text-red-500"><ToolIcon name="x" className="w-4 h-4" /></button>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          {/* 운동 설명 (선택된 운동이 있을 때만) */}
+          {ex && (
+            <div>
+              {secBtn('guide', exName(ex, lang) + ' · ' + t('wkt_sec_guide'), 'Lv' + ex.level)}
+              {secOpen === 'guide' && (
+                <div className="px-4 py-3 border-t border-gray-100">
+                  <p className="text-sm text-gray-600 leading-relaxed">{t(exDescKey(ex.id))}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* ---- Big timer card (whole card takes the phase colour; label text alongside) ---- */}
         <div className={'rounded-2xl text-white shadow-sm transition-colors relative ' + PHASE_BG[phase]}>
           {/* ⚙ sound / vibration — custom popover from the card's top-right corner */}
@@ -332,49 +400,6 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
             </div>
           </div>
         </div>
-
-        {/* ---- Settings (steppers) ---- */}
-        <div className="rounded-xl border border-gray-200 px-3 py-1.5 divide-y divide-gray-100">
-          {stepper(t('wkt_prep_s'), prep, setPrep, 0, 60, 5)}
-          {stepper(t('wkt_work_s'), work, setWork, 5, 600, 5)}
-          {stepper(t('wkt_rest_s'), rest, setRest, 0, 300, 5)}
-          {stepper(t('wkt_sets'), sets, setSets, 1, 20, 1)}
-          {stepper(t('wkt_rounds'), rounds, setRounds, 1, 10, 1)}
-        </div>
-
-        {/* ---- Custom routines (save / load / delete) ---- */}
-        <div className="rounded-xl border border-gray-200 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border-b border-gray-100">
-            <input value={routineName} onChange={(e) => setRoutineName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') saveRoutine() }} placeholder={t('wkt_routine_ph')} className="flex-1 min-w-0 px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:border-brand-400" />
-            <button onClick={saveRoutine} disabled={!routineName.trim()} className="px-3 py-1.5 text-sm font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-40">{t('wkt_save')}</button>
-          </div>
-          {routines.length === 0 ? (
-            <p className="text-center text-xs text-gray-400 py-4">{t('wkt_no_routines')}</p>
-          ) : (
-            <div className="divide-y divide-gray-100">
-              {routines.map((r) => {
-                const rex = EXERCISES.find((e) => e.id === r.ex)
-                return (
-                  <div key={r.name} className="flex items-center gap-2 px-3 py-2">
-                    <button onClick={() => loadRoutine(r)} disabled={running} className="flex-1 min-w-0 text-left disabled:opacity-40">
-                      <span className="block text-sm font-semibold text-gray-800 truncate">{r.name}</span>
-                      <span className="block text-[11px] text-gray-400 tabular-nums">{rex ? exName(rex, lang) + ' · ' : ''}{r.work}s / {r.rest}s × {r.sets}{r.rounds > 1 ? ` × ${r.rounds}R` : ''}</span>
-                    </button>
-                    <button onClick={() => saveRoutines(routines.filter((x) => x.name !== r.name))} aria-label="delete" className="p-1.5 shrink-0 text-gray-300 hover:text-red-500"><ToolIcon name="x" className="w-4 h-4" /></button>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* ---- Selected exercise guide ---- */}
-        {ex && (
-          <div className="rounded-xl border border-gray-200 p-4">
-            <p className="text-sm font-bold text-gray-800 mb-1">{exName(ex, lang)} <span className="text-xs font-semibold text-gray-400">Lv{ex.level}</span></p>
-            <p className="text-sm text-gray-600 leading-relaxed">{t(exDescKey(ex.id))}</p>
-          </div>
-        )}
 
         {/* Related tools */}
         <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
