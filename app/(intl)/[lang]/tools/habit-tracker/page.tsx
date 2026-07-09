@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
@@ -40,11 +40,23 @@ export default function HabitTrackerPage({ params }: { params: { lang: string } 
   const [adding, setAdding] = useState(false)
   const tracked = useRef(false)
 
+  // Habits persist in localStorage: read once on mount, write at every change (inside the
+  // handlers, never a save-effect — see the StrictMode clobbering pitfall). First visit
+  // (no stored key) keeps the demo defaults.
+  useEffect(() => {
+    try { const s = localStorage.getItem('ht_habits_v1'); if (s) { const p = JSON.parse(s); if (Array.isArray(p)) setHabits(p) } } catch { /* ignore */ }
+  }, [])
+  const persist = (updater: (prev: Habit[]) => Habit[]) => setHabits(prev => {
+    const n = updater(prev)
+    try { localStorage.setItem('ht_habits_v1', JSON.stringify(n)) } catch { /* ignore */ }
+    return n
+  })
+
   function track() { if (!tracked.current) { trackToolUsed('habit-tracker'); tracked.current = true } }
 
   function toggle(habitId: string, dayStr: string) {
     track()
-    setHabits(prev=>prev.map(h=>{
+    persist(prev=>prev.map(h=>{
       if (h.id!==habitId) return h
       const has = h.completedDays.includes(dayStr)
       return {...h, completedDays:has?h.completedDays.filter(d=>d!==dayStr):[...h.completedDays,dayStr]}
@@ -53,11 +65,11 @@ export default function HabitTrackerPage({ params }: { params: { lang: string } 
 
   function addHabit() {
     if (!newName.trim()) return
-    setHabits(prev=>[...prev,{id:Date.now().toString(),name:newName.trim(),emoji:newEmoji,completedDays:[]}])
+    persist(prev=>[...prev,{id:Date.now().toString(),name:newName.trim(),emoji:newEmoji,completedDays:[]}])
     setNewName(''); setAdding(false); track()
   }
 
-  function removeHabit(id: string) { setHabits(prev=>prev.filter(h=>h.id!==id)) }
+  function removeHabit(id: string) { persist(prev=>prev.filter(h=>h.id!==id)) }
 
   function getStreak(habit: Habit): number {
     let s=0, i=0
