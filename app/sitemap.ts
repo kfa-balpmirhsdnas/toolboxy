@@ -6,6 +6,7 @@ import { COUNTRIES, countrySlug } from '@/lib/countries'
 import { CSS_COLORS, colorSlug } from '@/lib/color-names'
 import { HANJA_LIST } from '@/lib/classics/hanja-index'
 import { SAJASOHAK } from '@/lib/classics/sajasohak'
+import { ZODIAC_SIGNS, ZODIAC_ANIMALS } from '@/lib/zodiac'
 
 const BASE_URL = 'https://www.toolboxy.net'
 const LANGS = ['en', 'ja', 'ko']
@@ -102,5 +103,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }))
 
-  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...elementUrls, ...countryUrls, ...colorUrls, ...hanjaUrls, ...sajaUrls]
+  // Zodiac sign (12) + Chinese zodiac animal (12) pages × 3 langs — localized content.
+  const zodiacUrls = LANGS.flatMap((lang) => [
+    ...ZODIAC_SIGNS.map((s) => ({ url: `${BASE_URL}/${lang}/tools/zodiac-sign/${s.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
+    ...ZODIAC_ANIMALS.map((a) => ({ url: `${BASE_URL}/${lang}/tools/chinese-zodiac/${a.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
+  ])
+
+  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...elementUrls, ...countryUrls, ...colorUrls, ...hanjaUrls, ...sajaUrls, ...zodiacUrls]
 }

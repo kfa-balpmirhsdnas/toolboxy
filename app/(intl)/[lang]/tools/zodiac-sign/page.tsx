@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
@@ -35,6 +36,7 @@ const tool = getToolBySlug('zodiac-sign')!
 
 export default function ZodiacSignPage() {
   const t = useTranslations('toolui')
+  const { lang } = useParams<{ lang: string }>()
   const [date,setDate]=useState('')
 
   const d=date?new Date(date):null
@@ -82,6 +84,13 @@ export default function ZodiacSignPage() {
               <div className="text-2xl">{s.emoji}</div>
               <div className="text-xs text-gray-500 truncate">{s.name}</div>
             </button>
+          ))}
+        </div>
+        {/* per-sign detail pages (longtail: 성격·기간·궁합) */}
+        <div className="mt-3 flex flex-wrap justify-center gap-1.5 pb-4">
+          {SIGNS.map(s=>(
+            <a key={s.name} href={`/${lang}/tools/zodiac-sign/${s.name.toLowerCase()}`}
+              className="px-2.5 py-1 rounded-full border border-gray-200 text-xs text-gray-500 hover:text-brand-600 hover:border-brand-300">{s.emoji} {s.name}</a>
           ))}
         </div>
       </div>

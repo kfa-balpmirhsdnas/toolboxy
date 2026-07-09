@@ -8,6 +8,8 @@ import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('chinese-zodiac')!
 
 // index = year % 12
+// eslint-disable-next-line import/order
+import { ZODIAC_ANIMALS, zName } from '@/lib/zodiac'
 const ANIMALS = [
   { emoji: '🐵', ko: '원숭이', ja: '猿', en: 'Monkey' }, { emoji: '🐔', ko: '닭', ja: '鶏', en: 'Rooster' },
   { emoji: '🐶', ko: '개', ja: '犬', en: 'Dog' }, { emoji: '🐷', ko: '돼지', ja: '猪', en: 'Pig' },
@@ -68,6 +70,15 @@ export default function ChineseZodiacPage({ params }: { params: { lang: string }
             </div>
           </>
         )}
+        {/* per-animal detail pages (longtail: 성격·연도·궁합) */}
+        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 pt-1">
+          {ZODIAC_ANIMALS.map((a) => (
+            <a key={a.id} href={`/${params.lang}/tools/chinese-zodiac/${a.id}`}
+              className="flex flex-col items-center py-2 rounded-xl border border-gray-100 text-gray-600 hover:border-brand-300 hover:text-brand-600">
+              <span className="text-xl">{a.emoji}</span><span className="text-[11px] mt-0.5">{zName(a, lang)}</span>
+            </a>
+          ))}
+        </div>
         <p className="text-xs text-gray-400">{t('cz_note')}</p>
       </div>
     </ToolLayout>
