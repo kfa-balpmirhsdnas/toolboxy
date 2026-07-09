@@ -82,6 +82,9 @@ export const COUNTRIES: Country[] = [
 ]
 
 export const flag = (code: string) => code.replace(/./g, (c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
+/** URL slug for a country's own page: /tools/country-info/<slug> (English name, kebab-case). */
+export const countrySlug = (c: Country): string => c.en.toLowerCase().replace(/[^a-z]+/g, '-')
+export const COUNTRY_BY_SLUG: Record<string, Country> = Object.fromEntries(COUNTRIES.map((c) => [countrySlug(c), c]))
 export const cName = (c: Country, lang: string) => (lang === 'ko' ? c.ko : lang === 'ja' ? c.ja : c.en)
 export const capName = (c: Country, lang: string) => (lang === 'ko' ? c.cap_ko : lang === 'ja' ? c.cap_ja : c.cap_en)
 

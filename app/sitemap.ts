@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { TOOLS, CATEGORY_META, type ToolCategory } from '@/lib/tools/registry'
 import { IDIOMS } from '@/lib/gosaseongeo'
 import { ELEMENTS, elementSlug } from '@/lib/elements'
+import { COUNTRIES, countrySlug } from '@/lib/countries'
 
 const BASE_URL = 'https://www.toolboxy.net'
 const LANGS = ['en', 'ja', 'ko']
@@ -67,5 +68,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   )
 
-  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...elementUrls]
+  // Per-country pages (~70 × 3 langs) — localized content, every locale canonical.
+  const countryUrls = LANGS.flatMap((lang) =>
+    COUNTRIES.map((c) => ({
+      url: `${BASE_URL}/${lang}/tools/country-info/${countrySlug(c)}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
+  )
+
+  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...elementUrls, ...countryUrls]
 }
