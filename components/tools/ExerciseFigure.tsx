@@ -54,8 +54,10 @@ const FIGS: Record<string, Fig> = {
   },
   'seated-leg-raise': {
     period: 2000,
-    a: lying([122, 90], [148, 96], { head: [70, 44], neck: [76, 56], hip: [96, 94], elbow: [88, 76], hand: [100, 92] }),
-    b: lying([120, 72], [146, 54], { head: [70, 44], neck: [76, 56], hip: [96, 94], elbow: [88, 76], hand: [100, 92] }),
+    // arm plants on the floor BEHIND the hip (down-left of the torso) — the previous coords ran
+    // almost parallel to the torso line, so the arm was invisible
+    a: lying([122, 90], [148, 96], { head: [70, 44], neck: [76, 56], hip: [96, 94], elbow: [70, 80], hand: [72, 106] }),
+    b: lying([120, 72], [146, 54], { head: [70, 44], neck: [76, 56], hip: [96, 94], elbow: [70, 80], hand: [72, 106] }),
   },
   'hanging-knee-raise': { period: 2000, bar: true, a: hang([100, 94], [102, 110]), b: hang([114, 76], [106, 92]) },
   'hanging-leg-raise': { period: 2400, bar: true, a: hang([100, 94], [100, 110]), b: hang([124, 76], [148, 78]) },
