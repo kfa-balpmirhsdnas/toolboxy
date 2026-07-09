@@ -3,6 +3,7 @@ import { TOOLS, CATEGORY_META, type ToolCategory } from '@/lib/tools/registry'
 import { IDIOMS } from '@/lib/gosaseongeo'
 import { ELEMENTS, elementSlug } from '@/lib/elements'
 import { COUNTRIES, countrySlug } from '@/lib/countries'
+import { CSS_COLORS, colorSlug } from '@/lib/color-names'
 
 const BASE_URL = 'https://www.toolboxy.net'
 const LANGS = ['en', 'ja', 'ko']
@@ -77,5 +78,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   )
 
-  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...elementUrls, ...countryUrls]
+  // Per-CSS-color pages (140 × 3 langs).
+  const colorUrls = LANGS.flatMap((lang) =>
+    CSS_COLORS.map((c) => ({
+      url: `${BASE_URL}/${lang}/tools/html-color-names/${colorSlug(c)}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
+  )
+
+  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...elementUrls, ...countryUrls, ...colorUrls]
 }

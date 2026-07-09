@@ -7405,6 +7405,8 @@
     "hcn_subtitle": "140以上のCSS名前付き色とhex値。クリックでコピー。",
     "hcn_copied": "{name} をコピーしました!",
     "hcn_none": "色が見つかりません",
+    "hcn_css": "CSSでの使い方",
+    "hcn_similar": "似ている色",
     "ue_title": "URLエンコーダー / デコーダー",
     "ue_subtitle": "URL文字列とコンポーネントをエンコード・デコードします",
     "ue_component": "コンポーネントモード (encodeURIComponent — / ? # & = もエンコード)",

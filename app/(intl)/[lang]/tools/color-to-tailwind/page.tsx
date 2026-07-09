@@ -4,25 +4,8 @@ import { useTranslations } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
-// Tailwind CSS color palette (selected)
-const TW:{name:string,hex:string}[]=[
-  {name:'slate-50',hex:'#f8fafc'},{name:'slate-100',hex:'#f1f5f9'},{name:'slate-200',hex:'#e2e8f0'},{name:'slate-300',hex:'#cbd5e1'},{name:'slate-400',hex:'#94a3b8'},{name:'slate-500',hex:'#64748b'},{name:'slate-600',hex:'#475569'},{name:'slate-700',hex:'#334155'},{name:'slate-800',hex:'#1e293b'},{name:'slate-900',hex:'#0f172a'},
-  {name:'gray-50',hex:'#f9fafb'},{name:'gray-100',hex:'#f3f4f6'},{name:'gray-200',hex:'#e5e7eb'},{name:'gray-300',hex:'#d1d5db'},{name:'gray-400',hex:'#9ca3af'},{name:'gray-500',hex:'#6b7280'},{name:'gray-600',hex:'#4b5563'},{name:'gray-700',hex:'#374151'},{name:'gray-800',hex:'#1f2937'},{name:'gray-900',hex:'#111827'},
-  {name:'red-50',hex:'#fef2f2'},{name:'red-100',hex:'#fee2e2'},{name:'red-200',hex:'#fecaca'},{name:'red-400',hex:'#f87171'},{name:'red-500',hex:'#ef4444'},{name:'red-600',hex:'#dc2626'},{name:'red-700',hex:'#b91c1c'},{name:'red-900',hex:'#7f1d1d'},
-  {name:'orange-400',hex:'#fb923c'},{name:'orange-500',hex:'#f97316'},{name:'orange-600',hex:'#ea580c'},{name:'orange-700',hex:'#c2410c'},
-  {name:'amber-400',hex:'#fbbf24'},{name:'amber-500',hex:'#f59e0b'},{name:'amber-600',hex:'#d97706'},
-  {name:'yellow-300',hex:'#fde047'},{name:'yellow-400',hex:'#facc15'},{name:'yellow-500',hex:'#eab308'},
-  {name:'green-50',hex:'#f0fdf4'},{name:'green-100',hex:'#dcfce7'},{name:'green-400',hex:'#4ade80'},{name:'green-500',hex:'#22c55e'},{name:'green-600',hex:'#16a34a'},{name:'green-700',hex:'#15803d'},{name:'green-900',hex:'#14532d'},
-  {name:'teal-400',hex:'#2dd4bf'},{name:'teal-500',hex:'#14b8a6'},{name:'teal-600',hex:'#0d9488'},
-  {name:'cyan-400',hex:'#22d3ee'},{name:'cyan-500',hex:'#06b6d4'},{name:'cyan-600',hex:'#0891b2'},
-  {name:'blue-50',hex:'#eff6ff'},{name:'blue-100',hex:'#dbeafe'},{name:'blue-400',hex:'#60a5fa'},{name:'blue-500',hex:'#3b82f6'},{name:'blue-600',hex:'#2563eb'},{name:'blue-700',hex:'#1d4ed8'},{name:'blue-900',hex:'#1e3a8a'},
-  {name:'indigo-400',hex:'#818cf8'},{name:'indigo-500',hex:'#6366f1'},{name:'indigo-600',hex:'#4f46e5'},{name:'indigo-700',hex:'#4338ca'},
-  {name:'violet-500',hex:'#8b5cf6'},{name:'violet-600',hex:'#7c3aed'},{name:'violet-700',hex:'#6d28d9'},
-  {name:'purple-400',hex:'#c084fc'},{name:'purple-500',hex:'#a855f7'},{name:'purple-600',hex:'#9333ea'},
-  {name:'pink-400',hex:'#f472b6'},{name:'pink-500',hex:'#ec4899'},{name:'pink-600',hex:'#db2777'},
-  {name:'rose-400',hex:'#fb7185'},{name:'rose-500',hex:'#f43f5e'},{name:'rose-600',hex:'#e11d48'},
-  {name:'white',hex:'#ffffff'},{name:'black',hex:'#000000'},
-]
+// Tailwind CSS color palette — shared source in lib/color-names (also powers the per-color pages)
+import { TW_PALETTE as TW } from '@/lib/color-names'
 
 function hexToRgb(hex:string):{r:number,g:number,b:number}|null{
   const m=hex.replace('#','').match(/^([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i)

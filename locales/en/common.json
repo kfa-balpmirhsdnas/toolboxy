@@ -6996,6 +6996,8 @@
     "hcn_subtitle": "All 140+ CSS named colors with their hex values. Click to copy.",
     "hcn_copied": "{name} copied!",
     "hcn_none": "No colors found",
+    "hcn_css": "CSS usage",
+    "hcn_similar": "Similar colors",
     "ue_title": "URL Encoder / Decoder",
     "ue_subtitle": "Encode or decode URL strings and components",
     "ue_component": "Component mode (encodeURIComponent — encodes / ? # & = too)",

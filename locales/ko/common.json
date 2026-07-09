@@ -7432,6 +7432,8 @@
     "hcn_subtitle": "140개 이상의 CSS 명명 색상과 hex 값. 클릭하여 복사하세요.",
     "hcn_copied": "{name} 복사됨!",
     "hcn_none": "색상을 찾을 수 없습니다",
+    "hcn_css": "CSS 사용법",
+    "hcn_similar": "비슷한 색",
     "ue_title": "URL 인코더 / 디코더",
     "ue_subtitle": "URL 문자열과 구성 요소를 인코딩하거나 디코딩합니다",
     "ue_component": "구성 요소 모드 (encodeURIComponent — / ? # & = 도 인코딩)",
