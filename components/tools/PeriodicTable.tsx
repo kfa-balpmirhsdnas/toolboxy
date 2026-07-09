@@ -138,6 +138,8 @@ export default function PeriodicTable({ params }: { params: { lang: string } }) 
               {useText && <span className="col-span-2 sm:col-span-3">{t('pt_use')}: <b>{useText}</b></span>}
             </div>
           )}
+          {/* per-element page (longtail SEO) — also the crawler's in-content path to those pages */}
+          <a href={`/${lang}/tools/periodic-table/${sel.en.toLowerCase()}`} className="inline-block mt-2.5 text-sm font-semibold text-brand-600 hover:underline">{t('pt_more')} →</a>
          </div>
          {d && shellArr.length > 0 && (
            <div className="shrink-0 self-center sm:self-start mx-auto sm:mx-0">

@@ -4,6 +4,9 @@
 
 export interface Element { n: number; sym: string; en: string; ko: string; ja: string; mass: number; cat: string; group: number; period: number }
 
+/** URL slug for an element's own page: /tools/periodic-table/<slug> (English name, lowercase). */
+export const elementSlug = (e: Element): string => e.en.toLowerCase()
+
 export const ELEMENTS: Element[] = [
   { n: 1, sym: 'H', en: 'Hydrogen', ko: '수소', ja: '水素', mass: 1.008, cat: 'nonmetal', group: 1, period: 1 },
   { n: 2, sym: 'He', en: 'Helium', ko: '헬륨', ja: 'ヘリウム', mass: 4.0026, cat: 'noble', group: 18, period: 1 },
@@ -126,3 +129,4 @@ export const ELEMENTS: Element[] = [
 ]
 
 export const BY_SYMBOL: Record<string, Element> = Object.fromEntries(ELEMENTS.map((e) => [e.sym, e]))
+export const ELEMENT_BY_SLUG: Record<string, Element> = Object.fromEntries(ELEMENTS.map((e) => [elementSlug(e), e]))
