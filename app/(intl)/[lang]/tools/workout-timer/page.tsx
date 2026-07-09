@@ -450,6 +450,14 @@ export default function WorkoutTimerPage({ params: { lang } }: { params: { lang:
               {secOpen === 'guide' && (
                 <div className="px-4 py-3 border-t border-gray-100">
                   <p className="text-sm text-gray-600 leading-relaxed">{t(exDescKey(ex.id))}</p>
+                  {/* muscle-emphasis tags: 복근 60% · 허벅지 25% … */}
+                  <div className="flex flex-wrap gap-1.5 mt-2.5">
+                    {ex.targets.map(([m, pct]) => (
+                      <span key={m} className="inline-flex items-baseline gap-1 px-2 py-1 rounded-lg bg-brand-50 text-brand-700 text-xs font-semibold">
+                        {t('wkt_m_' + m)}<span className="text-[10px] opacity-70 tabular-nums">{pct}%</span>
+                      </span>
+                    ))}
+                  </div>
                   {/* live motion preview — always animating here so the form can be studied before starting */}
                   <ExerciseFigure exId={ex.id} active className="mx-auto mt-2 w-48 h-28 text-gray-500" />
                 </div>
