@@ -4,6 +4,8 @@ import { IDIOMS } from '@/lib/gosaseongeo'
 import { ELEMENTS, elementSlug } from '@/lib/elements'
 import { COUNTRIES, countrySlug } from '@/lib/countries'
 import { CSS_COLORS, colorSlug } from '@/lib/color-names'
+import { HANJA_LIST } from '@/lib/classics/hanja-index'
+import { SAJASOHAK } from '@/lib/classics/sajasohak'
 
 const BASE_URL = 'https://www.toolboxy.net'
 const LANGS = ['en', 'ja', 'ko']
@@ -87,5 +89,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   )
 
-  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...elementUrls, ...countryUrls, ...colorUrls]
+  // 천자문 한자 (1000) + 사자소학 구절 (39) pages — Korean-only content, /ko URLs only
+  // (other locales consolidate via canonical, same as the idiom pages).
+  const hanjaUrls = HANJA_LIST.map((h) => ({
+    url: `${BASE_URL}/ko/tools/cheonjamun/${encodeURIComponent(h.hanja)}`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
+  const sajaUrls = SAJASOHAK.map((v) => ({
+    url: `${BASE_URL}/ko/tools/sajasohak/${v.no}`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
+
+  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...elementUrls, ...countryUrls, ...colorUrls, ...hanjaUrls, ...sajaUrls]
 }
