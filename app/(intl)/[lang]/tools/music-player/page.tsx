@@ -509,7 +509,12 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
     eqRafRef.current = requestAnimationFrame(loop)
     return () => { if (eqRafRef.current) cancelAnimationFrame(eqRafRef.current) }
   }, [eqEnabled, playing])
-  const togglePlay = () => { const a = media(); if (!a || !url) return; if (a.paused) { if (eqEnabled) { setupEqGraph(); audioCtxRef.current?.resume?.() } a.play().catch(() => {}) } else a.pause() }
+  const togglePlay = () => {
+    const a = media(); if (!a || !url) return
+    if (a.paused) { if (eqEnabled) { setupEqGraph(); audioCtxRef.current?.resume?.() } a.play().catch(() => {}) } else a.pause()
+    // align the (possibly half-scrolled) player card with the view on every play/pause tap
+    cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
   const seekTo = (time: number) => { const a = media(); if (a) a.currentTime = time }
   const seekBy = (d: number) => { const a = media(); if (a) a.currentTime = Math.max(0, Math.min(a.duration || a.currentTime, a.currentTime + d)) }
   // Effective element volume = master volume × the track's normalization gain (≤1).
@@ -972,7 +977,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   </button>
                 ) : firstPlayable ? (
                   /* Nothing loaded but the playlist has a playable track → start it. */
-                  <button onClick={() => load(firstPlayable.file!)} aria-label="play" className="w-16 h-16 inline-flex items-center justify-center rounded-full bg-white text-brand-700 hover:bg-white/90 active:scale-95 transition shadow">
+                  <button onClick={() => { load(firstPlayable.file!); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }} aria-label="play" className="w-16 h-16 inline-flex items-center justify-center rounded-full bg-white text-brand-700 hover:bg-white/90 active:scale-95 transition shadow">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8"><path d="M8 5v14l11-7z" /></svg>
                   </button>
                 ) : (
