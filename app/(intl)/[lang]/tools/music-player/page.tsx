@@ -1001,10 +1001,10 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                   if (window.matchMedia('(min-width: 700px)').matches) { playlistRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return }
                   const r = cardRef.current?.getBoundingClientRect()
                   if (!r) return
+                  // Near-full-height panel: from just under the fixed header down to a small bottom
+                  // margin (the centered player-sized version left too much empty space above).
                   const headerSafe = 64 // fixed header (h-14) + breathing room
-                  const h = Math.min(r.height, window.innerHeight - headerSafe - 12)
-                  const top = Math.max(headerSafe, (window.innerHeight - h) / 2)
-                  setListOv({ top, left: r.left, w: r.width, h })
+                  setListOv({ top: headerSafe, left: r.left, w: r.width, h: window.innerHeight - headerSafe - 16 })
                 }} aria-label={t('mpl_gotolist')} title={t('mpl_gotolist')} className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-white/25 hover:bg-white/30 active:scale-95 transition">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>
                 </button>
