@@ -27,6 +27,21 @@ export default function VideoTrimmerPage({ params }: { params: { lang: string } 
     trackToolUsed('video-trimmer')
   }
 
+  // ±1/5/10s nudges — precise trims without fighting the slider on a phone.
+  const NUDGES = [-10, -5, -1, 1, 5, 10]
+  const nudgeStart = (d: number) => setStart((s) => Math.min(Math.max(0, +(s + d).toFixed(1)), end))
+  const nudgeEnd = (d: number) => setEnd((e) => Math.max(Math.min(dur, +(e + d).toFixed(1)), start))
+  const nudgeRow = (fn: (d: number) => void) => (
+    <div className="flex flex-wrap gap-1.5 mt-1">
+      {NUDGES.map((d) => (
+        <button key={d} onClick={() => fn(d)}
+          className="px-2.5 py-1 rounded-lg bg-gray-100 text-xs font-semibold text-gray-600 hover:bg-gray-200 active:bg-brand-100 tabular-nums">
+          {d > 0 ? '+' : ''}{d}s
+        </button>
+      ))}
+    </div>
+  )
+
   async function trim() {
     if (!file || end <= start) return
     setStatus('loading'); setOutUrl(''); setError('')
@@ -77,10 +92,12 @@ export default function VideoTrimmerPage({ params }: { params: { lang: string } 
               <div>
                 <label className="text-sm text-gray-600">{t('md_start')}: <span className="font-mono">{toClock(start)}</span></label>
                 <input type="range" min={0} max={dur} step={0.1} value={start} onChange={(e) => setStart(Math.min(+e.target.value, end))} className="w-full" />
+                {nudgeRow(nudgeStart)}
               </div>
               <div>
                 <label className="text-sm text-gray-600">{t('md_end')}: <span className="font-mono">{toClock(end)}</span></label>
                 <input type="range" min={0} max={dur} step={0.1} value={end} onChange={(e) => setEnd(Math.max(+e.target.value, start))} className="w-full" />
+                {nudgeRow(nudgeEnd)}
               </div>
             </div>
             {status && <p className="text-sm text-brand-600 text-center">{status === 'loading' ? t('md_loading') : t('md_processing')}</p>}
