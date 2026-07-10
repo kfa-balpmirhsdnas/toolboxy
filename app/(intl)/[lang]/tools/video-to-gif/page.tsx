@@ -19,6 +19,7 @@ export default function VideoToGifPage({ params }: { params: { lang: string } })
   const [width, setWidth] = useState(320)
   const [busy, setBusy] = useState(false)
   const [prog, setProg] = useState(0)
+  const [error, setError] = useState('')
   const [out, setOut] = useState<{ url: string; size: number } | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -31,8 +32,10 @@ export default function VideoToGifPage({ params }: { params: { lang: string } })
 
   async function convert() {
     const v = videoRef.current; if (!v) return
-    setBusy(true); setProg(0); setOut(null)
+    setBusy(true); setProg(0); setOut(null); setError('')
     try {
+      // videoWidth 0 = the browser couldn't decode this codec (e.g. HEVC) — surface it, don't NaN out
+      if (!v.videoWidth || !isFinite(dur) || dur <= 0) throw new Error('undecodable')
       const { GIFEncoder, quantize, applyPalette } = await import('gifenc')
       const ratio = width / v.videoWidth
       const w = width, h = Math.round(v.videoHeight * ratio)
@@ -41,11 +44,15 @@ export default function VideoToGifPage({ params }: { params: { lang: string } })
       const gif = GIFEncoder()
       const total = Math.max(1, Math.round(len * fps))
       const delay = Math.round(1000 / fps)
+      // ONE global palette sampled from the clip's middle frame — per-frame palettes made colors
+      // shimmer between frames and bloated the file (this is what ffmpeg's palettegen does too).
+      await seek(v, Math.min(dur - 0.01, start + len / 2))
+      ctx.drawImage(v, 0, 0, w, h)
+      const palette = quantize(ctx.getImageData(0, 0, w, h).data, 256)
       for (let i = 0; i < total; i++) {
         await seek(v, Math.min(dur - 0.01, start + i / fps))
         ctx.drawImage(v, 0, 0, w, h)
         const { data } = ctx.getImageData(0, 0, w, h)
-        const palette = quantize(data, 256)
         const index = applyPalette(data, palette)
         gif.writeFrame(index, w, h, { palette, delay })
         setProg(Math.round(((i + 1) / total) * 100))
@@ -53,7 +60,10 @@ export default function VideoToGifPage({ params }: { params: { lang: string } })
       gif.finish()
       const blob = new Blob([gif.bytes()], { type: 'image/gif' })
       setOut({ url: URL.createObjectURL(blob), size: blob.size })
-    } catch (e) { console.error(e) } finally { setBusy(false) }
+    } catch (e) {
+      console.error(e)
+      setError(t('md_error')) // codec/decode/memory failures were silently swallowed before
+    } finally { setBusy(false) }
   }
 
   function download() { if (!out) return; const a = document.createElement('a'); a.href = out.url; a.download = 'animation.gif'; a.click(); trackToolDownload('video-to-gif', 'gif') }
@@ -93,6 +103,7 @@ export default function VideoToGifPage({ params }: { params: { lang: string } })
               <button onClick={convert} disabled={busy} className="px-5 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 disabled:opacity-50">{busy ? t('vg_converting', { n: prog }) : t('vg_convert')}</button>
               <button onClick={() => setSrc('')} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">{t('vg_change')}</button>
             </div>
+            {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl p-3">{error}</p>}
             {out && (
               <div className="rounded-xl border-2 border-green-200 bg-green-50 p-3 flex items-center justify-between">
                 <span className="text-sm text-gray-600">GIF · {fmt(out.size)}</span>
