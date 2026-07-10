@@ -259,9 +259,15 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [listOv, setListOv] = useState<{ top: number; left: number; w: number; h: number } | null>(null)
   useEffect(() => {
     if (!listOv) return
+    // Lock the page behind the popup — without this, scrolling the list also scrolled the page.
+    // (html AND body: body alone still lets the document scroll in Chrome.)
+    const prevBody = document.body.style.overflow
+    const prevHtml = document.documentElement.style.overflow
+    document.body.style.overflow = 'hidden'
+    document.documentElement.style.overflow = 'hidden'
     const close = () => setListOv(null) // rect goes stale on resize/rotation → just close
     window.addEventListener('resize', close)
-    return () => window.removeEventListener('resize', close)
+    return () => { document.body.style.overflow = prevBody; document.documentElement.style.overflow = prevHtml; window.removeEventListener('resize', close) }
   }, [listOv])
   const [lyricsLines, setLyricsLines] = useState<{ t: number; text: string }[] | null>(null) // time-synced lyrics
 
@@ -1161,7 +1167,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 shown.length === 0 ? (
                   <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
                 ) : (
-                  <div ref={listRef} onScroll={onListScroll} className={(listOv ? 'flex-1 min-h-0 ' : 'max-h-[300px] ') + 'min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
+                  <div ref={listRef} onScroll={onListScroll} className={(listOv ? 'flex-1 min-h-0 overscroll-contain ' : 'max-h-[300px] ') + 'min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
                     {shown.slice(0, renderN).map((h) => {
                       const key = h.name + '|' + h.size
                       const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
@@ -1245,7 +1251,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     history.length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
                     ) : (
-                      <div onScroll={onListScroll} className={(listOv ? 'flex-1 min-h-0 ' : 'max-h-80 ') + 'divide-y divide-gray-100 min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-auto'}>
+                      <div onScroll={onListScroll} className={(listOv ? 'flex-1 min-h-0 overscroll-contain ' : 'max-h-80 ') + 'divide-y divide-gray-100 min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-auto'}>
                         {history.slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const member = groupKeys(openGroup).has(key)
                           const ov = metaOv[key]; const fn = parseFileName(h.name.replace(/\.[^.]+$/, ''))
@@ -1262,7 +1268,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     groupSongs(openGroup).length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mpl_group_empty')}</p>
                     ) : (
-                      <div ref={groupListRef} onScroll={onListScroll} className={(listOv ? 'flex-1 min-h-0 ' : 'max-h-[300px] ') + 'min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
+                      <div ref={groupListRef} onScroll={onListScroll} className={(listOv ? 'flex-1 min-h-0 overscroll-contain ' : 'max-h-[300px] ') + 'min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
                         {groupSongs(openGroup).slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                           return (
