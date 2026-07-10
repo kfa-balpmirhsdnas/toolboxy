@@ -96,7 +96,11 @@ export default function AudioTrimmerPage({ params }: { params: { lang: string } 
             </div>
           </>
         )}
-        <p className="text-xs text-gray-400 text-center">{t('md_note_fast')}</p>
+        {/* unified privacy banner (same format as the other tools) */}
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-800">
+          <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></svg>
+          <span>{t('md_note_local')}</span>
+        </div>
       </div>
     </ToolLayout>
   )

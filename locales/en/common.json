@@ -4573,7 +4573,6 @@
     "md_trim": "Trim & download",
     "md_extract": "Extract the audio as MP3",
     "md_download": "⬇ Download",
-    "md_note_fast": "Cut without re-encoding — fast, and processed in your browser.",
     "md_note_browser": "Processed entirely in your browser — nothing is uploaded.",
     "md_error": "Something went wrong. Try a shorter clip or a different file.",
     "kj_ph": "Type a Korean word (e.g. 무료)",
