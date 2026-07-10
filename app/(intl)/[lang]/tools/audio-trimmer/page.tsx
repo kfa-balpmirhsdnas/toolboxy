@@ -21,11 +21,29 @@ export default function AudioTrimmerPage({ params }: { params: { lang: string } 
   const [outUrl, setOutUrl] = useState('')
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+  const audioRef = useRef<HTMLAudioElement>(null)
 
   function load(f: File) {
-    setFile(f); setUrl(URL.createObjectURL(f)); setOutUrl(''); setError('')
+    setFile(f); setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) }); setOutUrl(''); setError('')
     trackToolUsed('audio-trimmer')
   }
+
+  // Whichever trim point you're adjusting (slider drag or ±chip), the player seeks there so
+  // you HEAR exactly where the cut lands (same behaviour as the video trimmer).
+  const seekTo = (sec: number) => { const a = audioRef.current; if (a && isFinite(sec)) try { a.currentTime = Math.min(Math.max(0, sec), dur || sec) } catch { /* ignore */ } }
+  const NUDGES = [-10, -5, -1, 1, 5, 10]
+  const nudgeStart = (d: number) => setStart((s) => { const n = Math.min(Math.max(0, +(s + d).toFixed(1)), end); seekTo(n); return n })
+  const nudgeEnd = (d: number) => setEnd((e) => { const n = Math.max(Math.min(dur, +(e + d).toFixed(1)), start); seekTo(n); return n })
+  const nudgeRow = (fn: (d: number) => void) => (
+    <div className="flex flex-wrap gap-1.5 mt-1">
+      {NUDGES.map((d) => (
+        <button key={d} onClick={() => fn(d)}
+          className="px-2.5 py-1 rounded-lg bg-gray-100 text-xs font-semibold text-gray-600 hover:bg-gray-200 active:bg-brand-100 tabular-nums">
+          {d > 0 ? '+' : ''}{d}s
+        </button>
+      ))}
+    </div>
+  )
 
   async function trim() {
     if (!file || end <= start) return
@@ -58,11 +76,12 @@ export default function AudioTrimmerPage({ params }: { params: { lang: string } 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
+        {/* always mounted so the 불러오기 button can open the picker with a file already loaded */}
+        <input ref={inputRef} type="file" accept="audio/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.currentTarget.value = ''; if (f) load(f) }} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-            <input ref={inputRef} type="file" accept="audio/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
             <p className="text-4xl mb-2">🎵</p>
             <p className="text-sm font-medium text-gray-600">{t('md_drop_audio')}</p>
             <div className="flex justify-center mt-4">
@@ -71,16 +90,18 @@ export default function AudioTrimmerPage({ params }: { params: { lang: string } 
           </div>
         ) : (
           <>
-            <audio src={url} controls className="w-full"
+            <audio ref={audioRef} src={url} controls className="w-full"
               onLoadedMetadata={(e) => { const d = e.currentTarget.duration; setDur(d); setEnd(d); setStart(0) }} />
             <div className="space-y-3">
               <div>
                 <label className="text-sm text-gray-600">{t('md_start')}: <span className="font-mono">{toClock(start)}</span></label>
-                <input type="range" min={0} max={dur} step={0.1} value={start} onChange={(e) => setStart(Math.min(+e.target.value, end))} className="w-full" />
+                <input type="range" min={0} max={dur} step={0.1} value={start} onChange={(e) => { const v = Math.min(+e.target.value, end); setStart(v); seekTo(v) }} className="w-full" />
+                {nudgeRow(nudgeStart)}
               </div>
               <div>
                 <label className="text-sm text-gray-600">{t('md_end')}: <span className="font-mono">{toClock(end)}</span></label>
-                <input type="range" min={0} max={dur} step={0.1} value={end} onChange={(e) => setEnd(Math.max(+e.target.value, start))} className="w-full" />
+                <input type="range" min={0} max={dur} step={0.1} value={end} onChange={(e) => { const v = Math.max(+e.target.value, start); setEnd(v); seekTo(v) }} className="w-full" />
+                {nudgeRow(nudgeEnd)}
               </div>
             </div>
             {status && <p className="text-sm text-brand-600 text-center">{status === 'loading' ? t('md_loading') : t('md_processing')}</p>}
@@ -92,7 +113,9 @@ export default function AudioTrimmerPage({ params }: { params: { lang: string } 
               ) : (
                 <button onClick={download} className="px-6 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700">{t('md_download')}</button>
               )}
-              <button onClick={() => { setUrl(''); setFile(null); setOutUrl('') }} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 inline-flex items-center justify-center" aria-label="reset"><ToolIcon name="refresh" className="w-4 h-4" /></button>
+              <button onClick={() => inputRef.current?.click()} className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-brand-300">
+                <ToolIcon name="folder" className="w-4 h-4" />{t('md_load')}
+              </button>
             </div>
           </>
         )}

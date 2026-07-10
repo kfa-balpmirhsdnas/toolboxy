@@ -28,7 +28,7 @@ export default function VideoTrimmerPage({ params }: { params: { lang: string } 
   const seekTo = (sec: number) => { const v = videoRef.current; if (v && isFinite(sec)) try { v.currentTime = Math.min(Math.max(0, sec), dur || sec) } catch { /* ignore */ } }
 
   function load(f: File) {
-    setFile(f); setUrl(URL.createObjectURL(f)); setOutUrl(''); setError('')
+    setFile(f); setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) }); setOutUrl(''); setError('')
     trackToolUsed('video-trimmer')
   }
 
@@ -78,11 +78,12 @@ export default function VideoTrimmerPage({ params }: { params: { lang: string } 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
+        {/* always mounted so the 불러오기 button can open the picker with a file already loaded */}
+        <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.currentTarget.value = ''; if (f) load(f) }} />
         {!url ? (
           <div onClick={() => inputRef.current?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && load(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-            <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
             <p className="text-4xl mb-2">🎬</p>
             <p className="text-sm font-medium text-gray-600">{t('md_drop_video')}</p>
             <div className="flex justify-center mt-4">
@@ -114,7 +115,9 @@ export default function VideoTrimmerPage({ params }: { params: { lang: string } 
               ) : (
                 <button onClick={download} className="px-6 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700">{t('md_download')}</button>
               )}
-              <button onClick={() => { setUrl(''); setFile(null); setOutUrl('') }} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 inline-flex items-center justify-center" aria-label="reset"><ToolIcon name="refresh" className="w-4 h-4" /></button>
+              <button onClick={() => inputRef.current?.click()} className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-brand-300">
+                <ToolIcon name="folder" className="w-4 h-4" />{t('md_load')}
+              </button>
             </div>
           </>
         )}
