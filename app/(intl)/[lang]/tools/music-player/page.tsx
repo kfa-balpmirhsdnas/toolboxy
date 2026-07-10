@@ -145,7 +145,16 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const toggleNormalize = () => setNormalize((v) => { const n = !v; try { localStorage.setItem('mp_norm_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleAutoSave = () => setAutoSave((v) => { const n = !v; try { localStorage.setItem('mp_autosave_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleEq = () => setEqEnabled((v) => { const n = !v; try { localStorage.setItem('mp_eq_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
-  const toggleDark = () => setDarkMode((v) => { const n = !v; try { localStorage.setItem('mp_dark_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
+  const toggleDark = () => setDarkMode((v) => {
+    const n = !v
+    try {
+      localStorage.setItem('mp_dark_v1', n ? '1' : '0')
+      // keep the pre-paint CSS hint (html[data-mpdark]) in sync with the live toggle
+      const h = document.documentElement
+      if (n) h.setAttribute('data-mpdark', '1'); else h.removeAttribute('data-mpdark')
+    } catch { /* ignore */ }
+    return n
+  })
   const toggleArt = () => setAlbumArt((v) => { const n = !v; try { localStorage.setItem('mp_art_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const toggleLyrics = () => setLyricsOn((v) => { const n = !v; try { localStorage.setItem('mp_lyrics_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
   const flashNav = (dir: 'prev' | 'next') => { setNavHi(dir); if (navTimer.current) clearTimeout(navTimer.current); navTimer.current = setTimeout(() => setNavHi(null), 3000) }
@@ -900,7 +909,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
              LEFT, player RIGHT. (lg: was too high — a Fold's inner screen is ~750-830 CSS px.) */
           <div className="space-y-px min-[700px]:space-y-0 min-[700px]:grid min-[700px]:grid-cols-2 min-[700px]:gap-4">
             {/* ---- Now-playing card ---- */}
-            <div ref={cardRef} className={'min-[700px]:order-2 rounded-2xl text-white shadow-sm overflow-hidden scroll-mt-16 bg-gradient-to-b ' + (darkMode ? 'from-gray-800 to-black' : 'from-brand-500 to-brand-700')}>
+            <div ref={cardRef} className={'mp-theme-player min-[700px]:order-2 rounded-2xl text-white shadow-sm overflow-hidden scroll-mt-16 bg-gradient-to-b ' + (darkMode ? 'from-gray-800 to-black' : 'from-brand-500 to-brand-700')}>
               <div className="p-5">
               {/* Album art is a fixed height and the gauge slot below is always reserved, so opening a
                   submenu never resizes anything (no layout shake). */}
@@ -1115,7 +1124,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
             {listOv && <div className="fixed inset-0 z-40 bg-black/40 min-[700px]:hidden" onClick={() => setListOv(null)} />}
             <div ref={playlistRef}
               style={listOv ? { top: listOv.top, left: listOv.left, width: listOv.w, height: listOv.h } : undefined}
-              className={(listOv ? 'fixed z-50 flex flex-col shadow-2xl ' : '') + 'min-[700px]:order-1 min-[700px]:h-0 min-[700px]:min-h-full min-[700px]:flex min-[700px]:flex-col rounded-2xl border overflow-hidden scroll-mt-16 ' + (darkMode ? 'bg-gray-900 border-gray-700' : (listOv ? 'bg-white ' : '') + 'border-gray-200')}>
+              className={(listOv ? 'fixed z-50 flex flex-col shadow-2xl ' : '') + 'mp-theme-list min-[700px]:order-1 min-[700px]:h-0 min-[700px]:min-h-full min-[700px]:flex min-[700px]:flex-col rounded-2xl border overflow-hidden scroll-mt-16 ' + (darkMode ? 'bg-gray-900 border-gray-700' : (listOv ? 'bg-white ' : '') + 'border-gray-200')}>
               {selMode ? (
                 /* ---- multi-select action bar (replaces the tab header while selecting) ---- */
                 <div className={'flex items-center gap-1 px-1.5 py-1.5 border-b ' + (darkMode ? 'bg-gray-800 border-gray-700' : 'bg-brand-50/70 border-gray-200')}>

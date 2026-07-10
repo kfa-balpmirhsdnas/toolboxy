@@ -43,3 +43,15 @@
     @apply inline-flex items-center text-xs font-medium bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full;
   }
 }
+
+/* Music-player dark mode, pre-hydration: the layout's inline script stamps data-mpdark on <html>
+   from localStorage BEFORE first paint, and these rules skin the two big themed cards so
+   dark-mode users never see the blue SSR flash. After hydration the component state takes over
+   with identical colors. */
+html[data-mpdark='1'] .mp-theme-player {
+  background-image: linear-gradient(to bottom, #1f2937, #000);
+}
+html[data-mpdark='1'] .mp-theme-list {
+  background-color: #111827;
+  border-color: #374151;
+}
