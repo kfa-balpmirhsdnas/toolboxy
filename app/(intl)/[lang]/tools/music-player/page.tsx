@@ -254,6 +254,15 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   const [selKeys, setSelKeys] = useState<Set<string>>(new Set())
   const [selSheet, setSelSheet] = useState(false) // "리스트 추가" target picker for the selection
   const [selNewName, setSelNewName] = useState('')
+  // Mobile 목록 overlay: the playlist card gets FIXED-positioned exactly over the player card
+  // (same DOM node, no duplication) — the stored rect is the player's bounding box at open time.
+  const [listOv, setListOv] = useState<{ top: number; left: number; w: number; h: number } | null>(null)
+  useEffect(() => {
+    if (!listOv) return
+    const close = () => setListOv(null) // rect goes stale on resize/rotation → just close
+    window.addEventListener('resize', close)
+    return () => window.removeEventListener('resize', close)
+  }, [listOv])
   const [lyricsLines, setLyricsLines] = useState<{ t: number; text: string }[] | null>(null) // time-synced lyrics
 
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -743,7 +752,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
   // In select mode a tap toggles the row's selection instead of playing.
   const trackOpen = (h: { name: string; size: number; file: File | null }) => h.file || selMode
     ? <button
-        onClick={() => { if (selMode) { if (!wasLongPress()) toggleSel(h.name + '|' + h.size); return } if (wasLongPress()) return; load(h.file!); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
+        onClick={() => { if (selMode) { if (!wasLongPress()) toggleSel(h.name + '|' + h.size); return } if (wasLongPress()) return; load(h.file!); setListOv(null); cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
         onPointerDown={startPress(h)} onPointerUp={cancelPress} onPointerLeave={cancelPress} onPointerCancel={cancelPress}
         onContextMenu={(e) => e.preventDefault()}
         className="flex-1 min-w-0 flex items-center gap-2 text-left select-none [-webkit-touch-callout:none] [-webkit-user-select:none]">{trackInner(h)}</button>
@@ -974,7 +983,13 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 )}
                 <button onClick={() => { playNext(); flashNav('next') }} aria-label="next" className={'w-12 h-12 inline-flex items-center justify-center rounded-full active:scale-95 transition ' + (navHi === 'next' ? 'bg-white/30' : 'hover:bg-white/15')}><svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="m5 4 10 8-10 8z" /><rect x="17.6" y="4" width="2.4" height="16" rx="1" /></svg></button>
                 {/* Jump down to the playlist / group list */}
-                <button onClick={() => playlistRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} aria-label={t('mpl_gotolist')} title={t('mpl_gotolist')} className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-white/25 hover:bg-white/30 active:scale-95 transition">
+                <button onClick={() => {
+                  // ≥700px the list sits beside the player → keep the scroll; on mobile open the
+                  // overlay sized to the player card ("플레이어 크기만큼").
+                  if (window.matchMedia('(min-width: 700px)').matches) { playlistRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return }
+                  const r = cardRef.current?.getBoundingClientRect()
+                  if (r) setListOv({ top: r.top, left: r.left, w: r.width, h: r.height })
+                }} aria-label={t('mpl_gotolist')} title={t('mpl_gotolist')} className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-white/25 hover:bg-white/30 active:scale-95 transition">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>
                 </button>
               </div>
@@ -1079,8 +1094,12 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
 
             {/* ---- Playlist (standard list style; dark theme follows the player) ---- */}
             {/* h-0 + min-h-full: the list contributes nothing to the grid row height (the player alone
-                sets it) and then stretches to exactly that height — 목록 높이 = 플레이어 높이. */}
-            <div ref={playlistRef} className={'min-[700px]:order-1 min-[700px]:h-0 min-[700px]:min-h-full min-[700px]:flex min-[700px]:flex-col rounded-2xl border overflow-hidden scroll-mt-16 ' + (darkMode ? 'bg-gray-900 border-gray-700' : 'border-gray-200')}>
+                sets it) and then stretches to exactly that height — 목록 높이 = 플레이어 높이.
+                With the mobile 목록 overlay open, this SAME card goes fixed over the player. */}
+            {listOv && <div className="fixed inset-0 z-40 bg-black/40 min-[700px]:hidden" onClick={() => setListOv(null)} />}
+            <div ref={playlistRef}
+              style={listOv ? { top: listOv.top, left: listOv.left, width: listOv.w, height: listOv.h } : undefined}
+              className={(listOv ? 'fixed z-50 flex flex-col shadow-2xl ' : '') + 'min-[700px]:order-1 min-[700px]:h-0 min-[700px]:min-h-full min-[700px]:flex min-[700px]:flex-col rounded-2xl border overflow-hidden scroll-mt-16 ' + (darkMode ? 'bg-gray-900 border-gray-700' : (listOv ? 'bg-white ' : '') + 'border-gray-200')}>
               {selMode ? (
                 /* ---- multi-select action bar (replaces the tab header while selecting) ---- */
                 <div className={'flex items-center gap-1 px-1.5 py-1.5 border-b ' + (darkMode ? 'bg-gray-800 border-gray-700' : 'bg-brand-50/70 border-gray-200')}>
@@ -1118,6 +1137,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 </button>
                 <label htmlFor="mp-file" title={t('mp_pick')} className="p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="plus" className="w-4 h-4" /></label>
                 <label htmlFor="mp-folder" title={t('mp_folder')} className="p-2 text-gray-400 hover:text-brand-600 cursor-pointer"><ToolIcon name="folder" className="w-4 h-4" /></label>
+                {listOv && <button onClick={() => setListOv(null)} aria-label="close" className={'p-2 ' + (darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-500 hover:text-gray-800')}><ToolIcon name="x" className="w-4 h-4" /></button>}
               </div>
               )}
               {searchOn && (
@@ -1131,7 +1151,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 shown.length === 0 ? (
                   <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
                 ) : (
-                  <div ref={listRef} onScroll={onListScroll} className={'max-h-[300px] min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
+                  <div ref={listRef} onScroll={onListScroll} className={(listOv ? 'flex-1 min-h-0 ' : 'max-h-[300px] ') + 'min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
                     {shown.slice(0, renderN).map((h) => {
                       const key = h.name + '|' + h.size
                       const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
@@ -1195,7 +1215,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                 </div>
               ) : (
                 /* ---- 리스트: one group (drill-in) ---- */
-                <div className="min-[700px]:flex-1 min-[700px]:min-h-0 min-[700px]:flex min-[700px]:flex-col">
+                <div className={(listOv ? 'flex-1 min-h-0 flex flex-col ' : '') + 'min-[700px]:flex-1 min-[700px]:min-h-0 min-[700px]:flex min-[700px]:flex-col'}>
                   <div className={'flex items-center gap-1 px-2 py-2 border-b ' + (darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-100')}>
                     <button onClick={() => { setOpenGroup(null); setAddMode(false); setReorder(false) }} className={'inline-flex items-center gap-1 px-1.5 py-1 text-sm ' + (darkMode ? 'text-gray-400 hover:text-brand-400' : 'text-gray-500 hover:text-brand-600')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m15 18-6-6 6-6" /></svg>{t('mpl_back')}</button>
                     <span className={'flex-1 min-w-0 text-sm font-semibold truncate text-center ' + (darkMode ? 'text-gray-100' : 'text-gray-800')}>{groupName(openGroup)}</span>
@@ -1215,7 +1235,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     history.length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mp_empty')}</p>
                     ) : (
-                      <div onScroll={onListScroll} className="divide-y divide-gray-100 max-h-80 min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-auto">
+                      <div onScroll={onListScroll} className={(listOv ? 'flex-1 min-h-0 ' : 'max-h-80 ') + 'divide-y divide-gray-100 min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-auto'}>
                         {history.slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const member = groupKeys(openGroup).has(key)
                           const ov = metaOv[key]; const fn = parseFileName(h.name.replace(/\.[^.]+$/, ''))
@@ -1232,7 +1252,7 @@ export default function MusicPlayerPage({ params: { lang } }: { params: { lang: 
                     groupSongs(openGroup).length === 0 ? (
                       <p className="text-center text-sm text-gray-400 py-10">{t('mpl_group_empty')}</p>
                     ) : (
-                      <div ref={groupListRef} onScroll={onListScroll} className={'max-h-[300px] min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
+                      <div ref={groupListRef} onScroll={onListScroll} className={(listOv ? 'flex-1 min-h-0 ' : 'max-h-[300px] ') + 'min-[700px]:max-h-none min-[700px]:flex-1 min-[700px]:min-h-0 overflow-y-auto divide-y ' + (darkMode ? 'divide-white/10' : 'divide-gray-100')}>
                         {groupSongs(openGroup).slice(0, renderN).map((h) => {
                           const key = h.name + '|' + h.size; const isCur = curFile ? curFile.name + '|' + curFile.size === key : false
                           return (
