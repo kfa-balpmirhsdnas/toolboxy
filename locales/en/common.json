@@ -5170,6 +5170,8 @@
     "ok_subtitle": "Recognize text in a photo or image and turn it into editable text.",
     "ok_drop": "Drop an image or click to upload",
     "ok_run": "Extract text",
+    "ok_enhance": "Enhance image (recommended)",
+    "ok_downloading": "Downloading language data… {n}%",
     "ok_running": "Recognizing… {n}%",
     "ok_change": "Change image",
     "ok_copy": "Copy",
