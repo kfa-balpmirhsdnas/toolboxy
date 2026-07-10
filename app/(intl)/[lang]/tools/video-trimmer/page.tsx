@@ -21,6 +21,11 @@ export default function VideoTrimmerPage({ params }: { params: { lang: string } 
   const [outUrl, setOutUrl] = useState('')
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  // (a)-style scrubbing: whichever trim point you're adjusting (slider drag or ±chip), the
+  // preview seeks there instantly so you SEE the exact cut frame.
+  const seekTo = (sec: number) => { const v = videoRef.current; if (v && isFinite(sec)) try { v.currentTime = Math.min(Math.max(0, sec), dur || sec) } catch { /* ignore */ } }
 
   function load(f: File) {
     setFile(f); setUrl(URL.createObjectURL(f)); setOutUrl(''); setError('')
@@ -29,8 +34,8 @@ export default function VideoTrimmerPage({ params }: { params: { lang: string } 
 
   // ±1/5/10s nudges — precise trims without fighting the slider on a phone.
   const NUDGES = [-10, -5, -1, 1, 5, 10]
-  const nudgeStart = (d: number) => setStart((s) => Math.min(Math.max(0, +(s + d).toFixed(1)), end))
-  const nudgeEnd = (d: number) => setEnd((e) => Math.max(Math.min(dur, +(e + d).toFixed(1)), start))
+  const nudgeStart = (d: number) => setStart((s) => { const n = Math.min(Math.max(0, +(s + d).toFixed(1)), end); seekTo(n); return n })
+  const nudgeEnd = (d: number) => setEnd((e) => { const n = Math.max(Math.min(dur, +(e + d).toFixed(1)), start); seekTo(n); return n })
   const nudgeRow = (fn: (d: number) => void) => (
     <div className="flex flex-wrap gap-1.5 mt-1">
       {NUDGES.map((d) => (
@@ -86,17 +91,17 @@ export default function VideoTrimmerPage({ params }: { params: { lang: string } 
           </div>
         ) : (
           <>
-            <video src={url} controls className="w-full max-h-72 rounded-xl bg-black"
+            <video ref={videoRef} src={url} controls className="w-full max-h-72 rounded-xl bg-black"
               onLoadedMetadata={(e) => { const d = e.currentTarget.duration; setDur(d); setEnd(d); setStart(0) }} />
             <div className="space-y-3">
               <div>
                 <label className="text-sm text-gray-600">{t('md_start')}: <span className="font-mono">{toClock(start)}</span></label>
-                <input type="range" min={0} max={dur} step={0.1} value={start} onChange={(e) => setStart(Math.min(+e.target.value, end))} className="w-full" />
+                <input type="range" min={0} max={dur} step={0.1} value={start} onChange={(e) => { const v = Math.min(+e.target.value, end); setStart(v); seekTo(v) }} className="w-full" />
                 {nudgeRow(nudgeStart)}
               </div>
               <div>
                 <label className="text-sm text-gray-600">{t('md_end')}: <span className="font-mono">{toClock(end)}</span></label>
-                <input type="range" min={0} max={dur} step={0.1} value={end} onChange={(e) => setEnd(Math.max(+e.target.value, start))} className="w-full" />
+                <input type="range" min={0} max={dur} step={0.1} value={end} onChange={(e) => { const v = Math.max(+e.target.value, start); setEnd(v); seekTo(v) }} className="w-full" />
                 {nudgeRow(nudgeEnd)}
               </div>
             </div>
