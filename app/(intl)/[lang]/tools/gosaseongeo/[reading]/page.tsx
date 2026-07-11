@@ -56,6 +56,13 @@ export default async function IdiomPage({ params }: { params: { lang: string; re
     <div className="px-4 py-3 flex gap-3"><span className="text-sm text-gray-400 w-14 shrink-0">{label}</span><span className="text-gray-800">{children}</span></div>
   )
 
+  // 삼국지 유래 성어는 심층 페이지(유래 스토리·정사/연의 구분)로 내부 링크.
+  const TKI_LINK: Record<string, string> = {
+    '삼고초려': 'samgochoryeo', '도원결의': 'dowongyeorui', '계륵': 'gyereuk', '읍참마속': 'eupchammasok',
+    '괄목상대': 'gwalmoksangdae', '백미': 'baekmi', '수어지교': 'sueojigyo', '파죽지세': 'pajukjise', '출사표': 'chulsapyo',
+  }
+  const tkiSlug = TKI_LINK[i.reading]
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-5">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -84,6 +91,13 @@ export default async function IdiomPage({ params }: { params: { lang: string; re
           </Row>
         )}
       </div>
+
+      {tkiSlug && (
+        <Link href={`/${params.lang}/tools/three-kingdoms-idioms/${tkiSlug}`}
+          className="block rounded-xl border-2 border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-700 hover:bg-amber-100 transition-colors">
+          ⚔️ {L('gs_tki_link', '삼국지 심층 유래 보기 — 유래 스토리·정사/연의 구분')} →
+        </Link>
+      )}
 
       {related.length > 0 && (
         <div>

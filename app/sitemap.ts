@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { TOOLS, CATEGORY_META, type ToolCategory } from '@/lib/tools/registry'
 import { IDIOMS } from '@/lib/gosaseongeo'
+import { TK_IDIOMS } from '@/lib/tools/threeKingdomsIdioms'
 import { ELEMENTS, elementSlug } from '@/lib/elements'
 import { COUNTRIES, countrySlug } from '@/lib/countries'
 import { CSS_COLORS, colorSlug } from '@/lib/color-names'
@@ -63,6 +64,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }))
 
+  // 삼국지 고사성어 (30 × 3 langs) — trilingual content, every locale canonical.
+  const tkIdiomUrls = LANGS.flatMap((lang) =>
+    TK_IDIOMS.map((i) => ({
+      url: `${BASE_URL}/${lang}/tools/three-kingdoms-idioms/${i.slug}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })),
+  )
+
   // Per-element pages (118 × 3 langs) — localized content, so every locale is canonical.
   const elementUrls = LANGS.flatMap((lang) =>
     ELEMENTS.map((e) => ({
@@ -109,5 +119,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...ZODIAC_ANIMALS.map((a) => ({ url: `${BASE_URL}/${lang}/tools/chinese-zodiac/${a.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
   ])
 
-  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...elementUrls, ...countryUrls, ...colorUrls, ...hanjaUrls, ...sajaUrls, ...zodiacUrls]
+  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...tkIdiomUrls, ...elementUrls, ...countryUrls, ...colorUrls, ...hanjaUrls, ...sajaUrls, ...zodiacUrls]
 }

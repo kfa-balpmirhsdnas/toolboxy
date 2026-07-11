@@ -104,6 +104,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "three-kingdoms-idioms": "A dictionary of 30 idioms born from the Three Kingdoms — meanings, origin stories, pinyin, and whether each comes from history or the novel. With character filters and modern examples. Free, no sign-up.",
     "three-kingdoms-test": "Answer 12 questions in 3 minutes to find which Three Kingdoms hero matches your personality — Cao Cao, Zhuge Liang, Guan Yu and 13 more across 4 axes. Free, no install or sign-up, with a shareable result card.",
     "study-planner": "A free online study planner: add color-coded subjects, list tasks per day, check them off and watch daily/weekly completion rates. Week and day views, A4 print, JSON backup — no login, stored only in your browser.",
     "flashcards": "Make your own flashcard decks with front/back text and flip through them to memorize anything. Bulk paste from a spreadsheet, know/don’t-know sorting, retry only the missed cards, JSON backup. Free, no sign-up.",
@@ -1662,6 +1663,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "three-kingdoms-idioms": "Three Kingdoms Idioms is a dictionary of 30 expressions that came out of the Three Kingdoms era, from the Three Visits to the Peach Garden Oath. Each entry gives the hanja, Korean and Japanese readings, pinyin, a modern definition, a full origin story from the saga, and two modern example sentences — plus a source badge that tells you whether it comes from the official histories, their annotations, the novel, or later records. Filter by hero (Liu Bei, Cao Cao, Zhuge Liang…), search across scripts, and check the idiom of the day. Completely free, no installation or sign-up.",
     "three-kingdoms-test": "The Three Kingdoms personality test scores you on four axes — strategy/action, cause/results, leader/advisor, careful/bold — through 12 situational questions, then matches you to one of 16 heroes like Cao Cao, Liu Bei, Zhuge Liang or Lü Bu. The result shows your character description, strengths, a 4-axis graph, plus your best and toughest matches, and you can save a 1080×1080 result card or share your result by link. Everything is evaluated instantly in your browser and your answers are never stored.",
     "study-planner": "Study Planner is an online study schedule that needs no account. Register subjects with colors, add tasks to any day of the week, and tick them off — daily and weekly completion percentages update automatically. Switch between the default weekly view (Mon–Sun) and a focused day view, and print the weekly plan on A4 landscape. Everything is stored only in your browser (localStorage), never sent to a server, with JSON export/import for backup or moving devices.",
     "flashcards": "Flashcards is an online study-card tool: put a question on the front and the answer on the back, then flip through the deck to memorize vocabulary, terms or formulas. Type cards one by one or bulk-paste a list copied from Excel or notes (tab or comma separated). In study mode, tap to flip and answer Know / Don’t know — at the end you can replay only the cards you missed. Decks live only in your browser (localStorage) and can be exported/imported as JSON for backup.",
@@ -2010,6 +2012,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "three-kingdoms-idioms": ["Search by hanja, reading or meaning to find an idiom.", "Filter by hero (Liu Bei, Cao Cao…) or by source (history vs. novel).", "Open an idiom for its meaning, origin story, modern examples and related idioms."],
     "three-kingdoms-test": ["Answer the 12 questions, picking one of two options (~3 min).", "See your matching hero, the 4-axis graph, and your best/toughest matches.", "Save the result card as an image or share the link and compare with friends."],
     "study-planner": ["Add your subjects with colors in the subject manager.", "Use “+ add task” on a day card, pick the subject and type the task.", "Check tasks off as you finish — daily/weekly completion rates update, and the weekly plan prints on A4."],
     "flashcards": ["Create a deck and fill in each card’s front (question) and back (answer).", "For long lists, paste into bulk add — one card per line, tab or comma separated.", "Hit Study, tap to flip, and pick Know / Don’t know — then replay just the missed cards."],
@@ -5752,6 +5755,13 @@
     "atd_max_abs": "Allowed absences: {n}",
     "atd_disclaim": "※ Actual rules vary by school and course.",
     "atd_related": "Related tools:",
+    "tki_title": "Three Kingdoms Idioms",
+    "tki_subtitle": "From the Three Visits to the Peach Garden Oath — meaning, origin and source in one place",
+    "tki_today": "Idiom of the day",
+    "tki_search_ph": "Search by hanja, reading or meaning (e.g. 鷄肋, bamboo)",
+    "tki_all": "All",
+    "tki_no_result": "No idioms match your search.",
+    "tki_test_banner": "Which Three Kingdoms hero are you? — Take the test",
     "tk_title": "Three Kingdoms Personality Test",
     "tk_subtitle": "Answer 12 questions to find your Three Kingdoms match",
     "tk_meta_line": "12 questions · ~3 min · answers are never stored",
@@ -7703,6 +7713,7 @@
     ]
   },
   "toolNames": {
+    "three-kingdoms-idioms": "Three Kingdoms Idioms",
     "three-kingdoms-test": "Three Kingdoms Test",
     "study-planner": "Study Planner",
     "flashcards": "Flashcards",
@@ -7879,6 +7890,7 @@
     }
   },
   "toolTitles": {
+    "three-kingdoms-idioms": "Three Kingdoms Idioms - Meanings & Origin Stories",
     "three-kingdoms-test": "Three Kingdoms Personality Test - Which Hero Are You?",
     "study-planner": "Online Study Planner - Weekly Study Schedule",
     "habit-tracker": "Habit Tracker - Free Online Habit Chart",

@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useMessages } from 'next-intl'
+import Link from 'next/link'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 import {
@@ -15,6 +16,7 @@ const asLang = (l: string): TKLang => (l === 'ko' || l === 'ja' ? l : 'en')
 export default function ThreeKingdomsTestPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const lang = asLang(params.lang)
+  const toolNames = (useMessages() as { toolNames?: Record<string, string> }).toolNames ?? {}
 
   const [stage, setStage] = useState<'start' | 'quiz' | 'result'>('start')
   const [answers, setAnswers] = useState<AB[]>([])
@@ -235,6 +237,10 @@ export default function ThreeKingdomsTestPage({ params }: { params: { lang: stri
               </button>
             ))}
           </div>
+          <Link href={`/${lang}/tools/three-kingdoms-idioms`}
+            className="mt-6 block rounded-2xl border-2 border-amber-200 bg-amber-50 p-4 text-center font-bold text-amber-700 hover:bg-amber-100 transition-colors">
+            📜 {toolNames['three-kingdoms-idioms'] || 'Three Kingdoms Idioms'}
+          </Link>
         </div>
       </div>
     </ToolLayout>

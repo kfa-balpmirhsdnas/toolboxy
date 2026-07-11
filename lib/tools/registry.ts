@@ -67,6 +67,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'three-kingdoms-idioms',category:'funny',also:['classics'],added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 고사성어','삼고초려 뜻','도원결의 뜻','고사성어 유래','삼국지 사자성어','three kingdoms idioms','chinese idioms origin','三国志 故事成語','故事成語 由来','三顧の礼 意味'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'three-kingdoms-test',category:'funny',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 인물 테스트','삼국지 테스트','성격 테스트','나와 닮은 삼국지 장수','조조 유형','제갈량 유형','three kingdoms personality test','which three kingdoms character are you','personality quiz','三国志 性格診断','三国志 診断','武将診断'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'study-planner',category:'study',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['스터디 플래너','공부 계획표','주간 계획표','학습 플래너','공부 플래너','study planner','weekly study schedule','study timetable','homework planner','学習プランナー','勉強計画表','週間計画'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'flashcards',category:'study',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['암기카드','플래시카드','단어 암기','암기 앱','온라인 암기카드','flashcards','flash cards maker','study cards','spaced practice','暗記カード','フラッシュカード','単語カード'],maxFileSizeMB:{free:0,pro:0} },
