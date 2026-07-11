@@ -105,6 +105,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "three-kingdoms-timeline": "A vertical timeline of 70+ key events from the Yellow Turban Rebellion (184) to the fall of Wu (280), with battle/politics/birth-death filters, decade jumps, and links into the character and battle dictionaries. Free.",
     "three-kingdoms-battles": "The 15 decisive battles of the Three Kingdoms from the Yellow Turbans to the conquest of Wu — background, course and outcome in order, with commander links, related idioms, and what the novel changed. Free.",
     "three-kingdoms-quotes": "Forty verified quotes from the Three Kingdoms — Cao Cao, Liu Bei, Zhuge Liang and more — with the original Chinese, natural translations, the story behind each line, and its exact source. Free, no sign-up.",
     "three-kingdoms-characters": "Profiles of 60 Three Kingdoms figures from Cao Cao and Liu Bei to Diao Chan and Hua Tuo: courtesy names, dates, factions, key events, and how history differs from the novel. Free, no sign-up needed.",
@@ -1667,6 +1668,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "three-kingdoms-timeline": "The Three Kingdoms Timeline lays out the 96 years from the Yellow Turban Rebellion (184) to Jin’s reunification (280) in 70+ events. Each card carries the year, a short description and linked people; events that exist only in the novel (the Peach Garden Oath, Hulao Gate) are badged. Filter to battles only, political events only, or character births and deaths — the latter generated automatically from the character dictionary. Decade navigation jumps you to any period, and the 15 major battles link through to their full battle pages.",
     "three-kingdoms-battles": "Three Kingdoms Battles is a chronological dictionary of the 15 engagements that shaped the era, from the Yellow Turban Rebellion (184) to the conquest of Wu (280). Each battle covers the year, belligerents and key commanders (linked to the character dictionary), background, course, outcome and impact — plus a history-vs-novel section flagging inventions like the chained ships and southeast wind of Red Cliffs. Troop numbers are given \"as recorded,\" acknowledging the exaggeration debate, and each battle links to the idioms it produced. Filter by faction, browse in order.",
     "three-kingdoms-quotes": "Three Kingdoms Quotes collects 40 sayings of Cao Cao, Liu Bei, Zhuge Liang, Sima Yi and others, each with the classical original, a natural translation, and the story of the moment it was spoken. Internet-famous quotes without a traceable source are excluded: every entry cites its exact origin — a chapter of the official histories, an annotated source, or a chapter of the novel — and carries the series’ source badge (history / annotations / novel / later record). Filter by speaker, check the date-seeded quote of the day, and save any quote as a 1080×1080 share card. Fully cross-linked with the character dictionary.",
     "three-kingdoms-characters": "Three Kingdoms Characters is a profile dictionary of 60 figures spanning Wei, Shu, Wu and the Han court and warlords. Every entry gives the hanja name, courtesy and posthumous names, dates, faction (with changes of allegiance), a five-sentence profile, dated key events, and a paragraph on how the person differs between the official histories and the novel. Pages interlink with the Three Kingdoms idioms dictionary, and the index offers faction and civil/military filters plus search across scripts. Fictional characters invented by the novel, like Diao Chan, are clearly badged.",
@@ -2019,6 +2021,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "three-kingdoms-timeline": ["Pick a filter — battles, politics, or character births and deaths.", "Use the decade buttons (190, 200…) to jump to any period.", "Follow the people and battle links on each card to the detail pages."],
     "three-kingdoms-battles": ["Pick a battle from the chronological list, or filter by faction.", "Open a battle for background, course, outcome and commander/idiom links.", "Check the history-vs-novel section to see what the novel invented."],
     "three-kingdoms-quotes": ["Filter by speaker (Cao Cao, Zhuge Liang…) to browse the quotes.", "Open a quote for the original text, translation, backstory and exact source.", "Use the save button to export a 1080×1080 quote card image."],
     "three-kingdoms-characters": ["Search by name, hanja or courtesy name to find a character.", "Filter by faction (Wei, Shu, Wu…) or by civil/military role.", "Open a profile for dates, key events, the history-vs-novel comparison and related idioms."],
@@ -5765,6 +5768,15 @@
     "atd_max_abs": "Allowed absences: {n}",
     "atd_disclaim": "※ Actual rules vary by school and course.",
     "atd_related": "Related tools:",
+    "tkt_title": "Three Kingdoms Timeline",
+    "tkt_subtitle": "From the Yellow Turbans (184) to reunification (280), at a glance",
+    "tkt_f_all": "All events",
+    "tkt_f_battle": "Battles",
+    "tkt_f_politics": "Politics",
+    "tkt_f_life": "Births & deaths",
+    "tkt_born": "{name} born",
+    "tkt_died": "{name} dies",
+    "tkt_battle_link": "Battle page",
     "tkq_title": "Three Kingdoms Quotes",
     "tkq_subtitle": "Original text, translation and backstory — 40 fully sourced sayings",
     "tkq_today": "Quote of the day",
@@ -7735,6 +7747,7 @@
     ]
   },
   "toolNames": {
+    "three-kingdoms-timeline": "Three Kingdoms Timeline",
     "three-kingdoms-battles": "Three Kingdoms Battles",
     "three-kingdoms-quotes": "Three Kingdoms Quotes",
     "three-kingdoms-characters": "Three Kingdoms Characters",
@@ -7915,6 +7928,7 @@
     }
   },
   "toolTitles": {
+    "three-kingdoms-timeline": "Three Kingdoms Timeline (184–280 AD) - Every Key Event",
     "three-kingdoms-battles": "Three Kingdoms Battles Explained - Red Cliffs, Guandu & More",
     "three-kingdoms-quotes": "Three Kingdoms Quotes - 40 Sourced Sayings of Cao Cao & More",
     "three-kingdoms-characters": "Three Kingdoms Characters - 60 Heroes of the Era Explained",

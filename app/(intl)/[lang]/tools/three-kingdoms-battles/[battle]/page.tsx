@@ -16,21 +16,21 @@ const S = {
     desc: (b: TKBattle) => `${b.name.ko}(${b.year}) 완전 정리: ${b.background.ko.split('.')[0]}. 배경·전개·결과와 정사/연의 차이까지 한 페이지에.`,
     year: '연도', sides: '교전 세력', background: '배경', course: '전개', outcome: '결과와 영향',
     diff: '정사와 연의의 차이', idioms: '이 전투에서 나온 고사성어', all: '삼국지 전투 사전 전체 보기',
-    prevB: '이전 전투', nextB: '다음 전투',
+    timeline: '연표에서 보기', prevB: '이전 전투', nextB: '다음 전투',
   },
   ja: {
     title: (b: TKBattle) => `${b.name.ja}をわかりやすく解説 - 背景・経過・結果（${b.year}年）`,
     desc: (b: TKBattle) => `${b.name.ja}（${b.year}）完全解説: ${b.background.ja.split('。')[0]}。背景・経過・結果、正史と演義の違いまで1ページで。`,
     year: '年', sides: '交戦勢力', background: '背景', course: '経過', outcome: '結果と影響',
     diff: '正史と演義の違い', idioms: 'この戦いから生まれた故事成語', all: '三国志の戦いをすべて見る',
-    prevB: '前の戦い', nextB: '次の戦い',
+    timeline: '年表で見る', prevB: '前の戦い', nextB: '次の戦い',
   },
   en: {
     title: (b: TKBattle) => `Battle of ${b.name.en.replace(/^Battle of /, '').replace(/^The /, '')} Explained (${b.year})`,
     desc: (b: TKBattle) => `${b.name.en} (${b.year}) explained: ${b.background.en.split('.')[0]}. Background, course, outcome — and how the novel differs from history.`,
     year: 'Year', sides: 'Belligerents', background: 'Background', course: 'Course', outcome: 'Outcome & impact',
     diff: 'History vs. the novel', idioms: 'Idioms born in this battle', all: 'Browse all Three Kingdoms battles',
-    prevB: 'Previous battle', nextB: 'Next battle',
+    timeline: 'View on the timeline', prevB: 'Previous battle', nextB: 'Next battle',
   },
 }
 
@@ -88,6 +88,8 @@ export default function BattlePage({ params }: { params: { lang: string; battle:
         <h1 className="text-3xl font-black text-gray-900">{b.name[lang]}</h1>
         <p className="text-sm text-gray-400 font-serif mt-1">{b.hanja}</p>
         <p className="text-sm font-bold text-gray-500 mt-1">{s.year}: {b.year}</p>
+        <Link href={`/${lang}/tools/three-kingdoms-timeline#y${b.sortYear}`}
+          className="inline-block mt-2 text-xs px-2.5 py-1 rounded-lg border border-gray-200 text-gray-500 hover:text-brand-600 hover:border-brand-200">🕰 {s.timeline}</Link>
       </div>
 
       {/* belligerents + commanders */}

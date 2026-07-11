@@ -1,6 +1,7 @@
 // 삼국지 공유 사건 데이터 — 인물 사전의 "주요 사건"과 연표(배치3)가 공유한다 (t3 ④ 중복 입력 금지 규칙).
 // year는 정사 기준, 연의에만 있는 사건은 src:'novel'. 인물 생몰은 인물 데이터에서 파생하므로 여기 없음.
 import type { TKL, TKSrc } from './tkCommon'
+import { EVENTS_EXTRA } from './threeKingdomsEventsExtra'
 
 export type TKEventType = 'battle' | 'politics' | 'other'
 
@@ -14,7 +15,7 @@ export interface TKEvent {
   people: string[] // 공통 인물 ID
 }
 
-export const TK_EVENTS: TKEvent[] = [
+const EVENTS_A: TKEvent[] = [
   { id: 'yellow-turban', year: 184, type: 'battle', src: 'history',
     title: { ko: '황건적의 난', ja: '黄巾の乱', en: 'Yellow Turban Rebellion' },
     desc: { ko: '장각이 이끄는 태평도 신도들이 전국에서 봉기하며 삼국시대의 막이 오른다. 유비·조조·손견이 토벌전에서 처음 이름을 알렸다.', ja: '張角率いる太平道の信徒が全国で蜂起し、三国時代の幕が上がる。劉備・曹操・孫堅が討伐戦で初めて名を上げた。', en: 'Zhang Jiao’s Taiping followers rise across the empire, opening the Three Kingdoms era. Liu Bei, Cao Cao and Sun Jian first made their names in the suppression.' },
@@ -257,6 +258,7 @@ export const TK_EVENTS: TKEvent[] = [
     people: [] },
 ]
 
+export const TK_EVENTS: TKEvent[] = [...EVENTS_A, ...EVENTS_EXTRA]
 export const TK_EVENTS_SORTED = [...TK_EVENTS].sort((a, b) => a.year - b.year)
 
 export function eventsForPerson(id: string, max = 5) {
