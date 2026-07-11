@@ -104,6 +104,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "three-kingdoms-test": "Answer 12 questions in 3 minutes to find which Three Kingdoms hero matches your personality — Cao Cao, Zhuge Liang, Guan Yu and 13 more across 4 axes. Free, no install or sign-up, with a shareable result card.",
     "study-planner": "A free online study planner: add color-coded subjects, list tasks per day, check them off and watch daily/weekly completion rates. Week and day views, A4 print, JSON backup — no login, stored only in your browser.",
     "flashcards": "Make your own flashcard decks with front/back text and flip through them to memorize anything. Bulk paste from a spreadsheet, know/don’t-know sorting, retry only the missed cards, JSON backup. Free, no sign-up.",
     "exam-dday": "Add your exam name and date to see the countdown plus remaining weekends and total study hours at 3 hours a day. Track several exams on one screen — free, no sign-up, saved in your browser only.",
@@ -1661,6 +1662,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "three-kingdoms-test": "The Three Kingdoms personality test scores you on four axes — strategy/action, cause/results, leader/advisor, careful/bold — through 12 situational questions, then matches you to one of 16 heroes like Cao Cao, Liu Bei, Zhuge Liang or Lü Bu. The result shows your character description, strengths, a 4-axis graph, plus your best and toughest matches, and you can save a 1080×1080 result card or share your result by link. Everything is evaluated instantly in your browser and your answers are never stored.",
     "study-planner": "Study Planner is an online study schedule that needs no account. Register subjects with colors, add tasks to any day of the week, and tick them off — daily and weekly completion percentages update automatically. Switch between the default weekly view (Mon–Sun) and a focused day view, and print the weekly plan on A4 landscape. Everything is stored only in your browser (localStorage), never sent to a server, with JSON export/import for backup or moving devices.",
     "flashcards": "Flashcards is an online study-card tool: put a question on the front and the answer on the back, then flip through the deck to memorize vocabulary, terms or formulas. Type cards one by one or bulk-paste a list copied from Excel or notes (tab or comma separated). In study mode, tap to flip and answer Know / Don’t know — at the end you can replay only the cards you missed. Decks live only in your browser (localStorage) and can be exported/imported as JSON for backup.",
     "exam-dday": "Exam D-Day is an exam-focused countdown tool: register test dates (TOEFL, IELTS, finals…) and see the days remaining at a glance. Beyond a simple count, it shows how many weekend days are left and how many total study hours you can bank at 3 hours per day — numbers you can plug straight into a study plan. Track multiple exams at once; everything is stored only in your browser (localStorage) with JSON export/import.",
@@ -2008,6 +2010,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "three-kingdoms-test": ["Answer the 12 questions, picking one of two options (~3 min).", "See your matching hero, the 4-axis graph, and your best/toughest matches.", "Save the result card as an image or share the link and compare with friends."],
     "study-planner": ["Add your subjects with colors in the subject manager.", "Use “+ add task” on a day card, pick the subject and type the task.", "Check tasks off as you finish — daily/weekly completion rates update, and the weekly plan prints on A4."],
     "flashcards": ["Create a deck and fill in each card’s front (question) and back (answer).", "For long lists, paste into bulk add — one card per line, tab or comma separated.", "Hit Study, tap to flip, and pick Know / Don’t know — then replay just the missed cards."],
     "exam-dday": ["Tap a preset (TOEFL, IELTS…) or type your exam name.", "Pick the exam date and press Add to create a countdown card.", "Use the remaining weekends and 3-hours-a-day totals to plan your studying."],
@@ -5749,6 +5752,23 @@
     "atd_max_abs": "Allowed absences: {n}",
     "atd_disclaim": "※ Actual rules vary by school and course.",
     "atd_related": "Related tools:",
+    "tk_title": "Three Kingdoms Personality Test",
+    "tk_subtitle": "Answer 12 questions to find your Three Kingdoms match",
+    "tk_meta_line": "12 questions · ~3 min · answers are never stored",
+    "tk_start": "Start the test",
+    "tk_strengths": "Strengths",
+    "tk_caution": "Watch out for",
+    "tk_match": "Best match",
+    "tk_clash": "Toughest match",
+    "tk_retry": "Retake the test",
+    "tk_take": "Take the test yourself",
+    "tk_save_img": "Save image",
+    "tk_share": "Share",
+    "tk_copy": "Copy URL",
+    "tk_copied": "Copied",
+    "tk_seo_title": "What is the Three Kingdoms personality test?",
+    "tk_seo_body": "This free personality test sorts you along four axes — strategy vs. action, cause vs. results, leading vs. advising, careful vs. bold — and matches you to the most similar of 16 Three Kingdoms heroes. Are you a leader who reads opportunity like Cao Cao, a strategist who designs the board like Zhuge Liang, or a loyalty-driven doer like Guan Yu? Answer 12 situational questions and get your result in about 3 minutes. Browse all 16 types below to preview each character.",
+    "tk_types_title": "All 16 types",
     "spl_title": "Study Planner",
     "spl_subtitle": "Plan color-coded study tasks and track your completion rate",
     "spl_subjects": "Subjects",
@@ -7683,6 +7703,7 @@
     ]
   },
   "toolNames": {
+    "three-kingdoms-test": "Three Kingdoms Test",
     "study-planner": "Study Planner",
     "flashcards": "Flashcards",
     "exam-dday": "Exam D-Day",
@@ -7858,6 +7879,7 @@
     }
   },
   "toolTitles": {
+    "three-kingdoms-test": "Three Kingdoms Personality Test - Which Hero Are You?",
     "study-planner": "Online Study Planner - Weekly Study Schedule",
     "habit-tracker": "Habit Tracker - Free Online Habit Chart",
     "flashcards": "Flashcard Maker - Free Online Study Cards",
