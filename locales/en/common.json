@@ -104,6 +104,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "exam-score-calculator": "Enter the number of questions, points per question and your correct answers to instantly get your score and percentage. Supports multiple sections with different weighting and negative marking. Free, no sign-up needed.",
     "target-score-calculator": "Enter your target average and the exam scores you have so far to see exactly what you need on the remaining exams. Supports weighted grading (midterm 40% / final 60%) and shows your best possible average. Free, no sign-up.",
     "attendance-calculator": "Enter total classes and your absences to instantly see your attendance percentage and how many more classes you can miss. Supports late-to-absence conversion and custom minimum attendance rules. Free, no sign-up, runs in your browser.",
     "music-player": "A free browser music player for MP3 and other audio. Playlist, lock-screen and background playback, repeat and shuffle, resume, and a sleep timer. Files never leave your device.",
@@ -1657,6 +1658,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "exam-score-calculator": "The exam score calculator is a general-purpose tool for grading a test right after you take it. Enter the question count, points per question and how many you got right to see your score and percentage instantly. Add multiple sections for exams like listening 100 + reading 100, and optionally apply negative marking that deducts a percentage per wrong answer. It is a universal calculator (not an official conversion table for any specific exam); everything runs in your browser and nothing is stored.",
     "target-score-calculator": "The target score calculator answers \"what do I need on my final?\" instantly. Enter your target average and the scores you already have, leave upcoming exams blank, and it computes the score you need on the rest — with full support for weighted grading like midterm 40% / final 60%. If the goal is out of reach it says so and shows the best average you can still get. Everything runs in your browser and nothing is stored.",
     "attendance-calculator": "The attendance calculator shows your current attendance percentage and how many more classes you can safely miss. Enter the total number of classes and your absences so far, optionally convert lates into absences (e.g. 3 lates = 1 absence), and pick the minimum required attendance (2/3, 3/4, 80%…). Handy for university F-grade rules, academies and certification courses. Everything is calculated instantly in your browser and nothing is stored.",
     "period-tracker": "Period Tracker keeps a private log of your menstrual cycles and uses it to estimate your average cycle length, predict your next period (with a D-day countdown), and show an ovulation and fertile-window estimate on a monthly calendar. Add a record each month — start date, period length and an optional symptom note — and a cycle-length chart helps you see how regular your cycles are. Everything is stored only in your browser and never sent to a server; use Export/Import to back up your records or move them to another device. Predictions are estimates for reference only and cycles naturally vary — this tool is not a contraceptive method.",
@@ -2000,6 +2002,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "exam-score-calculator": ["Enter the question count and points per question for each section (add sections if weighting differs).", "Type how many answers you got right — score and percentage appear instantly.", "If the exam uses negative marking, set the deduction rate (%)."],
     "target-score-calculator": ["Enter your target average.", "Fill in scores for exams you have taken; leave future exams blank.", "Turn on weights if exams count differently — the score you need is shown big."],
     "attendance-calculator": ["Enter the total number of classes and your absences and lates so far.", "Pick a late-to-absence rule if your school uses one (e.g. 3 lates = 1 absence).", "Choose the minimum required attendance — the number of classes you can still miss is shown big."],
     "video-player": ["Drag or pick a video file to play (nothing is uploaded).","Press \"Capture frame\" at any moment to save it as an image (PNG/JPG).","Mark A at the start and B at the end of a section, then turn on Repeat to loop A–B.","Adjust playback speed (0.25×–2×) for language or instrument practice."],
@@ -5737,6 +5740,20 @@
     "atd_max_abs": "Allowed absences: {n}",
     "atd_disclaim": "※ Actual rules vary by school and course.",
     "atd_related": "Related tools:",
+    "esc_title": "Exam Score Calculator",
+    "esc_subtitle": "Get your score and percentage from the number of correct answers",
+    "esc_section": "Section",
+    "esc_section_ph": "e.g. Listening (optional)",
+    "esc_questions": "Questions",
+    "esc_perq": "Pts each",
+    "esc_correct": "Correct",
+    "esc_add": "+ Add section",
+    "esc_penalty": "Negative marking",
+    "esc_res_score": "Your score",
+    "esc_res_rate": "Accuracy",
+    "esc_res_correct": "{c} of {q} correct",
+    "esc_sec_n": "Section {n}",
+    "esc_penalty_note": "※ {n}% of a question’s points deducted per wrong answer.",
     "tsc_title": "Target Score Calculator",
     "tsc_subtitle": "Find out what you need on your remaining exams to hit your target average",
     "tsc_goal": "Target average",
@@ -7587,6 +7604,7 @@
     ]
   },
   "toolNames": {
+    "exam-score-calculator": "Exam Score Calculator",
     "target-score-calculator": "Target Score Calculator",
     "attendance-calculator": "Attendance Calculator",
     "music-player": "Music Player",
@@ -7758,6 +7776,7 @@
     }
   },
   "toolTitles": {
+    "exam-score-calculator": "Test Score Calculator - Percentage & Marks",
     "target-score-calculator": "Final Grade Calculator - What Do I Need on My Final",
     "attendance-calculator": "Attendance Calculator - How Many Classes Can I Miss",
     "gpa-calculator": "GPA Calculator - College Grade Point Average",
