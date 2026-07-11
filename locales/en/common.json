@@ -104,6 +104,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "study-planner": "A free online study planner: add color-coded subjects, list tasks per day, check them off and watch daily/weekly completion rates. Week and day views, A4 print, JSON backup — no login, stored only in your browser.",
     "flashcards": "Make your own flashcard decks with front/back text and flip through them to memorize anything. Bulk paste from a spreadsheet, know/don’t-know sorting, retry only the missed cards, JSON backup. Free, no sign-up.",
     "exam-dday": "Add your exam name and date to see the countdown plus remaining weekends and total study hours at 3 hours a day. Track several exams on one screen — free, no sign-up, saved in your browser only.",
     "exam-score-calculator": "Enter the number of questions, points per question and your correct answers to instantly get your score and percentage. Supports multiple sections with different weighting and negative marking. Free, no sign-up needed.",
@@ -1660,6 +1661,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "study-planner": "Study Planner is an online study schedule that needs no account. Register subjects with colors, add tasks to any day of the week, and tick them off — daily and weekly completion percentages update automatically. Switch between the default weekly view (Mon–Sun) and a focused day view, and print the weekly plan on A4 landscape. Everything is stored only in your browser (localStorage), never sent to a server, with JSON export/import for backup or moving devices.",
     "flashcards": "Flashcards is an online study-card tool: put a question on the front and the answer on the back, then flip through the deck to memorize vocabulary, terms or formulas. Type cards one by one or bulk-paste a list copied from Excel or notes (tab or comma separated). In study mode, tap to flip and answer Know / Don’t know — at the end you can replay only the cards you missed. Decks live only in your browser (localStorage) and can be exported/imported as JSON for backup.",
     "exam-dday": "Exam D-Day is an exam-focused countdown tool: register test dates (TOEFL, IELTS, finals…) and see the days remaining at a glance. Beyond a simple count, it shows how many weekend days are left and how many total study hours you can bank at 3 hours per day — numbers you can plug straight into a study plan. Track multiple exams at once; everything is stored only in your browser (localStorage) with JSON export/import.",
     "exam-score-calculator": "The exam score calculator is a general-purpose tool for grading a test right after you take it. Enter the question count, points per question and how many you got right to see your score and percentage instantly. Add multiple sections for exams like listening 100 + reading 100, and optionally apply negative marking that deducts a percentage per wrong answer. It is a universal calculator (not an official conversion table for any specific exam); everything runs in your browser and nothing is stored.",
@@ -2006,6 +2008,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "study-planner": ["Add your subjects with colors in the subject manager.", "Use “+ add task” on a day card, pick the subject and type the task.", "Check tasks off as you finish — daily/weekly completion rates update, and the weekly plan prints on A4."],
     "flashcards": ["Create a deck and fill in each card’s front (question) and back (answer).", "For long lists, paste into bulk add — one card per line, tab or comma separated.", "Hit Study, tap to flip, and pick Know / Don’t know — then replay just the missed cards."],
     "exam-dday": ["Tap a preset (TOEFL, IELTS…) or type your exam name.", "Pick the exam date and press Add to create a countdown card.", "Use the remaining weekends and 3-hours-a-day totals to plan your studying."],
     "exam-score-calculator": ["Enter the question count and points per question for each section (add sections if weighting differs).", "Type how many answers you got right — score and percentage appear instantly.", "If the exam uses negative marking, set the deduction rate (%)."],
@@ -5746,6 +5749,21 @@
     "atd_max_abs": "Allowed absences: {n}",
     "atd_disclaim": "※ Actual rules vary by school and course.",
     "atd_related": "Related tools:",
+    "spl_title": "Study Planner",
+    "spl_subtitle": "Plan color-coded study tasks and track your completion rate",
+    "spl_subjects": "Subjects",
+    "spl_manage": "+ Manage",
+    "spl_done_manage": "Done",
+    "spl_subject_ph": "Subject name",
+    "spl_week": "Week",
+    "spl_day": "Day",
+    "spl_week_rate": "This week",
+    "spl_add_task": "add task",
+    "spl_task_ph": "Task (e.g. Ch.3 problems)",
+    "spl_no_tasks": "No tasks yet",
+    "spl_need_subject": "Add a subject in the manager above first.",
+    "spl_toggle": "Toggle done",
+    "spl_print": "Print week (A4)",
     "fc_title": "Flashcards",
     "fc_subtitle": "Build your own flashcard decks and flip through them to memorize",
     "fc_deck_ph": "Deck name (e.g. Unit 1 vocab)",
@@ -7665,6 +7683,7 @@
     ]
   },
   "toolNames": {
+    "study-planner": "Study Planner",
     "flashcards": "Flashcards",
     "exam-dday": "Exam D-Day",
     "exam-score-calculator": "Exam Score Calculator",
@@ -7839,6 +7858,7 @@
     }
   },
   "toolTitles": {
+    "study-planner": "Online Study Planner - Weekly Study Schedule",
     "habit-tracker": "Habit Tracker - Free Online Habit Chart",
     "flashcards": "Flashcard Maker - Free Online Study Cards",
     "pomodoro-timer": "Pomodoro Timer - Online Study Timer 25/5",

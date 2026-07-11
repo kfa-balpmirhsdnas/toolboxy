@@ -67,6 +67,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'study-planner',category:'study',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['스터디 플래너','공부 계획표','주간 계획표','학습 플래너','공부 플래너','study planner','weekly study schedule','study timetable','homework planner','学習プランナー','勉強計画表','週間計画'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'flashcards',category:'study',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['암기카드','플래시카드','단어 암기','암기 앱','온라인 암기카드','flashcards','flash cards maker','study cards','spaced practice','暗記カード','フラッシュカード','単語カード'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'exam-dday',category:'study',also:['time'],added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['시험 디데이','수능 디데이','토익 디데이','시험 날짜 계산','남은 공부 시간','exam dday','exam countdown','days until exam','試験 D-day','JLPT カウントダウン','試験まであと何日'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'exam-score-calculator',category:'study',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['시험 점수 계산기','가채점','정답률 계산','틀린 개수 점수','배점 계산','exam score calculator','test score calculator','percentage correct','marks calculator','試験採点','正答率計算','点数計算'],maxFileSizeMB:{free:0,pro:0} },
