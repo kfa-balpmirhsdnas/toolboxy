@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useMessages } from 'next-intl'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('pomodoro-timer')!
@@ -8,31 +8,82 @@ type Mode = 'work' | 'short' | 'long'
 const DEFAULTS: Record<Mode, number> = { work: 25 * 60, short: 5 * 60, long: 15 * 60 }
 const LABELS: Record<Mode, string> = { work: 'pom_focus', short: 'pom_short', long: 'pom_long' }
 const COLORS: Record<Mode, string> = { work: '#6366f1', short: '#10b981', long: '#3b82f6' }
+const LS_DUR = 'pom_dur_v1'
+const LS_TODAY = 'pom_today_v1' // { date: 'YYYY-MM-DD', count } — resets at midnight
+const LS_NOTIF = 'pom_notif_v1'
+
+const todayStr = () => {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
 
 export default function PomodoroTimerPage() {
   const t = useTranslations('toolui')
+  const toolNames = (useMessages() as { toolNames?: Record<string, string> }).toolNames ?? {}
   const [mode, setMode] = useState<Mode>('work')
   const [durations, setDurations] = useState(DEFAULTS)
   const [remaining, setRemaining] = useState(DEFAULTS.work)
   const [running, setRunning] = useState(false)
-  const [sessions, setSessions] = useState(0)
+  const [sessions, setSessions] = useState(0) // completed today (localStorage, midnight reset)
   const [editing, setEditing] = useState(false)
+  const [notifOn, setNotifOn] = useState(false)
   const acRef = useRef<AudioContext | null>(null)
+  const endAtRef = useRef(0)     // absolute end time — keeps the countdown exact in background tabs
+  const baseTitleRef = useRef('')
 
-  // Tick: the interval only decrements. Completion is handled separately so we
-  // never run side effects (sound, state changes) inside a setState updater.
+  // Load persisted settings/state once (read-only; all writes happen in handlers).
   useEffect(() => {
-    if (!running) return
-    const id = setInterval(() => setRemaining((r) => (r > 0 ? r - 1 : 0)), 1000)
+    baseTitleRef.current = document.title
+    try {
+      const d = JSON.parse(localStorage.getItem(LS_DUR) || 'null')
+      if (d && d.work && d.short && d.long) { setDurations(d); setRemaining(d.work) }
+    } catch { /* ignore */ }
+    try {
+      const s = JSON.parse(localStorage.getItem(LS_TODAY) || 'null')
+      if (s && s.date === todayStr()) setSessions(s.count || 0)
+    } catch { /* ignore */ }
+    if (localStorage.getItem(LS_NOTIF) === '1' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      setNotifOn(true)
+    }
+    return () => { document.title = baseTitleRef.current }
+  }, [])
+
+  // Tick — recompute from the absolute end timestamp (no drift, survives
+  // background-tab throttling) and mirror the countdown into the tab title.
+  useEffect(() => {
+    if (!running) { document.title = baseTitleRef.current; return }
+    const tick = () => {
+      const left = Math.max(0, Math.round((endAtRef.current - Date.now()) / 1000))
+      setRemaining(left)
+      const mm = String(Math.floor(left / 60)).padStart(2, '0')
+      const ss = String(left % 60).padStart(2, '0')
+      document.title = `(${mm}:${ss}) ${toolNames['pomodoro-timer'] || 'Pomodoro'}`
+    }
+    tick()
+    const id = setInterval(tick, 500)
     return () => clearInterval(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [running])
 
   // Completion — fires once when the countdown reaches 0 while running.
   useEffect(() => {
     if (!running || remaining > 0) return
     setRunning(false)
-    if (mode === 'work') setSessions((s) => s + 1)
+    let next: Mode
+    if (mode === 'work') {
+      const n = sessions + 1
+      setSessions(n)
+      try { localStorage.setItem(LS_TODAY, JSON.stringify({ date: todayStr(), count: n })) } catch { /* quota */ }
+      next = n % 4 === 0 ? 'long' : 'short' // classic cycle: long break every 4th pomodoro
+    } else {
+      next = 'work'
+    }
     beep()
+    if (notifOn && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      try { new Notification(toolNames['pomodoro-timer'] || 'Pomodoro', { body: t(mode === 'work' ? 'pom_nwork' : 'pom_nbreak') }) } catch { /* ignore */ }
+    }
+    setMode(next)
+    setRemaining(durations[next])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [remaining, running])
 
@@ -68,12 +119,31 @@ export default function PomodoroTimerPage() {
   function toggle() {
     if (!running) {
       ensureAudio()
-      if (remaining <= 0) setRemaining(durations[mode]) // restart a finished timer
+      const startFrom = remaining > 0 ? remaining : durations[mode]
+      endAtRef.current = Date.now() + startFrom * 1000
+      if (remaining <= 0) setRemaining(startFrom)
     }
     setRunning((v) => !v)
   }
   const switchMode = (m: Mode) => { setMode(m); setRemaining(durations[m]); setRunning(false) }
   const reset = () => { setRemaining(durations[mode]); setRunning(false) }
+
+  // Notification opt-in: permission is requested only when the user turns the
+  // toggle on (never on page load).
+  function toggleNotif() {
+    if (notifOn) {
+      setNotifOn(false)
+      try { localStorage.setItem(LS_NOTIF, '0') } catch { /* ignore */ }
+      return
+    }
+    if (typeof Notification === 'undefined') return
+    Notification.requestPermission().then((p) => {
+      if (p === 'granted') {
+        setNotifOn(true)
+        try { localStorage.setItem(LS_NOTIF, '1') } catch { /* ignore */ }
+      }
+    })
+  }
 
   const min = Math.floor(remaining / 60), sec = remaining % 60
   const pct = (1 - remaining / durations[mode]) * 100
@@ -110,8 +180,12 @@ export default function PomodoroTimerPage() {
             {running ? t('sw_pause') : t('sw_start')}
           </button>
         </div>
-        <div className="text-center">
-          <p className="text-sm text-gray-500">{t('pom_sessions')} <strong className="text-gray-800">{sessions}</strong></p>
+        <div className="flex items-center justify-center gap-4">
+          <p className="text-sm text-gray-500">{t('pom_today')} <strong className="text-gray-800">{sessions}</strong></p>
+          <button onClick={toggleNotif} title={t('pom_notif')}
+            className={'text-sm px-3 py-1.5 rounded-lg border transition-colors ' + (notifOn ? 'border-brand-300 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-500 hover:bg-gray-50')}>
+            {notifOn ? '🔔 ' : '🔕 '}{t('pom_notif')}
+          </button>
         </div>
         <div className="bg-gray-50 rounded-xl p-3">
           <button onClick={() => setEditing((e) => !e)} className="text-xs text-blue-600 hover:underline mb-2 block">{editing ? t('pom_hide') : t('pom_editdur')}</button>
@@ -119,8 +193,16 @@ export default function PomodoroTimerPage() {
             <div className="grid grid-cols-3 gap-2">
               {(['work', 'short', 'long'] as Mode[]).map((m) => (
                 <div key={m}><label className="block text-xs text-gray-500 mb-1">{t(LABELS[m])} ({t('pom_min')})</label>
-                  <input type="number" value={Math.round(durations[m] / 60)} min="1" max="60"
-                    onChange={(e) => { const v = Math.max(1, Number(e.target.value)) * 60; setDurations((d) => ({ ...d, [m]: v })); if (mode === m) { setRemaining(v); setRunning(false) } }}
+                  <input type="number" value={Math.round(durations[m] / 60)} min="1" max="120"
+                    onChange={(e) => {
+                      const v = Math.max(1, Number(e.target.value)) * 60
+                      setDurations((d) => {
+                        const next = { ...d, [m]: v }
+                        try { localStorage.setItem(LS_DUR, JSON.stringify(next)) } catch { /* quota */ }
+                        return next
+                      })
+                      if (mode === m) { setRemaining(v); setRunning(false) }
+                    }}
                     className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm text-center" /></div>
               ))}
             </div>

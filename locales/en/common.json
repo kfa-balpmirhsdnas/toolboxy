@@ -7166,6 +7166,10 @@
     "pom_hide": "Hide",
     "pom_editdur": "Edit durations",
     "pom_min": "min",
+    "pom_today": "Done today:",
+    "pom_notif": "Notify",
+    "pom_nwork": "Focus done! Time for a break.",
+    "pom_nbreak": "Break over! Back to focus.",
     "zod_title": "Zodiac Sign Finder",
     "zod_subtitle": "Find your zodiac sign and discover your traits, element, and ruling planet",
     "zod_dob": "Date of Birth",
@@ -7793,6 +7797,7 @@
     }
   },
   "toolTitles": {
+    "pomodoro-timer": "Pomodoro Timer - Online Study Timer 25/5",
     "exam-dday": "Exam Countdown - Days Until Your Test",
     "exam-score-calculator": "Test Score Calculator - Percentage & Marks",
     "target-score-calculator": "Final Grade Calculator - What Do I Need on My Final",

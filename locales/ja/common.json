@@ -7579,6 +7579,10 @@
     "pom_hide": "隠す",
     "pom_editdur": "時間を編集",
     "pom_min": "分",
+    "pom_today": "今日の完了:",
+    "pom_notif": "通知",
+    "pom_nwork": "集中終了！休憩しましょう。",
+    "pom_nbreak": "休憩終了！集中に戻りましょう。",
     "zod_title": "星座ファインダー",
     "zod_subtitle": "生年月日から星座と性格・元素・支配星を調べます",
     "zod_dob": "生年月日",
@@ -7983,6 +7987,7 @@
     }
   },
   "toolTitles": {
+    "pomodoro-timer": "ポモドーロタイマー - オンライン勉強タイマー",
     "exam-dday": "試験カウントダウン - JLPT・TOEIC D-day計算",
     "exam-score-calculator": "試験採点計算 - 正答数から点数・正答率",
     "target-score-calculator": "目標点数計算 - 残りの試験で必要な点数",

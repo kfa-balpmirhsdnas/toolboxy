@@ -7606,6 +7606,10 @@
     "pom_hide": "숨기기",
     "pom_editdur": "시간 편집",
     "pom_min": "분",
+    "pom_today": "오늘 완료:",
+    "pom_notif": "알림",
+    "pom_nwork": "집중 끝! 휴식할 시간이에요.",
+    "pom_nbreak": "휴식 끝! 다시 집중해 볼까요?",
     "zod_title": "별자리 찾기",
     "zod_subtitle": "생년월일로 별자리와 성격·원소·지배 행성을 알아보세요",
     "zod_dob": "생년월일",
@@ -8010,6 +8014,7 @@
     }
   },
   "toolTitles": {
+    "pomodoro-timer": "뽀모도로 타이머 - 온라인 공부 타이머",
     "exam-dday": "시험 디데이 계산기 - 수능 토익 D-day",
     "exam-score-calculator": "시험 점수 계산기 - 가채점 정답률 계산",
     "target-score-calculator": "목표 점수 계산기 - 남은 시험 필요 점수",
