@@ -105,6 +105,8 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "three-kingdoms-battles": "The 15 decisive battles of the Three Kingdoms from the Yellow Turbans to the conquest of Wu — background, course and outcome in order, with commander links, related idioms, and what the novel changed. Free.",
+    "three-kingdoms-quotes": "Forty verified quotes from the Three Kingdoms — Cao Cao, Liu Bei, Zhuge Liang and more — with the original Chinese, natural translations, the story behind each line, and its exact source. Free, no sign-up.",
     "three-kingdoms-characters": "Profiles of 60 Three Kingdoms figures from Cao Cao and Liu Bei to Diao Chan and Hua Tuo: courtesy names, dates, factions, key events, and how history differs from the novel. Free, no sign-up needed.",
     "three-kingdoms-idioms": "A dictionary of 30 idioms born from the Three Kingdoms — meanings, origin stories, pinyin, and whether each comes from history or the novel. With character filters and modern examples. Free, no sign-up.",
     "three-kingdoms-test": "Answer 12 questions in 3 minutes to find which Three Kingdoms hero matches your personality — Cao Cao, Zhuge Liang, Guan Yu and 13 more across 4 axes. Free, no install or sign-up, with a shareable result card.",
@@ -1665,6 +1667,8 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "three-kingdoms-battles": "Three Kingdoms Battles is a chronological dictionary of the 15 engagements that shaped the era, from the Yellow Turban Rebellion (184) to the conquest of Wu (280). Each battle covers the year, belligerents and key commanders (linked to the character dictionary), background, course, outcome and impact — plus a history-vs-novel section flagging inventions like the chained ships and southeast wind of Red Cliffs. Troop numbers are given \"as recorded,\" acknowledging the exaggeration debate, and each battle links to the idioms it produced. Filter by faction, browse in order.",
+    "three-kingdoms-quotes": "Three Kingdoms Quotes collects 40 sayings of Cao Cao, Liu Bei, Zhuge Liang, Sima Yi and others, each with the classical original, a natural translation, and the story of the moment it was spoken. Internet-famous quotes without a traceable source are excluded: every entry cites its exact origin — a chapter of the official histories, an annotated source, or a chapter of the novel — and carries the series’ source badge (history / annotations / novel / later record). Filter by speaker, check the date-seeded quote of the day, and save any quote as a 1080×1080 share card. Fully cross-linked with the character dictionary.",
     "three-kingdoms-characters": "Three Kingdoms Characters is a profile dictionary of 60 figures spanning Wei, Shu, Wu and the Han court and warlords. Every entry gives the hanja name, courtesy and posthumous names, dates, faction (with changes of allegiance), a five-sentence profile, dated key events, and a paragraph on how the person differs between the official histories and the novel. Pages interlink with the Three Kingdoms idioms dictionary, and the index offers faction and civil/military filters plus search across scripts. Fictional characters invented by the novel, like Diao Chan, are clearly badged.",
     "three-kingdoms-idioms": "Three Kingdoms Idioms is a dictionary of 30 expressions that came out of the Three Kingdoms era, from the Three Visits to the Peach Garden Oath. Each entry gives the hanja, Korean and Japanese readings, pinyin, a modern definition, a full origin story from the saga, and two modern example sentences — plus a source badge that tells you whether it comes from the official histories, their annotations, the novel, or later records. Filter by hero (Liu Bei, Cao Cao, Zhuge Liang…), search across scripts, and check the idiom of the day. Completely free, no installation or sign-up.",
     "three-kingdoms-test": "The Three Kingdoms personality test scores you on four axes — strategy/action, cause/results, leader/advisor, careful/bold — through 12 situational questions, then matches you to one of 16 heroes like Cao Cao, Liu Bei, Zhuge Liang or Lü Bu. The result shows your character description, strengths, a 4-axis graph, plus your best and toughest matches, and you can save a 1080×1080 result card or share your result by link. Everything is evaluated instantly in your browser and your answers are never stored.",
@@ -2015,6 +2019,8 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "three-kingdoms-battles": ["Pick a battle from the chronological list, or filter by faction.", "Open a battle for background, course, outcome and commander/idiom links.", "Check the history-vs-novel section to see what the novel invented."],
+    "three-kingdoms-quotes": ["Filter by speaker (Cao Cao, Zhuge Liang…) to browse the quotes.", "Open a quote for the original text, translation, backstory and exact source.", "Use the save button to export a 1080×1080 quote card image."],
     "three-kingdoms-characters": ["Search by name, hanja or courtesy name to find a character.", "Filter by faction (Wei, Shu, Wu…) or by civil/military role.", "Open a profile for dates, key events, the history-vs-novel comparison and related idioms."],
     "three-kingdoms-idioms": ["Search by hanja, reading or meaning to find an idiom.", "Filter by hero (Liu Bei, Cao Cao…) or by source (history vs. novel).", "Open an idiom for its meaning, origin story, modern examples and related idioms."],
     "three-kingdoms-test": ["Answer the 12 questions, picking one of two options (~3 min).", "See your matching hero, the 4-axis graph, and your best/toughest matches.", "Save the result card as an image or share the link and compare with friends."],
@@ -5759,6 +5765,13 @@
     "atd_max_abs": "Allowed absences: {n}",
     "atd_disclaim": "※ Actual rules vary by school and course.",
     "atd_related": "Related tools:",
+    "tkq_title": "Three Kingdoms Quotes",
+    "tkq_subtitle": "Original text, translation and backstory — 40 fully sourced sayings",
+    "tkq_today": "Quote of the day",
+    "tkq_all": "All",
+    "tkb_title": "Three Kingdoms Battles",
+    "tkb_subtitle": "The 15 decisive battles, from the Yellow Turbans to reunification",
+    "tkb_all": "All",
     "tkc_title": "Three Kingdoms Characters",
     "tkc_subtitle": "60 heroes of Wei, Shu and Wu — dates, key events, and history vs. the novel",
     "tkc_search_ph": "Search by name, hanja or courtesy name (e.g. Cao Cao, 曹操)",
@@ -7722,6 +7735,8 @@
     ]
   },
   "toolNames": {
+    "three-kingdoms-battles": "Three Kingdoms Battles",
+    "three-kingdoms-quotes": "Three Kingdoms Quotes",
     "three-kingdoms-characters": "Three Kingdoms Characters",
     "three-kingdoms-idioms": "Three Kingdoms Idioms",
     "three-kingdoms-test": "Three Kingdoms Test",
@@ -7900,6 +7915,8 @@
     }
   },
   "toolTitles": {
+    "three-kingdoms-battles": "Three Kingdoms Battles Explained - Red Cliffs, Guandu & More",
+    "three-kingdoms-quotes": "Three Kingdoms Quotes - 40 Sourced Sayings of Cao Cao & More",
     "three-kingdoms-characters": "Three Kingdoms Characters - 60 Heroes of the Era Explained",
     "three-kingdoms-idioms": "Three Kingdoms Idioms - Meanings & Origin Stories",
     "three-kingdoms-test": "Three Kingdoms Personality Test - Which Hero Are You?",

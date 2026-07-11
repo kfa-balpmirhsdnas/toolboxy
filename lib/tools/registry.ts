@@ -73,6 +73,8 @@ export const HIDDEN_CATEGORIES: ReadonlySet<ToolCategory> = new Set<ToolCategory
 export const isHiddenTool = (t: ToolMeta) => HIDDEN_CATEGORIES.has(t.category)
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'three-kingdoms-quotes',category:'three-kingdoms',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 명언','조조 명언','제갈량 명언','유비 명언','출사표 구절','three kingdoms quotes','cao cao quotes','zhuge liang quotes','三国志 名言','曹操 名言','諸葛亮 名言'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'three-kingdoms-battles',category:'three-kingdoms',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 전투','적벽대전 정리','관도대전','이릉대전','삼국지 전쟁','three kingdoms battles','battle of red cliffs explained','guandu','三国志 戦い','赤壁の戦い 解説'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'three-kingdoms-characters',category:'three-kingdoms',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 인물','삼국지 인물 사전','조조 자','유비 생몰년','삼국지 등장인물','three kingdoms characters','who is cao cao','romance of the three kingdoms characters','三国志 人物','三国志 登場人物','武将 一覧'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'three-kingdoms-idioms',category:'funny',also:['classics'],added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 고사성어','삼고초려 뜻','도원결의 뜻','고사성어 유래','삼국지 사자성어','three kingdoms idioms','chinese idioms origin','三国志 故事成語','故事成語 由来','三顧の礼 意味'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'three-kingdoms-test',category:'funny',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 인물 테스트','삼국지 테스트','성격 테스트','나와 닮은 삼국지 장수','조조 유형','제갈량 유형','three kingdoms personality test','which three kingdoms character are you','personality quiz','三国志 性格診断','三国志 診断','武将診断'],maxFileSizeMB:{free:0,pro:0} },

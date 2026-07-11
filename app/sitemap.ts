@@ -2,6 +2,9 @@ import type { MetadataRoute } from 'next'
 import { TOOLS, CATEGORY_META, HIDDEN_CATEGORIES, isHiddenTool, type ToolCategory } from '@/lib/tools/registry'
 import { IDIOMS } from '@/lib/gosaseongeo'
 import { TK_IDIOMS } from '@/lib/tools/threeKingdomsIdioms'
+import { TK_CHARS } from '@/lib/tools/threeKingdomsCharacters'
+import { TK_QUOTES } from '@/lib/tools/threeKingdomsQuotes'
+import { TK_BATTLES } from '@/lib/tools/threeKingdomsBattles'
 import { ELEMENTS, elementSlug } from '@/lib/elements'
 import { COUNTRIES, countrySlug } from '@/lib/countries'
 import { CSS_COLORS, colorSlug } from '@/lib/color-names'
@@ -73,6 +76,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   )
 
+  // 삼국지 시리즈 개별 페이지 (인물 60 + 명언 40 + 전투 15) × 3 langs —
+  // 카테고리가 숨김 해제(HIDDEN_CATEGORIES에서 제거)되는 순간 자동 포함.
+  const tkOpen = !HIDDEN_CATEGORIES.has('three-kingdoms')
+  const tkSeriesUrls = !tkOpen ? [] : LANGS.flatMap((lang) => [
+    ...TK_CHARS.map((c) => ({ url: `${BASE_URL}/${lang}/tools/three-kingdoms-characters/${c.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
+    ...TK_QUOTES.map((q) => ({ url: `${BASE_URL}/${lang}/tools/three-kingdoms-quotes/${q.slug}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
+    ...TK_BATTLES.map((b) => ({ url: `${BASE_URL}/${lang}/tools/three-kingdoms-battles/${b.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
+  ])
+
   // Per-element pages (118 × 3 langs) — localized content, so every locale is canonical.
   const elementUrls = LANGS.flatMap((lang) =>
     ELEMENTS.map((e) => ({
@@ -119,5 +131,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...ZODIAC_ANIMALS.map((a) => ({ url: `${BASE_URL}/${lang}/tools/chinese-zodiac/${a.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
   ])
 
-  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...tkIdiomUrls, ...elementUrls, ...countryUrls, ...colorUrls, ...hanjaUrls, ...sajaUrls, ...zodiacUrls]
+  return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...tkIdiomUrls, ...tkSeriesUrls, ...elementUrls, ...countryUrls, ...colorUrls, ...hanjaUrls, ...sajaUrls, ...zodiacUrls]
 }

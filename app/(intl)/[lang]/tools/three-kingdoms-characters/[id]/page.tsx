@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 import { TK_CHARS, TKC_BY_ID, ROLE_LABEL, type TKChar } from '@/lib/tools/threeKingdomsCharacters'
 import { eventsForPerson } from '@/lib/tools/threeKingdomsEvents'
 import { TK_IDIOMS, tkiName } from '@/lib/tools/threeKingdomsIdioms'
+import { quotesForPerson } from '@/lib/tools/threeKingdomsQuotes'
+import { battlesForPerson } from '@/lib/tools/threeKingdomsBattles'
 import { FACTION_META, SRC_META, asTKLang, type TKLang } from '@/lib/tools/tkCommon'
 import { TKSrcBadge, TKFactionBadge } from '@/components/tools/TKBadge'
 
@@ -17,7 +19,7 @@ const S = {
     title: (c: TKChar) => `${c.name.ko} - 삼국지 인물 사전 (자·생몰년·주요 사건)`,
     desc: (c: TKChar) => `${c.name.ko}(${c.hanja}${c.courtesy ? ', 자 ' + c.courtesy.read.ko : ''}) — ${c.birth}~${c.death}. ${c.intro.ko.split('.')[0]}.`,
     life: '생몰년', courtesy: '자', posthumous: '시호', faction: '세력', factionHist: '세력 변천', role: '구분',
-    intro: '소개', events: '주요 사건', imageDiff: '정사와 연의의 차이', idioms: '관련 고사성어',
+    intro: '소개', events: '주요 사건', imageDiff: '정사와 연의의 차이', idioms: '관련 고사성어', quotes: '관련 명언', battles: '참전 전투',
     related: '같은 세력 인물', all: '삼국지 인물 사전 전체 보기', fictional: '연의 창작 인물',
     testBanner: '나와 닮은 삼국지 장수는? — 인물 테스트', idiomsBanner: '삼국지 고사성어 사전',
   },
@@ -25,7 +27,7 @@ const S = {
     title: (c: TKChar) => `${c.name.ja}とは - 三国志人物事典`,
     desc: (c: TKChar) => `${c.name.ja}（${c.hanja}${c.courtesy ? '、字は' + c.courtesy.read.ja : ''}） — ${c.birth}〜${c.death}。${c.intro.ja.split('。')[0]}。`,
     life: '生没年', courtesy: '字', posthumous: '諡号', faction: '勢力', factionHist: '勢力の変遷', role: '区分',
-    intro: '紹介', events: '主な出来事', imageDiff: '正史と演義の違い', idioms: '関連する故事成語',
+    intro: '紹介', events: '主な出来事', imageDiff: '正史と演義の違い', idioms: '関連する故事成語', quotes: '関連する名言', battles: '参戦した戦い',
     related: '同じ勢力の人物', all: '三国志人物事典をすべて見る', fictional: '演義の創作人物',
     testBanner: 'あなたに似ている武将は？ — 性格診断', idiomsBanner: '三国志の故事成語辞典',
   },
@@ -33,7 +35,7 @@ const S = {
     title: (c: TKChar) => `${c.name.en} - Three Kingdoms Character Profile`,
     desc: (c: TKChar) => `${c.name.en} (${c.hanja}${c.courtesy ? ', courtesy name ' + c.courtesy.read.en : ''}) — ${c.birth}–${c.death}. ${c.intro.en.split('.')[0]}.`,
     life: 'Lived', courtesy: 'Courtesy name', posthumous: 'Posthumous', faction: 'Faction', factionHist: 'Allegiances', role: 'Role',
-    intro: 'Profile', events: 'Key events', imageDiff: 'History vs. the novel', idioms: 'Related idioms',
+    intro: 'Profile', events: 'Key events', imageDiff: 'History vs. the novel', idioms: 'Related idioms', quotes: 'Related quotes', battles: 'Battles',
     related: 'Same faction', all: 'Browse all Three Kingdoms characters', fictional: 'Fictional (novel only)',
     testBanner: 'Which hero are you? — Take the test', idiomsBanner: 'Three Kingdoms idioms dictionary',
   },
@@ -67,6 +69,8 @@ export default function CharacterPage({ params }: { params: { lang: string; id: 
   const s = S[lang]
   const events = eventsForPerson(c.id)
   const idioms = TK_IDIOMS.filter((i) => i.people.includes(c.id))
+  const quotes = quotesForPerson(c.id)
+  const battles = battlesForPerson(c.id)
   const related = TK_CHARS.filter((x) => x.id !== c.id && x.faction === c.faction).slice(0, 4)
 
   const jsonLd = {
@@ -160,6 +164,32 @@ export default function CharacterPage({ params }: { params: { lang: string; id: 
             {idioms.map((i) => (
               <Link key={i.slug} href={`/${lang}/tools/three-kingdoms-idioms/${i.slug}`} className={chip}>
                 {tkiName(i, lang)} <span className="ml-1 text-gray-400 font-serif text-xs">{i.hanja}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* backlinks: quotes */}
+      {quotes.length > 0 && (
+        <section className="mb-4">
+          <h2 className="text-sm font-bold text-gray-500 mb-2">{s.quotes}</h2>
+          <div className="flex flex-wrap gap-2">
+            {quotes.map((q) => (
+              <Link key={q.slug} href={`/${lang}/tools/three-kingdoms-quotes/${q.slug}`} className={chip}>{q.gist[lang]}</Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* backlinks: battles */}
+      {battles.length > 0 && (
+        <section className="mb-4">
+          <h2 className="text-sm font-bold text-gray-500 mb-2">{s.battles}</h2>
+          <div className="flex flex-wrap gap-2">
+            {battles.map((b) => (
+              <Link key={b.id} href={`/${lang}/tools/three-kingdoms-battles/${b.id}`} className={chip}>
+                <span className="text-gray-400 text-xs mr-1.5 tabular-nums">{b.year}</span>{b.name[lang]}
               </Link>
             ))}
           </div>
