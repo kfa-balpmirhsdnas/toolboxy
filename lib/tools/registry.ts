@@ -73,6 +73,7 @@ export const HIDDEN_CATEGORIES: ReadonlySet<ToolCategory> = new Set<ToolCategory
 export const isHiddenTool = (t: ToolMeta) => HIDDEN_CATEGORIES.has(t.category)
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'three-kingdoms-quiz',category:'three-kingdoms',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 퀴즈','삼국지 상식 테스트','삼국지 문제','삼국지 시험','three kingdoms quiz','three kingdoms trivia','romance of the three kingdoms quiz','三国志クイズ','三国志 検定','三国志 問題'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'three-kingdoms-timeline',category:'three-kingdoms',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 연표','삼국지 연대기','삼국지 순서','황건적의 난 연도','three kingdoms timeline','three kingdoms chronology','184 280 AD','三国志 年表','三国志 時系列'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'three-kingdoms-quotes',category:'three-kingdoms',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 명언','조조 명언','제갈량 명언','유비 명언','출사표 구절','three kingdoms quotes','cao cao quotes','zhuge liang quotes','三国志 名言','曹操 名言','諸葛亮 名言'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'three-kingdoms-battles',category:'three-kingdoms',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 전투','적벽대전 정리','관도대전','이릉대전','삼국지 전쟁','three kingdoms battles','battle of red cliffs explained','guandu','三国志 戦い','赤壁の戦い 解説'],maxFileSizeMB:{free:0,pro:0} },

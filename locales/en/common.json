@@ -105,6 +105,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "three-kingdoms-quiz": "A Three Kingdoms trivia quiz: 10 random questions per round from a 90-question pool across three difficulty levels, with instant explanations, links to learn more, rank titles and a shareable score card. Free.",
     "three-kingdoms-timeline": "A vertical timeline of 70+ key events from the Yellow Turban Rebellion (184) to the fall of Wu (280), with battle/politics/birth-death filters, decade jumps, and links into the character and battle dictionaries. Free.",
     "three-kingdoms-battles": "The 15 decisive battles of the Three Kingdoms from the Yellow Turbans to the conquest of Wu — background, course and outcome in order, with commander links, related idioms, and what the novel changed. Free.",
     "three-kingdoms-quotes": "Forty verified quotes from the Three Kingdoms — Cao Cao, Liu Bei, Zhuge Liang and more — with the original Chinese, natural translations, the story behind each line, and its exact source. Free, no sign-up.",
@@ -1668,6 +1669,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "three-kingdoms-quiz": "The Three Kingdoms Quiz draws 10 random multiple-choice questions per round from a pool of 90 — thirty each at beginner, intermediate and expert level, from the Peach Garden Oath up to Pei Songzhi’s annotations. Every answer gets an instant explanation and a link into the related character, idiom or battle page, so each question teaches something. Questions where the novel and the histories disagree state their basis explicitly. Finish for a score, a rank title (Sleeping Dragon, Grand Commander, Captain, Recruit) and a 1080×1080 result card to challenge your friends with.",
     "three-kingdoms-timeline": "The Three Kingdoms Timeline lays out the 96 years from the Yellow Turban Rebellion (184) to Jin’s reunification (280) in 70+ events. Each card carries the year, a short description and linked people; events that exist only in the novel (the Peach Garden Oath, Hulao Gate) are badged. Filter to battles only, political events only, or character births and deaths — the latter generated automatically from the character dictionary. Decade navigation jumps you to any period, and the 15 major battles link through to their full battle pages.",
     "three-kingdoms-battles": "Three Kingdoms Battles is a chronological dictionary of the 15 engagements that shaped the era, from the Yellow Turban Rebellion (184) to the conquest of Wu (280). Each battle covers the year, belligerents and key commanders (linked to the character dictionary), background, course, outcome and impact — plus a history-vs-novel section flagging inventions like the chained ships and southeast wind of Red Cliffs. Troop numbers are given \"as recorded,\" acknowledging the exaggeration debate, and each battle links to the idioms it produced. Filter by faction, browse in order.",
     "three-kingdoms-quotes": "Three Kingdoms Quotes collects 40 sayings of Cao Cao, Liu Bei, Zhuge Liang, Sima Yi and others, each with the classical original, a natural translation, and the story of the moment it was spoken. Internet-famous quotes without a traceable source are excluded: every entry cites its exact origin — a chapter of the official histories, an annotated source, or a chapter of the novel — and carries the series’ source badge (history / annotations / novel / later record). Filter by speaker, check the date-seeded quote of the day, and save any quote as a 1080×1080 share card. Fully cross-linked with the character dictionary.",
@@ -2021,6 +2023,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "three-kingdoms-quiz": ["Pick a difficulty — each round draws 10 random questions.", "Answer to see an instant explanation, with a link to learn more.", "Save your score card with its rank title and challenge your friends."],
     "three-kingdoms-timeline": ["Pick a filter — battles, politics, or character births and deaths.", "Use the decade buttons (190, 200…) to jump to any period.", "Follow the people and battle links on each card to the detail pages."],
     "three-kingdoms-battles": ["Pick a battle from the chronological list, or filter by faction.", "Open a battle for background, course, outcome and commander/idiom links.", "Check the history-vs-novel section to see what the novel invented."],
     "three-kingdoms-quotes": ["Filter by speaker (Cao Cao, Zhuge Liang…) to browse the quotes.", "Open a quote for the original text, translation, backstory and exact source.", "Use the save button to export a 1080×1080 quote card image."],
@@ -5768,6 +5771,23 @@
     "atd_max_abs": "Allowed absences: {n}",
     "atd_disclaim": "※ Actual rules vary by school and course.",
     "atd_related": "Related tools:",
+    "tkz_title": "Three Kingdoms Quiz",
+    "tkz_subtitle": "What’s your Three Kingdoms rank? Ten questions per round",
+    "tkz_lv_easy": "Beginner",
+    "tkz_lv_easy_d": "Peach Garden and Red Hare — the basics everyone knows",
+    "tkz_lv_mid": "Intermediate",
+    "tkz_lv_mid_d": "Wuchao and the white-robe crossing — for story readers",
+    "tkz_lv_hard": "Expert",
+    "tkz_lv_hard_d": "Annotations and chronology traps — for history readers",
+    "tkz_meta": "10 random from a 90-question pool · instant explanations · nothing is stored",
+    "tkz_correct": "Correct!",
+    "tkz_wrong": "Wrong",
+    "tkz_learn_more": "Learn more",
+    "tkz_next": "Next question",
+    "tkz_see_result": "See result",
+    "tkz_save": "Save score card",
+    "tkz_retry": "Retry this level",
+    "tkz_change_lv": "Change difficulty",
     "tkt_title": "Three Kingdoms Timeline",
     "tkt_subtitle": "From the Yellow Turbans (184) to reunification (280), at a glance",
     "tkt_f_all": "All events",
@@ -7747,6 +7767,7 @@
     ]
   },
   "toolNames": {
+    "three-kingdoms-quiz": "Three Kingdoms Quiz",
     "three-kingdoms-timeline": "Three Kingdoms Timeline",
     "three-kingdoms-battles": "Three Kingdoms Battles",
     "three-kingdoms-quotes": "Three Kingdoms Quotes",
@@ -7928,6 +7949,7 @@
     }
   },
   "toolTitles": {
+    "three-kingdoms-quiz": "Three Kingdoms Quiz - How Many Can You Get Right?",
     "three-kingdoms-timeline": "Three Kingdoms Timeline (184–280 AD) - Every Key Event",
     "three-kingdoms-battles": "Three Kingdoms Battles Explained - Red Cliffs, Guandu & More",
     "three-kingdoms-quotes": "Three Kingdoms Quotes - 40 Sourced Sayings of Cao Cao & More",
