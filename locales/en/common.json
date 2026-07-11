@@ -104,6 +104,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "exam-dday": "Add your exam name and date to see the countdown plus remaining weekends and total study hours at 3 hours a day. Track several exams on one screen — free, no sign-up, saved in your browser only.",
     "exam-score-calculator": "Enter the number of questions, points per question and your correct answers to instantly get your score and percentage. Supports multiple sections with different weighting and negative marking. Free, no sign-up needed.",
     "target-score-calculator": "Enter your target average and the exam scores you have so far to see exactly what you need on the remaining exams. Supports weighted grading (midterm 40% / final 60%) and shows your best possible average. Free, no sign-up.",
     "attendance-calculator": "Enter total classes and your absences to instantly see your attendance percentage and how many more classes you can miss. Supports late-to-absence conversion and custom minimum attendance rules. Free, no sign-up, runs in your browser.",
@@ -1658,6 +1659,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "exam-dday": "Exam D-Day is an exam-focused countdown tool: register test dates (TOEFL, IELTS, finals…) and see the days remaining at a glance. Beyond a simple count, it shows how many weekend days are left and how many total study hours you can bank at 3 hours per day — numbers you can plug straight into a study plan. Track multiple exams at once; everything is stored only in your browser (localStorage) with JSON export/import.",
     "exam-score-calculator": "The exam score calculator is a general-purpose tool for grading a test right after you take it. Enter the question count, points per question and how many you got right to see your score and percentage instantly. Add multiple sections for exams like listening 100 + reading 100, and optionally apply negative marking that deducts a percentage per wrong answer. It is a universal calculator (not an official conversion table for any specific exam); everything runs in your browser and nothing is stored.",
     "target-score-calculator": "The target score calculator answers \"what do I need on my final?\" instantly. Enter your target average and the scores you already have, leave upcoming exams blank, and it computes the score you need on the rest — with full support for weighted grading like midterm 40% / final 60%. If the goal is out of reach it says so and shows the best average you can still get. Everything runs in your browser and nothing is stored.",
     "attendance-calculator": "The attendance calculator shows your current attendance percentage and how many more classes you can safely miss. Enter the total number of classes and your absences so far, optionally convert lates into absences (e.g. 3 lates = 1 absence), and pick the minimum required attendance (2/3, 3/4, 80%…). Handy for university F-grade rules, academies and certification courses. Everything is calculated instantly in your browser and nothing is stored.",
@@ -2002,6 +2004,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "exam-dday": ["Tap a preset (TOEFL, IELTS…) or type your exam name.", "Pick the exam date and press Add to create a countdown card.", "Use the remaining weekends and 3-hours-a-day totals to plan your studying."],
     "exam-score-calculator": ["Enter the question count and points per question for each section (add sections if weighting differs).", "Type how many answers you got right — score and percentage appear instantly.", "If the exam uses negative marking, set the deduction rate (%)."],
     "target-score-calculator": ["Enter your target average.", "Fill in scores for exams you have taken; leave future exams blank.", "Turn on weights if exams count differently — the score you need is shown big."],
     "attendance-calculator": ["Enter the total number of classes and your absences and lates so far.", "Pick a late-to-absence rule if your school uses one (e.g. 3 lates = 1 absence).", "Choose the minimum required attendance — the number of classes you can still miss is shown big."],
@@ -5740,6 +5743,19 @@
     "atd_max_abs": "Allowed absences: {n}",
     "atd_disclaim": "※ Actual rules vary by school and course.",
     "atd_related": "Related tools:",
+    "exd_title": "Exam D-Day",
+    "exd_subtitle": "Count down the days, weekends and study hours until your exam",
+    "exd_name_ph": "Exam name",
+    "exd_add": "Add",
+    "exd_err": "Please enter an exam name and date.",
+    "exd_preset_note": "Presets fill the name only — exam dates change every year, so pick the date yourself.",
+    "exd_weekends": "{n} weekend {n, plural, one {day} other {days}} left",
+    "exd_hours": "{n} h total at 3 h/day",
+    "exd_empty": "No exams yet. Add one above.",
+    "exd_export": "Export JSON",
+    "exd_import": "Import JSON",
+    "exd_import_err": "Could not import this file. Make sure it was exported from this tool.",
+    "exd_local_note": "Your list is stored only in this browser and never sent to a server.",
     "esc_title": "Exam Score Calculator",
     "esc_subtitle": "Get your score and percentage from the number of correct answers",
     "esc_section": "Section",
@@ -7604,6 +7620,7 @@
     ]
   },
   "toolNames": {
+    "exam-dday": "Exam D-Day",
     "exam-score-calculator": "Exam Score Calculator",
     "target-score-calculator": "Target Score Calculator",
     "attendance-calculator": "Attendance Calculator",
@@ -7776,6 +7793,7 @@
     }
   },
   "toolTitles": {
+    "exam-dday": "Exam Countdown - Days Until Your Test",
     "exam-score-calculator": "Test Score Calculator - Percentage & Marks",
     "target-score-calculator": "Final Grade Calculator - What Do I Need on My Final",
     "attendance-calculator": "Attendance Calculator - How Many Classes Can I Miss",

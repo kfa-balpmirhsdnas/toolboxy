@@ -67,6 +67,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'exam-dday',category:'study',also:['time'],added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['시험 디데이','수능 디데이','토익 디데이','시험 날짜 계산','남은 공부 시간','exam dday','exam countdown','days until exam','試験 D-day','JLPT カウントダウン','試験まであと何日'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'exam-score-calculator',category:'study',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['시험 점수 계산기','가채점','정답률 계산','틀린 개수 점수','배점 계산','exam score calculator','test score calculator','percentage correct','marks calculator','試験採点','正答率計算','点数計算'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'target-score-calculator',category:'study',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['목표 점수 계산기','기말 필요 점수','남은 시험 점수','평균 점수 계산','목표 평균','target score calculator','final grade calculator','what do I need on my final','required score','目標点数計算','期末 必要点数','平均点計算'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'attendance-calculator',category:'study',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['출석률 계산기','결석 가능 횟수','출석 계산','F학점 결석','지각 결석 환산','attendance calculator','absence calculator','attendance percentage','how many classes can I miss','出席率計算','欠席可能回数','出席日数計算'],maxFileSizeMB:{free:0,pro:0} },
