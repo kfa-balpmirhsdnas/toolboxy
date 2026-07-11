@@ -104,6 +104,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "attendance-calculator": "Enter total classes and your absences to instantly see your attendance percentage and how many more classes you can miss. Supports late-to-absence conversion and custom minimum attendance rules. Free, no sign-up, runs in your browser.",
     "music-player": "A free browser music player for MP3 and other audio. Playlist, lock-screen and background playback, repeat and shuffle, resume, and a sleep timer. Files never leave your device.",
     "video-player": "Free in-browser video player that captures any moment as an image (PNG/JPG) and loops an A–B section on repeat. No upload, all local — perfect for language and instrument practice.",
     "image-comparison": "Free image comparison tool — slider, side-by-side, overlay (opacity) and synced zoom. Compare before/after edits, compression, or A/B designs. No upload, all in-browser.",
@@ -1655,6 +1656,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "attendance-calculator": "The attendance calculator shows your current attendance percentage and how many more classes you can safely miss. Enter the total number of classes and your absences so far, optionally convert lates into absences (e.g. 3 lates = 1 absence), and pick the minimum required attendance (2/3, 3/4, 80%…). Handy for university F-grade rules, academies and certification courses. Everything is calculated instantly in your browser and nothing is stored.",
     "period-tracker": "Period Tracker keeps a private log of your menstrual cycles and uses it to estimate your average cycle length, predict your next period (with a D-day countdown), and show an ovulation and fertile-window estimate on a monthly calendar. Add a record each month — start date, period length and an optional symptom note — and a cycle-length chart helps you see how regular your cycles are. Everything is stored only in your browser and never sent to a server; use Export/Import to back up your records or move them to another device. Predictions are estimates for reference only and cycles naturally vary — this tool is not a contraceptive method.",
     "bulk-file-renamer": "Bulk File Renamer renames many files at once — PDFs, documents, archives, images, anything. Drop your files, switch on the rules you need (prefix/suffix, sequential numbering, find-and-replace, case, spaces, date, truncate, lowercase extensions) and watch the new names update live. When several file types are mixed you can pick which extensions to rename. Because browsers cannot rename your original files in place, the renamed copies are bundled into a zip you download — your originals stay untouched. Everything runs in your browser; no file is uploaded.",
     "remove-exif": "Remove EXIF deletes the hidden metadata your camera and phone embed in photos — GPS location, camera model, lens, date and exposure settings — so you can share images safely. Drop one or many JPEG/PNG files; the tool shows what each photo contains (with a warning when GPS location is present), then strips it. Choose to remove everything or only the location (GPS). Because metadata is removed at the byte level, the pixels are never re-encoded — resolution and quality stay exactly the same. Everything runs in your browser; your photos are never uploaded, and the originals on your device are left untouched.",
@@ -1996,6 +1998,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "attendance-calculator": ["Enter the total number of classes and your absences and lates so far.", "Pick a late-to-absence rule if your school uses one (e.g. 3 lates = 1 absence).", "Choose the minimum required attendance — the number of classes you can still miss is shown big."],
     "video-player": ["Drag or pick a video file to play (nothing is uploaded).","Press \"Capture frame\" at any moment to save it as an image (PNG/JPG).","Mark A at the start and B at the end of a section, then turn on Repeat to loop A–B.","Adjust playback speed (0.25×–2×) for language or instrument practice."],
     "image-comparison": ["Add the two images to compare (drag or pick each side).","Choose a mode: slider, side-by-side, overlay, or synced zoom.","Drag the slider or adjust opacity/zoom to spot differences; save the comparison as an image if you like."],
     "heic-viewer": ["Drop HEIC/HEIF files or use “Choose files” (multiple supported).","Flip with ←→ or the thumbnails; zoom, rotate, and go fullscreen.","Save the current photo as JPG/PNG, or download all at once as JPG (zip)."],
@@ -5713,6 +5716,24 @@
     "gp_conv": "View on other scales (simple proportional)",
     "gp_pct": "Percentile",
     "gp_disclaim": "※ Scale conversion and percentile use a simple proportional formula and may differ from your school’s official conversion.",
+    "atd_title": "Attendance Calculator",
+    "atd_subtitle": "See your attendance rate and how many more classes you can miss",
+    "atd_total": "Total classes",
+    "atd_absent": "Absences",
+    "atd_late": "Lates",
+    "atd_late_conv": "Late conversion",
+    "atd_off": "Off",
+    "atd_late_eq": "{n} lates = 1 absence",
+    "atd_req": "Required rate",
+    "atd_custom": "Custom",
+    "atd_res_left": "You can still miss",
+    "atd_times": "{n, plural, one {# class} other {# classes}}",
+    "atd_fail": "Already below the required attendance",
+    "atd_res_rate": "Current rate",
+    "atd_eff": "Effective absences: {n}",
+    "atd_max_abs": "Allowed absences: {n}",
+    "atd_disclaim": "※ Actual rules vary by school and course.",
+    "atd_related": "Related tools:",
     "gp_courses": "Courses:",
     "gp_d_math": "Mathematics",
     "gp_d_eng": "English",
@@ -7544,6 +7565,7 @@
     ]
   },
   "toolNames": {
+    "attendance-calculator": "Attendance Calculator",
     "music-player": "Music Player",
     "video-player": "Video Player",
     "image-comparison": "Image Comparison",
@@ -7713,6 +7735,7 @@
     }
   },
   "toolTitles": {
+    "attendance-calculator": "Attendance Calculator - How Many Classes Can I Miss",
     "gpa-calculator": "GPA Calculator - College Grade Point Average",
     "mp4-to-mp3": "MP4 to MP3 Converter",
     "workout-timer": "Workout Interval Timer",
