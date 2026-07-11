@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { TOOLS, CATEGORY_META, type ToolCategory } from '@/lib/tools/registry'
+import { TOOLS, CATEGORY_META, HIDDEN_CATEGORIES, isHiddenTool, type ToolCategory } from '@/lib/tools/registry'
 import { IDIOMS } from '@/lib/gosaseongeo'
 import { TK_IDIOMS } from '@/lib/tools/threeKingdomsIdioms'
 import { ELEMENTS, elementSlug } from '@/lib/elements'
@@ -15,7 +15,7 @@ const now = new Date()
 
 // Only categories that actually have tools (avoid thin/empty pages).
 const NONEMPTY_CATEGORIES = (Object.keys(CATEGORY_META) as ToolCategory[]).filter(
-  (cat) => TOOLS.some((t) => t.category === cat || t.also?.includes(cat)),
+  (cat) => !HIDDEN_CATEGORIES.has(cat) && TOOLS.some((t) => t.category === cat || t.also?.includes(cat)),
 )
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -49,7 +49,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // ignores it — omitting is the documented recommendation when the real date isn't tracked).
   // changeFrequency is ignored by Google/Bing either way; weekly just reads truthfully.
   const toolUrls = LANGS.flatMap((lang) =>
-    TOOLS.map((tool) => ({
+    TOOLS.filter((tool) => !isHiddenTool(tool)).map((tool) => ({
       url: `${BASE_URL}/${lang}/tools/${tool.slug}`,
       changeFrequency: 'weekly' as const,
       priority: 0.8,

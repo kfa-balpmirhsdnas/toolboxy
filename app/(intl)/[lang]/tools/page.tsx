@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { TOOLS, CATEGORY_META, type ToolCategory } from '@/lib/tools/registry'
+import { TOOLS, CATEGORY_META, HIDDEN_CATEGORIES, type ToolCategory } from '@/lib/tools/registry'
 import ToolCard from '@/components/tools/ToolCard'
 
 const BASE = 'https://www.toolboxy.net'
@@ -22,7 +22,7 @@ export function generateMetadata({ params }: { params: { lang: string } }): Meta
 }
 
 export default async function ToolsPage({ params }: { params: { lang: string } }) {
-  const categories = Object.keys(CATEGORY_META) as ToolCategory[]
+  const categories = (Object.keys(CATEGORY_META) as ToolCategory[]).filter((c) => !HIDDEN_CATEGORIES.has(c))
   const tc = await getTranslations({ locale: params.lang, namespace: 'categories' })
   const th = await getTranslations({ locale: params.lang, namespace: 'home' })
 

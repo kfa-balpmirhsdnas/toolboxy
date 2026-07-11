@@ -6,7 +6,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'samgochoryeo', hanja: '三顧草廬', ko: '삼고초려', ja: '三顧の礼（さんこのれい）', pinyin: 'sān gù cǎo lú', enLit: 'Three Visits to the Thatched Cottage',
     src: 'history', srcName: { ko: '정사 삼국지 제갈량전(출사표)', ja: '正史『三国志』諸葛亮伝（出師表）', en: 'Records of the Three Kingdoms — Zhuge Liang (the Chu Shi Biao)' },
-    people: ['liubei', 'zhugeliang'],
+    people: ['liu-bei', 'zhuge-liang'],
     meaning: {
       ko: '뛰어난 인재를 얻기 위해 정성을 다해 여러 번 찾아가 예를 갖추는 것을 뜻해요. 오늘날에는 인재 영입이나 간곡한 부탁에 두루 쓰입니다.',
       ja: '優れた人材を得るために、何度も足を運び礼を尽くすことを意味します。現代では人材のスカウトや、心を込めた依頼の場面で広く使われます。',
@@ -26,7 +26,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'gyereuk', hanja: '鷄肋', ko: '계륵', ja: '鶏肋（けいろく）', pinyin: 'jī lèi', enLit: 'Chicken Ribs',
     src: 'history', srcName: { ko: '후한서 양수전', ja: '『後漢書』楊修伝', en: 'Book of the Later Han — Yang Xiu' },
-    people: ['caocao', 'yangxiu'],
+    people: ['cao-cao', 'yang-xiu'],
     meaning: {
       ko: '먹자니 별 살이 없고 버리자니 아까운 닭갈비처럼, 큰 쓸모는 없지만 버리기는 아까운 것을 뜻해요. 이러지도 저러지도 못하는 애매한 대상에 씁니다.',
       ja: '食べるほど身はないが捨てるには惜しい鶏のあばら骨のように、大した役には立たないが手放すのは惜しいものを指します。どっちつかずの微妙な対象に使います。',
@@ -46,7 +46,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'eupchammasok', hanja: '泣斬馬謖', ko: '읍참마속', ja: '泣いて馬謖を斬る（ないてばしょくをきる）', pinyin: 'qì zhǎn mǎ sù', enLit: 'Executing Ma Su in Tears',
     src: 'history', srcName: { ko: '정사 삼국지 마속전(읍 묘사는 양양기)', ja: '正史『三国志』馬謖伝（涙の描写は襄陽記）', en: 'Records of the Three Kingdoms — Ma Su' },
-    people: ['zhugeliang', 'masu'],
+    people: ['zhuge-liang', 'ma-su'],
     meaning: {
       ko: '아무리 아끼는 사람이라도 대의와 기강을 위해서는 눈물을 머금고 처벌한다는 뜻이에요. 공정한 원칙 앞에 사사로운 정을 접는 결단을 가리킵니다.',
       ja: 'どんなに可愛がっている人でも、大義と規律のためには涙をのんで処罰するという意味です。公正な原則の前で私情を断つ決断を指します。',
@@ -66,7 +66,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'baekmi', hanja: '白眉', ko: '백미', ja: '白眉（はくび）', pinyin: 'bái méi', enLit: 'The White Eyebrows',
     src: 'history', srcName: { ko: '정사 삼국지 마량전', ja: '正史『三国志』馬良伝', en: 'Records of the Three Kingdoms — Ma Liang' },
-    people: ['maliang'],
+    people: ['ma-liang'],
     meaning: {
       ko: '여럿 가운데 가장 뛰어난 사람이나 작품을 뜻해요. 무리 중 단연 돋보이는 최고를 가리킬 때 씁니다.',
       ja: '多くの中で最も優れた人や作品を意味します。群を抜いて際立つ最高のものを指すときに使います。',
@@ -86,7 +86,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'sueojigyo', hanja: '水魚之交', ko: '수어지교', ja: '水魚の交わり（すいぎょのまじわり）', pinyin: 'shuǐ yú zhī jiāo', enLit: 'Like Fish and Water',
     src: 'history', srcName: { ko: '정사 삼국지 제갈량전', ja: '正史『三国志』諸葛亮伝', en: 'Records of the Three Kingdoms — Zhuge Liang' },
-    people: ['liubei', 'zhugeliang'],
+    people: ['liu-bei', 'zhuge-liang'],
     meaning: {
       ko: '물과 물고기처럼 떼려야 뗄 수 없는 아주 친밀한 사이를 뜻해요. 서로가 서로에게 꼭 필요한 관계에 씁니다.',
       ja: '水と魚のように切っても切れない、非常に親密な間柄を意味します。互いが互いに欠かせない関係に使います。',
@@ -106,7 +106,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'cheonhasambunjigye', hanja: '天下三分之計', ko: '천하삼분지계', ja: '天下三分の計（てんかさんぶんのけい）', pinyin: 'tiān xià sān fēn zhī jì', enLit: 'The Plan to Divide the Realm in Three',
     src: 'history', srcName: { ko: '정사 삼국지 제갈량전(융중대)', ja: '正史『三国志』諸葛亮伝（隆中対）', en: 'Records of the Three Kingdoms — Zhuge Liang (the Longzhong Plan)' },
-    people: ['zhugeliang', 'liubei'],
+    people: ['zhuge-liang', 'liu-bei'],
     meaning: {
       ko: '천하를 셋으로 나누어 정립시킨다는 제갈량의 대전략에서 나온 말로, 판 전체를 읽고 세우는 원대한 청사진을 뜻해요. 강자와 정면 대결하는 대신 자기 몫의 기반부터 확보하는 전략을 가리키기도 합니다.',
       ja: '天下を三つに分けて鼎立させるという諸葛亮の大戦略から生まれた言葉で、盤面全体を読んで立てる壮大な青写真を意味します。強者と正面から争わず、まず自分の基盤を確保する戦略も指します。',
@@ -126,7 +126,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'chulsapyo', hanja: '出師表', ko: '출사표', ja: '出師の表（すいしのひょう）', pinyin: 'chū shī biǎo', enLit: 'The Memorial on Marching Out',
     src: 'history', srcName: { ko: '정사 삼국지 제갈량전 수록(국궁진췌는 후출사표 — 진위 논란 있음)', ja: '正史『三国志』諸葛亮伝所収（鞠躬尽瘁は後出師表 — 真偽に議論あり）', en: 'Records of the Three Kingdoms — Zhuge Liang (jugong-jinchui is from the disputed Later Memorial)' },
-    people: ['zhugeliang'],
+    people: ['zhuge-liang'],
     meaning: {
       ko: '큰 싸움이나 도전에 나서며 각오를 밝히는 것을 뜻해요. "출사표를 던지다"는 선거·경쟁 참가 선언의 관용구가 됐고, 함께 쓰이는 국궁진췌(鞠躬盡瘁)는 몸을 굽혀 온 힘을 다한다는 뜻입니다.',
       ja: '大きな戦いや挑戦に臨んで決意を表明することを意味します。日本語でも「出師の表を奉る」は覚悟の表明として使われ、共に語られる鞠躬尽瘁は身を屈めて全力を尽くすという意味です。',
@@ -146,7 +146,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'dandobuhoe', hanja: '單刀赴會', ko: '단도부회', ja: '単刀赴会（たんとうふかい）', pinyin: 'dān dāo fù huì', enLit: 'Attending the Meeting with a Single Blade',
     src: 'history', srcName: { ko: '정사 삼국지 노숙전(연의는 관우 시점으로 극화)', ja: '正史『三国志』魯粛伝（演義は関羽視点に脚色）', en: 'Records of the Three Kingdoms — Lu Su (the novel retells it from Guan Yu’s side)' },
-    people: ['guanyu', 'lusu'],
+    people: ['guan-yu', 'lu-su'],
     meaning: {
       ko: '칼 한 자루만 차고 적진의 모임에 나아간다는 뜻으로, 위험을 무릅쓴 담대한 단신 협상을 가리켜요. 배짱과 당당함으로 승부하는 자리에 씁니다.',
       ja: '刀一振りだけを帯びて敵地の会合に赴くという意味で、危険を冒した大胆な単身交渉を指します。度胸と堂々たる態度で勝負する場面に使います。',
@@ -166,7 +166,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'pajukjise', hanja: '破竹之勢', ko: '파죽지세', ja: '破竹の勢い（はちくのいきおい）', pinyin: 'pò zhú zhī shì', enLit: 'Like Splitting Bamboo',
     src: 'history', srcName: { ko: '진서 두예전(삼국 통일 전쟁)', ja: '『晋書』杜預伝（三国統一戦争）', en: 'Book of Jin — Du Yu (the war that ended the Three Kingdoms)' },
-    people: ['duyu'],
+    people: ['du-yu'],
     meaning: {
       ko: '대나무를 쪼갤 때 첫 마디만 가르면 나머지가 죽 갈라지듯, 거침없이 이겨 나가는 맹렬한 기세를 뜻해요. 연승 행진이나 무서운 상승세에 씁니다.',
       ja: '竹を割るとき最初の節さえ裂けば残りが一気に割れるように、とどまるところを知らない猛烈な勢いを意味します。連勝街道や凄まじい上昇気流に使います。',
@@ -186,7 +186,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'maninjijeok', hanja: '萬人之敵', ko: '만인지적', ja: '万人の敵（ばんにんのてき）', pinyin: 'wàn rén zhī dí', enLit: 'A Match for Ten Thousand',
     src: 'history', srcName: { ko: '정사 삼국지 관장마황조전', ja: '正史『三国志』関張馬黄趙伝', en: 'Records of the Three Kingdoms — Biographies of Guan, Zhang, Ma, Huang, Zhao' },
-    people: ['guanyu', 'zhangfei'],
+    people: ['guan-yu', 'zhang-fei'],
     meaning: {
       ko: '혼자서 만 명을 상대할 만한 뛰어난 용맹, 또는 그런 인물을 뜻해요. 압도적인 개인 기량을 가진 에이스를 가리킵니다.',
       ja: '一人で万人を相手にできるほどの並外れた武勇、またはその持ち主を意味します。圧倒的な個人技量を持つエースを指します。',
@@ -206,7 +206,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'eongwagisil', hanja: '言過其實', ko: '언과기실', ja: '言過其実（げんかきじつ）', pinyin: 'yán guò qí shí', enLit: 'Words Beyond One’s Deeds',
     src: 'history', srcName: { ko: '정사 삼국지 마량전(유비의 유언)', ja: '正史『三国志』馬良伝（劉備の遺言）', en: 'Records of the Three Kingdoms — Ma Liang (Liu Bei’s dying counsel)' },
-    people: ['liubei', 'masu'],
+    people: ['liu-bei', 'ma-su'],
     meaning: {
       ko: '말이 실제 능력이나 사실보다 부풀려져 있다는 뜻이에요. 화려한 언변에 비해 실속이 없는 사람이나 과장된 주장에 씁니다.',
       ja: '言葉が実際の能力や事実より誇張されているという意味です。派手な弁舌のわりに中身のない人や、大げさな主張に使います。',
@@ -226,7 +226,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'gaemuneupdo', hanja: '開門揖盜', ko: '개문읍도', ja: '開門揖盗（かいもんゆうとう）', pinyin: 'kāi mén yī dào', enLit: 'Opening the Gate to Bow the Thief In',
     src: 'history', srcName: { ko: '정사 삼국지 오주전(장소의 간언)', ja: '正史『三国志』呉主伝（張昭の諫言）', en: 'Records of the Three Kingdoms — Sun Quan (Zhang Zhao’s counsel)' },
-    people: ['sunquan', 'zhangzhao'],
+    people: ['sun-quan', 'zhang-zhao'],
     meaning: {
       ko: '문을 열고 도둑에게 절까지 하며 맞아들인다는 뜻으로, 스스로 화를 불러들이는 어리석음을 가리켜요. 위기 앞에서 넋을 놓아 적에게 틈을 내주는 상황에 씁니다.',
       ja: '門を開けて盗人にお辞儀までして迎え入れるという意味で、自ら災いを招き入れる愚かさを指します。危機を前に呆然として敵に隙を与える状況に使います。',
@@ -246,7 +246,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'byeonggwisinsok', hanja: '兵貴神速', ko: '병귀신속', ja: '兵は神速を貴ぶ（へいはしんそくをたっとぶ）', pinyin: 'bīng guì shén sù', enLit: 'Speed Is the Essence of War',
     src: 'history', srcName: { ko: '정사 삼국지 곽가전', ja: '正史『三国志』郭嘉伝', en: 'Records of the Three Kingdoms — Guo Jia' },
-    people: ['guojia', 'caocao'],
+    people: ['guo-jia', 'cao-cao'],
     meaning: {
       ko: '용병에서는 귀신같은 빠르기가 가장 귀하다는 뜻으로, 기회를 잡으려면 속도가 생명이라는 말이에요. 상대가 대비하기 전에 움직이는 전격전의 원리입니다.',
       ja: '用兵では神のごとき速さこそ最も貴いという意味で、好機を掴むには速度が命だという言葉です。相手が備える前に動く電撃戦の原理です。',
@@ -266,7 +266,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'siksosabeon', hanja: '食少事煩', ko: '식소사번', ja: '食少事煩（しょくしょうじはん）', pinyin: 'shí shǎo shì fán', enLit: 'Eating Little, Toiling Much',
     src: 'history', srcName: { ko: '진서 선제기', ja: '『晋書』宣帝紀', en: 'Book of Jin — Annals of Emperor Xuan (Sima Yi)' },
-    people: ['simayi', 'zhugeliang'],
+    people: ['sima-yi', 'zhuge-liang'],
     meaning: {
       ko: '먹는 것은 적은데 일은 많다는 뜻으로, 몸을 돌보지 않고 과로하는 상태를 가리켜요. 건강을 해칠 만큼 일을 떠안은 사람을 걱정할 때 씁니다.',
       ja: '食べる量は少ないのに仕事は多いという意味で、体を顧みず働きすぎる状態を指します。健康を害するほど仕事を抱え込んだ人を案じるときに使います。',
@@ -286,7 +286,7 @@ export const IDIOMS_A: TKIdiom[] = [
   {
     slug: 'woldanpyeong', hanja: '月旦評', ko: '월단평', ja: '月旦評（げったんひょう）', pinyin: 'yuè dàn píng', enLit: 'The First-of-the-Month Review',
     src: 'history', srcName: { ko: '후한서 허소전', ja: '『後漢書』許劭伝', en: 'Book of the Later Han — Xu Shao' },
-    people: ['xushao', 'caocao'],
+    people: ['xu-shao', 'cao-cao'],
     meaning: {
       ko: '매달 초하루마다 인물을 품평하던 데서 나온 말로, 인물이나 작품에 대한 논평 자체를 뜻해요. 오늘날 인물평·월평 같은 말의 어원입니다.',
       ja: '毎月一日に人物を品評したことから生まれた言葉で、人物や作品に対する論評そのものを意味します。今日の人物評・月旦といった言葉の語源です。',

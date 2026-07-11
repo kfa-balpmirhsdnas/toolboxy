@@ -1,4 +1,4 @@
-export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science' | 'time' | 'device' | 'world' | 'social' | 'study'
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science' | 'time' | 'device' | 'world' | 'social' | 'study' | 'three-kingdoms'
 export type Phase = 1 | 2 | 3
 
 export interface ToolMeta {
@@ -66,7 +66,14 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
   return !locs || !lang || locs.includes(lang)
 }
 
+// Categories built but not yet launched: their tools stay reachable by direct URL for
+// verification, but are excluded from home, the tools index, category pages and the
+// sitemap until launch (t3 rule). Launch = remove the slug from this set.
+export const HIDDEN_CATEGORIES: ReadonlySet<ToolCategory> = new Set<ToolCategory>(['three-kingdoms'])
+export const isHiddenTool = (t: ToolMeta) => HIDDEN_CATEGORIES.has(t.category)
+
 export const TOOLS: ToolMeta[] = [
+  {slug:'three-kingdoms-characters',category:'three-kingdoms',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 인물','삼국지 인물 사전','조조 자','유비 생몰년','삼국지 등장인물','three kingdoms characters','who is cao cao','romance of the three kingdoms characters','三国志 人物','三国志 登場人物','武将 一覧'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'three-kingdoms-idioms',category:'funny',also:['classics'],added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 고사성어','삼고초려 뜻','도원결의 뜻','고사성어 유래','삼국지 사자성어','three kingdoms idioms','chinese idioms origin','三国志 故事成語','故事成語 由来','三顧の礼 意味'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'three-kingdoms-test',category:'funny',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 인물 테스트','삼국지 테스트','성격 테스트','나와 닮은 삼국지 장수','조조 유형','제갈량 유형','three kingdoms personality test','which three kingdoms character are you','personality quiz','三国志 性格診断','三国志 診断','武将診断'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'study-planner',category:'study',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['스터디 플래너','공부 계획표','주간 계획표','학습 플래너','공부 플래너','study planner','weekly study schedule','study timetable','homework planner','学習プランナー','勉強計画表','週間計画'],maxFileSizeMB:{free:0,pro:0} },
@@ -521,4 +528,5 @@ export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; 
   world:     { label: 'World',      icon: String.fromCodePoint(0x1F30F), color: 'cyan' },
   social:    { label: 'Social',     icon: String.fromCodePoint(0x1F4F1), color: 'pink' },
   study:     { label: 'Study & Exams', icon: String.fromCodePoint(0x1F4D6), color: 'emerald' },
+  'three-kingdoms': { label: 'Three Kingdoms', icon: String.fromCodePoint(0x2694, 0xFE0F), color: 'amber' },
 };

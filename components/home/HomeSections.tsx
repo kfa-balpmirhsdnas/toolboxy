@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { useTranslations, useMessages } from 'next-intl'
-import { TOOLS, CATEGORY_META, type ToolCategory, type ToolMeta } from '@/lib/tools/registry'
+import { TOOLS, CATEGORY_META, HIDDEN_CATEGORIES, isHiddenTool, type ToolCategory, type ToolMeta } from '@/lib/tools/registry'
 import ToolCard from '@/components/tools/ToolCard'
 
 const NEW_COUNT = 12        // ✨ 신규 도구 개수
@@ -10,10 +10,10 @@ const PER_CATEGORY = 8      // 카테고리별 둘러보기 — 카테고리당 
 
 // Non-empty categories only (skip categories with no tools).
 const CATEGORIES = (Object.keys(CATEGORY_META) as ToolCategory[]).filter((cat) =>
-  TOOLS.some((t) => t.category === cat || t.also?.includes(cat)),
+  !HIDDEN_CATEGORIES.has(cat) && TOOLS.some((t) => t.category === cat || t.also?.includes(cat)),
 )
 // Newest tools by `added` date (descending); undated tools sort last.
-const NEW_TOOLS = [...TOOLS]
+const NEW_TOOLS = TOOLS.filter((t) => !isHiddenTool(t))
   .sort((a, b) => (b.added ?? '').localeCompare(a.added ?? ''))
   .slice(0, NEW_COUNT)
 const TOOLS_BY_SLUG = new Map(TOOLS.map((t) => [t.slug, t]))
@@ -59,7 +59,7 @@ export default function HomePage({ params }: { params: { lang: string } }) {
   const q = query.trim().toLowerCase()
   const results = useMemo(() => {
     if (!q) return []
-    return TOOLS.filter((tool) => {
+    return TOOLS.filter((tool) => !isHiddenTool(tool)).filter((tool) => {
       const name = (messages.toolNames?.[tool.slug] ?? '').toLowerCase()
       const tags = (messages.toolTags?.[tool.slug] ?? tool.tags ?? []).join(' ').toLowerCase()
       const slugWords = tool.slug.replace(/-/g, ' ')

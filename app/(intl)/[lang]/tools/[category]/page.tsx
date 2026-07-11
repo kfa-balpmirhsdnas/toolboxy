@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import {
   CATEGORY_META,
+  HIDDEN_CATEGORIES,
   getToolsByCategory,
   TOOLS,
   type ToolCategory,
@@ -34,6 +35,8 @@ export default async function CategoryPage({
   // Only real categories reach here; tool slugs match their own static
   // folders (static routes win over this dynamic segment), anything else 404s.
   if (!isCategory(category)) notFound()
+  // Unlaunched categories 404 until they open (t3 rule).
+  if (HIDDEN_CATEGORIES.has(category)) notFound()
 
   const meta = CATEGORY_META[category]
   const tools = getToolsByCategory(category)

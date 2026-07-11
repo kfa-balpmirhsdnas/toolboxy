@@ -5,7 +5,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'gwalmoksangdae', hanja: '刮目相對', ko: '괄목상대', ja: '刮目相待（かつもくそうたい）', pinyin: 'guā mù xiāng dài', enLit: 'Rubbing One’s Eyes and Looking Again',
     src: 'annot', srcName: { ko: '강표전(삼국지 여몽전 배송지주 인용)', ja: '江表伝（『三国志』呂蒙伝 裴松之注）', en: 'Jiangbiao Zhuan (Pei Songzhi’s annotations to Lü Meng’s biography)' },
-    people: ['lvmeng', 'lusu'],
+    people: ['lv-meng', 'lu-su'],
     meaning: {
       ko: '눈을 비비고 다시 볼 만큼 상대의 실력이 몰라보게 늘었다는 뜻이에요. 짧은 사이 눈부시게 성장한 사람에게 씁니다.',
       ja: '目をこすってもう一度見るほど、相手の実力が見違えるほど伸びたという意味です。短い間に目覚ましく成長した人に使います。',
@@ -25,7 +25,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'ohaamong', hanja: '吳下阿蒙', ko: '오하아몽', ja: '呉下の阿蒙（ごかのあもう）', pinyin: 'wú xià ā méng', enLit: 'The Old A-Meng of Wu',
     src: 'annot', srcName: { ko: '강표전(삼국지 여몽전 배송지주 인용)', ja: '江表伝（『三国志』呂蒙伝 裴松之注）', en: 'Jiangbiao Zhuan (Pei Songzhi’s annotations to Lü Meng’s biography)' },
-    people: ['lvmeng', 'lusu'],
+    people: ['lv-meng', 'lu-su'],
     meaning: {
       ko: '언제까지나 발전 없이 예전 그대로인 사람을 뜻해요. 주로 "이제 오하아몽이 아니다"처럼, 몰라보게 성장했다는 부정형으로 씁니다.',
       ja: 'いつまでも進歩がなく昔のままの人を意味します。主に「もはや呉下の阿蒙にあらず」のように、見違えるほど成長したという否定形で使います。',
@@ -45,7 +45,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'subulseokgwon', hanja: '手不釋卷', ko: '수불석권', ja: '手不釈巻（しゅふしゃくかん）', pinyin: 'shǒu bù shì juàn', enLit: 'Never Without a Book in Hand',
     src: 'annot', srcName: { ko: '강표전(삼국지 여몽전 배송지주 인용)', ja: '江表伝（『三国志』呂蒙伝 裴松之注）', en: 'Jiangbiao Zhuan (Pei Songzhi’s annotations to Lü Meng’s biography)' },
-    people: ['lvmeng', 'sunquan'],
+    people: ['lv-meng', 'sun-quan'],
     meaning: {
       ko: '손에서 책을 놓지 않는다는 뜻으로, 틈만 나면 공부하는 성실한 배움의 자세를 가리켜요. 독서광이나 꾸준한 학습자를 칭찬할 때 씁니다.',
       ja: '手から書物を放さないという意味で、暇さえあれば学ぶ勤勉な姿勢を指します。読書家やたゆまぬ学習者を称えるときに使います。',
@@ -65,7 +65,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'biyukjitan', hanja: '髀肉之嘆', ko: '비육지탄', ja: '髀肉の嘆（ひにくのたん）', pinyin: 'bì ròu zhī tàn', enLit: 'Lamenting the Fat on One’s Thighs',
     src: 'annot', srcName: { ko: '구주춘추(삼국지 선주전 배송지주 인용)', ja: '九州春秋（『三国志』先主伝 裴松之注）', en: 'Jiuzhou Chunqiu (Pei Songzhi’s annotations to Liu Bei’s biography)' },
-    people: ['liubei'],
+    people: ['liu-bei'],
     meaning: {
       ko: '말을 탈 일이 없어 허벅지에 살만 오른 것을 한탄한다는 뜻으로, 뜻을 펼치지 못한 채 세월만 보내는 안타까움을 가리켜요. 재능을 썩히고 있다는 자탄에 씁니다.',
       ja: '馬に乗る機会がなく腿に肉がついたことを嘆くという意味で、志を果たせぬまま歳月だけが過ぎる無念さを指します。才能を持て余しているという自嘆に使います。',
@@ -85,7 +85,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'chiljongchilgeum', hanja: '七縱七擒', ko: '칠종칠금', ja: '七縦七擒（しちしょうしちきん）', pinyin: 'qī zòng qī qín', enLit: 'Captured Seven Times, Released Seven Times',
     src: 'annot', srcName: { ko: '한진춘추(삼국지 제갈량전 배송지주 인용)·화양국지', ja: '漢晋春秋（『三国志』諸葛亮伝 裴松之注）・華陽国志', en: 'Han Jin Chunqiu (Pei Songzhi’s annotations) and Huayang Guozhi' },
-    people: ['zhugeliang', 'menghuo'],
+    people: ['zhuge-liang', 'meng-huo'],
     meaning: {
       ko: '일곱 번 사로잡고 일곱 번 놓아준다는 뜻으로, 힘이 아니라 마음으로 상대를 복종시키는 것을 가리켜요. 상대가 진심으로 승복할 때까지 아량을 베푸는 전략입니다.',
       ja: '七度捕らえて七度放つという意味で、力ではなく心で相手を従わせることを指します。相手が心から承服するまで度量を示す戦略です。',
@@ -105,7 +105,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'nakbulsachok', hanja: '樂不思蜀', ko: '낙불사촉', ja: '楽不思蜀（らくふししょく）', pinyin: 'lè bù sī shǔ', enLit: 'Too Happy to Miss Shu',
     src: 'annot', srcName: { ko: '한진춘추(삼국지 후주전 배송지주 인용)', ja: '漢晋春秋（『三国志』後主伝 裴松之注）', en: 'Han Jin Chunqiu (Pei Songzhi’s annotations to Liu Shan’s biography)' },
-    people: ['liushan', 'simazhao'],
+    people: ['liu-shan', 'sima-zhao'],
     meaning: {
       ko: '즐거움에 빠져 고향 촉나라 생각을 하지 않는다는 뜻으로, 눈앞의 안락에 취해 근본과 처지를 잊는 것을 가리켜요. 향락에 젖어 본분을 잊은 사람을 꼬집을 때 씁니다.',
       ja: '楽しさに浸って故国の蜀を思わないという意味で、目先の安楽に酔って根本と境遇を忘れることを指します。享楽に溺れて本分を忘れた人を皮肉るときに使います。',
@@ -125,7 +125,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'sagongmyeong', hanja: '死孔明走生仲達', ko: '사공명 주생중달', ja: '死せる孔明、生ける仲達を走らす', pinyin: 'sǐ kǒng míng zǒu shēng zhòng dá', enLit: 'Dead Kongming Routs Living Zhongda',
     src: 'annot', srcName: { ko: '한진춘추(당대 속담 기록, 연의가 극화)', ja: '漢晋春秋（当時の俗諺の記録、演義が脚色）', en: 'Han Jin Chunqiu (a contemporary saying; dramatized in the novel)' },
-    people: ['zhugeliang', 'simayi'],
+    people: ['zhuge-liang', 'sima-yi'],
     meaning: {
       ko: '죽은 공명이 산 중달을 달아나게 했다는 뜻으로, 뛰어난 사람은 죽은 뒤에도 그 명성만으로 상대를 압도한다는 말이에요. 존재감이 실체를 넘어서는 상황에 씁니다.',
       ja: '死んだ孔明が生きている仲達を敗走させたという意味で、優れた人は死してなおその名声だけで相手を圧倒するという言葉です。存在感が実体を超える状況に使います。',
@@ -145,7 +145,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'dowongyeorui', hanja: '桃園結義', ko: '도원결의', ja: '桃園の誓い（とうえんのちかい）', pinyin: 'táo yuán jié yì', enLit: 'The Peach Garden Oath',
     src: 'novel', srcName: { ko: '삼국지연의 1회(정사에는 없는 창작 장면)', ja: '『三国志演義』第1回（正史にない創作場面）', en: 'Romance of the Three Kingdoms, ch. 1 (a fictional scene, not in the histories)' },
-    people: ['liubei', 'guanyu', 'zhangfei'],
+    people: ['liu-bei', 'guan-yu', 'zhang-fei'],
     meaning: {
       ko: '복숭아밭에서 의형제를 맺은 데서 나온 말로, 뜻을 함께하기로 굳게 다짐하는 결의를 뜻해요. 팀이나 동지가 한마음으로 출발을 다짐할 때 씁니다.',
       ja: '桃の園で義兄弟の契りを結んだことから生まれた言葉で、志を共にする固い誓いを意味します。チームや同志が心を一つに出発を誓うときに使います。',
@@ -165,7 +165,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'goyukjigye', hanja: '苦肉之計', ko: '고육지계', ja: '苦肉の策（くにくのさく）', pinyin: 'kǔ ròu zhī jì', enLit: 'The Self-Injury Ruse',
     src: 'novel', srcName: { ko: '삼국지연의 46회(정사엔 거짓 항복만 있고 매질은 창작)', ja: '『三国志演義』第46回（正史には偽降のみ、杖打ちは創作）', en: 'Romance of the Three Kingdoms, ch. 46 (the histories record only the feigned surrender)' },
-    people: ['huanggai', 'zhouyu'],
+    people: ['huang-gai', 'zhou-yu'],
     meaning: {
       ko: '제 몸을 상하게 하면서까지 꾸며내는 계책이라는 뜻으로, 큰 목적을 위해 스스로 손해를 감수하는 고심의 방책을 가리켜요. 오늘날 "고육지책"으로도 널리 씁니다.',
       ja: '我が身を傷つけてまで仕組む計略という意味で、大きな目的のために自ら損害を引き受ける苦渋の方策を指します。日本語では「苦肉の策」として広く使われます。',
@@ -185,7 +185,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'geumnangmyogye', hanja: '錦囊妙計', ko: '금낭묘계', ja: '錦嚢の計（きんのうのけい）', pinyin: 'jǐn náng miào jì', enLit: 'The Brocade-Bag Stratagems',
     src: 'novel', srcName: { ko: '삼국지연의 54회', ja: '『三国志演義』第54回', en: 'Romance of the Three Kingdoms, ch. 54' },
-    people: ['zhugeliang', 'zhaoyun'],
+    people: ['zhuge-liang', 'zhao-yun'],
     meaning: {
       ko: '비단 주머니 속의 신묘한 계책이라는 뜻으로, 위기의 순간마다 꺼내 쓰도록 미리 마련해 둔 대비책을 가리켜요. 만일에 대비한 비장의 플랜 B에 씁니다.',
       ja: '錦の袋の中の霊妙な計略という意味で、危機のたびに取り出して使えるようあらかじめ用意しておいた備えを指します。万一に備えた秘蔵のプランBに使います。',
@@ -205,7 +205,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'gongseonggye', hanja: '空城計', ko: '공성계', ja: '空城の計（くうじょうのけい）', pinyin: 'kōng chéng jì', enLit: 'The Empty Fort Strategy',
     src: 'novel', srcName: { ko: '삼국지연의 95회(곽충의 일화 — 배송지가 신빙성을 반박한 야사)', ja: '『三国志演義』第95回（郭沖の逸話 — 裴松之が信憑性を否定した野史）', en: 'Romance of the Three Kingdoms, ch. 95 (from an anecdote Pei Songzhi himself rejected)' },
-    people: ['zhugeliang', 'simayi'],
+    people: ['zhuge-liang', 'sima-yi'],
     meaning: {
       ko: '빈 성의 문을 활짝 열어 오히려 적이 의심하고 물러가게 만든다는 뜻으로, 약점을 당당히 드러내 상대의 판단을 흐리는 심리전을 가리켜요. 허세로 위기를 넘기는 배포에 씁니다.',
       ja: '空の城の門を開け放ち、かえって敵に疑わせて退かせるという意味で、弱点を堂々とさらして相手の判断を狂わせる心理戦を指します。はったりで危機を乗り切る度胸に使います。',
@@ -225,7 +225,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'mansagubi', hanja: '萬事俱備 只欠東風', ko: '만사구비 지흠동풍', ja: '万事倶備、只だ東風を欠く', pinyin: 'wàn shì jù bèi, zhǐ qiàn dōng fēng', enLit: 'Everything Ready but the East Wind',
     src: 'novel', srcName: { ko: '삼국지연의 49회', ja: '『三国志演義』第49回', en: 'Romance of the Three Kingdoms, ch. 49' },
-    people: ['zhugeliang', 'zhouyu'],
+    people: ['zhuge-liang', 'zhou-yu'],
     meaning: {
       ko: '모든 준비는 끝났는데 결정적인 한 가지만 빠져 있다는 뜻이에요. 성패를 가르는 마지막 조건이 아직 갖춰지지 않은 상황에 씁니다.',
       ja: 'すべての準備は整ったのに、決定的な一つだけが欠けているという意味です。成否を分ける最後の条件がまだ揃っていない状況に使います。',
@@ -245,7 +245,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'choseonchajeon', hanja: '草船借箭', ko: '초선차전', ja: '草船借箭（そうせんしゃくせん）', pinyin: 'cǎo chuán jiè jiàn', enLit: 'Borrowing Arrows with Straw Boats',
     src: 'novel', srcName: { ko: '삼국지연의 46회(정사의 유사 일화는 손권 — 위략)', ja: '『三国志演義』第46回（正史の類話は孫権 — 魏略）', en: 'Romance of the Three Kingdoms, ch. 46 (the historical version involves Sun Quan)' },
-    people: ['zhugeliang', 'lusu'],
+    people: ['zhuge-liang', 'lu-su'],
     meaning: {
       ko: '풀단 실은 배로 적의 화살을 빌려 온다는 뜻으로, 상대의 공격이나 자원을 역이용해 내 것으로 만드는 지혜를 가리켜요. 남의 힘을 빌려 문제를 해결하는 기지에 씁니다.',
       ja: '藁を積んだ船で敵の矢を借りてくるという意味で、相手の攻撃や資源を逆用して自分のものにする知恵を指します。他人の力を借りて問題を解決する機知に使います。',
@@ -265,7 +265,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'mangmaejigal', hanja: '望梅止渴', ko: '망매지갈', ja: '望梅止渇（ぼうばいしかつ）', pinyin: 'wàng méi zhǐ kě', enLit: 'Quenching Thirst with Dreamed Plums',
     src: 'later', srcName: { ko: '세설신어 가휼편(남조 송의 일화집)', ja: '『世説新語』仮譎篇（南朝宋の逸話集）', en: 'Shishuo Xinyu (A New Account of the Tales of the World, 5th c.)' },
-    people: ['caocao'],
+    people: ['cao-cao'],
     meaning: {
       ko: '매실을 떠올리게 해 갈증을 잊게 한다는 뜻으로, 상상이나 희망으로 당장의 어려움을 견디게 하는 것을 가리켜요. 임시방편의 위안이라는 뉘앙스로도 씁니다.',
       ja: '梅の実を思い浮かべさせて渇きを忘れさせるという意味で、想像や希望で当面の苦しさをしのがせることを指します。一時しのぎの慰めというニュアンスでも使います。',
@@ -285,7 +285,7 @@ export const IDIOMS_B: TKIdiom[] = [
   {
     slug: 'chilbojijae', hanja: '七步之才', ko: '칠보지재', ja: '七歩の才（しちほのさい）', pinyin: 'qī bù zhī cái', enLit: 'Genius Within Seven Paces',
     src: 'later', srcName: { ko: '세설신어 문학편(칠보시)', ja: '『世説新語』文学篇（七歩詩）', en: 'Shishuo Xinyu — Literature (the Seven-Pace Poem)' },
-    people: ['caozhi', 'caopi'],
+    people: ['cao-zhi', 'cao-pi'],
     meaning: {
       ko: '일곱 걸음 안에 시를 짓는 재주라는 뜻으로, 뛰어난 문학적 재능과 놀라운 순발력을 가리켜요. 즉석에서 빛나는 천재성에 씁니다.',
       ja: '七歩のうちに詩を作る才という意味で、優れた文才と驚くべき瞬発力を指します。即興で輝く天才性に使います。',

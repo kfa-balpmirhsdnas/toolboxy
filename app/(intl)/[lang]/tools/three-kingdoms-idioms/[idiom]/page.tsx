@@ -5,6 +5,7 @@ import {
   TK_IDIOMS, TKI_BY_SLUG, PEOPLE, SRC_META, tkiName, type TKIdiom, type TKILang,
 } from '@/lib/tools/threeKingdomsIdioms'
 import TKICopy from '@/components/tools/TKICopy'
+import { TKC_BY_ID } from '@/lib/tools/threeKingdomsCharacters'
 
 // Longtail SEO pages: one static page per idiom ("삼고초려 뜻과 유래", "三顧の礼の意味" …).
 // Trilingual content → per-locale canonical + hreflang (elements/countries convention).
@@ -144,7 +145,7 @@ export default function IdiomPage({ params }: { params: { lang: string; idiom: s
         <h2 className="text-sm font-bold text-gray-500 mb-2">{s.people}</h2>
         <div className="flex flex-wrap gap-2">
           {i.people.map((p) => (
-            <Link key={p} href={`/${lang}/tools/three-kingdoms-idioms?person=${p}`} className={chip}>
+            <Link key={p} href={TKC_BY_ID[p] ? `/${lang}/tools/three-kingdoms-characters/${p}` : `/${lang}/tools/three-kingdoms-idioms?person=${p}`} className={chip}>
               {PEOPLE[p].name[lang]} <span className="ml-1 text-gray-400 font-serif text-xs">{PEOPLE[p].hanja}</span>
             </Link>
           ))}
