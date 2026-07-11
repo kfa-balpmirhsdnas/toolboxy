@@ -38,7 +38,8 @@
     "time": "시간",
     "device": "기기 테스트",
     "world": "세계",
-    "social": "소셜"
+    "social": "소셜",
+    "study": "학습·시험"
   },
   "home": {
     "hero_title": "무료 온라인 도구",
@@ -592,7 +593,7 @@
     },
     "gpa-calculator": {
       "title": "GPA 계산기",
-      "description": "4.0, 5.0, 10.0, 100점 척도에서 학점 가중 평균으로 GPA를 계산합니다"
+      "description": "과목별 성적과 이수 학점만 입력하면 4.5·4.3·4.0 만점 기준 평점(GPA)을 즉시 계산합니다. 전공 평점, 만점 기준 간 변환, 백분위 환산까지 지원하는 무료 학점 계산기 — 설치·가입 없이 브라우저에서 바로 사용하세요."
     },
     "budget-calculator": {
       "title": "예산 계산기",
@@ -6142,6 +6143,12 @@
     "gp_cumulative": "누적 GPA",
     "gp_scale_word": "기준",
     "gp_total_credits": "총 학점:",
+    "gp_major": "전공",
+    "gp_major_short": "전",
+    "gp_major_gpa": "전공 평점",
+    "gp_conv": "다른 만점 기준으로 보기 (단순 비례 환산)",
+    "gp_pct": "백분위",
+    "gp_disclaim": "※ 만점 간 변환과 백분위는 단순 비례식 기준이며, 학교·기관별 공식 환산과 다를 수 있습니다.",
     "gp_courses": "과목 수:",
     "gp_d_math": "수학",
     "gp_d_eng": "영어",
@@ -7923,6 +7930,7 @@
     }
   },
   "toolTitles": {
+    "gpa-calculator": "학점 계산기 - 4.5 4.3 4.0 만점 GPA 변환",
     "mp4-to-mp3": "MP4 MP3 변환",
     "workout-timer": "운동 인터벌 타이머",
     "docx-to-odt": "docx odt 변환 (워드→오픈문서)",

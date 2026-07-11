@@ -1,4 +1,4 @@
-export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science' | 'time' | 'device' | 'world' | 'social'
+export type ToolCategory = 'pdf' | 'image' | 'video' | 'audio' | 'text' | 'developer' | 'file' | 'utility' | 'funny' | 'game' | 'qr' | 'security' | 'finance' | 'health' | 'design' | 'seo' | 'language' | 'classics' | 'random' | 'science' | 'time' | 'device' | 'world' | 'social' | 'study'
 export type Phase = 1 | 2 | 3
 
 export interface ToolMeta {
@@ -277,7 +277,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'bmi-calculator',category:'health',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['bmi','body','mass','index','health'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'speed-converter',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['speed converter'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'calorie-calculator',category:'health',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['calorie','tdee','bmr','diet','health'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'pomodoro-timer',category:'time',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['pomodoro','timer','focus','work','productivity'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'pomodoro-timer',category:'time',also:['study'],added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['pomodoro','timer','focus','work','productivity','공부 타이머','뽀모도로'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'binary-text-converter',category:'developer',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['binary text converter','binary text'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'stopwatch',category:'time',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['stopwatch','timer','lap','clock','measure'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'fraction-calculator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['fraction calculator'],maxFileSizeMB:{free:0,pro:0} },
@@ -291,7 +291,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'investment-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['investment calculator','roi','compound returns','investment growth','투자 계산'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'discount-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['discount','sale','price','percent'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'electricity-cost-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['electricity cost','power bill','energy cost','kwh cost','전기요금 계산'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'grade-calculator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['grade calculator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'grade-calculator',category:'utility',also:['study'],added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['grade calculator','학점 계산기','성적 계산'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'water-intake-calculator',category:'health',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['water intake','daily water','hydration calculator','물 섭취량'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'sleep-calculator',category:'health',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['sleep calculator','sleep cycle','bedtime calculator','수면 시간'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'pace-calculator',category:'health',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['pace calculator','running pace','race time','러닝 페이스'],maxFileSizeMB:{free:0,pro:0} },
@@ -299,7 +299,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'random-quote-generator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['random quote generator','random quote'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'tax-bracket-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['tax bracket','income tax','marginal tax','tax rate','소득세 구간'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'json-to-csv',category:'developer',also:['file'],added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['json','csv','convert','export','data'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'gpa-calculator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['gpa calculator'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'gpa-calculator',category:'utility',also:['study'],added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['gpa calculator','평점 계산기','4.5 만점'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'aspect-ratio-calculator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['aspect','ratio','width','height','resize'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'budget-calculator',category:'finance',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['budget calculator','monthly budget','expense planner','50 30 20 rule','예산 계산'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'age-calculator',category:'health',also:['time'],added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['age','birthday','date','calculate','years'],maxFileSizeMB:{free:0,pro:0} },
@@ -449,7 +449,7 @@ export const TOOLS: ToolMeta[] = [
   {slug:'text-truncator',category:'text',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['truncate','trim','text'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'word-cloud-generator',category:'text',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['word-cloud','visualize','text'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'word-wrap',category:'text',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['wrap','text','format'],maxFileSizeMB:{free:0,pro:0} },
-  {slug:'habit-tracker',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['habit','tracker','productivity'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'habit-tracker',category:'utility',also:['study'],added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['habit','tracker','productivity','습관 체크표'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'keyboard-shortcut-tester',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['keyboard','shortcut','test'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'number-palindrome',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['palindrome','number','check'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'number-sequence-generator',category:'utility',added:'2026-06-22',phase:1,isPro:false,isNew:true,tags:['sequence','number','generate'],maxFileSizeMB:{free:0,pro:0} },
@@ -512,4 +512,5 @@ export const CATEGORY_META: Record<ToolCategory, { label: string; icon: string; 
   device:    { label: 'Device Test', icon: String.fromCodePoint(0x1F5A5, 0xFE0F), color: 'slate' },
   world:     { label: 'World',      icon: String.fromCodePoint(0x1F30F), color: 'cyan' },
   social:    { label: 'Social',     icon: String.fromCodePoint(0x1F4F1), color: 'pink' },
+  study:     { label: 'Study & Exams', icon: String.fromCodePoint(0x1F4D6), color: 'emerald' },
 };

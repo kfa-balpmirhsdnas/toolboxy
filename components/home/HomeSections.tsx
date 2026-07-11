@@ -10,7 +10,7 @@ const PER_CATEGORY = 8      // 카테고리별 둘러보기 — 카테고리당 
 
 // Non-empty categories only (skip categories with no tools).
 const CATEGORIES = (Object.keys(CATEGORY_META) as ToolCategory[]).filter((cat) =>
-  TOOLS.some((t) => t.category === cat),
+  TOOLS.some((t) => t.category === cat || t.also?.includes(cat)),
 )
 // Newest tools by `added` date (descending); undated tools sort last.
 const NEW_TOOLS = [...TOOLS]
@@ -190,7 +190,7 @@ export default function HomePage({ params }: { params: { lang: string } }) {
             <h2 className="text-2xl font-bold text-gray-900 mb-8">{t('browse_by_category')}</h2>
             <div className="space-y-10">
               {CATEGORIES.map((cat) => {
-                const catTools = TOOLS.filter((tool) => tool.category === cat).slice(0, PER_CATEGORY)
+                const catTools = TOOLS.filter((tool) => tool.category === cat || tool.also?.includes(cat)).slice(0, PER_CATEGORY)
                 if (catTools.length === 0) return null
                 return (
                   <div key={cat}>

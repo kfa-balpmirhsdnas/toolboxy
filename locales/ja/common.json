@@ -38,7 +38,8 @@
     "time": "時間",
     "device": "デバイステスト",
     "world": "世界",
-    "social": "ソーシャル"
+    "social": "ソーシャル",
+    "study": "学習・試験"
   },
   "home": {
     "hero_title": "無料オンラインツール",
@@ -586,7 +587,7 @@
     },
     "gpa-calculator": {
       "title": "GPA計算ツール",
-      "description": "4.0・5.0・10.0・100点満点で単位加重平均GPAを計算します"
+      "description": "成績と単位数を入力するだけで、4.0・4.3・4.5など満点基準別にGPAを自動計算。専攻のみのGPA、基準間の換算、百分位表示にも対応した無料ツール。登録・インストール不要、ブラウザで完結します。"
     },
     "budget-calculator": {
       "title": "予算計算ツール",
@@ -6115,6 +6116,12 @@
     "gp_cumulative": "累積GPA",
     "gp_scale_word": "スケール",
     "gp_total_credits": "総単位:",
+    "gp_major": "専攻",
+    "gp_major_short": "専",
+    "gp_major_gpa": "専攻GPA",
+    "gp_conv": "他の満点基準で見る（単純比例換算）",
+    "gp_pct": "百分位",
+    "gp_disclaim": "※ 満点間の換算と百分位は単純比例式によるもので、学校・機関の公式換算とは異なる場合があります。",
     "gp_courses": "科目数:",
     "gp_d_math": "数学",
     "gp_d_eng": "英語",
@@ -7896,6 +7903,7 @@
     }
   },
   "toolTitles": {
+    "gpa-calculator": "GPA計算機 - 大学の成績評価を自動計算",
     "mp4-to-mp3": "MP4 MP3変換",
     "workout-timer": "運動インターバルタイマー",
     "docx-to-odt": "docx odt変換 (Word→OpenDocument)",

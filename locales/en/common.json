@@ -38,7 +38,8 @@
     "time": "Time",
     "device": "Device Test",
     "world": "World",
-    "social": "Social"
+    "social": "Social",
+    "study": "Study & Exams"
   },
   "home": {
     "hero_title": "Free Online Tools",
@@ -598,7 +599,7 @@
     },
     "gpa-calculator": {
       "title": "GPA Calculator",
-      "description": "Calculate your GPA with credit-weighted averages on 4.0, 5.0, 10.0, or 100-point scales"
+      "description": "Calculate your GPA instantly on 4.0, 4.3, 4.5, 5.0, 10 or 100-point scales with credit weighting, major-only GPA, scale conversion and percentile. Free, no sign-up, runs entirely in your browser."
     },
     "budget-calculator": {
       "title": "Budget Calculator",
@@ -5706,6 +5707,12 @@
     "gp_cumulative": "Cumulative GPA",
     "gp_scale_word": "scale",
     "gp_total_credits": "Total Credits:",
+    "gp_major": "Major",
+    "gp_major_short": "M",
+    "gp_major_gpa": "Major GPA",
+    "gp_conv": "View on other scales (simple proportional)",
+    "gp_pct": "Percentile",
+    "gp_disclaim": "※ Scale conversion and percentile use a simple proportional formula and may differ from your school’s official conversion.",
     "gp_courses": "Courses:",
     "gp_d_math": "Mathematics",
     "gp_d_eng": "English",
@@ -7706,6 +7713,7 @@
     }
   },
   "toolTitles": {
+    "gpa-calculator": "GPA Calculator - College Grade Point Average",
     "mp4-to-mp3": "MP4 to MP3 Converter",
     "workout-timer": "Workout Interval Timer",
     "docx-to-odt": "DOCX to ODT Converter (Word → OpenDocument)",
