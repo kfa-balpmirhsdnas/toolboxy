@@ -7701,6 +7701,14 @@
     "ht_cancel": "キャンセル",
     "ht_habit": "習慣",
     "ht_streak": "連続",
+    "ht_week_view": "週間",
+    "ht_month_view": "月間",
+    "ht_goal": "週間目標",
+    "ht_goal_unit": "回/週",
+    "ht_goal_col": "週間目標",
+    "ht_month_rate": "今月の達成率",
+    "ht_print": "印刷",
+    "ht_title_print": "習慣トラッカー",
     "ht_todaylabel": "今日",
     "ht_yesterday": "昨日",
     "ht_sun": "日",
@@ -8021,6 +8029,7 @@
     }
   },
   "toolTitles": {
+    "habit-tracker": "習慣トラッカー - 無料オンライン習慣チェック表",
     "flashcards": "暗記カード作成 - 無料オンライン単語カード",
     "pomodoro-timer": "ポモドーロタイマー - オンライン勉強タイマー",
     "exam-dday": "試験カウントダウン - JLPT・TOEIC D-day計算",

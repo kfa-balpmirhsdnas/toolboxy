@@ -7728,6 +7728,14 @@
     "ht_cancel": "취소",
     "ht_habit": "습관",
     "ht_streak": "연속",
+    "ht_week_view": "주간",
+    "ht_month_view": "월간",
+    "ht_goal": "주간 목표",
+    "ht_goal_unit": "회/주",
+    "ht_goal_col": "주간 목표",
+    "ht_month_rate": "이번 달 달성률",
+    "ht_print": "인쇄",
+    "ht_title_print": "습관 트래커",
     "ht_todaylabel": "오늘",
     "ht_yesterday": "어제",
     "ht_sun": "일",
@@ -8048,6 +8056,7 @@
     }
   },
   "toolTitles": {
+    "habit-tracker": "습관 트래커 - 온라인 습관 체크표",
     "flashcards": "온라인 암기카드 만들기 - 플래시카드",
     "pomodoro-timer": "뽀모도로 타이머 - 온라인 공부 타이머",
     "exam-dday": "시험 디데이 계산기 - 수능 토익 D-day",

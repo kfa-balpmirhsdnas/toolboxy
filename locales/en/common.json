@@ -7287,6 +7287,14 @@
     "ht_cancel": "Cancel",
     "ht_habit": "Habit",
     "ht_streak": "Streak",
+    "ht_week_view": "Week",
+    "ht_month_view": "Month",
+    "ht_goal": "Weekly goal",
+    "ht_goal_unit": "/wk",
+    "ht_goal_col": "Weekly goal",
+    "ht_month_rate": "This month",
+    "ht_print": "Print",
+    "ht_title_print": "Habit Tracker",
     "ht_todaylabel": "Today",
     "ht_yesterday": "Yesterday",
     "ht_sun": "Sun",
@@ -7831,6 +7839,7 @@
     }
   },
   "toolTitles": {
+    "habit-tracker": "Habit Tracker - Free Online Habit Chart",
     "flashcards": "Flashcard Maker - Free Online Study Cards",
     "pomodoro-timer": "Pomodoro Timer - Online Study Timer 25/5",
     "exam-dday": "Exam Countdown - Days Until Your Test",
