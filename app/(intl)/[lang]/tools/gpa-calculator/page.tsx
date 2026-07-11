@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useMessages } from 'next-intl'
+import Link from 'next/link'
 import ToolLayout from '@/components/tools/ToolLayout'
 import { getToolBySlug } from '@/lib/tools/registry'
 
@@ -44,6 +45,8 @@ const tool = getToolBySlug('gpa-calculator')!
 
 export default function GpaCalculatorPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
+  const lang = params.lang
+  const toolNames = (useMessages() as { toolNames?: Record<string, string> }).toolNames ?? {}
   // Korean pages default to the 4.5 scale (the domestic standard); ja/en default to 4.0.
   const [scale, setScale] = useState<Scale>(params.lang === 'ko' ? '4.5' : '4.0')
   const [courses, setCourses] = useState<Course[]>(() => [
@@ -135,6 +138,11 @@ export default function GpaCalculatorPage({ params }: { params: { lang: string }
             </div>
           </>
         )}
+        <div className="mt-8 flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-gray-400">{t('atd_related')}</span>
+          <Link href={`/${lang}/tools/target-score-calculator`} className="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-brand-300 text-sm font-medium transition-colors">{toolNames['target-score-calculator'] || 'Target Score Calculator'}</Link>
+          <Link href={`/${lang}/tools/attendance-calculator`} className="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-brand-300 text-sm font-medium transition-colors">{toolNames['attendance-calculator'] || 'Attendance Calculator'}</Link>
+        </div>
       </div>
     </ToolLayout>
   )

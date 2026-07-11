@@ -104,6 +104,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "target-score-calculator": "Enter your target average and the exam scores you have so far to see exactly what you need on the remaining exams. Supports weighted grading (midterm 40% / final 60%) and shows your best possible average. Free, no sign-up.",
     "attendance-calculator": "Enter total classes and your absences to instantly see your attendance percentage and how many more classes you can miss. Supports late-to-absence conversion and custom minimum attendance rules. Free, no sign-up, runs in your browser.",
     "music-player": "A free browser music player for MP3 and other audio. Playlist, lock-screen and background playback, repeat and shuffle, resume, and a sleep timer. Files never leave your device.",
     "video-player": "Free in-browser video player that captures any moment as an image (PNG/JPG) and loops an A–B section on repeat. No upload, all local — perfect for language and instrument practice.",
@@ -1656,6 +1657,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "target-score-calculator": "The target score calculator answers \"what do I need on my final?\" instantly. Enter your target average and the scores you already have, leave upcoming exams blank, and it computes the score you need on the rest — with full support for weighted grading like midterm 40% / final 60%. If the goal is out of reach it says so and shows the best average you can still get. Everything runs in your browser and nothing is stored.",
     "attendance-calculator": "The attendance calculator shows your current attendance percentage and how many more classes you can safely miss. Enter the total number of classes and your absences so far, optionally convert lates into absences (e.g. 3 lates = 1 absence), and pick the minimum required attendance (2/3, 3/4, 80%…). Handy for university F-grade rules, academies and certification courses. Everything is calculated instantly in your browser and nothing is stored.",
     "period-tracker": "Period Tracker keeps a private log of your menstrual cycles and uses it to estimate your average cycle length, predict your next period (with a D-day countdown), and show an ovulation and fertile-window estimate on a monthly calendar. Add a record each month — start date, period length and an optional symptom note — and a cycle-length chart helps you see how regular your cycles are. Everything is stored only in your browser and never sent to a server; use Export/Import to back up your records or move them to another device. Predictions are estimates for reference only and cycles naturally vary — this tool is not a contraceptive method.",
     "bulk-file-renamer": "Bulk File Renamer renames many files at once — PDFs, documents, archives, images, anything. Drop your files, switch on the rules you need (prefix/suffix, sequential numbering, find-and-replace, case, spaces, date, truncate, lowercase extensions) and watch the new names update live. When several file types are mixed you can pick which extensions to rename. Because browsers cannot rename your original files in place, the renamed copies are bundled into a zip you download — your originals stay untouched. Everything runs in your browser; no file is uploaded.",
@@ -1998,6 +2000,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "target-score-calculator": ["Enter your target average.", "Fill in scores for exams you have taken; leave future exams blank.", "Turn on weights if exams count differently — the score you need is shown big."],
     "attendance-calculator": ["Enter the total number of classes and your absences and lates so far.", "Pick a late-to-absence rule if your school uses one (e.g. 3 lates = 1 absence).", "Choose the minimum required attendance — the number of classes you can still miss is shown big."],
     "video-player": ["Drag or pick a video file to play (nothing is uploaded).","Press \"Capture frame\" at any moment to save it as an image (PNG/JPG).","Mark A at the start and B at the end of a section, then turn on Repeat to loop A–B.","Adjust playback speed (0.25×–2×) for language or instrument practice."],
     "image-comparison": ["Add the two images to compare (drag or pick each side).","Choose a mode: slider, side-by-side, overlay, or synced zoom.","Drag the slider or adjust opacity/zoom to spot differences; save the comparison as an image if you like."],
@@ -5734,6 +5737,25 @@
     "atd_max_abs": "Allowed absences: {n}",
     "atd_disclaim": "※ Actual rules vary by school and course.",
     "atd_related": "Related tools:",
+    "tsc_title": "Target Score Calculator",
+    "tsc_subtitle": "Find out what you need on your remaining exams to hit your target average",
+    "tsc_goal": "Target average",
+    "tsc_weighted": "Weighted",
+    "tsc_exam": "Exam",
+    "tsc_exam_ph": "Exam name (optional)",
+    "tsc_weight": "Weight %",
+    "tsc_score": "Score",
+    "tsc_score_ph": "not yet",
+    "tsc_add": "+ Add exam",
+    "tsc_weight_warn": "Weights add up to {n}% — adjust them to total 100%.",
+    "tsc_res_need": "Needed average on {n, plural, one {the remaining exam} other {# remaining exams}}",
+    "tsc_res_need_tail": "or higher to reach your goal!",
+    "tsc_impossible": "Even 100s on the remaining exams won’t reach the goal",
+    "tsc_max_avg": "Best possible average:",
+    "tsc_cur_avg": "Average so far:",
+    "tsc_all_done": "No exams are left blank. Leave the score empty for exams you haven’t taken yet.",
+    "tsc_d_mid": "Midterm",
+    "tsc_d_final": "Final",
     "gp_courses": "Courses:",
     "gp_d_math": "Mathematics",
     "gp_d_eng": "English",
@@ -7565,6 +7587,7 @@
     ]
   },
   "toolNames": {
+    "target-score-calculator": "Target Score Calculator",
     "attendance-calculator": "Attendance Calculator",
     "music-player": "Music Player",
     "video-player": "Video Player",
@@ -7735,6 +7758,7 @@
     }
   },
   "toolTitles": {
+    "target-score-calculator": "Final Grade Calculator - What Do I Need on My Final",
     "attendance-calculator": "Attendance Calculator - How Many Classes Can I Miss",
     "gpa-calculator": "GPA Calculator - College Grade Point Average",
     "mp4-to-mp3": "MP4 to MP3 Converter",

@@ -67,6 +67,7 @@ export function isAppTool(tool: ToolMeta, lang?: string): boolean {
 }
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'target-score-calculator',category:'study',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['목표 점수 계산기','기말 필요 점수','남은 시험 점수','평균 점수 계산','목표 평균','target score calculator','final grade calculator','what do I need on my final','required score','目標点数計算','期末 必要点数','平均点計算'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'attendance-calculator',category:'study',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['출석률 계산기','결석 가능 횟수','출석 계산','F학점 결석','지각 결석 환산','attendance calculator','absence calculator','attendance percentage','how many classes can I miss','出席率計算','欠席可能回数','出席日数計算'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'country-info',category:'world',added:'2026-07-09',phase:1,isPro:false,isNew:true,tags:['국가 정보','나라 정보','국가번호 조회','나라별 수도','나라별 콘센트','국가 코드','country info','country facts','calling code lookup','capital city','plug type by country','国情報','国番号','首都一覧'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'docx-to-odt',category:'file',also:['text'],added:'2026-07-09',phase:1,isPro:false,isNew:true,tags:['docx odt 변환','워드 odt 변환','docx 변환기','오픈오피스 변환','odt 파일 변환','워드 문서 변환','docx to odt','word to odt','convert docx to odt','odt converter','openoffice converter','docx odt変換','ワード odt変換','odt変換'],maxFileSizeMB:{free:0,pro:0} },
