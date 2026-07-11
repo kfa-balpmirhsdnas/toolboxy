@@ -105,6 +105,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "three-kingdoms-name-generator": "Enter your name, pick 2-3 personality keywords and a civil/martial leaning, and get a Three Kingdoms-style name — surname, given name and courtesy name (字) built from characters used in real period names. Free.",
     "three-kingdoms-quiz": "A Three Kingdoms trivia quiz: 10 random questions per round from a 90-question pool across three difficulty levels, with instant explanations, links to learn more, rank titles and a shareable score card. Free.",
     "three-kingdoms-timeline": "A vertical timeline of 70+ key events from the Yellow Turban Rebellion (184) to the fall of Wu (280), with battle/politics/birth-death filters, decade jumps, and links into the character and battle dictionaries. Free.",
     "three-kingdoms-battles": "The 15 decisive battles of the Three Kingdoms from the Yellow Turbans to the conquest of Wu — background, course and outcome in order, with commander links, related idioms, and what the novel changed. Free.",
@@ -1669,6 +1670,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "three-kingdoms-name-generator": "The Three Kingdoms Name Generator turns your name, two or three personality keywords and a civil-or-martial leaning into a period-style Chinese name. Surnames come from a pool of twenty clans of the era; the single-character given name is chosen from characters actually used in period names, weighted to your keywords; and the courtesy name (字) follows the real naming convention of echoing the given name’s meaning. Results include Korean, Japanese and pinyin readings, a gloss for every character, and a link to the Three Kingdoms figure your name suits best. Generation is deterministic — the same input always yields the same name — so save the result card and compare with friends.",
     "three-kingdoms-quiz": "The Three Kingdoms Quiz draws 10 random multiple-choice questions per round from a pool of 90 — thirty each at beginner, intermediate and expert level, from the Peach Garden Oath up to Pei Songzhi’s annotations. Every answer gets an instant explanation and a link into the related character, idiom or battle page, so each question teaches something. Questions where the novel and the histories disagree state their basis explicitly. Finish for a score, a rank title (Sleeping Dragon, Grand Commander, Captain, Recruit) and a 1080×1080 result card to challenge your friends with.",
     "three-kingdoms-timeline": "The Three Kingdoms Timeline lays out the 96 years from the Yellow Turban Rebellion (184) to Jin’s reunification (280) in 70+ events. Each card carries the year, a short description and linked people; events that exist only in the novel (the Peach Garden Oath, Hulao Gate) are badged. Filter to battles only, political events only, or character births and deaths — the latter generated automatically from the character dictionary. Decade navigation jumps you to any period, and the 15 major battles link through to their full battle pages.",
     "three-kingdoms-battles": "Three Kingdoms Battles is a chronological dictionary of the 15 engagements that shaped the era, from the Yellow Turban Rebellion (184) to the conquest of Wu (280). Each battle covers the year, belligerents and key commanders (linked to the character dictionary), background, course, outcome and impact — plus a history-vs-novel section flagging inventions like the chained ships and southeast wind of Red Cliffs. Troop numbers are given \"as recorded,\" acknowledging the exaggeration debate, and each battle links to the idioms it produced. Filter by faction, browse in order.",
@@ -2023,6 +2025,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "three-kingdoms-name-generator": ["Enter your name (nicknames fine) and pick 2-3 personality keywords.", "Choose your leaning — civil (strategy) or martial (valor) — and generate.", "Read the per-character meanings, then save the result card to share."],
     "three-kingdoms-quiz": ["Pick a difficulty — each round draws 10 random questions.", "Answer to see an instant explanation, with a link to learn more.", "Save your score card with its rank title and challenge your friends."],
     "three-kingdoms-timeline": ["Pick a filter — battles, politics, or character births and deaths.", "Use the decade buttons (190, 200…) to jump to any period.", "Follow the people and battle links on each card to the detail pages."],
     "three-kingdoms-battles": ["Pick a battle from the chronological list, or filter by faction.", "Open a battle for background, course, outcome and commander/idiom links.", "Check the history-vs-novel section to see what the novel invented."],
@@ -5771,6 +5774,21 @@
     "atd_max_abs": "Allowed absences: {n}",
     "atd_disclaim": "※ Actual rules vary by school and course.",
     "atd_related": "Related tools:",
+    "tkn_title": "Three Kingdoms Name Generator",
+    "tkn_subtitle": "Your Three Kingdoms-style name and courtesy name, from your own name",
+    "tkn_input": "Your name",
+    "tkn_input_ph": "Enter a name or nickname",
+    "tkn_traits": "Personality keywords (2-3)",
+    "tkn_tendency": "Leaning",
+    "tkn_civil": "Civil (strategy)",
+    "tkn_military": "Martial (valor)",
+    "tkn_run": "Generate",
+    "tkn_err_name": "Please enter a name.",
+    "tkn_err_traits": "Pick at least two personality keywords.",
+    "tkn_note": "Deterministic: the same input always gives the same name — compare with friends.",
+    "tkn_courtesy": "Courtesy name",
+    "tkn_match": "The hero this name suits",
+    "tkn_save": "Save result card",
     "tkz_title": "Three Kingdoms Quiz",
     "tkz_subtitle": "What’s your Three Kingdoms rank? Ten questions per round",
     "tkz_lv_easy": "Beginner",
@@ -7767,6 +7785,7 @@
     ]
   },
   "toolNames": {
+    "three-kingdoms-name-generator": "Three Kingdoms Name Generator",
     "three-kingdoms-quiz": "Three Kingdoms Quiz",
     "three-kingdoms-timeline": "Three Kingdoms Timeline",
     "three-kingdoms-battles": "Three Kingdoms Battles",
@@ -7949,6 +7968,7 @@
     }
   },
   "toolTitles": {
+    "three-kingdoms-name-generator": "Three Kingdoms Name Generator - Get Your Courtesy Name",
     "three-kingdoms-quiz": "Three Kingdoms Quiz - How Many Can You Get Right?",
     "three-kingdoms-timeline": "Three Kingdoms Timeline (184–280 AD) - Every Key Event",
     "three-kingdoms-battles": "Three Kingdoms Battles Explained - Red Cliffs, Guandu & More",
