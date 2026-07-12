@@ -38,6 +38,12 @@ export default function PaintPage({ params }: { params: { lang: string } }) {
   const [customH, setCustomH] = useState('600')
   const [fitCanvas, setFitCanvas] = useState(true)
   const [textBox, setTextBox] = useState<{ dx: number; dy: number; cx: number; cy: number; v: string } | null>(null)
+  const [dd, setDd] = useState<'color' | 'size' | 'bg' | null>(null) // 커스텀 드롭다운
+  const [ddRight, setDdRight] = useState(false) // 버튼이 화면 오른쪽에 있으면 팝오버를 우측 정렬
+  function toggleDd(kind: 'color' | 'size' | 'bg', e: React.MouseEvent<HTMLButtonElement>) {
+    setDdRight(e.currentTarget.getBoundingClientRect().left > window.innerWidth / 2)
+    setDd(dd === kind ? null : kind)
+  }
   const [stacks, setStacks] = useState({ undo: 0, redo: 0 }) // 버튼 상태용 카운터
 
   const mainRef = useRef<HTMLCanvasElement>(null)
@@ -380,11 +386,11 @@ export default function PaintPage({ params }: { params: { lang: string } }) {
         <p className="text-gray-500 mb-5">{t('pnt_subtitle')}</p>
 
         {/* options bar */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-3 mb-3 space-y-2.5">
-          {/* row 1: actions */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-3 mb-3">
           <div className="flex flex-wrap items-center gap-1.5">
-            <button onClick={undo} disabled={stacks.undo === 0} className={actBtn} title="Ctrl+Z"><ToolIcon name="undo" className="w-4 h-4" />{t('pnt_undo')}</button>
-            <button onClick={redo} disabled={stacks.redo === 0} className={actBtn} title="Ctrl+Y"><ToolIcon name="redo" className="w-4 h-4" />{t('pnt_redo')}</button>
+            {/* 실행취소/다시실행 — 아이콘 전용 */}
+            <button onClick={undo} disabled={stacks.undo === 0} className={actBtn + ' !px-2'} title={t('pnt_undo') + ' (Ctrl+Z)'} aria-label={t('pnt_undo')}><ToolIcon name="undo" className="w-4 h-4" /></button>
+            <button onClick={redo} disabled={stacks.redo === 0} className={actBtn + ' !px-2'} title={t('pnt_redo') + ' (Ctrl+Y)'} aria-label={t('pnt_redo')}><ToolIcon name="redo" className="w-4 h-4" /></button>
             <span className="w-px h-5 bg-gray-200 mx-1" />
             <button onClick={() => fileRef.current?.click()} className={actBtn}><ToolIcon name="folder" className="w-4 h-4" />{t('pnt_load')}</button>
             <button onClick={pasteFromClipboard} className={actBtn} title="Ctrl+V"><ToolIcon name="copy" className="w-4 h-4" />{t('pnt_paste')}</button>
@@ -398,8 +404,8 @@ export default function PaintPage({ params }: { params: { lang: string } }) {
             <span className="w-px h-5 bg-gray-200 mx-1" />
             <button onClick={clearCanvas} className={actBtn + ' !text-red-500 !border-red-200'}><ToolIcon name="trash" className="w-4 h-4" />{t('pnt_clear')}</button>
           </div>
-          {/* row 2: width + colors */}
-          <div className="flex flex-wrap items-center gap-3">
+
+          <div className="mt-2.5 flex flex-wrap items-center gap-2">
             <label className="flex items-center gap-2 text-xs text-gray-600">
               {t('pnt_width')}
               <input type="range" min={1} max={50} value={width} onChange={(e) => setWidth(+e.target.value)} className="w-28 accent-brand-600" />
@@ -410,44 +416,86 @@ export default function PaintPage({ params }: { params: { lang: string } }) {
                 {shapeFill ? '■ ' + t('pnt_fill_shape') : '□ ' + t('pnt_stroke_shape')}
               </button>
             )}
-            <div className="flex items-center gap-1.5">
-              <span className="w-8 h-8 rounded-lg border-2 border-gray-300 shrink-0" style={{ background: color }} title={color} />
-              <input type="color" value={color} onChange={(e) => { setColor(e.target.value) }} className="w-8 h-8 rounded cursor-pointer border border-gray-200 p-0.5 bg-white" />
-              <div className="grid grid-cols-8 gap-1">
-                {PALETTE.map((c) => (
-                  <button key={c} onClick={() => setColor(c)} className={'w-5 h-5 rounded border ' + (color === c ? 'ring-2 ring-brand-500 border-white' : 'border-gray-200')} style={{ background: c }} aria-label={c} />
-                ))}
-              </div>
-              {recent.length > 0 && (
-                <div className="flex gap-1 ml-1 pl-2 border-l border-gray-200">
-                  {recent.map((c) => (
-                    <button key={c} onClick={() => setColor(c)} className="w-5 h-5 rounded-full border border-gray-200" style={{ background: c }} aria-label={c} />
+
+            {/* 색상 — 커스텀 드롭다운 */}
+            <div className="relative">
+              <button onClick={(e) => toggleDd('color', e)} className={actBtn + ' !px-2'} aria-label={t('pnt_color')}>
+                <span className="w-5 h-5 rounded border border-gray-300 shrink-0" style={{ background: color }} />
+                <ToolIcon name="chevron-down" className="w-3.5 h-3.5" />
+              </button>
+              {dd === 'color' && (
+                <div className={'absolute z-40 mt-1.5 w-60 max-w-[calc(100vw-2rem)] rounded-xl border border-gray-200 bg-white shadow-lg p-3 ' + (ddRight ? 'right-0' : 'left-0')}>
+                  <div className="grid grid-cols-8 gap-1.5">
+                    {PALETTE.map((c) => (
+                      <button key={c} onClick={() => { setColor(c); setDd(null) }}
+                        className={'w-6 h-6 rounded border ' + (color === c ? 'ring-2 ring-brand-500 border-white' : 'border-gray-200')}
+                        style={{ background: c }} aria-label={c} />
+                    ))}
+                  </div>
+                  <div className="mt-2.5 flex items-center gap-2">
+                    <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer border border-gray-200 p-0.5 bg-white" />
+                    <span className="text-xs text-gray-500 font-mono">{color}</span>
+                  </div>
+                  {recent.length > 0 && (
+                    <div className="mt-2.5 pt-2.5 border-t border-gray-100">
+                      <p className="text-[10px] text-gray-400 mb-1.5">{t('pnt_recent')}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {recent.map((c) => (
+                          <button key={c} onClick={() => { setColor(c); setDd(null) }} className="w-6 h-6 rounded-full border border-gray-200" style={{ background: c }} aria-label={c} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* 캔버스 크기 — 커스텀 드롭다운 */}
+            <div className="relative">
+              <button onClick={(e) => toggleDd('size', e)} className={actBtn}>
+                {t('pnt_size')} {size.w}×{size.h}
+                <ToolIcon name="chevron-down" className="w-3.5 h-3.5" />
+              </button>
+              {dd === 'size' && (
+                <div className={'absolute z-40 mt-1.5 w-56 max-w-[calc(100vw-2rem)] rounded-xl border border-gray-200 bg-white shadow-lg p-2 ' + (ddRight ? 'right-0' : 'left-0')}>
+                  {PRESETS.map(([w, h]) => (
+                    <button key={w + 'x' + h} onClick={() => { setDd(null); setCustomW(String(w)); setCustomH(String(h)); newCanvas(w, h, bg) }}
+                      className={'w-full text-left px-2.5 py-2 rounded-lg text-sm hover:bg-gray-50 ' + (size.w === w && size.h === h ? 'font-bold text-brand-700' : 'text-gray-700')}>
+                      {w === 2480 ? 'A4 (2480×3508)' : `${w}×${h}`}
+                    </button>
+                  ))}
+                  <div className="mt-1.5 pt-2 border-t border-gray-100 flex items-center gap-1 px-1">
+                    <input value={customW} onChange={(e) => setCustomW(e.target.value)} inputMode="numeric" className="w-16 border border-gray-200 rounded px-1.5 py-1 text-center text-xs" />
+                    <span className="text-xs text-gray-400">×</span>
+                    <input value={customH} onChange={(e) => setCustomH(e.target.value)} inputMode="numeric" className="w-16 border border-gray-200 rounded px-1.5 py-1 text-center text-xs" />
+                    <button onClick={() => { setDd(null); newCanvas(parseInt(customW) || 800, parseInt(customH) || 600, bg) }} className={actBtn + ' ml-auto'}>{t('pnt_apply')}</button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 배경 — 커스텀 드롭다운 */}
+            <div className="relative">
+              <button onClick={(e) => toggleDd('bg', e)} className={actBtn}>
+                {t('pnt_bg')} {bg === 'white' ? t('pnt_bg_white') : t('pnt_bg_transparent')}
+                <ToolIcon name="chevron-down" className="w-3.5 h-3.5" />
+              </button>
+              {dd === 'bg' && (
+                <div className={'absolute z-40 mt-1.5 w-44 max-w-[calc(100vw-2rem)] rounded-xl border border-gray-200 bg-white shadow-lg p-2 ' + (ddRight ? 'right-0' : 'left-0')}>
+                  {(['white', 'transparent'] as Bg[]).map((b) => (
+                    <button key={b} onClick={() => { setDd(null); if (b !== bg) newCanvas(size.w, size.h, b) }}
+                      className={'w-full flex items-center gap-2 text-left px-2.5 py-2 rounded-lg text-sm hover:bg-gray-50 ' + (bg === b ? 'font-bold text-brand-700' : 'text-gray-700')}>
+                      <span className="w-5 h-5 rounded border border-gray-300 shrink-0"
+                        style={b === 'white' ? { background: '#fff' } : { backgroundImage: 'repeating-conic-gradient(#e5e7eb 0% 25%, #ffffff 0% 50%)', backgroundSize: '8px 8px' }} />
+                      {b === 'white' ? t('pnt_bg_white') : t('pnt_bg_transparent')}
+                    </button>
                   ))}
                 </div>
               )}
             </div>
           </div>
-          {/* row 3: canvas size + bg */}
-          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-            <span className="font-medium">{t('pnt_size')}</span>
-            {PRESETS.map(([w, h]) => (
-              <button key={w + 'x' + h} onClick={() => { setCustomW(String(w)); setCustomH(String(h)); newCanvas(w, h, bg) }}
-                className={actBtn + (size.w === w && size.h === h ? ' !border-brand-400 !text-brand-700' : '')}>
-                {w === 2480 ? 'A4' : `${w}×${h}`}
-              </button>
-            ))}
-            <span className="inline-flex items-center gap-1">
-              <input value={customW} onChange={(e) => setCustomW(e.target.value)} inputMode="numeric" className="w-14 border border-gray-200 rounded px-1.5 py-1 text-center" />
-              ×
-              <input value={customH} onChange={(e) => setCustomH(e.target.value)} inputMode="numeric" className="w-14 border border-gray-200 rounded px-1.5 py-1 text-center" />
-              <button onClick={() => newCanvas(parseInt(customW) || 800, parseInt(customH) || 600, bg)} className={actBtn}>{t('pnt_apply')}</button>
-            </span>
-            <span className="w-px h-5 bg-gray-200 mx-1" />
-            <span className="font-medium">{t('pnt_bg')}</span>
-            <button onClick={() => newCanvas(size.w, size.h, 'white')} className={actBtn + (bg === 'white' ? ' !border-brand-400 !text-brand-700' : '')}>{t('pnt_bg_white')}</button>
-            <button onClick={() => newCanvas(size.w, size.h, 'transparent')} className={actBtn + (bg === 'transparent' ? ' !border-brand-400 !text-brand-700' : '')}>{t('pnt_bg_transparent')}</button>
-          </div>
         </div>
+        {dd && <div className="fixed inset-0 z-30" onClick={() => setDd(null)} />}
 
         <div className="flex flex-col md:flex-row gap-3">
           {/* toolbar — desktop: left column / mobile: fixed bottom bar (엄지 도달 범위) */}
