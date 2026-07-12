@@ -63,6 +63,12 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   },
 ]
 
+// 도심 교통 보정계수 — ORS는 교통량 미반영(제한속도 기준)이라 실주행보다 25~30% 짧게 나옴.
+// 실측 비교(서울역→강남역 13분→실제 17분, 녹번역→홍대입구역 9분→실제 13분)로 1.35 캘리브레이션.
+// 필요 시 도시별 세분화 가능.
+export const TRAFFIC_FACTOR = 1.35
+export const correctDuration = (durationSec: number) => Math.round(durationSec * TRAFFIC_FACTOR)
+
 export const tariffById = (id: string): TaxiTariff | undefined => TAXI_TARIFFS.find((t) => t.id === id)
 export const tariffsForCountry = (c: TaxiCountry) => TAXI_TARIFFS.filter((t) => t.country === c)
 

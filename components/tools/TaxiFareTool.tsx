@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
-  tariffsForCountry, tariffById, calcTaxiFare, formatFare, asTaxiLang,
+  tariffsForCountry, tariffById, calcTaxiFare, formatFare, asTaxiLang, correctDuration,
   type TaxiCountry, type TaxiLang,
 } from '@/lib/tools/taxiFare'
 import { trackToolUsed } from '@/lib/gtag'
@@ -90,7 +90,8 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
         )
         return
       }
-      setData(j)
+      // 도심 교통 보정 — 표시 시간·저속 시간요금 계산 모두 보정값 사용
+      setData({ ...j, durationSec: correctDuration(j.durationSec) })
       trackToolUsed(slug)
       // 성공한 검색만 기록 (중복 제거 후 맨 앞에)
       saveHistory([
