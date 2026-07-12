@@ -73,6 +73,8 @@ export const HIDDEN_CATEGORIES: ReadonlySet<ToolCategory> = new Set<ToolCategory
 export const isHiddenTool = (t: ToolMeta) => HIDDEN_CATEGORIES.has(t.category)
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'taxi-fare',category:'utility',also:['world'],added:'2026-07-12',phase:1,isPro:false,isNew:true,tags:['택시요금 계산기','택시비 계산','서울 택시요금','부산 택시요금','도쿄 택시요금','taxi fare calculator','taxi cost estimate','tokyo taxi fare','seoul taxi fare','タクシー料金 計算','タクシー代 目安','東京 タクシー料金'],maxFileSizeMB:{free:0,pro:0} },
+  {slug:'taxi-route',category:'utility',also:['world'],added:'2026-07-12',phase:1,isPro:false,isNew:true,tags:['택시 경로 지도','택시 요금 지도','경로 거리 계산','taxi route map','taxi fare map','driving distance map','タクシー経路','タクシー ルート 地図','走行距離 地図'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'card-news-maker',category:'image',also:['social'],added:'2026-07-12',phase:1,isPro:false,isNew:true,tags:['카드뉴스 만들기','카드뉴스 생성기','카드뉴스 템플릿','인스타 카드뉴스','인스타그램 게시물 만들기','instagram carousel maker','carousel generator','instagram slides','social media post maker','インスタ投稿画像','投稿画像 作成','カルーセル 作成'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'paint',category:'image',added:'2026-07-12',phase:1,isPro:false,isNew:true,tags:['그림판','온라인 그림판','무료 그림 그리기','스케치','드로잉','스크린샷에 그리기','online paint','free drawing tool','draw online','ms paint online','お絵かきツール','ペイント 無料','オンライン お絵描き'],maxFileSizeMB:{free:0,pro:0} },
 

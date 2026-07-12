@@ -1,0 +1,100 @@
+// 택시 요금 계산 — 순수 함수 + 도시별 요금표 (taxi2.md).
+// 요금표는 공식 고시/협회 발표값 (2026-07 조사). 요금 개정 시 이 파일 데이터만 갱신.
+// 심야 할증이 시간대별 밴드(서울 20~40% 등)라 단일 %가 아닌 min~max 범위로 계산·표시한다.
+
+export type TaxiCountry = 'KR' | 'JP'
+export type TaxiLang = 'ko' | 'ja' | 'en'
+export const asTaxiLang = (l: string): TaxiLang => (l === 'ja' || l === 'en' ? l : 'ko')
+
+export interface TaxiTariff {
+  id: string
+  country: TaxiCountry
+  currency: 'KRW' | 'JPY'
+  label: Record<TaxiLang, string>
+  baseFare: number // 기본요금
+  baseDistanceM: number // 기본거리
+  unitFare: number // 거리요금 단가
+  unitDistanceM: number // 거리요금 단위(m)
+  timeFare: number // 시간요금 단가 (저속 시간거리병산)
+  timeUnitSec: number // 시간요금 단위(초)
+  nightPctMin: number // 심야 할증 최소 %
+  nightPctMax: number // 심야 할증 최대 % (밴드형이면 min≠max)
+  nightHours: string // 심야 시간대 표기
+  source: string // 근거 (공식 고시/발표)
+  updated: string // 기준일
+}
+
+export const TAXI_TARIFFS: TaxiTariff[] = [
+  {
+    id: 'KR-seoul', country: 'KR', currency: 'KRW',
+    label: { ko: '서울', ja: 'ソウル', en: 'Seoul' },
+    baseFare: 4800, baseDistanceM: 1600,
+    unitFare: 100, unitDistanceM: 131,
+    timeFare: 100, timeUnitSec: 30,
+    nightPctMin: 20, nightPctMax: 40, nightHours: '22:00–04:00',
+    source: '서울특별시 택시요금 고시 (news.seoul.go.kr/traffic/archives/1659)', updated: '2026-07',
+  },
+  {
+    id: 'KR-busan', country: 'KR', currency: 'KRW',
+    label: { ko: '부산', ja: '釜山', en: 'Busan' },
+    baseFare: 4800, baseDistanceM: 2000,
+    unitFare: 100, unitDistanceM: 132,
+    timeFare: 100, timeUnitSec: 33,
+    nightPctMin: 20, nightPctMax: 30, nightHours: '23:00–04:00',
+    source: '부산광역시 2023-06-01 요금 조정 발표 (busan.go.kr)', updated: '2026-07',
+  },
+  {
+    id: 'JP-tokyo', country: 'JP', currency: 'JPY',
+    label: { ko: '도쿄 (23구)', ja: '東京（23区）', en: 'Tokyo (23 wards)' },
+    baseFare: 500, baseDistanceM: 1000,
+    unitFare: 100, unitDistanceM: 232,
+    timeFare: 100, timeUnitSec: 85,
+    nightPctMin: 20, nightPctMax: 20, nightHours: '22:00–05:00',
+    source: '東京特別区・武三地区 2026-04-20 운임 개정', updated: '2026-07',
+  },
+  {
+    id: 'JP-osaka', country: 'JP', currency: 'JPY',
+    label: { ko: '오사카', ja: '大阪', en: 'Osaka' },
+    baseFare: 600, baseDistanceM: 1200,
+    unitFare: 100, unitDistanceM: 231,
+    timeFare: 100, timeUnitSec: 85,
+    nightPctMin: 20, nightPctMax: 20, nightHours: '22:00–05:00',
+    source: '大阪タクシー協会 2025-11-05 운임 개정 (osakataxi.or.jp/fare)', updated: '2026-07',
+  },
+]
+
+export const tariffById = (id: string): TaxiTariff | undefined => TAXI_TARIFFS.find((t) => t.id === id)
+export const tariffsForCountry = (c: TaxiCountry) => TAXI_TARIFFS.filter((t) => t.country === c)
+
+export interface TaxiFareResult {
+  day: number
+  nightMin: number
+  nightMax: number
+  currency: 'KRW' | 'JPY'
+}
+
+/**
+ * 요금 추정. 시간거리병산(저속 가산)은 경로의 평균 속도로 저속 구간을 정확히 알 수 없으므로
+ * 수학적 하한(총 소요시간 − 임계속도로 전거리 주행 시간)만 반영한다 — 임계속도는
+ * 미터기가 시간 가산으로 전환되는 속도(unitDistanceM/timeUnitSec)와 동일.
+ */
+export function calcTaxiFare(distanceM: number, durationSec: number, t: TaxiTariff): TaxiFareResult {
+  let fare = t.baseFare
+  const extraM = Math.max(0, distanceM - t.baseDistanceM)
+  fare += Math.ceil(extraM / t.unitDistanceM) * t.unitFare
+  const vth = t.unitDistanceM / t.timeUnitSec // m/s — 시간병산 임계속도
+  const slowSec = Math.max(0, durationSec - distanceM / vth)
+  fare += Math.floor(slowSec / t.timeUnitSec) * t.timeFare
+  return {
+    day: Math.round(fare),
+    nightMin: Math.round(fare * (1 + t.nightPctMin / 100)),
+    nightMax: Math.round(fare * (1 + t.nightPctMax / 100)),
+    currency: t.currency,
+  }
+}
+
+export function formatFare(amount: number, currency: 'KRW' | 'JPY', lang: TaxiLang): string {
+  const n = amount.toLocaleString(lang === 'en' ? 'en-US' : lang === 'ja' ? 'ja-JP' : 'ko-KR')
+  if (currency === 'KRW') return lang === 'ko' ? `${n}원` : `₩${n}`
+  return lang === 'ja' ? `${n}円` : `¥${n}`
+}
