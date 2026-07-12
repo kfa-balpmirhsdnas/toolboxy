@@ -12,7 +12,7 @@ const DB_VERSION = 1
 export const VH_MAX_BYTES = 200 * 1024 * 1024 // per-file cap for a stored blob (200 MB)
 export const VH_MAX_ITEMS = 100                // metadata is tiny, so keep plenty (favorites are never evicted)
 
-export type VHItem = { id: string; name: string; size: number; type: string; ts: number; blob?: Blob; thumb?: string }
+export type VHItem = { id: string; name: string; size: number; type: string; ts: number; blob?: Blob; thumb?: string; auto?: boolean }
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -110,6 +110,38 @@ export async function vhSetThumb(id: string, thumb: string): Promise<void> {
     const db = await openDB()
     store(db, 'readwrite').put({ ...prev, thumb })
   } catch { /* ignore */ }
+}
+
+// 자동 저장: 재생/추가한 영상의 blob을 auto 표시로 캐시. capBytes(0=무제한)를 넘으면
+// 가장 오래된 auto blob부터 내려놓는다(메타데이터는 유지). ★보관(auto 아님) blob은 절대 안 건드림.
+export async function vhAutoSave(meta: { id: string; name: string; size: number; type: string }, blob: Blob, capBytes: number): Promise<void> {
+  if (blob.size > VH_MAX_BYTES || (capBytes > 0 && blob.size > capBytes)) { await vhPutMeta(meta); return }
+  try {
+    const prev = await vhGet(meta.id)
+    if (prev?.blob && !prev.auto) return // 이미 ★보관된 blob — 그대로 둔다
+    const db = await openDB()
+    store(db, 'readwrite').put({ id: meta.id, name: meta.name, size: meta.size, type: meta.type, ts: prev?.ts || Date.now(), blob, thumb: prev?.thumb, auto: true })
+    if (capBytes > 0) {
+      const all = await vhList()
+      const autos = all.filter((x) => x.blob && x.auto).sort((a, b) => a.ts - b.ts) // 오래된 것부터
+      let total = autos.reduce((s, x) => s + (x.blob?.size || 0), 0)
+      const st = store(await openDB(), 'readwrite')
+      for (const x of autos) {
+        if (total <= capBytes) break
+        if (x.id === meta.id) continue
+        st.put({ ...x, blob: undefined, auto: undefined })
+        total -= x.blob?.size || 0
+      }
+    }
+  } catch { /* ignore */ }
+}
+
+// 저장소 사용량 (설정 표시용)
+export async function vhStorageUsage(): Promise<{ usage: number; quota: number } | null> {
+  try {
+    const est = await (navigator as unknown as { storage?: { estimate?: () => Promise<{ usage?: number; quota?: number }> } }).storage?.estimate?.()
+    return est ? { usage: est.usage || 0, quota: est.quota || 0 } : null
+  } catch { return null }
 }
 
 export async function vhDelete(id: string): Promise<void> {

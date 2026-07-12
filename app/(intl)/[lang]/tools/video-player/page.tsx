@@ -7,7 +7,7 @@ import ToolLayout from '@/components/tools/ToolLayout'
 import ToolIcon from '@/components/tools/ToolIcon'
 import { getToolBySlug } from '@/lib/tools/registry'
 import { trackToolUsed, trackToolDownload } from '@/lib/gtag'
-import { vhList, vhPutMeta, vhPutManyMeta, vhSave, vhSetBlob, vhSetThumb, vhDelete, vhClear } from '@/lib/tools/videoHistory'
+import { vhList, vhPutMeta, vhPutManyMeta, vhSave, vhSetBlob, vhSetThumb, vhDelete, vhClear, vhAutoSave, vhStorageUsage } from '@/lib/tools/videoHistory'
 import { useSharedFile } from '@/lib/tools/useSharedFile'
 
 const tool = getToolBySlug('video-player')!
@@ -93,6 +93,50 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const posSaveTsRef = useRef(0)                    // throttle the localStorage writes
   const suppressPlayRef = useRef(false)             // restore-on-refresh loads the last clip PAUSED
   const [lastName, setLastName] = useState('')      // last-played clip whose blob wasn't kept (metadata-only)
+  // ---- 목록 강화 (음악 플레이어 도입: 검색·윈도우 렌더·길이·다중선택·이름수정·자동저장) ----
+  const [query, setQuery] = useState('')
+  const [searchOn, setSearchOn] = useState(false)
+  const [renderN, setRenderN] = useState(60) // 윈도우 렌더 — 대용량 폴더도 목록이 얼지 않게
+  const onListScroll = (e: React.UIEvent<HTMLDivElement>) => { const el = e.currentTarget; if (el.scrollTop + el.clientHeight >= el.scrollHeight - 120) setRenderN((n) => n + 60) }
+  const [durs, setDurs] = useState<Record<string, number>>({}) // 목록 길이 표시 (키 → 초)
+  const durLoadedRef = useRef<Set<string>>(new Set())
+  const [toast, setToast] = useState('')
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const showToast = (msg: string) => { setToast(msg); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(''), 4000) }
+  const [selMode, setSelMode] = useState(false) // 다중 선택 (길게 누르기 메뉴에서 진입)
+  const [selKeys, setSelKeys] = useState<Set<string>>(new Set())
+  const [rowMenu, setRowMenu] = useState<{ key: string; name: string; file: File | null } | null>(null) // 길게 누르기 메뉴
+  const [renameV, setRenameV] = useState<string | null>(null) // 이름 수정 입력값 (null = 닫힘)
+  const [nameOv, setNameOv] = useState<Record<string, string>>({}) // 표시 제목 오버라이드
+  const pressRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pressStartRef = useRef(0)
+  const listBoxRef = useRef<HTMLDivElement>(null)
+  const [autoSave, setAutoSave] = useState(false) // 자동 저장 — 영상은 용량이 커서 기본 OFF
+  const autoSaveRef = useRef(false)
+  useEffect(() => { autoSaveRef.current = autoSave }, [autoSave])
+  const [autoCap, setAutoCap] = useState(1024 * 1024 * 1024) // 자동 저장 총량 상한 (기본 1GB, 0=무제한)
+  const autoCapRef = useRef(1024 * 1024 * 1024)
+  useEffect(() => { autoCapRef.current = autoCap }, [autoCap])
+  const [vsettings, setVsettings] = useState(false)
+  const [usage, setUsage] = useState<{ usage: number; quota: number } | null>(null)
+  useEffect(() => { if (vsettings) vhStorageUsage().then(setUsage) }, [vsettings])
+  useEffect(() => { setRenderN(60) }, [histTab, query, histView])
+  const startPress = (key: string, name: string, file: File | null) => () => {
+    if (pressRef.current) clearTimeout(pressRef.current)
+    pressRef.current = setTimeout(() => { pressStartRef.current = Date.now(); setRowMenu({ key, name, file }) }, 550)
+  }
+  const cancelPress = () => { if (pressRef.current) { clearTimeout(pressRef.current); pressRef.current = null } }
+  const wasLongPress = () => pressStartRef.current > 0 && Date.now() - pressStartRef.current < 800
+  const toggleSel = (key: string) => setSelKeys((prev) => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n })
+  const exitSel = () => { setSelMode(false); setSelKeys(new Set()) }
+  const setName = (key: string, name: string) => setNameOv((prev) => {
+    const n = { ...prev }
+    if (name.trim()) n[key] = name.trim(); else delete n[key]
+    try { localStorage.setItem('vp_names_v1', JSON.stringify(n)) } catch { /* ignore */ }
+    return n
+  })
+  const toggleAutoSave = () => setAutoSave((v) => { const n = !v; try { localStorage.setItem('vp_autosave_v1', n ? '1' : '0') } catch { /* ignore */ } return n })
+  const setCap = (b: number) => { setAutoCap(b); try { localStorage.setItem('vp_autocap_v1', String(b)) } catch { /* ignore */ } }
   useEffect(() => { try { const s = localStorage.getItem('vp_pos_v1'); if (s) positionsRef.current = JSON.parse(s) } catch { /* ignore */ } }, [])
   // 재생 설정 영속화 — 반복모드·속도·볼륨·밝기·야간모드가 새로고침을 넘어 유지 (음악 플레이어 규칙)
   useEffect(() => {
@@ -102,6 +146,9 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       const vo = parseFloat(localStorage.getItem('vp_vol_v1') || ''); if (vo >= 0 && vo <= 1) setVolume(vo)
       const br = parseFloat(localStorage.getItem('vp_bright_v1') || ''); if (br >= 0.3 && br <= 1.7) setBrightness(br)
       if (localStorage.getItem('vp_night_v1') === '1') setNightMode(true)
+      if (localStorage.getItem('vp_autosave_v1') === '1') setAutoSave(true)
+      const cap = localStorage.getItem('vp_autocap_v1'); if (cap != null && +cap >= 0) setAutoCap(+cap)
+      const nm = localStorage.getItem('vp_names_v1'); if (nm) setNameOv(JSON.parse(nm))
     } catch { /* ignore */ }
   }, [])
   // 저장(★) blob이 브라우저 저장소 압박으로 증발하지 않게 영구 저장소 요청 (음악 플레이어와 동일)
@@ -191,6 +238,36 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [histView, history])
 
+  // 목록 길이 표시 — 임시 video 엘리먼트로 각 클립 duration을 순차 프로브 (음악 플레이어 방식)
+  useEffect(() => {
+    const need = history.filter((h) => h.file && !durLoadedRef.current.has(h.name + '|' + h.size)).slice(0, 40)
+    if (!need.length) return
+    let alive = true; let i = 0
+    const el = document.createElement('video'); el.preload = 'metadata'; el.muted = true
+    const next = () => {
+      if (!alive || i >= need.length) return
+      const h = need[i++]; const key = h.name + '|' + h.size; durLoadedRef.current.add(key)
+      const u = URL.createObjectURL(h.file!)
+      const done = (d: number) => { URL.revokeObjectURL(u); if (alive && d > 0 && isFinite(d)) setDurs((pr) => ({ ...pr, [key]: d })); next() }
+      el.onloadedmetadata = () => done(el.duration || 0)
+      el.onerror = () => done(0)
+      el.src = u
+    }
+    next()
+    return () => { alive = false }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history])
+  // 재생 중인 행을 목록 컨테이너 안에서 자동 스크롤 (페이지 아님)
+  useEffect(() => {
+    if (!curFile || !listBoxRef.current) return
+    const key = curFile.name + '|' + curFile.size
+    const c = listBoxRef.current
+    const row = Array.from(c.children).find((el) => (el as HTMLElement).dataset.key === key) as HTMLElement | undefined
+    if (!row) return
+    const cr = c.getBoundingClientRect(), rr = row.getBoundingClientRect()
+    if (rr.top < cr.top || rr.bottom > cr.bottom) c.scrollTo({ top: Math.max(0, c.scrollTop + (rr.top - cr.top) - (c.clientHeight - row.clientHeight) / 2), behavior: 'smooth' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curFile, histTab])
   // Picture-in-Picture (background play) — standard API + iOS webkit fallback; no-op where unsupported.
   async function togglePip() {
     const v = videoRef.current as (HTMLVideoElement & { webkitSetPresentationMode?: (m: string) => void; webkitPresentationMode?: string }) | null
@@ -261,7 +338,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
 
   // advance = playlist auto-advance (repeat-all): keep the history order stable so "next" cycles the whole list.
   const load = useCallback((f: File, advance = false, autoplay = true) => {
-    if (!isMedia(f)) return
+    if (!isMedia(f)) { showToast(t('vp_bad_file') + ' — ' + f.name); return }
     suppressPlayRef.current = !autoplay // restore-on-refresh loads the clip paused
     setLastName('')
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
@@ -273,19 +350,19 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     setCurFile(f)
     if (!advance) {
       // Keep a session history of played videos (newest first, de-duped, capped).
-      setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 60)) // eslint-disable-line
+      setHistory((h) => [{ name: f.name, size: f.size, file: f }, ...h.filter((x) => !(x.name === f.name && x.size === f.size))].slice(0, 999)) // eslint-disable-line
     }
     // Persist metadata so the list survives a refresh; the actual blob is only kept for ★ saved clips.
     const id = f.name + '|' + f.size
     const meta = { id, name: f.name, size: f.size, type: f.type }
-    if (savedRef.current.has(id)) vhSave(meta, f); else vhPutMeta(meta)
+    if (savedRef.current.has(id)) vhSave(meta, f); else if (autoSaveRef.current) vhAutoSave(meta, f, autoCapRef.current); else vhPutMeta(meta)
     try { localStorage.setItem('vp_last_v1', id) } catch { /* ignore */ } // 마지막 영상 기억 (새로고침 복원)
     trackToolUsed('video-player')
   }, [])
   // Play the next clip for repeat-all — cycles the CURRENTLY OPEN tab (전체 or 보관), wrapping around.
   function playNext() {
     const list = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
-    if (!list.length) return
+    if (!list.some((x) => x.file)) { dirRef.current?.click(); return } // 재생할 파일 없음 → 폴더 열기
     const idx = curFile ? list.findIndex((x) => x.file === curFile) : -1
     // 랜덤 반복: pick a random OTHER playable clip in the open tab.
     if (repeatMode === 'shuffle') {
@@ -303,7 +380,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // Previous playable clip in the open tab (wraps around).
   function playPrev() {
     const list = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
-    if (!list.length) return
+    if (!list.some((x) => x.file)) { dirRef.current?.click(); return } // 재생할 파일 없음 → 폴더 열기
     const idx = curFile ? list.findIndex((x) => x.file === curFile) : 0
     for (let step = 1; step <= list.length; step++) {
       const prev = list[(idx - step + list.length) % list.length]
@@ -347,7 +424,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       const restored = items.map((it) => ({ name: it.name, size: it.size, file: it.blob ? new File([it.blob], it.name, { type: it.type }) : null }))
       setHistory((h) => {
         const seen = new Set(h.map((x) => x.name + '|' + x.size))
-        return [...h, ...restored.filter((r) => !seen.has(r.name + '|' + r.size))].slice(0, 60)
+        return [...h, ...restored.filter((r) => !seen.has(r.name + '|' + r.size))].slice(0, 999)
       })
       const th: Record<string, string> = {}
       items.forEach((it) => { if (it.thumb) th[it.name + '|' + it.size] = it.thumb })
@@ -421,7 +498,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       const add = vids.filter((f) => !seen.has(f.name + '|' + f.size)).map((f) => ({ name: f.name, size: f.size, file: f }))
       // Re-opening a folder restores the File on any matching metadata-only entries (dimmed → playable again).
       const restored = h.map((x) => { const f = byKey.get(x.name + '|' + x.size); return f && !x.file ? { ...x, file: f } : x })
-      return [...add, ...restored].slice(0, 60)
+      return [...add, ...restored].slice(0, 999)
     })
     // Persist metadata for every folder clip so the list survives a refresh (blobs stay session-only until ★ saved).
     vhPutManyMeta(vids.map((f) => ({ id: f.name + '|' + f.size, name: f.name, size: f.size, type: f.type })))
@@ -554,8 +631,27 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   // Shared slider (gauge) styling — white thumb, two-tone track via an inline gradient.
   const gaugeCls = 'w-40 h-1.5 appearance-none rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-0'
   const fillBg = (pct: number) => ({ background: `linear-gradient(to right, #fff ${pct}%, rgba(255,255,255,0.25) ${pct}%)` })
-  // History filtered by the 전체 / 보관 tab.
-  const shownHistory = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
+  // History filtered by the 전체 / 보관 tab + 검색어 (표시 이름 오버라이드 포함).
+  const dispName = (h: { name: string; size: number }) => nameOv[h.name + '|' + h.size] || h.name
+  const shownAllTab = history.filter((h) => histTab === 'all' || saved.has(h.name + '|' + h.size))
+  const shownHistory = query.trim()
+    ? shownAllTab.filter((h) => (dispName(h) + ' ' + h.name).toLowerCase().includes(query.trim().toLowerCase()))
+    : shownAllTab
+  const fmtDur = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
+  // 다중 선택 일괄 동작
+  const bulkSave = () => {
+    setSaved((prev) => {
+      const n = new Set(prev)
+      selKeys.forEach((k) => {
+        const h = history.find((x) => x.name + '|' + x.size === k)
+        if (h?.file && !n.has(k)) { n.add(k); vhSave({ id: k, name: h.name, size: h.size, type: h.file.type }, h.file) }
+      })
+      try { localStorage.setItem('vp_saved_v1', JSON.stringify(Array.from(n))) } catch { /* ignore */ }
+      return n
+    })
+    exitSel()
+  }
+  const bulkDelete = () => { selKeys.forEach((k) => removeFromHistory(k)); exitSel() }
   const starSvg = (key: string) => (
     <svg viewBox="0 0 24 24" fill={saved.has(key) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" /></svg>
   )
@@ -925,7 +1021,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
 
                   </div>
                   {/* Video title — shown with the overlay */}
-                  {base && <div className="max-w-[280px] truncate px-3 py-1 rounded-lg bg-black/60 backdrop-blur text-white text-sm font-medium text-center pointer-events-auto">{base}</div>}
+                  {base && <div className="max-w-[280px] truncate px-3 py-1 rounded-lg bg-black/60 backdrop-blur text-white text-sm font-medium text-center pointer-events-auto">{(curFile && nameOv[curFile.name + '|' + curFile.size]) || base}</div>}
                 </div>
                 </div>
               )}
@@ -1098,11 +1194,11 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
           </>
         )}
 
-        {/* Play history — videos opened this session; click to replay. List ⇄ thumbnails toggle. */}
+        {/* Play history — 검색·다중선택·이름수정·자동저장 지원 (음악 플레이어 도입). */}
         {history.length > 0 && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              {/* 전체 / 보관 tabs (replaces the old "재생 기록" title) */}
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              {/* 전체 / 보관 tabs */}
               <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
                 {([['all', t('vp_tab_all')], ['saved', t('vp_tab_saved')]] as const).map(([id, label]) => (
                   <button key={id} onClick={() => setHistTab(id)}
@@ -1111,7 +1207,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   </button>
                 ))}
               </div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1">
+                {/* 검색 */}
+                <button onClick={() => { setSearchOn((s) => { if (s) setQuery(''); return !s }) }} aria-label={t('vp_search')} title={t('vp_search')}
+                  className={'shrink-0 p-1.5 transition-colors ' + (searchOn ? 'text-brand-600' : 'text-gray-400 hover:text-gray-600')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                </button>
                 <div className="flex rounded-lg bg-gray-100 p-0.5 text-xs">
                   {(['list', 'thumbnails'] as const).map((v) => (
                     <button key={v} onClick={() => setHistView(v)}
@@ -1121,40 +1222,82 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     </button>
                   ))}
                 </div>
+                {/* 자동 저장 설정 */}
+                <button onClick={() => setVsettings((s) => !s)} aria-label={t('vp_settings')} title={t('vp_settings')}
+                  className={'shrink-0 p-1.5 transition-colors ' + (vsettings || autoSave ? 'text-brand-600' : 'text-gray-400 hover:text-gray-600')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>
+                </button>
                 <button onClick={resetHistory} title={t('vp_reset')} aria-label={t('vp_reset')} className="shrink-0 p-1.5 text-gray-400 hover:text-red-500 transition-colors">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
                 </button>
               </div>
             </div>
+            {searchOn && (
+              <input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('vp_search_ph')}
+                className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
+            )}
+            {vsettings && (
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 space-y-2.5 text-sm">
+                <label className="flex items-center justify-between gap-2 cursor-pointer">
+                  <span className="text-gray-700 font-medium">{t('vp_autosave')}</span>
+                  <input type="checkbox" checked={autoSave} onChange={toggleAutoSave} className="accent-brand-600 w-4 h-4" />
+                </label>
+                <p className="text-[11px] text-gray-400 leading-relaxed">{t('vp_autosave_hint')}</p>
+                <div className={'flex flex-wrap items-center gap-1.5 ' + (autoSave ? '' : 'opacity-40 pointer-events-none')}>
+                  {([[500 * 1024 * 1024, '500MB'], [1024 * 1024 * 1024, '1GB'], [2 * 1024 * 1024 * 1024, '2GB'], [0, t('vp_cap_unlimited')]] as const).map(([b, label]) => (
+                    <button key={label} onClick={() => setCap(b)}
+                      className={'px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ' + (autoCap === b ? 'bg-brand-600 border-brand-600 text-white' : 'bg-white border-gray-200 text-gray-600')}>{label}</button>
+                  ))}
+                </div>
+                {usage && <p className="text-[11px] text-gray-400 tabular-nums">{t('vp_storage')}: {(usage.usage / 1024 / 1024).toFixed(0)}MB / {(usage.quota / 1024 / 1024 / 1024).toFixed(1)}GB</p>}
+              </div>
+            )}
+            {selMode && (
+              <div className="flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-3 py-2 text-xs">
+                <span className="font-bold text-brand-700">{t('vp_sel_n', { n: selKeys.size })}</span>
+                <button onClick={bulkSave} disabled={selKeys.size === 0} className="ml-auto px-2.5 py-1 rounded-lg border border-gray-200 bg-white font-medium text-gray-700 disabled:opacity-40">★ {t('vp_sel_save')}</button>
+                <button onClick={bulkDelete} disabled={selKeys.size === 0} className="px-2.5 py-1 rounded-lg border border-red-200 bg-white font-medium text-red-500 disabled:opacity-40">{t('ui_delete')}</button>
+                <button onClick={exitSel} className="px-2.5 py-1 rounded-lg border border-gray-200 bg-white font-medium text-gray-500">{t('vp_cancel')}</button>
+              </div>
+            )}
             {shownHistory.length === 0 ? (
               <p className="flex items-center justify-center gap-1.5 text-sm text-gray-400 text-center py-6">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" /></svg>
-                {t('vp_save')}
+                {query.trim() ? t('vp_no_match') : t('vp_save')}
               </p>
             ) : histView === 'thumbnails' ? (
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                {shownHistory.map((h, i) => {
+                {shownHistory.slice(0, renderN).map((h, i) => {
                   const key = h.name + '|' + h.size, on = h.file === curFile
                   return (
-                    <div key={i} title={h.file ? h.name : h.name + ' — ' + t('vp_reopen')}
-                      className={'relative aspect-video rounded-xl overflow-hidden border-2 bg-gray-900 transition-colors ' + (on ? 'border-brand-500' : 'border-gray-200 hover:border-brand-300')}>
-                      <button onClick={() => openHistItem(h.file)} className={'absolute inset-0 w-full h-full ' + (h.file ? '' : 'opacity-60')}>
+                    <div key={i} title={h.file ? dispName(h) : dispName(h) + ' — ' + t('vp_reopen')}
+                      className={'relative aspect-video rounded-xl overflow-hidden border-2 bg-gray-900 transition-colors ' + (on ? 'border-brand-500' : selMode && selKeys.has(key) ? 'border-brand-400' : 'border-gray-200 hover:border-brand-300')}>
+                      <button onClick={() => { if (wasLongPress()) return; if (selMode) toggleSel(key); else openHistItem(h.file) }}
+                        onPointerDown={startPress(key, dispName(h), h.file)} onPointerUp={cancelPress} onPointerLeave={cancelPress} onPointerMove={cancelPress}
+                        onContextMenu={(e) => e.preventDefault()}
+                        className={'absolute inset-0 w-full h-full ' + (h.file ? '' : 'opacity-60')}>
                         {thumbs[key]
                           /* eslint-disable-next-line @next/next/no-img-element */
                           ? <img src={thumbs[key]} alt={h.name} className="w-full h-full object-cover" />
                           : <span className="absolute inset-0 flex items-center justify-center text-2xl">🎞️</span>}
-                        <span className="absolute bottom-0 inset-x-0 px-1.5 py-0.5 bg-black/60 text-white text-[10px] truncate text-left">{h.name}</span>
+                        <span className="absolute bottom-0 inset-x-0 px-1.5 py-0.5 bg-black/60 text-white text-[10px] truncate text-left">
+                          {dispName(h)}{durs[key] ? ' · ' + fmtDur(durs[key]) : ''}
+                        </span>
                       </button>
-                      {h.file && (
+                      {selMode ? (
+                        <span className={'absolute top-1 left-1 z-10 w-5 h-5 rounded-md flex items-center justify-center text-[11px] font-bold ' + (selKeys.has(key) ? 'bg-brand-600 text-white' : 'bg-black/40 text-white/60 border border-white/40')}>{selKeys.has(key) ? '✓' : ''}</span>
+                      ) : h.file && (
                         <button onClick={() => toggleSaved(key, h.file)} aria-label={t('vp_save')} title={t('vp_save')}
                           className={'absolute top-1 left-1 z-10 p-1 rounded-md bg-black/40 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-white/70 hover:text-amber-300')}>
                           {starSvg(key)}
                         </button>
                       )}
-                      <button onClick={() => removeFromHistory(key)} aria-label={t('ui_delete')} title={t('ui_delete')}
-                        className="absolute top-1 right-1 z-10 p-1 rounded-md bg-black/40 text-white/70 [@media(hover:hover)]:hover:text-red-400 transition-colors">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-                      </button>
+                      {!selMode && (
+                        <button onClick={() => removeFromHistory(key)} aria-label={t('ui_delete')} title={t('ui_delete')}
+                          className="absolute top-1 right-1 z-10 p-1 rounded-md bg-black/40 text-white/70 [@media(hover:hover)]:hover:text-red-400 transition-colors">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                        </button>
+                      )}
                     </div>
                   )
                 })}
@@ -1164,35 +1307,77 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-100">
                   <span className="w-5 shrink-0" />
                   <span className="flex-1 min-w-0">{t('vp_col_name')}</span>
-                  <span className="shrink-0 w-16 text-right">{t('vp_col_size')}</span>
+                  <span className="shrink-0 w-10 text-right">{t('vp_col_dur')}</span>
+                  <span className="shrink-0 w-16 text-right hidden sm:block">{t('vp_col_size')}</span>
                 </div>
-                <div className="divide-y divide-gray-100 max-h-72 overflow-auto">
-                  {shownHistory.map((h, i) => {
+                <div ref={listBoxRef} onScroll={onListScroll} className="divide-y divide-gray-100 max-h-72 overflow-auto">
+                  {shownHistory.slice(0, renderN).map((h, i) => {
                     const key = h.name + '|' + h.size
                     return (
-                      <div key={i} className={'flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors ' + (h.file === curFile ? 'bg-brand-50' : 'hover:bg-gray-50')}>
-                        {h.file
-                          ? <button onClick={() => toggleSaved(key, h.file)} aria-label={t('vp_save')} title={t('vp_save')}
-                              className={'shrink-0 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400')}>
-                              {starSvg(key)}
-                            </button>
-                          : <span className="w-4 shrink-0" />}
-                        <button onClick={() => openHistItem(h.file)} title={h.file ? undefined : t('vp_reopen')} className={'flex items-center gap-2 flex-1 min-w-0 text-left ' + (h.file ? '' : 'opacity-50')}>
-                          <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{h.name}</span>
+                      <div key={i} data-key={key} className={'flex items-center gap-2 w-full px-4 py-2 text-sm transition-colors ' + (h.file === curFile ? 'bg-brand-50' : 'hover:bg-gray-50')}>
+                        {selMode
+                          ? <input type="checkbox" checked={selKeys.has(key)} onChange={() => toggleSel(key)} className="accent-brand-600 w-4 h-4 shrink-0" />
+                          : h.file
+                            ? <button onClick={() => toggleSaved(key, h.file)} aria-label={t('vp_save')} title={t('vp_save')}
+                                className={'shrink-0 transition-colors ' + (saved.has(key) ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400')}>
+                                {starSvg(key)}
+                              </button>
+                            : <span className="w-4 shrink-0" />}
+                        <button onClick={() => { if (wasLongPress()) return; if (selMode) toggleSel(key); else openHistItem(h.file) }}
+                          onPointerDown={startPress(key, dispName(h), h.file)} onPointerUp={cancelPress} onPointerLeave={cancelPress} onPointerMove={cancelPress}
+                          onContextMenu={(e) => e.preventDefault()}
+                          title={h.file ? undefined : t('vp_reopen')} className={'flex items-center gap-2 flex-1 min-w-0 text-left ' + (h.file ? '' : 'opacity-50')}>
+                          <span className={'flex-1 truncate ' + (h.file === curFile ? 'text-brand-700 font-medium' : 'text-gray-700')}>{dispName(h)}</span>
                         </button>
-                        <span className="shrink-0 sm:w-16 text-right text-gray-400 tabular-nums whitespace-nowrap">
-                          <span className="sm:hidden">{fmtSizeShort(h.size)}</span>
-                          <span className="hidden sm:inline">{fmtSize(h.size)}</span>
-                        </span>
-                        <button onClick={() => removeFromHistory(key)} aria-label={t('ui_delete')} title={t('ui_delete')} className="shrink-0 p-1 text-gray-300 [@media(hover:hover)]:hover:text-red-500 transition-colors">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-                        </button>
+                        <span className="shrink-0 w-10 text-right text-gray-400 tabular-nums text-xs">{durs[key] ? fmtDur(durs[key]) : ''}</span>
+                        <span className="shrink-0 sm:w-16 text-right text-gray-400 tabular-nums whitespace-nowrap hidden sm:block">{fmtSize(h.size)}</span>
+                        {!selMode && (
+                          <button onClick={() => removeFromHistory(key)} aria-label={t('ui_delete')} title={t('ui_delete')} className="shrink-0 p-1 text-gray-300 [@media(hover:hover)]:hover:text-red-500 transition-colors">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                          </button>
+                        )}
                       </div>
                     )
                   })}
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* 길게 누르기 메뉴 — 이름 수정 / 보관 / 삭제 / 다중 선택 */}
+        {rowMenu && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4" onClick={() => { setRowMenu(null); setRenameV(null) }}>
+            <div className="w-full max-w-sm rounded-2xl bg-white p-4 space-y-1" onClick={(e) => e.stopPropagation()}>
+              <p className="px-1 pb-2 text-sm font-bold text-gray-900 truncate">{rowMenu.name}</p>
+              {renameV === null ? (
+                <>
+                  <button onClick={() => setRenameV(rowMenu.name)} className="w-full text-left px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50">✏️ {t('vp_menu_rename')}</button>
+                  {rowMenu.file && (
+                    <button onClick={() => { toggleSaved(rowMenu.key, rowMenu.file); setRowMenu(null) }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50">
+                      ⭐ {saved.has(rowMenu.key) ? t('vp_unsave') : t('vp_save')}
+                    </button>
+                  )}
+                  <button onClick={() => { setSelMode(true); setSelKeys(new Set([rowMenu.key])); setRowMenu(null) }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50">☑️ {t('vp_menu_select')}</button>
+                  <button onClick={() => { removeFromHistory(rowMenu.key); setRowMenu(null) }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm text-red-500 hover:bg-red-50">🗑️ {t('ui_delete')}</button>
+                </>
+              ) : (
+                <div className="space-y-2">
+                  <input autoFocus value={renameV} onChange={(e) => setRenameV(e.target.value)} maxLength={120}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { setName(rowMenu.key, renameV); setRowMenu(null); setRenameV(null) } }}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
+                  <div className="flex gap-2">
+                    <button onClick={() => { setName(rowMenu.key, renameV); setRowMenu(null); setRenameV(null) }} className="flex-1 py-2 rounded-xl bg-brand-600 text-white text-sm font-bold">{t('vp_apply')}</button>
+                    <button onClick={() => setRenameV(null)} className="px-4 py-2 rounded-xl border border-gray-200 text-sm text-gray-600">{t('vp_cancel')}</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        {toast && (
+          <div className="fixed bottom-4 inset-x-0 z-50 flex justify-center pointer-events-none px-4">
+            <p className="max-w-full truncate rounded-full bg-gray-900/90 text-white text-xs px-4 py-2">{toast}</p>
           </div>
         )}
 
