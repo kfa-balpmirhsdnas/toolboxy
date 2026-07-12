@@ -4145,6 +4145,7 @@
     "vp_pip_btn": "Picture-in-Picture",
     "vp_pip_mobile_hint": "On Android, tap the playing video, then open the controls' ⋮ menu and choose 'Picture-in-picture'. (Or leave the app while it plays for automatic PiP.)",
     "vp_drop_sub": "Plays in your browser · no upload",
+    "vp_reopen_last": "Last watched — reopen the folder or file to continue",
     "vp_drop": "Drop a video here",
     "ic_related": "Related:",
     "ic_saving": "Saving…",

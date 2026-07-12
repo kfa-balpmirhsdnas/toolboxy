@@ -91,7 +91,33 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const positionsRef = useRef<Record<string, number>>({}) // last-played position per clip (name|size → seconds)
   const resumePosRef = useRef(0)                    // seek the freshly-loaded clip here (resume where you left off)
   const posSaveTsRef = useRef(0)                    // throttle the localStorage writes
+  const suppressPlayRef = useRef(false)             // restore-on-refresh loads the last clip PAUSED
+  const [lastName, setLastName] = useState('')      // last-played clip whose blob wasn't kept (metadata-only)
   useEffect(() => { try { const s = localStorage.getItem('vp_pos_v1'); if (s) positionsRef.current = JSON.parse(s) } catch { /* ignore */ } }, [])
+  // 재생 설정 영속화 — 반복모드·속도·볼륨·밝기·야간모드가 새로고침을 넘어 유지 (음악 플레이어 규칙)
+  useEffect(() => {
+    try {
+      const rm = localStorage.getItem('vp_repeat_v1'); if (rm === 'off' || rm === 'one' || rm === 'all' || rm === 'shuffle') setRepeatMode(rm)
+      const sp = parseFloat(localStorage.getItem('vp_speed_v1') || ''); if (sp >= 0.25 && sp <= 3) setSpeed(sp)
+      const vo = parseFloat(localStorage.getItem('vp_vol_v1') || ''); if (vo >= 0 && vo <= 1) setVolume(vo)
+      const br = parseFloat(localStorage.getItem('vp_bright_v1') || ''); if (br >= 0.3 && br <= 1.7) setBrightness(br)
+      if (localStorage.getItem('vp_night_v1') === '1') setNightMode(true)
+    } catch { /* ignore */ }
+  }, [])
+  // 저장(★) blob이 브라우저 저장소 압박으로 증발하지 않게 영구 저장소 요청 (음악 플레이어와 동일)
+  useEffect(() => { try { const st = (navigator as unknown as { storage?: { persist?: () => Promise<boolean>; persisted?: () => Promise<boolean> } }).storage; st?.persisted?.().then((p) => { if (!p) st.persist?.().catch(() => {}) }).catch(() => {}) } catch { /* ignore */ } }, [])
+  // 탭 숨김/닫힘 직전 재생 위치 플러시 — 새로고침해도 정확한 위치에서 이어보기
+  useEffect(() => {
+    const flush = () => { try { const el = activeRef.current; if (el && curFile && el.currentTime > 0) positionsRef.current[curFile.name + '|' + curFile.size] = el.currentTime; localStorage.setItem('vp_pos_v1', JSON.stringify(positionsRef.current)) } catch { /* ignore */ } }
+    const onVis = () => { if (document.visibilityState === 'hidden') flush() }
+    window.addEventListener('pagehide', flush); document.addEventListener('visibilitychange', onVis)
+    return () => { window.removeEventListener('pagehide', flush); document.removeEventListener('visibilitychange', onVis) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curFile])
+  // 설정 저장 헬퍼 — 변경 핸들러에서 직접 저장 (useEffect 저장 금지 규칙)
+  const changeRepeat = (m: 'off' | 'one' | 'all' | 'shuffle') => { setRepeatMode(m); try { localStorage.setItem('vp_repeat_v1', m) } catch { /* ignore */ } }
+  const changeSpeed = (s: number) => { setSpeed(s); try { localStorage.setItem('vp_speed_v1', String(s)) } catch { /* ignore */ } }
+  const changeBright = (v: number) => { setBrightness(v); try { localStorage.setItem('vp_bright_v1', String(v)) } catch { /* ignore */ } }
 
   // In "audio mode" (and for audio-only files) playback runs through the <audio> element — browsers keep
   // audio elements playing when the screen turns off, whereas a <video> gets paused in the background.
@@ -184,7 +210,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   const seekTo = (time: number) => { const v = media(); if (v) v.currentTime = time; showOverlay() }
   // Volume/mute apply to BOTH elements so the setting carries across audio↔video switches.
   const toggleMute = () => { const v = media(); if (!v) return; const nm = !v.muted;[videoRef.current, audioElRef.current].forEach((el) => { if (el) el.muted = nm }); setMuted(nm); showOverlay() }
-  const setVol = (val: number) => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) { el.volume = val; el.muted = val === 0 } }); setVolume(val); setMuted(val === 0); showOverlay() }
+  const setVol = (val: number) => { [videoRef.current, audioElRef.current].forEach((el) => { if (el) { el.volume = val; el.muted = val === 0 } }); setVolume(val); setMuted(val === 0); try { localStorage.setItem('vp_vol_v1', String(val)) } catch { /* ignore */ } showOverlay() }
   const toggleFs = () => { const el = wrapperRef.current; if (!el) return; if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else el.requestFullscreen?.().catch(() => {}); showOverlay() }
   // Edge gestures (MX-player style): drag a video edge toward the video's top to raise, toward its bottom to
   // lower — left edge = brightness, right edge = volume. The value tracks from wherever it started, so a
@@ -210,7 +236,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     else { const v = Math.min(1, Math.max(0, d.val + frac)); setVol(v); setDragHud({ kind: 'vol', pct: Math.round(v * 100) }) }
     showOverlay()
   }
-  const onEdgeRelease = () => { const d = dragRef.current; dragRef.current = null; if (d && d.moved) { justDraggedRef.current = true; setTimeout(() => setDragHud(null), 650) } }
+  const onEdgeRelease = () => { const d = dragRef.current; dragRef.current = null; if (d && d.moved) { justDraggedRef.current = true; setTimeout(() => setDragHud(null), 650); try { localStorage.setItem('vp_bright_v1', String(brightness)); localStorage.setItem('vp_vol_v1', String(volume)) } catch { /* ignore */ } } }
   // Swallow the click that follows a drag so it doesn't toggle the overlay off; a plain tap still passes through.
   const onEdgeClick = (e: React.MouseEvent) => { if (justDraggedRef.current) { e.stopPropagation(); justDraggedRef.current = false } }
   useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener('fullscreenchange', h); return () => document.removeEventListener('fullscreenchange', h) }, [])
@@ -234,8 +260,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
   }, [url, useAudioEl])
 
   // advance = playlist auto-advance (repeat-all): keep the history order stable so "next" cycles the whole list.
-  const load = useCallback((f: File, advance = false) => {
+  const load = useCallback((f: File, advance = false, autoplay = true) => {
     if (!isMedia(f)) return
+    suppressPlayRef.current = !autoplay // restore-on-refresh loads the clip paused
+    setLastName('')
     setUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(f) })
     setBase(f.name.replace(/\.[^.]+$/, '') || 'frame')
     setA(null); setB(null); setRepeat(false); setCur(0); setAudioMode(false); setAudioOnly(false)
@@ -251,6 +279,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
     const id = f.name + '|' + f.size
     const meta = { id, name: f.name, size: f.size, type: f.type }
     if (savedRef.current.has(id)) vhSave(meta, f); else vhPutMeta(meta)
+    try { localStorage.setItem('vp_last_v1', id) } catch { /* ignore */ } // 마지막 영상 기억 (새로고침 복원)
     trackToolUsed('video-player')
   }, [])
   // Play the next clip for repeat-all — cycles the CURRENTLY OPEN tab (전체 or 보관), wrapping around.
@@ -323,6 +352,13 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
       const th: Record<string, string> = {}
       items.forEach((it) => { if (it.thumb) th[it.name + '|' + it.size] = it.thumb })
       if (Object.keys(th).length) setThumbs((p) => ({ ...th, ...p }))
+      // 마지막 영상 복원 — ★보관(blob 있음)이면 일시정지 상태로 로드(이어보기 위치 포함),
+      // 메타데이터만 남았으면 초기 화면에 제목 + 다시 열기 안내를 띄운다 (음악 플레이어 규칙).
+      try {
+        const lastKey = localStorage.getItem('vp_last_v1')
+        const it = lastKey ? restored.find((r) => r.name + '|' + r.size === lastKey) : null
+        if (it) { if (it.file) load(it.file, true, false); else setLastName(it.name) }
+      } catch { /* ignore */ }
     })
     return () => { alive = false }
   }, [])
@@ -582,11 +618,11 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             {/* presets */}
             <div className="flex items-center gap-0.5">
               {[0.5, 0.75, 1, 1.25, 1.5, 2].map((p) => (
-                <button key={p} onClick={() => { setSpeed(p); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (speed === p ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{p}×</button>
+                <button key={p} onClick={() => { changeSpeed(p); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (speed === p ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{p}×</button>
               ))}
             </div>
             <div className="flex items-center gap-2">
-              <input type="range" min={0.25} max={3} step={0.25} value={speed} onChange={(e) => { setSpeed(+e.target.value); showOverlay() }} aria-label="playback speed"
+              <input type="range" min={0.25} max={3} step={0.25} value={speed} onChange={(e) => { changeSpeed(+e.target.value); showOverlay() }} aria-label="playback speed"
                 style={fillBg(((speed - 0.25) / 2.75) * 100)} className={gaugeCls} />
               <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{speed}×</span>
             </div>
@@ -616,12 +652,12 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             {/* presets — 0–100 scale (0 = darkest, ~50 = normal, 100 = brightest) */}
             <div className="flex items-center gap-0.5">
               {[0, 20, 40, 50, 60, 80, 100].map((p) => (
-                <button key={p} onClick={() => { setBrightness(0.3 + (p / 100) * 1.4); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (Math.round(((brightness - 0.3) / 1.4) * 100) === p ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{p}</button>
+                <button key={p} onClick={() => { changeBright(0.3 + (p / 100) * 1.4); showOverlay() }} className={'px-1.5 h-6 rounded text-[10px] tabular-nums transition-colors ' + (Math.round(((brightness - 0.3) / 1.4) * 100) === p ? 'bg-brand-600 text-white' : 'text-white/70 hover:bg-white/15')}>{p}</button>
               ))}
             </div>
             <div className="flex items-center gap-2">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0 text-white/70"><circle cx="12" cy="12" r="4" /><path d="M12 3v1" /><path d="M12 20v1" /><path d="M3 12h1" /><path d="M20 12h1" /></svg>
-              <input type="range" min={0.3} max={1.7} step={0.05} value={brightness} onChange={(e) => { setBrightness(+e.target.value); showOverlay() }} aria-label="brightness"
+              <input type="range" min={0.3} max={1.7} step={0.05} value={brightness} onChange={(e) => { changeBright(+e.target.value); showOverlay() }} aria-label="brightness"
                 style={fillBg(((brightness - 0.3) / 1.4) * 100)} className={gaugeCls} />
               <span className="text-[10px] tabular-nums text-white/80 w-8 text-right">{Math.round(((brightness - 0.3) / 1.4) * 100)}</span>
             </div>
@@ -675,17 +711,28 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
             if (ms?.setPositionState && el.duration && isFinite(el.duration)) { try { ms.setPositionState({ duration: el.duration, position: Math.min(el.currentTime, el.duration), playbackRate: el.playbackRate || 1 }) } catch { /* ignore */ } }
           }} />
         {!url ? (
-          <div onClick={() => inputRef.current?.click()}
+          /* 초기 화면 = 플레이어 (음악 플레이어 규칙): 검은 플레이어 박스가 디폴트.
+             마지막 영상이 메타데이터만 남았으면 제목 + 다시 열기 안내를 보여준다. */
+          <div onClick={() => (lastName ? dirRef.current : inputRef.current)?.click()}
             onDrop={(e) => { e.preventDefault(); e.dataTransfer.files[0] && loadAndScroll(e.dataTransfer.files[0]) }} onDragOver={(e) => e.preventDefault()}
-            className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-colors">
-            <p className="text-5xl mb-3">🎞️</p>
-            <p className="text-base font-medium text-gray-700">{t('vp_drop')}</p>
-            <p className="text-xs text-gray-400 mt-1">{t('vp_drop_sub')}</p>
+            className="relative rounded-xl bg-black min-h-[50vh] sm:min-h-[420px] flex flex-col items-center justify-center gap-2 text-center cursor-pointer overflow-hidden px-6">
+            <p className="text-5xl mb-1">🎞️</p>
+            {lastName ? (
+              <>
+                <p className="max-w-[85%] truncate text-sm font-medium text-white/85">{lastName}</p>
+                <p className="text-xs text-white/50">{t('vp_reopen_last')}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-base font-medium text-white/85">{t('vp_drop')}</p>
+                <p className="text-xs text-white/50">{t('vp_drop_sub')}</p>
+              </>
+            )}
             <div className="flex flex-wrap justify-center gap-2 mt-4">
               <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-sm font-semibold rounded-xl hover:bg-brand-700">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M7 3v18" /><path d="M3 7.5h4" /><path d="M3 12h18" /><path d="M3 16.5h4" /><path d="M17 3v18" /><path d="M17 7.5h4" /><path d="M17 16.5h4" /></svg>{t('vp_pick_video')}
               </button>
-              <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50">
+              <button type="button" onClick={(e) => { e.stopPropagation(); dirRef.current?.click() }} className="inline-flex items-center gap-1.5 px-4 py-2 border border-white/30 text-white/85 text-sm font-semibold rounded-xl hover:bg-white/10">
                 <ToolIcon name="folder" className="w-4 h-4" />{t('vp_pick_folder')}
               </button>
             </div>
@@ -717,8 +764,13 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   resumePosRef.current = 0
                   // Auto-play as soon as the file loads (Q2): selecting the file is a user gesture, so
                   // sound is normally allowed; if a browser blocks it, fall back to muted autoplay.
-                  v.muted = false
-                  v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
+                  // (복원 로드는 일시정지 상태로 — suppressPlayRef)
+                  v.volume = volume; v.muted = muted
+                  if (suppressPlayRef.current) { suppressPlayRef.current = false }
+                  else {
+                    v.muted = false
+                    v.play().catch(() => { v.muted = true; v.play().catch(() => {}) })
+                  }
                 }}
                 onPlay={() => { setPlaying(true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'playing' } catch { /* ignore */ } }}
                 onPause={(e) => { setPlaying(false); if (!useAudioEl) savePos(e.currentTarget.currentTime, true); try { (navigator as unknown as { mediaSession?: { playbackState: string } }).mediaSession!.playbackState = 'paused' } catch { /* ignore */ } }}
@@ -775,7 +827,7 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                   </button>
 
                   {/* Night mode — warm/dim filter for comfortable night viewing (moon; highlighted when on) */}
-                  <button onClick={() => { setNightMode((n) => !n); showOverlay() }} title={t('vp_night')} aria-label={t('vp_night')}
+                  <button onClick={() => { setNightMode((n) => { const nv = !n; try { localStorage.setItem('vp_night_v1', nv ? '1' : '0') } catch { /* ignore */ } return nv }); showOverlay() }} title={t('vp_night')} aria-label={t('vp_night')}
                     className={ovBtn + (nightMode ? ' bg-brand-600/90 hover:bg-brand-600' : ' bg-black/55 hover:bg-black/75')}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
                   </button>
@@ -861,10 +913,10 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                     </button>
                     {openMenu === 'repeat' && (
                       <div className={subMenu}>
-                        <button onClick={() => { setRepeatMode('one'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'one' ? ' bg-brand-600' : '')}><span className="flex items-center gap-2">{loopLetter('1')}{t('vp_repeat_one')}</span></button>
-                        <button onClick={() => { setRepeatMode('all'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'all' ? ' bg-brand-600' : '')}><span className="flex items-center gap-2">{loopLetter('A')}{t('vp_repeat_all')}</span></button>
-                        <button onClick={() => { setRepeatMode('shuffle'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'shuffle' ? ' bg-brand-600' : '')}><span className="flex items-center gap-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></svg>{t('vp_repeat_shuffle')}</span></button>
-                        <button onClick={() => { setRepeatMode('off'); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span className="flex items-center gap-2">
+                        <button onClick={() => { changeRepeat('one'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'one' ? ' bg-brand-600' : '')}><span className="flex items-center gap-2">{loopLetter('1')}{t('vp_repeat_one')}</span></button>
+                        <button onClick={() => { changeRepeat('all'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'all' ? ' bg-brand-600' : '')}><span className="flex items-center gap-2">{loopLetter('A')}{t('vp_repeat_all')}</span></button>
+                        <button onClick={() => { changeRepeat('shuffle'); setOpenMenu(null); showOverlay() }} className={subRow + (repeatMode === 'shuffle' ? ' bg-brand-600' : '')}><span className="flex items-center gap-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></svg>{t('vp_repeat_shuffle')}</span></button>
+                        <button onClick={() => { changeRepeat('off'); setOpenMenu(null); showOverlay() }} className={subRow + ' border-t border-white/10 text-white/80'}><span className="flex items-center gap-2">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><circle cx="12" cy="12" r="9" /><path d="m5.6 5.6 12.8 12.8" /></svg>
                           {t('vp_repeat_off')}</span></button>
                       </div>
@@ -1028,14 +1080,14 @@ export default function VideoPlayerPage({ params }: { params: { lang: string } }
                 )}
                 {optTab === 'repeat' && (
                   <div className="flex flex-wrap gap-2">
-                    <button onClick={() => setRepeatMode('one')}
+                    <button onClick={() => changeRepeat('one')}
                       className={chipBtn + ' inline-flex items-center gap-1.5 ' + (repeatMode === 'one' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>{loopLetter('1')}{t('vp_repeat_one')}</button>
-                    <button onClick={() => setRepeatMode('all')}
+                    <button onClick={() => changeRepeat('all')}
                       className={chipBtn + ' inline-flex items-center gap-1.5 ' + (repeatMode === 'all' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>{loopLetter('A')}{t('vp_repeat_all')}</button>
-                    <button onClick={() => setRepeatMode('shuffle')}
+                    <button onClick={() => changeRepeat('shuffle')}
                       className={chipBtn + ' inline-flex items-center gap-1.5 ' + (repeatMode === 'shuffle' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></svg>{t('vp_repeat_shuffle')}</button>
-                    <button onClick={() => setRepeatMode('off')}
+                    <button onClick={() => changeRepeat('off')}
                       className={chipBtn + ' inline-flex items-center gap-1.5 ' + (repeatMode === 'off' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 shrink-0"><circle cx="12" cy="12" r="9" /><path d="m5.6 5.6 12.8 12.8" /></svg>{t('vp_repeat_off')}</button>
                   </div>
