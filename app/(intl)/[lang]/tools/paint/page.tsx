@@ -38,9 +38,9 @@ export default function PaintPage({ params }: { params: { lang: string } }) {
   const [customH, setCustomH] = useState('600')
   const [fitCanvas, setFitCanvas] = useState(true)
   const [textBox, setTextBox] = useState<{ dx: number; dy: number; cx: number; cy: number; v: string } | null>(null)
-  const [dd, setDd] = useState<'color' | 'size' | 'bg' | null>(null) // 커스텀 드롭다운
+  const [dd, setDd] = useState<'file' | 'color' | 'size' | 'bg' | null>(null) // 커스텀 드롭다운
   const [ddRight, setDdRight] = useState(false) // 버튼이 화면 오른쪽에 있으면 팝오버를 우측 정렬
-  function toggleDd(kind: 'color' | 'size' | 'bg', e: React.MouseEvent<HTMLButtonElement>) {
+  function toggleDd(kind: 'file' | 'color' | 'size' | 'bg', e: React.MouseEvent<HTMLButtonElement>) {
     setDdRight(e.currentTarget.getBoundingClientRect().left > window.innerWidth / 2)
     setDd(dd === kind ? null : kind)
   }
@@ -381,7 +381,7 @@ export default function PaintPage({ params }: { params: { lang: string } }) {
 
   return (
     <ToolLayout tool={tool} lang={params.lang}>
-      <div className="max-w-5xl mx-auto px-4 pb-20 md:pb-0">
+      <div className="max-w-5xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('pnt_title')}</h1>
         <p className="text-gray-500 mb-5">{t('pnt_subtitle')}</p>
 
@@ -392,15 +392,32 @@ export default function PaintPage({ params }: { params: { lang: string } }) {
             <button onClick={undo} disabled={stacks.undo === 0} className={actBtn + ' !px-2'} title={t('pnt_undo') + ' (Ctrl+Z)'} aria-label={t('pnt_undo')}><ToolIcon name="undo" className="w-4 h-4" /></button>
             <button onClick={redo} disabled={stacks.redo === 0} className={actBtn + ' !px-2'} title={t('pnt_redo') + ' (Ctrl+Y)'} aria-label={t('pnt_redo')}><ToolIcon name="redo" className="w-4 h-4" /></button>
             <span className="w-px h-5 bg-gray-200 mx-1" />
-            <button onClick={() => fileRef.current?.click()} className={actBtn}><ToolIcon name="folder" className="w-4 h-4" />{t('pnt_load')}</button>
-            <button onClick={pasteFromClipboard} className={actBtn} title="Ctrl+V"><ToolIcon name="copy" className="w-4 h-4" />{t('pnt_paste')}</button>
-            <label className="inline-flex items-center gap-1 text-xs text-gray-500 ml-1">
-              <input type="checkbox" checked={fitCanvas} onChange={(e) => setFitCanvas(e.target.checked)} className="accent-brand-600" />
-              {t('pnt_fit_canvas')}
-            </label>
-            <span className="w-px h-5 bg-gray-200 mx-1" />
-            <button onClick={savePng} className={actBtn + ' !text-brand-700 !border-brand-200'}><ToolIcon name="download" className="w-4 h-4" />PNG</button>
-            <button onClick={saveJpg} className={actBtn + ' !text-brand-700 !border-brand-200'}><ToolIcon name="download" className="w-4 h-4" />JPG</button>
+            {/* 파일 메뉴 — 불러오기·PNG·JPG 통합 */}
+            <div className="relative">
+              <button onClick={(e) => toggleDd('file', e)} className={actBtn}>
+                <ToolIcon name="folder" className="w-4 h-4" />{t('pnt_file')}
+                <ToolIcon name="chevron-down" className="w-3.5 h-3.5" />
+              </button>
+              {dd === 'file' && (
+                <div className={'absolute z-40 mt-1.5 w-48 max-w-[calc(100vw-2rem)] rounded-xl border border-gray-200 bg-white shadow-lg p-2 ' + (ddRight ? 'right-0' : 'left-0')}>
+                  <button onClick={() => { setDd(null); fileRef.current?.click() }}
+                    className="w-full flex items-center gap-2 text-left px-2.5 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                    <ToolIcon name="folder" className="w-4 h-4 text-gray-400" />{t('pnt_load')}
+                  </button>
+                  <div className="my-1 border-t border-gray-100" />
+                  <button onClick={() => { setDd(null); savePng() }}
+                    className="w-full flex items-center gap-2 text-left px-2.5 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                    <ToolIcon name="download" className="w-4 h-4 text-gray-400" />{t('pnt_save_png')}
+                  </button>
+                  <button onClick={() => { setDd(null); saveJpg() }}
+                    className="w-full flex items-center gap-2 text-left px-2.5 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                    <ToolIcon name="download" className="w-4 h-4 text-gray-400" />{t('pnt_save_jpg')}
+                  </button>
+                </div>
+              )}
+            </div>
+            {/* 붙여넣기 — 아이콘 전용 */}
+            <button onClick={pasteFromClipboard} className={actBtn + ' !px-2'} title={t('pnt_paste') + ' (Ctrl+V)'} aria-label={t('pnt_paste')}><ToolIcon name="copy" className="w-4 h-4" /></button>
             <span className="w-px h-5 bg-gray-200 mx-1" />
             <button onClick={clearCanvas} className={actBtn + ' !text-red-500 !border-red-200'}><ToolIcon name="trash" className="w-4 h-4" />{t('pnt_clear')}</button>
           </div>
@@ -470,6 +487,11 @@ export default function PaintPage({ params }: { params: { lang: string } }) {
                     <input value={customH} onChange={(e) => setCustomH(e.target.value)} inputMode="numeric" className="w-16 border border-gray-200 rounded px-1.5 py-1 text-center text-xs" />
                     <button onClick={() => { setDd(null); newCanvas(parseInt(customW) || 800, parseInt(customH) || 600, bg) }} className={actBtn + ' ml-auto'}>{t('pnt_apply')}</button>
                   </div>
+                  {/* 불러온 이미지 크기에 캔버스 맞춤 — 크기 메뉴로 통합 */}
+                  <label className="mt-1.5 pt-2 border-t border-gray-100 flex items-center gap-1.5 px-2.5 pb-1 text-xs text-gray-500 cursor-pointer">
+                    <input type="checkbox" checked={fitCanvas} onChange={(e) => setFitCanvas(e.target.checked)} className="accent-brand-600" />
+                    {t('pnt_fit_canvas')}
+                  </label>
                 </div>
               )}
             </div>
@@ -498,8 +520,8 @@ export default function PaintPage({ params }: { params: { lang: string } }) {
         {dd && <div className="fixed inset-0 z-30" onClick={() => setDd(null)} />}
 
         <div className="flex flex-col md:flex-row gap-3">
-          {/* toolbar — desktop: left column / mobile: fixed bottom bar (엄지 도달 범위) */}
-          <div className="fixed bottom-0 inset-x-0 z-30 flex flex-row justify-center gap-1.5 bg-white/95 backdrop-blur border-t border-gray-200 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:static md:flex-col md:justify-start md:bg-transparent md:border-0 md:p-0 md:w-auto">
+          {/* toolbar — desktop: left column / mobile: canvas 위 가로 줄 (하단 고정은 가시성 문제로 폐기) */}
+          <div className="flex flex-row flex-wrap justify-center gap-1.5 md:flex-col md:justify-start md:w-auto">
             {TOOLS_LIST.map((tl) => (
               <button key={tl} onClick={() => setToolSel(tl)} className={iconBtn(toolSel === tl)} title={t('pnt_' + tl)} aria-label={t('pnt_' + tl)}>
                 <ToolIcon name={TOOL_ICONS[tl]} className="w-5 h-5" />
