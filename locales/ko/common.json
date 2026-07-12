@@ -6290,6 +6290,8 @@
     "cnm_dl_zip": "PNG {n}장 ZIP 다운로드",
     "cnm_rel_thumb": "유튜브 썸네일 다운로드",
     "cnm_rel_insta": "인스타 줄바꿈",
+    "txf_recent": "최근 검색",
+    "txf_recent_del": "기록 삭제",
     "txf_title": "택시 요금 계산기",
     "txf_subtitle": "출발지·목적지만 넣으면 거리·시간·예상 요금까지",
     "txf_route_title": "택시 경로·요금 지도",

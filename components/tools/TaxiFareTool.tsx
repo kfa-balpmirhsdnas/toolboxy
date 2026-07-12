@@ -1,13 +1,17 @@
 'use client'
 // 택시 요금 계산 공용 엔진 UI — /taxi-fare(A형)와 /taxi-route(B형)가 공유.
 // B형은 MapComp(Leaflet, dynamic import)를 주입받아 결과 아래에 경로 지도를 그린다.
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   tariffsForCountry, tariffById, calcTaxiFare, formatFare, asTaxiLang,
   type TaxiCountry, type TaxiLang,
 } from '@/lib/tools/taxiFare'
 import { trackToolUsed } from '@/lib/gtag'
+
+interface HistoryItem { city: string; o: string; d: string }
+const HISTORY_KEY = 'txf_history_v1'
+const HISTORY_MAX = 8
 
 export interface TaxiRouteData {
   origin: { lat: number; lng: number; label: string }
@@ -32,22 +36,48 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const [data, setData] = useState<TaxiRouteData | null>(null)
+  const [history, setHistory] = useState<HistoryItem[]>([])
 
   const tariff = tariffById(cityId)!
+
+  useEffect(() => { // 최근 검색 로드 (양 페이지 공유)
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY)
+      if (raw) setHistory((JSON.parse(raw) as HistoryItem[]).filter((h) => h && h.o && h.d && tariffById(h.city)))
+    } catch { /* 손상된 기록 무시 */ }
+  }, [])
+
+  // 저장은 변경 시점(성공한 계산·삭제)에 직접 — useEffect 저장 금지 규칙
+  function saveHistory(list: HistoryItem[]) {
+    setHistory(list)
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list)) } catch { /* quota 무시 */ }
+  }
+  function removeHistory(i: number) {
+    saveHistory(history.filter((_, k) => k !== i))
+  }
+  function pickHistory(h: HistoryItem) {
+    const tf = tariffById(h.city)!
+    setCountry(tf.country); setCityId(h.city); setOrigin(h.o); setDest(h.d)
+    calc(h.o, h.d, h.city)
+  }
 
   function pickCountry(c: TaxiCountry) {
     setCountry(c)
     setCityId(tariffsForCountry(c)[0].id)
   }
 
-  async function calc() {
-    if (!origin.trim() || !dest.trim() || busy) return
+  async function calc(oArg?: string, dArg?: string, cityArg?: string) {
+    const o = (oArg ?? origin).trim()
+    const d = (dArg ?? dest).trim()
+    const city = cityArg ?? cityId
+    const ctry = tariffById(city)!.country
+    if (!o || !d || busy) return
     setBusy(true); setErr(null); setData(null)
     try {
       const r = await fetch('/api/taxi-route', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ origin, destination: dest, country, withGeometry: slug === 'taxi-route' }),
+        body: JSON.stringify({ origin: o, destination: d, country: ctry, withGeometry: slug === 'taxi-route' }),
       })
       const j = await r.json()
       if (!r.ok) {
@@ -62,6 +92,11 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
       }
       setData(j)
       trackToolUsed(slug)
+      // 성공한 검색만 기록 (중복 제거 후 맨 앞에)
+      saveHistory([
+        { city, o, d },
+        ...history.filter((h) => !(h.city === city && h.o === o && h.d === d)),
+      ].slice(0, HISTORY_MAX))
     } catch {
       setErr(t('txf_err_server'))
     } finally {
@@ -103,11 +138,33 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
             className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
         </div>
         <p className="text-[11px] text-gray-400 mt-1.5">{t('txf_hint')}</p>
-        <button onClick={calc} disabled={busy || !origin.trim() || !dest.trim()}
+        <button onClick={() => calc()} disabled={busy || !origin.trim() || !dest.trim()}
           className="mt-3 w-full py-3 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold disabled:opacity-50">
           {busy ? t('txf_calcing') : t('txf_calc')}
         </button>
         {err && <p className="mt-3 text-sm rounded-xl bg-rose-50 border border-rose-200 text-rose-600 px-3 py-2.5">{err}</p>}
+
+        {/* 최근 검색 — 칩 클릭으로 재계산, ×로 삭제 */}
+        {history.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-[11px] text-gray-400 mb-1.5">{t('txf_recent')}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {history.map((h, i) => (
+                <span key={h.city + h.o + h.d}
+                  className="inline-flex items-center gap-1 max-w-full rounded-full border border-gray-200 bg-gray-50 pl-2.5 pr-1 py-1 text-xs text-gray-600">
+                  <button onClick={() => pickHistory(h)} disabled={busy}
+                    className="truncate max-w-[13rem] hover:text-brand-600 disabled:opacity-50">
+                    {tariffById(h.city)?.label[lang]} · {h.o} → {h.d}
+                  </button>
+                  <button onClick={() => removeHistory(i)} aria-label={t('txf_recent_del')}
+                    className="w-4 h-4 shrink-0 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-400 leading-none">
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 결과 */}
