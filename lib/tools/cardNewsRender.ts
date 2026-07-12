@@ -153,7 +153,9 @@ function wrapTokens(ctx: CanvasRenderingContext2D, toks: Tok[], size: number, we
 export const RATIOS = { square: { w: 1080, h: 1080 }, portrait: { w: 1080, h: 1350 } } as const
 export type CNRatio = keyof typeof RATIOS
 
-const SIZES = [44, 40, 36, 32, 28, 24] // 본문 크기 사다리 (지시서 24~44px)
+// 본문 크기 사다리 — 짧은 텍스트는 72px까지 키우고, 양이 늘면 24px까지 축소.
+// (초기 44px 상한은 짧은 문구가 카드에서 너무 작아 보여 상향 — 수동 크기 조절 대신 자동 확장)
+const SIZES = [72, 64, 56, 48, 44, 40, 36, 32, 28, 24]
 const LINE_H = 1.62
 const PAD = 96 // 카드 안쪽 여백 (1080 기준)
 
