@@ -37,6 +37,10 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
   const [err, setErr] = useState<string | null>(null)
   const [data, setData] = useState<TaxiRouteData | null>(null)
   const [history, setHistory] = useState<HistoryItem[]>([])
+  const [dd, setDd] = useState<'o' | 'd' | null>(null) // 입력창 옆 최근 지역 드롭다운
+
+  // 기존 검색에 쓰인 지역(출발·도착 모두) — 두 입력창 공용 목록
+  const places = Array.from(new Set(history.flatMap((h) => [h.o, h.d]))).slice(0, 10)
 
   const tariff = tariffById(cityId)!
 
@@ -131,13 +135,32 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
           ))}
         </div>
         <div className="grid gap-2">
-          <input value={origin} onChange={(e) => setOrigin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && calc()}
-            placeholder={t('txf_origin_ph')}
-            className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
-          <input value={dest} onChange={(e) => setDest(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && calc()}
-            placeholder={t('txf_dest_ph')}
-            className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
+          {([['o', origin, setOrigin, 'txf_origin_ph'], ['d', dest, setDest, 'txf_dest_ph']] as const).map(([kind, val, setVal, ph]) => (
+            <div key={kind} className="relative flex gap-1.5">
+              <input value={val} onChange={(e) => setVal(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && calc()}
+                placeholder={t(ph)}
+                className="flex-1 min-w-0 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-300" />
+              {places.length > 0 && (
+                <button onClick={() => setDd(dd === kind ? null : kind)} aria-label={t('txf_recent')}
+                  className="shrink-0 w-10 rounded-xl border border-gray-200 bg-white text-gray-400 hover:text-brand-600 hover:border-brand-300 flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 9 6 6 6-6" /></svg>
+                </button>
+              )}
+              {dd === kind && (
+                <div className="absolute z-40 top-full right-0 mt-1.5 w-64 max-w-[calc(100vw-2rem)] rounded-xl border border-gray-200 bg-white shadow-lg p-2">
+                  <p className="px-2.5 pt-1 pb-1.5 text-[10px] text-gray-400">{t('txf_recent')}</p>
+                  {places.map((p) => (
+                    <button key={p} onClick={() => { setVal(p); setDd(null) }}
+                      className="w-full text-left px-2.5 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 truncate">
+                      📍 {p}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
+        {dd && <div className="fixed inset-0 z-30" onClick={() => setDd(null)} />}
         <p className="text-[11px] text-gray-400 mt-1.5">{t('txf_hint')}</p>
         <button onClick={() => calc()} disabled={busy || !origin.trim() || !dest.trim()}
           className="mt-3 w-full py-3 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold disabled:opacity-50">
@@ -187,10 +210,11 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
             <p className="text-3xl font-black text-brand-700 tabular-nums">{formatFare(fare.day, fare.currency, lang)}</p>
             <p className="mt-2 text-xs text-gray-500">
               {t('txf_fare_night')} ({tariff.nightHours}) ·{' '}
+              {/* 밴드형 할증(서울 등)은 중간값 ± 편차로 표시 */}
               <span className="font-bold text-gray-700 tabular-nums">
                 {fare.nightMin === fare.nightMax
                   ? formatFare(fare.nightMin, fare.currency, lang)
-                  : `${formatFare(fare.nightMin, fare.currency, lang)} ~ ${formatFare(fare.nightMax, fare.currency, lang)}`}
+                  : `${formatFare(Math.round((fare.nightMin + fare.nightMax) / 2), fare.currency, lang)} ±${formatFare(Math.round((fare.nightMax - fare.nightMin) / 2), fare.currency, lang)}`}
               </span>
             </p>
           </div>
