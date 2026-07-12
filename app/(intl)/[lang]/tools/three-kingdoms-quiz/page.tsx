@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import ToolLayout from '@/components/tools/ToolLayout'
@@ -11,7 +11,10 @@ import { asTKLang, type TKLang } from '@/lib/tools/tkCommon'
 
 const tool = getToolBySlug('three-kingdoms-quiz')!
 
-// 등급 칭호 (90↑ 와룡급 / 70↑ 대도독급 / 50↑ 교위급 / 미만 신병급)
+// 난이도별 문제당 점수 — 입문 5 / 중급 10 / 고수 15 (만점 50/100/150)
+const PTS: Record<TKQuizLevel, number> = { easy: 5, mid: 10, hard: 15 }
+
+// 등급 칭호 — 정답률 % 기준 (90↑ 와룡급 / 70↑ 대도독급 / 50↑ 교위급 / 미만 신병급)
 const GRADES: { min: number; label: Record<TKLang, string>; symbol: string; color: string }[] = [
   { min: 90, label: { ko: '와룡급', ja: '臥龍級', en: 'Sleeping Dragon' }, symbol: '智', color: '#10b981' },
   { min: 70, label: { ko: '대도독급', ja: '大都督級', en: 'Grand Commander' }, symbol: '帥', color: '#3b82f6' },
@@ -56,15 +59,20 @@ export default function ThreeKingdomsQuizPage({ params }: { params: { lang: stri
   function pickLevel(lv: TKQuizLevel) { setLevel(lv); stage.begin() }
   function changeLevel() { setLevel(null); setRounds([]); setIdx(0); setPicked(null); setCorrect(0); stage.reset() }
 
+  const explRef = useRef<HTMLDivElement>(null)
   function pick(pos: number) {
     if (picked !== null || !stage.playing) return
     setPicked(pos)
     if (rounds[idx].order[pos] === 0) { setCorrect((c) => c + 1); sfx('point') } else sfx('lose')
+    // 해설·다음 버튼이 화면 밖(또는 하단 광고 아래)에 남지 않게 자동 스크롤 — "다음 문제" 미클릭 버그 방지
+    requestAnimationFrame(() => setTimeout(() => explRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 60))
   }
   function nextQ() { setIdx((i) => i + 1); setPicked(null) }
 
-  const score = correct * 10
-  const grade = GRADES.find((g) => score >= g.min)!
+  const score = correct * (level ? PTS[level] : 10)
+  const maxScore = rounds.length * (level ? PTS[level] : 10)
+  const pct = rounds.length ? Math.round((correct / rounds.length) * 100) : 0
+  const grade = GRADES.find((g) => pct >= g.min)!
 
   function saveCard() {
     const S = 1080
@@ -78,7 +86,7 @@ export default function ThreeKingdomsQuizPage({ params }: { params: { lang: stri
     x.fillStyle = grade.color; x.font = 'bold 170px serif'; x.fillText(grade.symbol, S / 2, 360)
     x.fillStyle = '#9ca3af'; x.font = '36px sans-serif'; x.fillText(t('tkz_title'), S / 2, 545)
     x.fillStyle = '#ffffff'; x.font = 'bold 130px sans-serif'; x.fillText(`${score}`, S / 2, 690)
-    x.fillStyle = '#d1d5db'; x.font = '40px sans-serif'; x.fillText(`/ 100 · ${t('tkz_lv_' + level)}`, S / 2, 750)
+    x.fillStyle = '#d1d5db'; x.font = '40px sans-serif'; x.fillText(`/ ${maxScore} · ${t('tkz_lv_' + level)}`, S / 2, 750)
     x.fillStyle = grade.color; x.font = 'bold 56px sans-serif'; x.fillText(grade.label[lang], S / 2, 850)
     x.fillStyle = '#6b7280'; x.font = '30px sans-serif'; x.fillText('toolboxy.net', S / 2, 1042)
     const a = document.createElement('a')
@@ -123,7 +131,7 @@ export default function ThreeKingdomsQuizPage({ params }: { params: { lang: stri
                     <div className="w-24 h-24 mx-auto rounded-full border-4 flex items-center justify-center mb-3" style={{ borderColor: grade.color }}>
                       <span className="text-5xl font-bold font-serif" style={{ color: grade.color }}>{grade.symbol}</span>
                     </div>
-                    <p className="text-6xl font-black text-gray-900">{score}<span className="text-2xl text-gray-400 font-bold"> / 100</span></p>
+                    <p className="text-6xl font-black text-gray-900">{score}<span className="text-2xl text-gray-400 font-bold"> / {maxScore}</span></p>
                     <p className="mt-2 text-xl font-bold" style={{ color: grade.color }}>{grade.label[lang]}</p>
                     <p className="text-xs text-gray-400 mt-1">{t('tkz_lv_' + level)} · {correct} / {rounds.length}</p>
                   </div>
@@ -135,6 +143,8 @@ export default function ThreeKingdomsQuizPage({ params }: { params: { lang: stri
                       <div className="h-full bg-brand-500 rounded-full transition-all" style={{ width: `${(idx / rounds.length) * 100}%` }} />
                     </div>
                     <span className="text-sm text-gray-500 tabular-nums shrink-0">{idx + 1} / {rounds.length}</span>
+                    {/* 진행 중 점수 */}
+                    <span className="text-xs font-bold text-brand-700 bg-brand-50 border border-brand-200 rounded-full px-2.5 py-1 tabular-nums shrink-0">{score}{t('tkz_pts')}</span>
                   </div>
                   <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-4">
                     <p className="text-lg font-bold text-gray-900 text-center">{cur.q.q[lang]}</p>
@@ -155,7 +165,7 @@ export default function ThreeKingdomsQuizPage({ params }: { params: { lang: stri
                     })}
                   </div>
                   {picked !== null && (
-                    <div className="mt-4 rounded-2xl bg-gray-50 border border-gray-200 p-4">
+                    <div ref={explRef} className="mt-4 rounded-2xl bg-gray-50 border border-gray-200 p-4 scroll-mt-16 scroll-mb-4">
                       <p className="text-sm font-bold mb-1">
                         {rounds[idx].order[picked] === 0
                           ? <span className="text-emerald-600">○ {t('tkz_correct')}</span>
