@@ -73,6 +73,8 @@ export const HIDDEN_CATEGORIES: ReadonlySet<ToolCategory> = new Set<ToolCategory
 export const isHiddenTool = (t: ToolMeta) => HIDDEN_CATEGORIES.has(t.category)
 
 export const TOOLS: ToolMeta[] = [
+  {slug:'paint',category:'image',added:'2026-07-12',phase:1,isPro:false,isNew:true,tags:['그림판','온라인 그림판','무료 그림 그리기','스케치','드로잉','스크린샷에 그리기','online paint','free drawing tool','draw online','ms paint online','お絵かきツール','ペイント 無料','オンライン お絵描き'],maxFileSizeMB:{free:0,pro:0} },
+
   {slug:'three-kingdoms-name-generator',category:'three-kingdoms',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 이름 생성기','나의 자 만들기','삼국지식 이름','자(字) 작명','three kingdoms name generator','chinese courtesy name generator','三国志風名前メーカー','あざな 作成','字 生成'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'three-kingdoms-quiz',category:'three-kingdoms',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 퀴즈','삼국지 상식 테스트','삼국지 문제','삼국지 시험','three kingdoms quiz','three kingdoms trivia','romance of the three kingdoms quiz','三国志クイズ','三国志 検定','三国志 問題'],maxFileSizeMB:{free:0,pro:0} },
   {slug:'three-kingdoms-timeline',category:'three-kingdoms',added:'2026-07-11',phase:1,isPro:false,isNew:true,tags:['삼국지 연표','삼국지 연대기','삼국지 순서','황건적의 난 연도','three kingdoms timeline','three kingdoms chronology','184 280 AD','三国志 年表','三国志 時系列'],maxFileSizeMB:{free:0,pro:0} },

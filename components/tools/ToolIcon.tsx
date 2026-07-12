@@ -4,6 +4,9 @@ import type { ReactNode } from 'react'
 // emoji/glyph icons so every tool's toolbar looks consistent in light + dark. Lucide-style
 // (viewBox 0 0 24 24, stroke=currentColor). Add new icons here; never inline emoji in a bar.
 const P: Record<string, ReactNode> = {
+  circle: <circle cx="12" cy="12" r="9" />,
+  bucket: <><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2a2 2 0 0 0 2.8 0L19 11Z" /><path d="m5 2 5 5" /><path d="M2 13h15" /><path d="M22 20a2 2 0 1 1-4 0c0-1.6 2-3.5 2-3.5s2 1.9 2 3.5Z" /></>,
+  eyedropper: <><path d="m2 22 1-1h3l9-9" /><path d="M3 21v-3l9-9" /><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z" /></>,
   'zoom-out': <><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /><path d="M8 11h6" /></>,
   'zoom-in': <><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /><path d="M11 8v6" /><path d="M8 11h6" /></>,
   fit: <><path d="M15 3h6v6" /><path d="M9 21H3v-6" /><path d="M21 3l-7 7" /><path d="M3 21l7-7" /></>,

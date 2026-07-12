@@ -105,6 +105,7 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
+    "paint": "A free paint tool that runs right in your browser — pen, shapes, fill and text, plus paste-a-screenshot (Ctrl+V) to annotate images. 20 undo steps, PNG/JPG export, touch drawing on mobile. No install.",
     "three-kingdoms-name-generator": "Enter your name, pick 2-3 personality keywords and a civil/martial leaning, and get a Three Kingdoms-style name — surname, given name and courtesy name (字) built from characters used in real period names. Free.",
     "three-kingdoms-quiz": "A Three Kingdoms trivia quiz: 10 random questions per round from a 90-question pool across three difficulty levels, with instant explanations, links to learn more, rank titles and a shareable score card. Free.",
     "three-kingdoms-timeline": "A vertical timeline of 70+ key events from the Yellow Turban Rebellion (184) to the fall of Wu (280), with battle/politics/birth-death filters, decade jumps, and links into the character and battle dictionaries. Free.",
@@ -858,6 +859,7 @@
     "continue": "Continue without signing up"
   },
   "langTools": {
+    "paint": {"faq": [{"q": "Where are my drawings saved?", "a": "Nothing is uploaded. Hitting save downloads a PNG or JPG file to your device. There is no auto-save, so keep your work with the save buttons."}, {"q": "Do I need to install or sign in?", "a": "No. Open the page and draw — it works on desktop, tablets and phones with full touch support."}, {"q": "Can I annotate a screenshot?", "a": "Yes. Copy a screenshot and press Ctrl+V — the canvas resizes to the image and you can mark it up with pen, shapes and text. On mobile, use the paste button in the toolbar."}]},
     "video-player": {"faq":[{"q":"Is my video uploaded?","a":"No. The file is opened only in your browser; playback, frame capture and A–B looping all run locally and are never sent to a server."},{"q":"What image format are frames saved in?","a":"The full-resolution frame at the current position is saved as PNG or JPG. It extracts the actual video frame (not a screenshot), so there is no quality loss."},{"q":"How does A–B repeat work?","a":"Press A at the start and B at the end of the section, then enable Repeat. Whenever playback reaches B it jumps back to A and loops — great for dictation or practicing a passage."},{"q":"Can I change the playback speed?","a":"Yes, from 0.25× to 2×, so you can slow down fast sections or speed through others."},{"q":"Which video formats are supported?","a":"Any format your browser can play (MP4/H.264, WebM, etc.). Some codecs may not play depending on the browser."}]},
     "image-comparison": {"faq":[{"q":"Do the two images need to be the same size?","a":"No. Images of different sizes are centered and fit to each pane, so you can compare them as-is."},{"q":"What is it used for?","a":"Before/after edits, compression quality, A/B designs, resize results — any time you want to hold two images side by side."},{"q":"Does it work on mobile?","a":"Yes. The slider moves with touch, and every mode works on mobile."},{"q":"Are my images uploaded?","a":"No. Everything runs in your browser; your images are never sent to a server."}]},
     "heic-viewer": {"faq":[{"q":"What is HEIC?","a":"HEIC (HEIF) is Apple’s high-efficiency image format, the default for iPhone photos since iOS 11. It stores the same quality in a smaller file than JPG."},{"q":"Why won’t it open on Windows?","a":"Windows, Chrome and most PC setups don’t support HEIC out of the box and need an extra codec. This viewer decodes HEIC inside your browser, so it just opens — no install."},{"q":"Can I save as JPG?","a":"Yes. Save the current photo as JPG or PNG while viewing, or download all loaded photos at once as JPG (zip)."},{"q":"Are my photos uploaded?","a":"No. All decoding and conversion happen entirely in your browser; your photos are never sent to a server."}]},
@@ -1670,6 +1672,7 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
+    "paint": "Online Paint is a lightweight, MS-Paint-style drawing tool. It gives you pen, eraser, line, rectangle and ellipse (outline or filled), a flood-fill bucket, text and an eyedropper, with a width slider, a 16-color palette, a native color picker and recent colors. Open files, drag-and-drop, or simply Ctrl+V a screenshot to annotate it (mobile has a paste button); canvases run from 800×600 to A4 plus custom sizes, on white or transparent backgrounds. Twenty steps of undo/redo, PNG (with transparency) and JPG export, and full touch drawing on mobile — everything stays in your browser, and nothing is uploaded.",
     "three-kingdoms-name-generator": "The Three Kingdoms Name Generator turns your name, two or three personality keywords and a civil-or-martial leaning into a period-style Chinese name. Surnames come from a pool of twenty clans of the era; the single-character given name is chosen from characters actually used in period names, weighted to your keywords; and the courtesy name (字) follows the real naming convention of echoing the given name’s meaning. Results include Korean, Japanese and pinyin readings, a gloss for every character, and a link to the Three Kingdoms figure your name suits best. Generation is deterministic — the same input always yields the same name — so save the result card and compare with friends.",
     "three-kingdoms-quiz": "The Three Kingdoms Quiz draws 10 random multiple-choice questions per round from a pool of 90 — thirty each at beginner, intermediate and expert level, from the Peach Garden Oath up to Pei Songzhi’s annotations. Every answer gets an instant explanation and a link into the related character, idiom or battle page, so each question teaches something. Questions where the novel and the histories disagree state their basis explicitly. Finish for a score, a rank title (Sleeping Dragon, Grand Commander, Captain, Recruit) and a 1080×1080 result card to challenge your friends with.",
     "three-kingdoms-timeline": "The Three Kingdoms Timeline lays out the 96 years from the Yellow Turban Rebellion (184) to Jin’s reunification (280) in 70+ events. Each card carries the year, a short description and linked people; events that exist only in the novel (the Peach Garden Oath, Hulao Gate) are badged. Filter to battles only, political events only, or character births and deaths — the latter generated automatically from the character dictionary. Decade navigation jumps you to any period, and the 15 major battles link through to their full battle pages.",
@@ -2025,6 +2028,7 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
+    "paint": ["Pick a tool (pen, shapes, fill…), a color and a width, and draw on the canvas.", "Paste a screenshot with Ctrl+V (or the paste button on mobile) to annotate it.", "Save as PNG (transparency supported) or JPG — there is no auto-save, so use the save buttons."],
     "three-kingdoms-name-generator": ["Enter your name (nicknames fine) and pick 2-3 personality keywords.", "Choose your leaning — civil (strategy) or martial (valor) — and generate.", "Read the per-character meanings, then save the result card to share."],
     "three-kingdoms-quiz": ["Pick a difficulty — each round draws 10 random questions.", "Answer to see an instant explanation, with a link to learn more.", "Save your score card with its rank title and challenge your friends."],
     "three-kingdoms-timeline": ["Pick a filter — battles, politics, or character births and deaths.", "Use the decade buttons (190, 200…) to jump to any period.", "Follow the people and battle links on each card to the detail pages."],
@@ -5774,6 +5778,36 @@
     "atd_max_abs": "Allowed absences: {n}",
     "atd_disclaim": "※ Actual rules vary by school and course.",
     "atd_related": "Related tools:",
+    "pnt_title": "Online Paint",
+    "pnt_subtitle": "Pen, shapes, fill and text — paste a screenshot and mark it up",
+    "pnt_pen": "Pen (B)",
+    "pnt_eraser": "Eraser (E)",
+    "pnt_line": "Line",
+    "pnt_rect": "Rectangle",
+    "pnt_ellipse": "Ellipse",
+    "pnt_fill": "Fill",
+    "pnt_text": "Text",
+    "pnt_picker": "Eyedropper",
+    "pnt_width": "Width",
+    "pnt_fill_shape": "Filled",
+    "pnt_stroke_shape": "Outline",
+    "pnt_size": "Canvas",
+    "pnt_apply": "Apply",
+    "pnt_bg": "Background",
+    "pnt_bg_white": "White",
+    "pnt_bg_transparent": "Transparent",
+    "pnt_new_confirm": "Unsaved work will be lost. Create a new canvas?",
+    "pnt_clear": "Clear all",
+    "pnt_clear_confirm": "Clear the whole canvas? (You can undo this.)",
+    "pnt_undo": "Undo",
+    "pnt_redo": "Redo",
+    "pnt_load": "Open",
+    "pnt_paste": "Paste",
+    "pnt_paste_fail": "No image found on the clipboard. Copy an image and try again.",
+    "pnt_fit_canvas": "Fit canvas to image",
+    "pnt_text_ph": "Type, then press Enter",
+    "pnt_shortcut_hint": "Shortcuts: B pen · E eraser · Ctrl+Z undo · Ctrl+Y redo · Ctrl+V paste",
+    "pnt_save_note": "No auto-save — keep your work with the PNG/JPG save buttons.",
     "tkn_title": "Three Kingdoms Name Generator",
     "tkn_subtitle": "Your Three Kingdoms-style name and courtesy name, from your own name",
     "tkn_input": "Your name",
@@ -7785,6 +7819,7 @@
     ]
   },
   "toolNames": {
+    "paint": "Paint",
     "three-kingdoms-name-generator": "Three Kingdoms Name Generator",
     "three-kingdoms-quiz": "Three Kingdoms Quiz",
     "three-kingdoms-timeline": "Three Kingdoms Timeline",
@@ -7968,6 +8003,7 @@
     }
   },
   "toolTitles": {
+    "paint": "Online Paint - Free Drawing Tool in Browser",
     "three-kingdoms-name-generator": "Three Kingdoms Name Generator - Get Your Courtesy Name",
     "three-kingdoms-quiz": "Three Kingdoms Quiz - How Many Can You Get Right?",
     "three-kingdoms-timeline": "Three Kingdoms Timeline (184–280 AD) - Every Key Event",
