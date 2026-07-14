@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { TOOLS, CATEGORY_META, HIDDEN_CATEGORIES, isHiddenTool, type ToolCategory } from '@/lib/tools/registry'
+import { GLOBAL_TOOLS } from '@/lib/tools/metadata'
 import { IDIOMS } from '@/lib/gosaseongeo'
 import { TK_IDIOMS } from '@/lib/tools/threeKingdomsIdioms'
 import { TK_CHARS } from '@/lib/tools/threeKingdomsCharacters'
@@ -38,21 +39,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   )
 
-  const categoryUrls = LANGS.flatMap((lang) =>
-    NONEMPTY_CATEGORIES.map((cat) => ({
-      url: `${BASE_URL}/${lang}/tools/${cat}`,
-      lastModified: now,
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    })),
-  )
+  // ko 우선 색인 전략 (2026-07): 카테고리·서브 콘텐츠 페이지는 ko만 제출.
+  // en/ja 도구 페이지는 GLOBAL_TOOLS(어학·다국어 설계 도구)만 제출 — noindex 정책과 일치.
+  const categoryUrls = NONEMPTY_CATEGORIES.map((cat) => ({
+    url: `${BASE_URL}/ko/tools/${cat}`,
+    lastModified: now,
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }))
 
   // Every tool, every language. No lastModified: stamping every deploy's build time on all
   // ~360 tools made the signal meaningless (Google distrusts an always-fresh lastmod and then
   // ignores it — omitting is the documented recommendation when the real date isn't tracked).
   // changeFrequency is ignored by Google/Bing either way; weekly just reads truthfully.
-  const toolUrls = LANGS.flatMap((lang) =>
-    TOOLS.filter((tool) => !isHiddenTool(tool)).map((tool) => ({
+  const toolUrls = TOOLS.filter((tool) => !isHiddenTool(tool)).flatMap((tool) =>
+    (GLOBAL_TOOLS.has(tool.slug) ? LANGS : ['ko']).map((lang) => ({
       url: `${BASE_URL}/${lang}/tools/${tool.slug}`,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
@@ -67,50 +68,40 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }))
 
-  // 삼국지 고사성어 (30 × 3 langs) — trilingual content, every locale canonical.
-  const tkIdiomUrls = LANGS.flatMap((lang) =>
-    TK_IDIOMS.map((i) => ({
-      url: `${BASE_URL}/${lang}/tools/three-kingdoms-idioms/${i.slug}`,
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    })),
-  )
+  // 삼국지 고사성어 — ko 우선 전략: ko만 제출 (en/ja는 도구 레이아웃 noindex 상속)
+  const tkIdiomUrls = TK_IDIOMS.map((i) => ({
+    url: `${BASE_URL}/ko/tools/three-kingdoms-idioms/${i.slug}`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
 
   // 삼국지 시리즈 개별 페이지 (인물 60 + 명언 40 + 전투 15) × 3 langs —
   // 카테고리가 숨김 해제(HIDDEN_CATEGORIES에서 제거)되는 순간 자동 포함.
   const tkOpen = !HIDDEN_CATEGORIES.has('three-kingdoms')
-  const tkSeriesUrls = !tkOpen ? [] : LANGS.flatMap((lang) => [
-    ...TK_CHARS.map((c) => ({ url: `${BASE_URL}/${lang}/tools/three-kingdoms-characters/${c.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
-    ...TK_QUOTES.map((q) => ({ url: `${BASE_URL}/${lang}/tools/three-kingdoms-quotes/${q.slug}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
-    ...TK_BATTLES.map((b) => ({ url: `${BASE_URL}/${lang}/tools/three-kingdoms-battles/${b.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
-  ])
+  const tkSeriesUrls = !tkOpen ? [] : [
+    ...TK_CHARS.map((c) => ({ url: `${BASE_URL}/ko/tools/three-kingdoms-characters/${c.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
+    ...TK_QUOTES.map((q) => ({ url: `${BASE_URL}/ko/tools/three-kingdoms-quotes/${q.slug}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
+    ...TK_BATTLES.map((b) => ({ url: `${BASE_URL}/ko/tools/three-kingdoms-battles/${b.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
+  ]
 
-  // Per-element pages (118 × 3 langs) — localized content, so every locale is canonical.
-  const elementUrls = LANGS.flatMap((lang) =>
-    ELEMENTS.map((e) => ({
-      url: `${BASE_URL}/${lang}/tools/periodic-table/${elementSlug(e)}`,
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    })),
-  )
+  // 원소·국가·색상 개별 페이지 — ko 우선 전략: ko만 제출
+  const elementUrls = ELEMENTS.map((e) => ({
+    url: `${BASE_URL}/ko/tools/periodic-table/${elementSlug(e)}`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
 
-  // Per-country pages (~70 × 3 langs) — localized content, every locale canonical.
-  const countryUrls = LANGS.flatMap((lang) =>
-    COUNTRIES.map((c) => ({
-      url: `${BASE_URL}/${lang}/tools/country-info/${countrySlug(c)}`,
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    })),
-  )
+  const countryUrls = COUNTRIES.map((c) => ({
+    url: `${BASE_URL}/ko/tools/country-info/${countrySlug(c)}`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
 
-  // Per-CSS-color pages (140 × 3 langs).
-  const colorUrls = LANGS.flatMap((lang) =>
-    CSS_COLORS.map((c) => ({
-      url: `${BASE_URL}/${lang}/tools/html-color-names/${colorSlug(c)}`,
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    })),
-  )
+  const colorUrls = CSS_COLORS.map((c) => ({
+    url: `${BASE_URL}/ko/tools/html-color-names/${colorSlug(c)}`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
 
   // 천자문 한자 (1000) + 사자소학 구절 (39) pages — Korean-only content, /ko URLs only
   // (other locales consolidate via canonical, same as the idiom pages).
@@ -125,11 +116,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }))
 
-  // Zodiac sign (12) + Chinese zodiac animal (12) pages × 3 langs — localized content.
-  const zodiacUrls = LANGS.flatMap((lang) => [
-    ...ZODIAC_SIGNS.map((s) => ({ url: `${BASE_URL}/${lang}/tools/zodiac-sign/${s.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
-    ...ZODIAC_ANIMALS.map((a) => ({ url: `${BASE_URL}/${lang}/tools/chinese-zodiac/${a.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
-  ])
+  // 별자리·띠 개별 페이지 — ko 우선 전략: ko만 제출
+  const zodiacUrls = [
+    ...ZODIAC_SIGNS.map((s) => ({ url: `${BASE_URL}/ko/tools/zodiac-sign/${s.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
+    ...ZODIAC_ANIMALS.map((a) => ({ url: `${BASE_URL}/ko/tools/chinese-zodiac/${a.id}`, changeFrequency: 'monthly' as const, priority: 0.6 })),
+  ]
 
   return [...homeUrls, ...staticUrls, ...categoryUrls, ...toolUrls, ...idiomUrls, ...tkIdiomUrls, ...tkSeriesUrls, ...elementUrls, ...countryUrls, ...colorUrls, ...hanjaUrls, ...sajaUrls, ...zodiacUrls]
 }

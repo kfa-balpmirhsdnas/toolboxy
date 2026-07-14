@@ -4,6 +4,23 @@ import { TOOLS, APP_LOCALES } from './registry'
 const BASE = 'https://www.toolboxy.net'
 const LANGS = ['en', 'ja', 'ko'] as const
 
+/**
+ * ko 우선 색인 전략 (2026-07 GSC 노출 붕괴 대응): Google이 en/ja 도구 페이지 대부분을
+ * "크롤링됨-색인 안 됨"으로 거부(1,160건)하면서 사이트 전체가 저품질 분류로 억제됐다.
+ * 대응: 해당 언어권에 실질 가치가 있는 도구(GLOBAL_TOOLS)만 en/ja 색인을 유지하고,
+ * 나머지 en/ja 페이지는 noindex,follow + 사이트맵 제외 + hreflang 제거로 정리해
+ * "색인 가치 있는 URL 비율"을 올린다. 콘텐츠 보강 후 이 Set에 추가하면 재개방된다.
+ */
+export const GLOBAL_TOOLS: ReadonlySet<string> = new Set([
+  // 사전·어학 (언어 자체가 콘텐츠 — en/ja 사용자가 실제 대상)
+  'korean-to-japanese', 'korean-to-english', 'japanese-to-korean', 'english-to-korean',
+  'japanese-to-english', 'english-to-japanese', 'korean-antonyms', 'japanese-antonyms', 'english-antonyms',
+  'elementary-japanese-words', 'elementary-english-words',
+  // 언어별 타이틀·콘텐츠를 따로 설계한 도구
+  'card-news-maker', 'taxi-fare', 'taxi-route', 'time-difference',
+])
+export const isIndexableLocale = (slug: string, lang: string) => lang === 'ko' || GLOBAL_TOOLS.has(slug)
+
 // Localized "Free Online Tool" suffix for the <title>.
 const SUFFIX: Record<string, string> = {
   en: 'Free Online Tool',
@@ -81,9 +98,12 @@ export async function buildToolMetadata(slug: string, lang: string): Promise<Met
     : `${name} – ${SUFFIX[safeLang]} | ToolBoxy`
   const url = `${BASE}/${safeLang}/tools/${slug}`
 
+  // hreflang은 색인 대상 로케일만 (noindex 페이지를 alternate로 가리키면 모순 신호)
+  const global = GLOBAL_TOOLS.has(slug)
+  const idxLangs = global ? LANGS : (['ko'] as const)
   const languages: Record<string, string> = {}
-  for (const l of LANGS) languages[l] = `${BASE}/${l}/tools/${slug}`
-  languages['x-default'] = `${BASE}/en/tools/${slug}`
+  for (const l of idxLangs) languages[l] = `${BASE}/${l}/tools/${slug}`
+  languages['x-default'] = `${BASE}/${global ? 'en' : 'ko'}/tools/${slug}`
 
   // Server-render a per-tool manifest link so each tool installs as its OWN PWA.
   // (A shared SSR default would make Chrome treat every page as the same app, so
@@ -106,6 +126,9 @@ export async function buildToolMetadata(slug: string, lang: string): Promise<Met
     alternates: { canonical: url, languages },
     openGraph: { title, description, url, siteName: 'ToolBoxy', type: 'website', locale: safeLang },
     twitter: { card: 'summary', title, description },
+    // ko 우선 색인 전략: 비화이트리스트 en/ja 페이지는 noindex,follow (레이아웃 메타라
+    // 하위 상세 페이지들에도 상속됨)
+    robots: isIndexableLocale(slug, safeLang) ? undefined : { index: false, follow: true },
   }
 }
 
@@ -137,16 +160,15 @@ export async function buildCategoryMetadata(category: string, lang: string): Pro
   const description = (CAT_DESC[safeLang] ?? CAT_DESC.en)(catName, count)
   const url = `${BASE}/${safeLang}/tools/${category}`
 
-  const languages: Record<string, string> = {}
-  for (const l of LANGS) languages[l] = `${BASE}/${l}/tools/${category}`
-  languages['x-default'] = `${BASE}/en/tools/${category}`
+  const languages: Record<string, string> = { ko: `${BASE}/ko/tools/${category}` }
+  languages['x-default'] = `${BASE}/ko/tools/${category}`
 
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: url, languages },
     openGraph: { title, description, url, siteName: 'ToolBoxy', type: 'website', locale: safeLang },
-    // Empty categories have no content to rank — keep them out of the index.
-    robots: count === 0 ? { index: false, follow: true } : undefined,
+    // 빈 카테고리 + (ko 우선 전략) 비-ko 카테고리 페이지는 색인 제외
+    robots: count === 0 || safeLang !== 'ko' ? { index: false, follow: true } : undefined,
   }
 }
