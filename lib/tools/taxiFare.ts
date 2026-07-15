@@ -44,6 +44,16 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
     source: '부산광역시 2023-06-01 요금 조정 발표 (busan.go.kr)', updated: '2026-07',
   },
   {
+    // 경기도 표준형 (수원·성남 등 15개 시군 공통) — 외곽 일부 시군은 요율이 다를 수 있음
+    id: 'KR-gyeonggi', country: 'KR', currency: 'KRW',
+    label: { ko: '경기 (수원·성남 등)', ja: '京畿（水原・城南など）', en: 'Gyeonggi (Suwon etc.)' },
+    baseFare: 4800, baseDistanceM: 1600,
+    unitFare: 100, unitDistanceM: 131,
+    timeFare: 100, timeUnitSec: 30,
+    nightPctMin: 30, nightPctMax: 30, nightHours: '23:00–04:00',
+    source: '경기도 2023-07-01 요금 조정 (표준형)', updated: '2026-07',
+  },
+  {
     id: 'KR-incheon', country: 'KR', currency: 'KRW',
     label: { ko: '인천', ja: '仁川', en: 'Incheon' },
     baseFare: 4800, baseDistanceM: 1600,
