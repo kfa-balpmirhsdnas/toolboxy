@@ -93,6 +93,8 @@ const nextConfig = {
       // image batch
       ['image-base64-converter', 'image-to-base64'],
       ['base64-image-encoder', 'image-to-base64'],
+      // taxi: route map merged into the fare calculator (map always shown)
+      ['taxi-route', 'taxi-fare'],
     ]
     return DEDUPES.map(([from, to]) => ({
       source: `/:lang/tools/${from}`,

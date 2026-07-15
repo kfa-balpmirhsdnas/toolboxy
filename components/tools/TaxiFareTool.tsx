@@ -23,7 +23,7 @@ export interface TaxiRouteData {
 
 export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
   lang: string
-  slug: 'taxi-fare' | 'taxi-route'
+  slug: 'taxi-fare'
   MapComp?: React.ComponentType<{ data: TaxiRouteData }>
 }) {
   const t = useTranslations('toolui')
@@ -73,7 +73,7 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
       const r = await fetch('/api/taxi-route', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ origin: o, destination: d, country: ctry, withGeometry: slug === 'taxi-route' }),
+        body: JSON.stringify({ origin: o, destination: d, country: ctry, withGeometry: !!MapComp }),
       })
       const j = await r.json()
       if (!r.ok) {

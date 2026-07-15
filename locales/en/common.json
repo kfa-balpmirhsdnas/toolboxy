@@ -105,7 +105,6 @@
     "generic": "Something went wrong. Please try again."
   },
   "toolDescriptions": {
-    "taxi-route": "Draws your taxi route on a map and calculates distance, time and an estimated fare. Supports Seoul, Busan, Tokyo and Osaka with day and night fares. Free, no login.",
     "taxi-fare": "Enter a start and destination to get driving distance, travel time and an estimated taxi fare. Based on official tariffs for Seoul, Busan, Tokyo and Osaka, with day and night fares. Free, no login.",
     "card-news-maker": "Paste your text and get a ready-to-post Instagram carousel — cover, body slides and closing page are auto-generated. 10 themes, automatic text fitting, 1080px PNG/ZIP download. Free, no login, no watermark, commercial use OK.",
     "paint": "A free paint tool that runs right in your browser — pen, shapes, fill and text, plus paste-a-screenshot (Ctrl+V) to annotate images. 20 undo steps, PNG/JPG export, touch drawing on mobile. No install.",
@@ -862,7 +861,6 @@
     "continue": "Continue without signing up"
   },
   "langTools": {
-    "taxi-route": {"faq": [{"q": "Is the route on the map the actual taxi route?", "a": "It’s a driving route based on the real road network. Your driver may take a different route, in which case the fare will differ too."}, {"q": "What is the fare based on?", "a": "Official tariffs for Seoul, Busan, Tokyo (23 wards) and Osaka — base fare, distance increments and slow-traffic time charges — with night surcharges shown per city. Tolls are not included."}, {"q": "I just want the fare, quickly.", "a": "If you don’t need the map, use the lighter Taxi Fare Calculator page — it runs on the same engine."}]},
     "taxi-fare": {"faq": [{"q": "Will the fare match the actual meter?", "a": "It’s an estimate. Actual fares vary with the driver’s route, traffic (slow-speed time charges), tolls and out-of-area surcharges. Calculations follow each city’s official tariff."}, {"q": "Why is the night fare shown as a range?", "a": "Seoul’s surcharge varies by hour (20% at 22–23, 40% at 23–02, 20% at 02–04), so we show a min–max range. Tokyo and Osaka use a flat +20% (22:00–05:00), shown as one value."}, {"q": "My address isn’t found.", "a": "The free map data (OSM) recognizes station names, landmarks and well-known buildings better than detailed street addresses. Try “Seoul Station”, “Shinjuku Station” or “Tokyo Tower”."}, {"q": "Will more cities be added?", "a": "Currently Seoul, Busan, Tokyo (23 wards) and Osaka are supported. More cities will be added after verifying their official tariffs."}]},
     "card-news-maker": {"faq": [{"q": "Is it free? Is there a watermark?", "a": "Completely free with no watermark at all. No login or sign-up required."}, {"q": "Can I use the slides commercially?", "a": "Yes. All fonts are open-licensed (OFL), so you can freely use the results for brand accounts, ads and product promotion."}, {"q": "Will my text ever get cut off?", "a": "Text size auto-adjusts between 24 and 44px to fit each slide, and if it still overflows at the minimum size the slide splits automatically. Your text is never clipped."}, {"q": "Is my text uploaded to a server?", "a": "No. Everything from generation to download happens in your browser. Your latest work is auto-backed up locally, and you can also save it as a JSON file to continue later."}]},
     "paint": {"faq": [{"q": "Where are my drawings saved?", "a": "Nothing is uploaded. Hitting save downloads a PNG or JPG file to your device. There is no auto-save, so keep your work with the save buttons."}, {"q": "Do I need to install or sign in?", "a": "No. Open the page and draw — it works on desktop, tablets and phones with full touch support."}, {"q": "Can I annotate a screenshot?", "a": "Yes. Copy a screenshot and press Ctrl+V — the canvas resizes to the image and you can mark it up with pen, shapes and text. On mobile, use the paste button in the toolbar."}]},
@@ -1678,7 +1676,6 @@
     "uploadPrivacyA": "No. Everything runs only on your own computer, inside your browser, and your files are never sent to a server or anywhere else. So you can use it with complete peace of mind, without worrying about your file contents leaking."
   },
   "toolAbout": {
-    "taxi-route": "The Taxi Route Map draws the actual driving route between your start and destination on a map, and calculates distance, travel time and an estimated fare in one go. It uses official tariffs for Seoul, Busan, Tokyo (23 wards) and Osaka, showing day fares and night fare ranges (Japan +20%, Seoul +20–40%, Busan +20–30%) together. The map is OpenStreetMap-based, covering both Korea and Japan, with start/end markers and a route line. Fares are estimates and may differ from the meter depending on route, traffic and tolls. If you only need the fare without the map, try the lighter Taxi Fare Calculator.",
     "taxi-fare": "The Taxi Fare Calculator finds the real road driving distance and travel time between two places (station names and landmarks work best) and estimates the taxi fare using each city’s official tariff. It currently supports Seoul, Busan, Tokyo (23 wards) and Osaka, covering base fare, distance increments and slow-traffic time charges. Night surcharges differ by city (Japan +20%, Seoul +20–40%, Busan +20–30%), so day and night fares are shown together. Results are estimates — actual meter fares vary with route, traffic and tolls — calculated from the latest official fare revisions. Handy for trip budgeting, late-night ride costs, and planning travel in Korea and Japan.",
     "card-news-maker": "Carousel Maker turns plain text into a ready-to-post Instagram carousel — no design skills, no dragging elements around. Type a title and the cover is generated; paste your body text and it splits into slides at blank lines (long text is auto-split by sentence), with a closing page added automatically. Pick one of 10 finished themes (minimal, dark, pastel, newspaper, highlighter, notebook, navy, beige, pop, black-and-white typography) and the background, fonts, colors and layout apply in one click. Text size auto-adjusts between 24 and 44px to fit each slide, so nothing ever gets cut off. Use **emphasis** syntax to highlight key words in the theme’s style, and click any slide to fix typos, reorder, delete or duplicate it. Export at 1080×1080 or 1080×1350 as PNG files (bulk ZIP download included). Everything runs in your browser — your text never leaves your device — and all fonts are open-licensed (OFL), so the results are watermark-free and safe for commercial use.",
     "paint": "Online Paint is a lightweight, MS-Paint-style drawing tool. It gives you pen, eraser, line, rectangle and ellipse (outline or filled), a flood-fill bucket, text and an eyedropper, with a width slider, a 16-color palette, a native color picker and recent colors. Open files, drag-and-drop, or simply Ctrl+V a screenshot to annotate it (mobile has a paste button); canvases run from 800×600 to A4 plus custom sizes, on white or transparent backgrounds. Twenty steps of undo/redo, PNG (with transparency) and JPG export, and full touch drawing on mobile — everything stays in your browser, and nothing is uploaded.",
@@ -2037,7 +2034,6 @@
     "remove-exif": "Strip GPS location, camera and date from photos — quality untouched."
   },
   "howto": {
-    "taxi-route": ["Pick a country and city, then enter your start and destination.", "Hit Calculate to draw the route line and markers on the map.", "Check distance, time, and day/night fare estimates."],
     "taxi-fare": ["Pick a country and city (Seoul, Busan, Tokyo, Osaka).", "Enter your start and destination — station names and landmarks work best.", "Hit Calculate to see distance, time, and day/night fare estimates."],
     "card-news-maker": ["Enter a title and your text — blank lines split slides, and long text is auto-split by sentence. Use **emphasis** to highlight key words.", "Pick one of 10 themes and a ratio (1080×1080 / 1080×1350) — it applies to every slide instantly.", "Click any slide in the preview to fix typos, then download all slides as a PNG ZIP."],
     "paint": ["Pick a tool (pen, shapes, fill…), a color and a width, and draw on the canvas.", "Paste a screenshot with Ctrl+V (or the paste button on mobile) to annotate it.", "Save as PNG (transparency supported) or JPG — there is no auto-save, so use the save buttons."],
@@ -5859,8 +5855,6 @@
     "txf_auto_city": "City is detected from your start point",
     "txf_title": "Taxi Fare Calculator",
     "txf_subtitle": "Enter two places to get distance, time and fare estimates",
-    "txf_route_title": "Taxi Route Map",
-    "txf_route_subtitle": "See the route on a map with fare estimates in one go",
     "txf_kr": "🇰🇷 Korea",
     "txf_jp": "🇯🇵 Japan",
     "txf_origin_ph": "Start (e.g. Seoul Station, Shinjuku Station)",
@@ -5880,8 +5874,6 @@
     "txf_err_route": "No driving route found between the two points.",
     "txf_err_server": "A temporary error occurred. Please try again shortly.",
     "txf_not_ready": "This service is being prepared. Available soon.",
-    "txf_rel_route": "View on route map",
-    "txf_rel_fare": "Quick fare only",
     "txf_rel_timediff": "World Time Difference",
     "txf_rel_dist": "City Distance Calculator",
     "atd_related": "Related tools:",
@@ -7932,7 +7924,6 @@
     ]
   },
   "toolNames": {
-    "taxi-route": "Taxi Route Map",
     "taxi-fare": "Taxi Fare Calculator",
     "card-news-maker": "Carousel Maker",
     "paint": "Paint",
@@ -8119,7 +8110,6 @@
     }
   },
   "toolTitles": {
-    "taxi-route": "Taxi Route Map - Distance & Fare on the Map",
     "taxi-fare": "Taxi Fare Calculator - Seoul, Busan, Tokyo, Osaka",
     "card-news-maker": "Instagram Carousel Maker - Auto-Generate from Text",
     "paint": "Online Paint - Free Drawing Tool in Browser",

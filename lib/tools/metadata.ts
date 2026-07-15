@@ -17,7 +17,7 @@ export const GLOBAL_TOOLS: ReadonlySet<string> = new Set([
   'japanese-to-english', 'english-to-japanese', 'korean-antonyms', 'japanese-antonyms', 'english-antonyms',
   'elementary-japanese-words', 'elementary-english-words',
   // 언어별 타이틀·콘텐츠를 따로 설계한 도구
-  'card-news-maker', 'taxi-fare', 'taxi-route', 'time-difference',
+  'card-news-maker', 'taxi-fare', 'time-difference',
 ])
 export const isIndexableLocale = (slug: string, lang: string) => lang === 'ko' || GLOBAL_TOOLS.has(slug)
 
