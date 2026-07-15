@@ -170,7 +170,7 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
                   className="inline-flex items-center gap-1 max-w-full rounded-full border border-gray-200 bg-gray-50 pl-2.5 pr-1 py-1 text-xs text-gray-600">
                   <button onClick={() => pickHistory(h)} disabled={busy}
                     className="truncate max-w-[13rem] hover:text-brand-600 disabled:opacity-50">
-                    {tariffById(h.city)?.label[lang]} · {h.o} → {h.d}
+                    {h.o} → {h.d}
                   </button>
                   <button onClick={() => removeHistory(i)} aria-label={t('txf_recent_del')}
                     className="w-4 h-4 shrink-0 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-400 leading-none">

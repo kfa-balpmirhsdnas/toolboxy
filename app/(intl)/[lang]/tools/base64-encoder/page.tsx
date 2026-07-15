@@ -11,11 +11,17 @@ const tool = getToolBySlug('base64-encoder')!
 export default function Base64EncoderPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const [input, setInput] = useState('')
+  const [mode, setMode] = useState<'encode' | 'decode'>('encode') // 디코더 페이지 통합 — 인코드/디코드 토글
   const [copied, setCopied] = useState(false)
   const trackedRef = useRef(false)
 
   const output = (() => {
-    try { return input ? btoa(unescape(encodeURIComponent(input))) : '' } catch { return '' }
+    try {
+      if (!input) return ''
+      return mode === 'encode'
+        ? btoa(unescape(encodeURIComponent(input)))
+        : decodeURIComponent(escape(atob(input.trim())))
+    } catch { return '' }
   })()
 
   // Track first successful encode per session
@@ -36,6 +42,10 @@ export default function Base64EncoderPage({ params }: { params: { lang: string }
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-4">
+        <div className="flex gap-2">
+          <button onClick={() => setMode('encode')} className={'flex-1 py-2 rounded-lg font-medium transition-colors ' + (mode === 'encode' ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-700')}>{t('ui_encode')}</button>
+          <button onClick={() => setMode('decode')} className={'flex-1 py-2 rounded-lg font-medium transition-colors ' + (mode === 'decode' ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-700')}>{t('ui_decode')}</button>
+        </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">{t('b64_input')}</label>
           <textarea

@@ -26,6 +26,9 @@ export default function AgeCalculatorPage() {
   const daysUntil=Math.ceil((nextBday.getTime()-now.getTime())/(1000*60*60*24))
   const zodiac=(d:Date)=>{const m=d.getMonth()+1,day=d.getDate();if((m===3&&day>=21)||(m===4&&day<=19))return'aries';if((m===4&&day>=20)||(m===5&&day<=20))return'taurus';if((m===5&&day>=21)||(m===6&&day<=20))return'gemini';if((m===6&&day>=21)||(m===7&&day<=22))return'cancer';if((m===7&&day>=23)||(m===8&&day<=22))return'leo';if((m===8&&day>=23)||(m===9&&day<=22))return'virgo';if((m===9&&day>=23)||(m===10&&day<=22))return'libra';if((m===10&&day>=23)||(m===11&&day<=21))return'scorpio';if((m===11&&day>=22)||(m===12&&day<=21))return'sagittarius';if((m===12&&day>=22)||(m===1&&day<=19))return'capricorn';if((m===1&&day>=20)||(m===2&&day<=18))return'aquarius';return'pisces'}
   const valid=!isNaN(ms)&&ms>=0
+  // 만나이 계산기(man-age-calculator) 통합 — 연 나이·세는 나이 병기
+  const yearAge=target.getFullYear()-birth.getFullYear()
+  const counting=yearAge+1
   return (
     <ToolLayout tool={tool}>
       <div className="max-w-md mx-auto px-4 space-y-4">
@@ -43,6 +46,14 @@ export default function AgeCalculatorPage() {
               <p className="text-lg mt-1 opacity-90">{months} {t('ag_months')}, {days} {t('ag_days')}</p>
             </div>
             <div className="grid grid-cols-2 gap-2">
+              <div className="bg-gray-50 rounded-xl px-3 py-2.5">
+                <p className="text-xs text-gray-500">{t('ag_yearage')}</p>
+                <p className="font-bold text-gray-800 font-mono">{yearAge}</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl px-3 py-2.5">
+                <p className="text-xs text-gray-500">{t('ag_counting')}</p>
+                <p className="font-bold text-gray-800 font-mono">{counting}</p>
+              </div>
               {[['ag_tdays',totalDays.toLocaleString()],['ag_thours',hours.toLocaleString()],['ag_tmins',minutes.toLocaleString()],['ag_tsecs',seconds.toLocaleString()]].map(([l,v])=>(
                 <div key={l} className="bg-gray-50 rounded-xl px-3 py-2.5">
                   <p className="text-xs text-gray-500">{t(l)}</p>

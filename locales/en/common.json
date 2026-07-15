@@ -138,7 +138,6 @@
     "pdf-password": "A free tool to add or remove a password on a PDF. Upload a file, enter a password, and it processes right in your browser. No install, no signup, and files never leave your device.",
     "video-compressor": "A free tool to shrink video files. Drop a video, pick a compression level, and it re-encodes to MP4 right in your browser. No install, no signup, and files never leave your device.",
     "audio-converter": "A free tool to convert audio files to MP3, WAV, M4A or OGG. Drop a file, pick a format, and it converts right in your browser — no install, no signup, and files never leave your device.",
-    "mp4-to-mp3": "Free converter that extracts MP3 audio from MP4, MOV, WEBM and more. Bitrate (128–320 kbps), trimming and volume normalization — all in your browser, files never leave your device.",
     "mp3-tag-editor": "Free editor for MP3 ID3 tags — title, artist, album and album art. Lossless (tags only, audio untouched), with batch editing and ZIP download, all in your browser. Files never leave your device.",
     "workout-timer": "Free interval timer for home and ab workouts. Set prep/work/rest and sets, get 3-second countdown beeps, switch tones and vibration, pick exercise presets like leg raises, save routines, and keep the screen awake.",
     "docx-to-odt": "Free online converter that turns Word (.docx) documents into OpenDocument (.odt). The Pandoc engine runs entirely in your browser — files are never uploaded — and images stay embedded in the single .odt output.",
@@ -165,7 +164,6 @@
     "compress-pdf": "Free tool to reduce PDF file size. Works best on scanned or image-heavy PDFs and runs right in your browser.",
     "zip-files": "Free tool to bundle several files into a single ZIP, right in your browser with no upload.",
     "unzip": "Free tool to open a ZIP file and extract the files inside, right in your browser with no upload.",
-    "man-age-calculator": "Free tool to calculate your Korean 'man-nai' (full age) instantly from your birthdate, with counting age and year age too.",
     "dday-calculator": "Free D-Day calculator that counts the days until an exam, anniversary, or any target date. See D-100 or D-Day at a glance.",
     "world-clock": "Free world clock showing the current time in major cities like Seoul, New York, and London in real time.",
     "online-alarm": "Free online alarm that alerts you with a sound at a set time. Right in your browser, no install.",
@@ -214,14 +212,11 @@
     "cheonsugyeong": "Free Cheonsugyeong (Thousand-Hands Sutra) viewer showing the Hanja original, Korean reading, and meaning together, with auto-recitation — spoken aloud with the current line highlighted, auto-scroll, repeat, and adjustable speed. Runs right in your browser.",
     "white-noise-machine": "Free white noise machine — play rain, a crackling fire, ocean waves, a fan, pencil writing, or white/pink/brown noise for focus, sleep, and relaxation, with an elapsed-time display. Sounds are generated right in your browser, nothing to download.",
     "pdf-to-text": "Extract plain text from PDF files instantly in your browser. No upload to server needed.",
-    "base64-decoder": "Decode Base64 encoded strings back to plain text. Supports Unicode / UTF-8.",
-    "url-decoder": "Decode percent-encoded URLs back to human-readable text. Fast and private.",
     "csv-to-json": {
       "title": "CSV to JSON",
       "description": "Convert CSV data to JSON format with automatic number detection — supports comma, tab, semicolon, and pipe delimiters"
     },
     "jwt-decoder": "Decode and inspect JWT tokens client-side. See header, payload, and expiry — token never leaves your browser.",
-    "json-validator": "Validate JSON syntax instantly. Paste your JSON and get clear error messages with line numbers.",
     "json-to-csv": {
       "title": "JSON to CSV",
       "description": "Convert JSON arrays to CSV format instantly — paste your JSON and download or copy the result"
@@ -245,15 +240,10 @@
       "title": "Time Zone Converter",
       "description": "Convert times between time zones and see the current time in every major city around the world"
     },
-    "color-palette-generator": {
-      "title": "Color Palette Generator",
-      "description": "Generate harmonious color palettes — analogous, complementary, triadic, tetradic, monochromatic, and split-complementary schemes"
-    },
     "image-compress": "Compress and resize images in your browser to reduce file size without losing quality.",
     "jpg-to-png": "Convert JPG and JPEG images to lossless PNG format directly in your browser.",
     "png-to-jpg": "Convert PNG images to JPG with adjustable quality. Transparent areas filled white.",
     "svg-to-png": "Render SVG files to PNG at any scale. Paste SVG code or upload a file.",
-    "checksum-generator": "Compute SHA-1, SHA-256, SHA-384, and SHA-512 checksums for files or text. Verify file integrity.",
     "image-crop": "Crop images by specifying pixel coordinates. No upload required — runs in browser.",
     "html-entity-encoder": {
       "title": "HTML Entity Encoder",
@@ -318,7 +308,6 @@
     },
     "csv-viewer": "View and search CSV files in a table. Drag & drop files or paste CSV text directly.",
     "color-codes-converter": "Convert colors between HEX, RGB, and HSL formats. Visual color picker included.",
-    "diff-checker": "Compare two texts side by side and highlight line-by-line differences. Shows added and removed lines.",
     "number-formatter": {
       "title": "Number Formatter",
       "description": "Format numbers with locale-specific separators, currency symbols, and percentage across multiple locales"
@@ -334,7 +323,6 @@
       "description": "Format and beautify SQL queries with proper indentation and keyword capitalization."
     },
     "image-base64-converter": "Convert images to Base64 strings and decode Base64 back to viewable images.",
-    "markdown-preview": "Live side-by-side Markdown editor with rendered preview. Supports headings, links, code blocks.",
     "yaml-validator": {
       "title": "YAML Validator",
       "description": "Validate YAML syntax in real time — detects tab indentation errors, unclosed quotes, and reports key count"
@@ -411,13 +399,11 @@
       "description": "Build CSS keyframe animations with live preview — control duration, easing, delay, iteration, direction, and fill mode"
     },
     "markdown-table-generator": "Create tables interactively and export as Markdown, HTML, or CSV. Set column alignment, add or remove rows and columns, and download the result.",
-    "uuid-bulk-generator": "Generate up to 1000 UUIDs at once. Supports v4, no-hyphens, uppercase, nil, and short ID formats. Copy all or download as a text file.",
     "color-blindness-simulator": "Upload an image and preview it as seen by people with protanopia, deuteranopia, tritanopia, achromatopsia, and other color vision deficiencies.",
     "font-pairing-tool": "Explore curated Google Font pairings for headings and body text. Preview with live rendering, adjust size, and copy the CSS import snippet.",
     "text-counter-advanced": "Count characters, words, sentences, paragraphs, syllables, and reading/speaking time. Shows top word frequency and average word/sentence length.",
     "ascii-art-generator": "Transform text into large ASCII art banners with custom characters.",
     "html-color-picker": "Pick colors with a visual picker, view HEX/RGB/HSL/HSV values, check contrast ratios, and browse 60+ named HTML/CSS colors.",
-    "keyboard-shortcut-tester": "Click the capture zone and press any key or shortcut to see the key name, code, and modifiers (Ctrl, Alt, Shift, Meta). Captures last 20 events.",
     "css-box-model-visualizer": "Visualize and configure CSS box model (margin, border, padding, content). Supports content-box and border-box. Copy the generated CSS.",
     "open-graph-preview": "Preview how your page looks on Facebook, Twitter, and LinkedIn when shared. Generate the Open Graph and Twitter meta tags.",
     "json-to-yaml": "Convert JSON to YAML format. Handles nested objects, arrays, strings with special characters, and boolean/null values correctly.",
@@ -518,10 +504,6 @@
     "duplicate-line-remover": {
       "title": "Duplicate Line Remover",
       "description": "Remove duplicate lines from text instantly with case-sensitive or case-insensitive matching"
-    },
-    "pixel-to-rem-converter": {
-      "title": "Pixel to REM Converter",
-      "description": "Convert between px, rem, and em CSS units with a configurable base font size and a common values reference table"
     },
     "case-converter": {
       "title": "Case Converter",
@@ -667,10 +649,6 @@
       "title": "CSS Grid Generator",
       "description": "Build CSS grid layouts visually — set column/row counts, gaps, and template values with live grid preview"
     },
-    "pixel-converter": {
-      "title": "Pixel Converter",
-      "description": "Convert between px, em, rem, vw, vh, pt and cm units with a custom base font size."
-    },
     "gradient-generator": {
       "title": "CSS Gradient Generator",
       "description": "Create beautiful CSS gradients with a live visual editor — linear, radial, and conic."
@@ -696,7 +674,6 @@
       "description": "Browse all 140+ CSS named colors with hex values. Click any color to copy its hex code."
     },
     "text-encrypt-decrypt": "Encrypt and decrypt text with a password, entirely in your browser.",
-    "ip-address-lookup": "Look up details for any IP address — location, network and more.",
     "color-name-finder": "Find the closest named color for any HEX or RGB value.",
     "xml-to-json": "Convert XML to JSON instantly. Free online XML to JSON converter.",
     "subnet-calculator": "Calculate subnet masks, IP ranges and host counts from any CIDR.",
@@ -718,7 +695,6 @@
     "css-triangle-generator": "Generate CSS triangles in any direction and copy the code.",
     "email-validator": "Check whether an email address is valid and well-formed.",
     "html-color-codes": "Browse HTML color names with their HEX and RGB codes.",
-    "html-table-generator": "Create HTML tables visually and copy the markup.",
     "json-tree-viewer": "View and explore JSON as a collapsible tree.",
     "javascript-minifier": "Minify JavaScript to shrink file size instantly.",
     "color-shades-generator": "Generate lighter and darker shades of any color.",
@@ -728,7 +704,6 @@
     "color-converter": "Convert colors between HEX, RGB, HSL and more.",
     "pixel-art-maker": "Draw pixel art in your browser and export the image.",
     "image-placeholder-generator": "Generate placeholder images of any size for mockups.",
-    "image-color-extractor": "Extract the dominant colors and palette from any image.",
     "image-resizer": "Resize images to any dimension right in your browser.",
     "image-to-base64": "Convert images to Base64 data URIs instantly.",
     "base64-image-viewer": "Preview and decode Base64-encoded images instantly.",
@@ -739,7 +714,6 @@
     "text-diff-checker": "Compare two texts and highlight every difference.",
     "string-padding-tool": "Pad strings to a fixed length with any character.",
     "text-to-handwriting": "Turn typed text into realistic handwriting.",
-    "text-to-ascii-art": "Convert text into ASCII art banners instantly.",
     "text-line-sorter": "Sort lines of text alphabetically or numerically.",
     "text-case-converter": "Convert text between upper, lower, title and more cases.",
     "markdown-editor": "Write Markdown with a live preview in your browser.",
@@ -747,7 +721,6 @@
     "matrix-calculator": "Add, multiply and invert matrices online.",
     "date-difference-calculator": "Calculate the days, months and years between two dates.",
     "file-size-converter": "Convert between bytes, KB, MB, GB and TB.",
-    "random-color-generator": "Generate random colors with HEX and RGB codes.",
     "statistics-calculator": "Calculate mean, median, mode and standard deviation.",
     "tax-calculator": "Calculate tax and net amounts quickly.",
     "speed-distance-time-calculator": "Calculate speed, distance or time from the other two.",
@@ -785,7 +758,6 @@
     "favicon-generator": "Generate favicons in every common size from one image, with ready-to-paste HTML tags. Free favicon generator.",
     "webp-converter": "Convert images to WebP — or WebP back to PNG/JPG — right in your browser. Free WebP converter.",
     "image-to-pdf": "Combine JPG, PNG and other images into a single PDF — one image per page. Free image-to-PDF converter.",
-    "compound-interest-calculator": "Calculate compound interest with regular monthly contributions. Free compound interest calculator.",
     "salary-converter": "Convert pay between hourly, daily, weekly, monthly and yearly. Free salary / wage converter.",
     "vat-calculator": "Add or remove VAT (sales tax) at any rate, with net, tax and gross amounts. Free VAT calculator.",
     "savings-goal-calculator": "See how long it takes to reach a savings goal with monthly deposits and returns. Free savings goal calculator.",
@@ -1198,15 +1170,6 @@
         {
           "q": "Are my files uploaded?",
           "a": "No — everything is processed locally in your browser."
-        }
-      ]
-    },
-    "compound-interest-calculator": {
-      "intro": "Enter your starting amount, rate, term and monthly contribution to project your savings.",
-      "faq": [
-        {
-          "q": "Is it free?",
-          "a": "Yes — no sign-up, no installation, completely free to use right away."
         }
       ]
     },
@@ -1705,7 +1668,6 @@
     "pdf-password": "The PDF password tool lets you protect a PDF with a password (Lock) or remove the password from a protected PDF (Unlock). Lock encrypts the PDF with the password you enter; Unlock opens it with the correct password and re-saves it without encryption. Everything runs in your browser — the file and password are never sent to a server. If you forget the password, the PDF cannot be unlocked, so keep it safe.",
     "video-compressor": "The video compressor reduces video file size so it is easier to share or upload. Pick a level (High, Medium, Light) and it re-encodes to H.264 (MP4), then shows how much smaller the result is. Everything runs on the ffmpeg engine inside your browser — files are never uploaded. The engine (~30 MB) is fetched once on first use, and longer clips take more time.",
     "audio-converter": "The audio converter changes the format of your music or recordings. Convert to MP3 (universal, small), WAV (lossless), M4A (AAC) or OGG (open format). It runs the ffmpeg engine inside your browser, so files are never uploaded to a server. The engine (~30 MB) is fetched once on your first conversion.",
-    "mp4-to-mp3": "The video → MP3 converter pulls the sound out of MP4, MOV, WEBM, MKV, AVI and M4V videos and saves it as an MP3. You can set the bitrate (128/192/256/320 kbps), sample rate, mono/stereo, volume normalization and a time range, plus fade in/out and ID3 tags (title, artist, album). Queue several files and they convert one by one, ready to download individually or as a single ZIP. Conversion runs on the ffmpeg engine inside your browser, so files are never uploaded. The engine (~30 MB) is fetched once on your first conversion.",
     "country-info": "The country info directory gathers each country's essential facts on a single page: international calling code (+82, +33…), capital city, population, IANA time zone, power plug types with voltage and frequency, and the flag — no more hopping between scattered lookups before a trip or an international call. Browse by continent or search, and jump straight to neighbouring countries in the same region. Populations are approximate; all values come from public reference data.",
     "docx-to-odt": "The docx → odt converter turns Word documents (.docx) into the OpenDocument (.odt) format used by LibreOffice and OpenOffice. It runs Pandoc — the de-facto standard document conversion engine — as WebAssembly inside your browser, so files are never uploaded to any server: safe for work documents and personal files alike. Content structure converts well (headings, paragraphs, lists, tables, bold/italic, links, images, footnotes), and images are embedded in the single .odt output so there's nothing extra to carry around. Because Pandoc converts through its document model, elements like text boxes, intricate layouts, exact fonts/spacing and tracked changes may be simplified. The engine (~56 MB) downloads once on your first conversion and is cached afterwards.",
     "workout-timer": "The workout timer is a general-purpose interval timer for home training. Set the prep, work and rest times plus sets and rounds, and it shows big numbers with a per-phase colour (prep = yellow, work = green, rest = blue), beeps a 3-second countdown before every switch, plays a switch tone, and vibrates on supported phones — so you can follow along without watching the screen. Pick an ab-exercise preset (from reverse crunches up to hanging leg raises, sorted by difficulty) to auto-fill the recommended times and see form tips, and save your favourite settings as named routines. While running, the screen is kept awake (Wake Lock). Everything is stored in your browser only.",
@@ -1723,7 +1685,6 @@
     "ocr": "Recognize the text inside a photo or screenshot (OCR) and turn it into editable, copyable text. It supports Korean, English, and Japanese (plus Korean+English), and once recognition finishes you can edit or copy the result directly. The first run downloads language data and takes a moment, and clear, straight images give the best accuracy. Everything is processed in your browser, so your image is never uploaded, and it's free with no install.",
     "video-to-gif": "Cut a clip from a video and turn it into an animated GIF. Adjust the start point, length, width, and FPS (frames per second) to balance file size and smoothness. It works by capturing the video's frames and encoding them into a GIF, and the whole process runs in your browser, so your video is never uploaded. Free with no install.",
     "image-filter": "Adjust a photo's brightness, contrast, saturation, and hue with sliders, and apply one-tap presets like black & white, sepia, vintage, sharpen, warm, and cool. Tweak the values against a live preview and save the result as PNG; you can also add blur. Everything is processed in your browser, so your photo is never uploaded to a server, and it's free with no install.",
-    "man-age-calculator": "Calculate your Korean 'man-nai' (full international age) instantly from your birthdate. Korea standardized legal and official ages to man-nai in June 2023; this tool shows that age along with the traditional counting age (this year − birth year + 1) and year age (this year − birth year), plus the days until your next birthday. Everything is processed in your browser, free with no install.",
     "dday-calculator": "Count how many days remain until a target date — an exam, anniversary, or deadline. Enter the date and it shows the days left as D-100, D-1, and so on, or D+number for a date that has already passed. You can add a name to label what the countdown is for. It's calculated from today, runs in your browser, and is free with no install.",
     "world-clock": "See the current time in major cities like Seoul, Tokyo, New York, London, and Sydney on one screen, updating in real time. Handy for checking the time difference when you have family or colleagues abroad; cities on a different calendar day are shown with their date. It updates every second based on your device clock, free with no install.",
     "online-alarm": "Set a time and this online alarm alerts you with a sound when it arrives. Add a note to label what the alarm is for, and once set you'll see a live countdown to the alarm. The sound is generated in your browser, and the tab needs to stay open for the alarm to ring. Free with no install.",
@@ -1811,7 +1772,6 @@
     "tax-calculator": "This tool quickly works out tax amounts along with the before- and after-tax totals. Enter a price and rate, and it shows you the tax and the final figure at once. It's useful for invoices, quotes, shopping, or just double-checking a receipt. Calculations happen instantly in your browser and nothing you type is stored.",
     "loan-calculator": "This tool estimates your monthly loan payment and the total interest you'll pay. Enter the loan amount, interest rate, and term, and it lays out what each month looks like. It's a helpful way to compare options before borrowing or to plan a budget. Everything is calculated in your browser, and none of your numbers are saved.",
     "mortgage-calculator": "This tool estimates your monthly home-loan payment based on the price, down payment, rate, and term. It shows how much you'd pay each month and how the interest adds up over the years. It's a great first step when planning to buy a home or comparing mortgage offers. Calculations run in your browser and your figures are never stored.",
-    "compound-interest-calculator": "This tool shows how your money can grow with compound interest over time. Enter a starting amount, rate, and period, and it projects how the balance builds as interest earns more interest. It's a clear way to picture the power of long-term saving or investing. Everything is calculated in your browser, with nothing saved.",
     "percentage-calculator": "This tool handles everyday percentage questions in one place. Work out what percent one number is of another, find a percentage of a value, or see the percent change between two figures. It's handy for discounts, tips, grades, statistics, and more. Calculations are instant and run entirely in your browser.",
     "discount-calculator": "This tool figures out the final price after a discount. Enter the original price and the percent off, and it shows both how much you save and what you'll actually pay. It's perfect for sales, coupons, and quick shopping decisions. Everything is calculated in your browser, with nothing stored.",
     "tip-calculator": "This tool works out the tip and the total bill in seconds. Enter the amount, choose a tip percentage, and even split it between people. It takes the guesswork out of dining out or sharing a bill with friends. Calculations are instant and stay entirely in your browser.",
@@ -1843,7 +1803,6 @@
     "html-to-markdown": "This tool converts HTML back into clean, readable Markdown. It's handy for moving web content into notes, docs, or a README. Everything is done in your browser, so your content stays private.",
     "markdown-table-generator": "This tool helps you build Markdown tables without fiddling with pipes and dashes by hand. Fill in the cells and copy the formatted table into your docs or README. It runs entirely in your browser.",
     "markdown-editor": "This tool lets you write Markdown and see the formatted result live as you type. It's great for drafting README files, notes, or posts. Everything stays in your browser — nothing is saved or uploaded.",
-    "markdown-preview": "This tool lets you write Markdown and see the formatted result live as you type. It's great for drafting README files, notes, or posts. Everything stays in your browser — nothing is saved or uploaded.",
     "markdown-previewer": "This tool lets you write Markdown and see the formatted result live as you type. It's great for drafting README files, notes, or posts. Everything stays in your browser — nothing is saved or uploaded.",
     "text-to-morse-code": "This tool translates between regular text and Morse code in both directions. Type a message to encode it into dots and dashes, or paste Morse to decode it back. It's fun for learning, signaling, or puzzles, and runs in your browser.",
     "morse-code-converter": "This tool translates between regular text and Morse code in both directions. Type a message to encode it into dots and dashes, or paste Morse to decode it back. It's fun for learning, signaling, or puzzles, and runs in your browser.",
@@ -1914,7 +1873,6 @@
     "number-palindrome": "This tool explores numbers — checking primes, generating sequences like Fibonacci, or testing number patterns. It's handy for math homework, coding practice, or curiosity. Everything is calculated in your browser.",
     "screen-resolution-checker": "This tool shows your screen's resolution and related display details instantly. It's useful when setting up wallpapers, reporting a bug, or checking your device specs. Everything is read in your browser.",
     "habit-tracker": "This tool helps you track daily habits and build streaks. Tick off what you've done and watch your consistency grow over time. It runs in your browser to keep things simple.",
-    "keyboard-shortcut-tester": "This tool shows exactly which keys you're pressing, including combinations. It's handy for checking a keyboard, debugging shortcuts, or learning key codes. Everything is detected right in your browser.",
     "typing-speed-test": "This tool measures how fast and accurately you type, in words per minute. Take a quick test and see your speed and error rate right away. It's a fun way to track your typing over time, and it runs in your browser.",
     "speech-to-text": "This tool turns your spoken words into written text using your microphone. It's handy for quick notes, dictation, or capturing ideas hands-free. The recognition runs in your browser.",
     "auto-loan-calculator": "This tool estimates the monthly payment and total cost of a car loan. Enter the price, down payment, rate, and term to see what financing a vehicle really costs. Your figures aren't stored and it runs in your browser.",
@@ -1949,7 +1907,6 @@
     "fancy-text-generator": "This tool turns plain text into fancy fonts and stylish symbols you can paste anywhere. Make your name or bio stand out on social media, in chats, or in usernames. It all runs in your browser.",
     "flip-text": "This tool flips your text upside down so it reads ¡ǝsɹǝʌǝɹ. It's a playful way to grab attention in messages, bios, or posts. Everything runs instantly in your browser.",
     "text-to-handwriting": "This tool turns your typed text into a handwriting-style image. It's fun for personal notes, cards, or giving digital text a warmer, human touch. The image is created in your browser.",
-    "text-to-ascii-art": "This tool turns text into big ASCII art made of characters. It's great for fun banners in code comments, terminals, or chat. Everything is generated right in your browser.",
     "ascii-art-generator": "This tool turns text into big ASCII art made of characters. It's great for fun banners in code comments, terminals, or chat. Everything is generated right in your browser.",
     "screen-recorder": "This tool records your screen right from the browser — perfect for tutorials, demos, or capturing a bug. Start recording and save the video straight to your device. Nothing is uploaded; it all stays with you. (Screen recording needs a desktop browser.)",
     "webcam-test": "This tool lets you check that your webcam is working before a call or recording. See your camera's live preview and confirm it's set up right. The video stays in your browser and is never uploaded.",
@@ -1970,7 +1927,6 @@
     "color-name-finder": "This tool converts colors between HEX, RGB, HSL, and named colors. Paste any color value and instantly see it in every format, with a live preview. It's a designer and developer staple that runs in your browser.",
     "html-color-names": "This tool converts colors between HEX, RGB, HSL, and named colors. Paste any color value and instantly see it in every format, with a live preview. It's a designer and developer staple that runs in your browser.",
     "html-color-picker": "This tool lets you pick a color visually and get its HEX, RGB, and HSL codes. It's perfect for grabbing the exact shade you need for a website or design. Everything runs in your browser.",
-    "color-palette-generator": "This tool helps you build beautiful color palettes and schemes for your designs. Generate harmonious combinations, shades, or random palettes to spark ideas. Everything is created in your browser.",
     "random-palette-generator": "This tool helps you build beautiful color palettes and schemes for your designs. Generate harmonious combinations, shades, or random palettes to spark ideas. Everything is created in your browser.",
     "color-scheme-generator": "This tool helps you build beautiful color palettes and schemes for your designs. Generate harmonious combinations, shades, or random palettes to spark ideas. Everything is created in your browser.",
     "color-shades-generator": "This tool helps you build beautiful color palettes and schemes for your designs. Generate harmonious combinations, shades, or random palettes to spark ideas. Everything is created in your browser.",
@@ -1981,11 +1937,9 @@
     "gradient-text-generator": "This tool creates smooth color gradients and gives you the CSS to use them. Adjust the colors and direction visually, then copy the code straight into your site. It runs entirely in your browser.",
     "color-contrast-checker": "This tool checks whether two colors have enough contrast to be readable, against accessibility (WCAG) standards. It helps make sure your text is legible for everyone. Everything runs in your browser.",
     "color-blindness-simulator": "This tool simulates how your colors look to people with different types of color blindness. It's a valuable check for designing inclusive, accessible visuals. Everything runs in your browser.",
-    "random-color-generator": "This tool generates random colors along with their HEX, RGB, and HSL codes. It's a quick way to find inspiration or break out of a creative rut. Everything runs in your browser.",
     "color-to-tailwind": "This tool is a handy color helper for developers — matching colors to the nearest Tailwind class or working out opacity values. It saves you guesswork while styling. Everything runs in your browser.",
     "opacity-calculator": "This tool is a handy color helper for developers — matching colors to the nearest Tailwind class or working out opacity values. It saves you guesswork while styling. Everything runs in your browser.",
     "image-color-picker": "This tool pulls colors out of an image — pick a single color or extract a whole palette. Upload a photo and grab the exact HEX and RGB values you see. It runs in your browser, so your image is never uploaded.",
-    "image-color-extractor": "This tool pulls colors out of an image — pick a single color or extract a whole palette. Upload a photo and grab the exact HEX and RGB values you see. It runs in your browser, so your image is never uploaded.",
     "color-palette-extractor": "This tool pulls colors out of an image — pick a single color or extract a whole palette. Upload a photo and grab the exact HEX and RGB values you see. It runs in your browser, so your image is never uploaded.",
     "svg-to-png": "This tool converts SVG vector graphics into PNG images at the size you choose. It's handy when you need a raster version of a logo or icon for apps that don't support SVG. The conversion runs in your browser.",
     "pixel-art-maker": "This tool lets you draw pixel art right in your browser on a simple grid. Place colors square by square to make icons, sprites, or retro-style art. Your creation stays in your browser until you download it.",
@@ -2066,7 +2020,6 @@
     "pdf-password": ["Choose 'Lock' or 'Unlock'.","Upload or drag in a PDF file.","Enter the password (Lock = the one to set, Unlock = the current one).","Press the button — it processes in your browser.","When done, download the resulting PDF."],
     "video-compressor": ["Upload or drag in a video file.","Choose a compression level (High, Medium or Light).","Press 'Compress' — it processes in your browser (with progress).","Check the size reduction and download the result."],
     "audio-converter": ["Upload or drag in an audio file.","Choose an output format (MP3, WAV, M4A or OGG).","Press 'Convert' — it processes in your browser.","When done, preview and download the result."],
-    "mp4-to-mp3": ["Upload or drag in video files (multiple allowed).","Pick options like bitrate — the defaults work fine too.","Press 'Convert to MP3' — files convert in your browser, one by one.","Download each MP3, or grab them all as a ZIP."],
     "country-info": ["Find a country via the continent lists or the search box.","Open it — calling code, capital, population, time zone, plugs and flag on one page.","Hop between same-region countries to compare.","Use the related tools below for time differences and plug details."],
     "docx-to-odt": ["Upload or drag in a Word (.docx) file.","Press 'Convert to ODT' — Pandoc converts it right in your browser (one-time engine download).","The .odt file downloads automatically, keeping the original filename.","Open the result in LibreOffice or OpenOffice."],
     "workout-timer": ["Pick an exercise preset, or set prep/work/rest and sets yourself.","Press 'Start' — the workout begins after the prep countdown (sound + vibration cues).","Follow the big numbers and phase colours, visible from across the room.","Save settings you use often as a named routine."],
@@ -2156,11 +2109,6 @@
       "Upload a ZIP file.",
       "The files inside are listed.",
       "Download them one by one or with Download all."
-    ],
-    "man-age-calculator": [
-      "Pick your birthdate.",
-      "Your age in full years appears instantly.",
-      "See the counting age, year age, and days to your next birthday too."
     ],
     "dday-calculator": [
       "Pick a target date.",
@@ -2586,11 +2534,6 @@
       "Pick a color to compare original vs simulated.",
       "Use the palette to see how many colors shift."
     ],
-    "ip-address-lookup": [
-      "Enter an IP or tap 'My IP Address'.",
-      "Press Lookup to see location and ISP info.",
-      "Open the map to view the location."
-    ],
     "subnet-calculator": [
       "Enter an IP address.",
       "Choose a CIDR prefix (e.g. /24).",
@@ -2656,11 +2599,6 @@
       "See the monthly payment instantly.",
       "Check total interest and total paid."
     ],
-    "compound-interest-calculator": [
-      "Enter the initial amount, rate and years.",
-      "Set the compounding frequency and contribution.",
-      "See the future value and interest earned."
-    ],
     "due-date-calculator": [
       "Enter the first day of your last period.",
       "Adjust your average cycle length.",
@@ -2721,11 +2659,6 @@
       "Adjust the number of steps.",
       "Click any tint or shade to copy it."
     ],
-    "color-palette-generator": [
-      "Pick a base color.",
-      "Choose a scheme (analogous, complementary, etc.).",
-      "Click a swatch to copy it."
-    ],
     "color-to-tailwind": [
       "Enter a hex color.",
       "See the closest Tailwind class.",
@@ -2781,20 +2714,10 @@
       "The Base64 result appears in real-time.",
       "Copy the result."
     ],
-    "base64-decoder": [
-      "Paste a Base64 string.",
-      "The decoded text appears in real-time.",
-      "Copy the result."
-    ],
     "binary-text-converter": [
       "Choose text→code or code→text, and binary/hex.",
       "Enter your text or code.",
       "Copy the converted output."
-    ],
-    "diff-checker": [
-      "Paste the original and modified text.",
-      "Press Compare.",
-      "See added and removed lines highlighted."
     ],
     "html-formatter": [
       "Paste your HTML.",
@@ -2805,11 +2728,6 @@
       "Enter text or drop a file.",
       "MD5 and SHA hashes are generated automatically.",
       "Copy the hash you need."
-    ],
-    "checksum-generator": [
-      "Choose a file or text.",
-      "Press Generate Checksums.",
-      "Paste an expected hash to verify integrity."
     ],
     "json-diff": [
       "Paste two JSONs (A and B).",
@@ -2905,11 +2823,6 @@
       "Paste your HTML.",
       "Press Convert.",
       "Copy the Markdown output."
-    ],
-    "html-table-generator": [
-      "Set the number of rows and columns.",
-      "Choose header, borders and striped options.",
-      "Copy the generated HTML table."
     ],
     "gradient-text-generator": [
       "Enter text and pick 2-3 colors.",
@@ -3061,11 +2974,6 @@
       "Set repeat count and separator.",
       "Copy the generated result."
     ],
-    "uuid-bulk-generator": [
-      "Set how many UUIDs to generate.",
-      "Choose a format (uppercase, no dashes, etc.).",
-      "Generate and copy them all."
-    ],
     "text-rotate": [
       "Choose flip or reverse mode.",
       "Enter your text.",
@@ -3085,11 +2993,6 @@
       "Enter a value.",
       "Choose the input unit.",
       "See the value in every speed unit."
-    ],
-    "pixel-converter": [
-      "Enter a pixel value.",
-      "Set the base font size.",
-      "See rem, em, pt, vw and more."
     ],
     "unicode-converter": [
       "Choose a conversion direction.",
@@ -3130,11 +3033,6 @@
       "Paste your YAML.",
       "Its syntax is validated automatically.",
       "See any error location."
-    ],
-    "markdown-preview": [
-      "Type Markdown on the left.",
-      "See the live preview on the right.",
-      "Supports headings, bold, lists, links and more."
     ],
     "markdown-to-html": [
       "Type your Markdown.",
@@ -3235,11 +3133,6 @@
       "Enter one item per line.",
       "Pick a sort mode and options.",
       "Copy the sorted result."
-    ],
-    "pixel-to-rem-converter": [
-      "Set the base font size.",
-      "Enter a px or rem value.",
-      "Copy the converted value."
     ],
     "opacity-calculator": [
       "Choose foreground and background colors.",
@@ -3381,11 +3274,6 @@
       "Choose characters, words or lines.",
       "Copy the reversed result."
     ],
-    "url-decoder": [
-      "Paste an encoded URL or text.",
-      "It decodes in real-time.",
-      "Copy the decoded result."
-    ],
     "utm-builder": [
       "Enter your website URL.",
       "Fill campaign source, medium and name.",
@@ -3396,20 +3284,10 @@
       "Choose the source timezone.",
       "See the time across multiple zones."
     ],
-    "random-color-generator": [
-      "Set the count.",
-      "Press generate.",
-      "Copy the hex of a color you like."
-    ],
     "svg-viewer": [
       "Paste your SVG code.",
       "Adjust preview background and scale.",
       "Download or copy the SVG."
-    ],
-    "text-to-ascii-art": [
-      "Type A-Z text.",
-      "Block ASCII art is generated.",
-      "Copy the result."
     ],
     "json-tree-viewer": [
       "Paste your JSON.",
@@ -3546,11 +3424,6 @@
       "Enter a temperature.",
       "See it in every unit."
     ],
-    "json-validator": [
-      "Paste your JSON.",
-      "Click validate.",
-      "Copy the pretty-printed JSON."
-    ],
     "url-parser": [
       "Enter a URL.",
       "See each part broken down.",
@@ -3595,11 +3468,6 @@
       "Pick a cipher method.",
       "Enter text and options.",
       "Copy the encrypted output."
-    ],
-    "keyboard-shortcut-tester": [
-      "Click the capture box.",
-      "Press any key or shortcut.",
-      "See the keys and codes."
     ],
     "random-palette-generator": [
       "Pick a color scheme.",
@@ -3685,11 +3553,6 @@
       "Click and type the text.",
       "Your WPM and accuracy update live.",
       "Try a new text anytime."
-    ],
-    "image-color-extractor": [
-      "Upload an image.",
-      "Top colors are extracted.",
-      "Click a swatch to copy."
     ],
     "pomodoro-timer": [
       "Choose focus or break.",
@@ -5743,6 +5606,8 @@
     "bf_hip": "Hip (cm)",
     "bf_label": "Body fat",
     "bf_disclaimer": "US Navy circumference method · estimate only, not medical advice.",
+    "ag_yearage": "Year age",
+    "ag_counting": "Counting age (K-age)",
     "ag_dob": "Date of Birth",
     "ag_atdate": "Age at Date",
     "ag_age": "Age",
@@ -7957,7 +7822,6 @@
     "pdf-password": "PDF Password (Protect & Unlock)",
     "video-compressor": "Video Compressor",
     "audio-converter": "Audio Converter",
-    "mp4-to-mp3": "Video to MP3 Converter",
     "mp3-tag-editor": "MP3 Tag Editor",
     "workout-timer": "Workout Timer",
     "docx-to-odt": "Online DOCX to ODT Converter",
@@ -7984,7 +7848,6 @@
     "compress-pdf": "Compress PDF",
     "zip-files": "Zip Files (Create ZIP)",
     "unzip": "Unzip (Extract ZIP)",
-    "man-age-calculator": "Korean Age Calculator (만 나이)",
     "dday-calculator": "D-Day Calculator",
     "world-clock": "World Clock",
     "online-alarm": "Online Alarm",
@@ -8130,7 +7993,6 @@
     "target-score-calculator": "Final Grade Calculator - What Do I Need on My Final",
     "attendance-calculator": "Attendance Calculator - How Many Classes Can I Miss",
     "gpa-calculator": "GPA Calculator - College Grade Point Average",
-    "mp4-to-mp3": "MP4 to MP3 Converter",
     "workout-timer": "Workout Interval Timer",
     "docx-to-odt": "DOCX to ODT Converter (Word → OpenDocument)",
     "country-info": "Country Calling Codes, Capitals & Plug Types",
