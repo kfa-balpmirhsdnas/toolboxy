@@ -5856,6 +5856,7 @@
     "cnm_rel_insta": "Instagram Line Break",
     "txf_recent": "Recent searches",
     "txf_recent_del": "Remove",
+    "txf_auto_city": "City is detected from your start point",
     "txf_title": "Taxi Fare Calculator",
     "txf_subtitle": "Enter two places to get distance, time and fare estimates",
     "txf_route_title": "Taxi Route Map",

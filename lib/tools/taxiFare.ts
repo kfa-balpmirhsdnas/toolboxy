@@ -11,6 +11,8 @@ export interface TaxiTariff {
   country: TaxiCountry
   currency: 'KRW' | 'JPY'
   label: Record<TaxiLang, string>
+  /** 요금표 자동 감지용 대략적 경계 상자 [남, 서, 북, 동]. 구체적 도시가 먼저 매칭되도록 배열 순서 유지. */
+  bbox: [number, number, number, number]
   baseFare: number // 기본요금
   baseDistanceM: number // 기본거리
   unitFare: number // 거리요금 단가
@@ -28,6 +30,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'KR-seoul', country: 'KR', currency: 'KRW',
     label: { ko: '서울', ja: 'ソウル', en: 'Seoul' },
+    bbox: [37.42, 126.76, 37.72, 127.19],
     baseFare: 4800, baseDistanceM: 1600,
     unitFare: 100, unitDistanceM: 131,
     timeFare: 100, timeUnitSec: 30,
@@ -37,6 +40,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'KR-busan', country: 'KR', currency: 'KRW',
     label: { ko: '부산', ja: '釜山', en: 'Busan' },
+    bbox: [34.98, 128.75, 35.40, 129.35],
     baseFare: 4800, baseDistanceM: 2000,
     unitFare: 100, unitDistanceM: 132,
     timeFare: 100, timeUnitSec: 33,
@@ -47,6 +51,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
     // 경기도 표준형 (수원·성남 등 15개 시군 공통) — 외곽 일부 시군은 요율이 다를 수 있음
     id: 'KR-gyeonggi', country: 'KR', currency: 'KRW',
     label: { ko: '경기 (수원·성남 등)', ja: '京畿（水原・城南など）', en: 'Gyeonggi (Suwon etc.)' },
+    bbox: [36.90, 126.30, 38.30, 127.90],
     baseFare: 4800, baseDistanceM: 1600,
     unitFare: 100, unitDistanceM: 131,
     timeFare: 100, timeUnitSec: 30,
@@ -56,6 +61,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'KR-incheon', country: 'KR', currency: 'KRW',
     label: { ko: '인천', ja: '仁川', en: 'Incheon' },
+    bbox: [37.33, 126.36, 37.62, 126.80],
     baseFare: 4800, baseDistanceM: 1600,
     unitFare: 100, unitDistanceM: 135,
     timeFare: 100, timeUnitSec: 33,
@@ -65,6 +71,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'KR-daegu', country: 'KR', currency: 'KRW',
     label: { ko: '대구', ja: '大邱', en: 'Daegu' },
+    bbox: [35.60, 128.34, 36.02, 128.77],
     baseFare: 4500, baseDistanceM: 1700,
     unitFare: 100, unitDistanceM: 125,
     timeFare: 100, timeUnitSec: 31,
@@ -74,6 +81,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'KR-daejeon', country: 'KR', currency: 'KRW',
     label: { ko: '대전', ja: '大田', en: 'Daejeon' },
+    bbox: [36.18, 127.24, 36.50, 127.56],
     baseFare: 4300, baseDistanceM: 1800,
     unitFare: 100, unitDistanceM: 132,
     timeFare: 100, timeUnitSec: 33,
@@ -83,6 +91,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'KR-gwangju', country: 'KR', currency: 'KRW',
     label: { ko: '광주', ja: '光州', en: 'Gwangju' },
+    bbox: [35.05, 126.64, 35.27, 127.02],
     baseFare: 4800, baseDistanceM: 1700,
     unitFare: 100, unitDistanceM: 132,
     timeFare: 100, timeUnitSec: 32,
@@ -92,6 +101,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'KR-jeju', country: 'KR', currency: 'KRW',
     label: { ko: '제주', ja: '済州', en: 'Jeju' },
+    bbox: [33.10, 126.10, 33.60, 127.00],
     baseFare: 4300, baseDistanceM: 2000,
     unitFare: 100, unitDistanceM: 127,
     timeFare: 100, timeUnitSec: 31,
@@ -101,6 +111,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'JP-tokyo', country: 'JP', currency: 'JPY',
     label: { ko: '도쿄 (23구)', ja: '東京（23区）', en: 'Tokyo (23 wards)' },
+    bbox: [35.53, 139.56, 35.82, 139.92],
     baseFare: 500, baseDistanceM: 1000,
     unitFare: 100, unitDistanceM: 232,
     timeFare: 100, timeUnitSec: 85,
@@ -110,6 +121,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'JP-osaka', country: 'JP', currency: 'JPY',
     label: { ko: '오사카', ja: '大阪', en: 'Osaka' },
+    bbox: [34.40, 135.30, 34.85, 135.70],
     baseFare: 600, baseDistanceM: 1200,
     unitFare: 100, unitDistanceM: 231,
     timeFare: 100, timeUnitSec: 85,
@@ -119,6 +131,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'JP-kyoto', country: 'JP', currency: 'JPY',
     label: { ko: '교토', ja: '京都', en: 'Kyoto' },
+    bbox: [34.87, 135.55, 35.16, 135.88],
     baseFare: 500, baseDistanceM: 900,
     unitFare: 100, unitDistanceM: 255,
     timeFare: 100, timeUnitSec: 95, // 시간병산은 10km/h 전환 관례 환산 (공시 초 단위 미확인)
@@ -128,6 +141,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'JP-fukuoka', country: 'JP', currency: 'JPY',
     label: { ko: '후쿠오카', ja: '福岡', en: 'Fukuoka' },
+    bbox: [33.45, 130.20, 33.75, 130.55],
     baseFare: 600, baseDistanceM: 1100,
     unitFare: 100, unitDistanceM: 287,
     timeFare: 100, timeUnitSec: 105, // 시간병산은 10km/h 전환 관례 환산
@@ -137,6 +151,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'JP-sapporo', country: 'JP', currency: 'JPY',
     label: { ko: '삿포로', ja: '札幌', en: 'Sapporo' },
+    bbox: [42.90, 141.20, 43.20, 141.50],
     baseFare: 600, baseDistanceM: 1050,
     unitFare: 100, unitDistanceM: 272,
     timeFare: 100, timeUnitSec: 100, // 1分40秒 공시
@@ -146,6 +161,7 @@ export const TAXI_TARIFFS: TaxiTariff[] = [
   {
     id: 'JP-nagoya', country: 'JP', currency: 'JPY',
     label: { ko: '나고야', ja: '名古屋', en: 'Nagoya' },
+    bbox: [35.00, 136.78, 35.30, 137.06],
     baseFare: 500, baseDistanceM: 910,
     unitFare: 100, unitDistanceM: 232,
     timeFare: 100, timeUnitSec: 85, // 시간병산은 10km/h 전환 관례 환산
@@ -162,6 +178,28 @@ export const correctDuration = (durationSec: number) => Math.round(durationSec *
 
 export const tariffById = (id: string): TaxiTariff | undefined => TAXI_TARIFFS.find((t) => t.id === id)
 export const tariffsForCountry = (c: TaxiCountry) => TAXI_TARIFFS.filter((t) => t.country === c)
+
+/**
+ * 출발지 좌표로 요금표 자동 선택 — 실제 미터기도 출발지 면허 기준.
+ * ① 구체 도시 bbox 우선 매칭(배열 순서: 서울·인천이 경기 캐치올보다 앞) →
+ * ② 미매칭 시 같은 나라에서 중심점이 가장 가까운 도시의 요금표로 근사.
+ */
+export function tariffForPoint(lat: number, lng: number, country: TaxiCountry): TaxiTariff {
+  const list = tariffsForCountry(country)
+  // 캐치올(경기)이 먼저 잡히지 않도록: bbox 면적이 작은 순으로 검사
+  const byArea = [...list].sort((a, b) => (a.bbox[2] - a.bbox[0]) * (a.bbox[3] - a.bbox[1]) - (b.bbox[2] - b.bbox[0]) * (b.bbox[3] - b.bbox[1]))
+  for (const t of byArea) {
+    const [s, w, n, e] = t.bbox
+    if (lat >= s && lat <= n && lng >= w && lng <= e) return t
+  }
+  let best = list[0]; let bd = Infinity
+  for (const t of list) {
+    const cy = (t.bbox[0] + t.bbox[2]) / 2, cx = (t.bbox[1] + t.bbox[3]) / 2
+    const d = (lat - cy) ** 2 + (lng - cx) ** 2
+    if (d < bd) { bd = d; best = t }
+  }
+  return best
+}
 
 export interface TaxiFareResult {
   day: number

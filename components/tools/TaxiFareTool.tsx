@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
-  tariffsForCountry, tariffById, calcTaxiFare, formatFare, asTaxiLang, correctDuration,
+  tariffById, tariffForPoint, calcTaxiFare, formatFare, asTaxiLang, correctDuration,
   type TaxiCountry, type TaxiLang,
 } from '@/lib/tools/taxiFare'
 import { trackToolUsed } from '@/lib/gtag'
@@ -30,7 +30,7 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
   const lang: TaxiLang = asTaxiLang(langRaw)
 
   const [country, setCountry] = useState<TaxiCountry>(lang === 'ja' ? 'JP' : 'KR')
-  const [cityId, setCityId] = useState(lang === 'ja' ? 'JP-tokyo' : 'KR-seoul')
+  const [tariffId, setTariffId] = useState<string | null>(null) // 출발지 좌표로 자동 감지된 요금표
   const [origin, setOrigin] = useState('')
   const [dest, setDest] = useState('')
   const [busy, setBusy] = useState(false)
@@ -41,8 +41,6 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
 
   // 기존 검색에 쓰인 지역(출발·도착 모두) — 두 입력창 공용 목록
   const places = Array.from(new Set(history.flatMap((h) => [h.o, h.d]))).slice(0, 10)
-
-  const tariff = tariffById(cityId)!
 
   useEffect(() => { // 최근 검색 로드 (양 페이지 공유)
     try {
@@ -60,21 +58,15 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
     saveHistory(history.filter((_, k) => k !== i))
   }
   function pickHistory(h: HistoryItem) {
-    const tf = tariffById(h.city)!
-    setCountry(tf.country); setCityId(h.city); setOrigin(h.o); setDest(h.d)
-    calc(h.o, h.d, h.city)
+    const ctry = tariffById(h.city)?.country || country
+    setCountry(ctry); setOrigin(h.o); setDest(h.d)
+    calc(h.o, h.d, ctry)
   }
 
-  function pickCountry(c: TaxiCountry) {
-    setCountry(c)
-    setCityId(tariffsForCountry(c)[0].id)
-  }
-
-  async function calc(oArg?: string, dArg?: string, cityArg?: string) {
+  async function calc(oArg?: string, dArg?: string, ctryArg?: TaxiCountry) {
     const o = (oArg ?? origin).trim()
     const d = (dArg ?? dest).trim()
-    const city = cityArg ?? cityId
-    const ctry = tariffById(city)!.country
+    const ctry = ctryArg ?? country
     if (!o || !d || busy) return
     setBusy(true); setErr(null); setData(null)
     try {
@@ -94,13 +86,16 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
         )
         return
       }
+      // 요금표 자동 감지 — 출발지 좌표 기준 (실제 미터기도 출발지 면허 기준)
+      const detected = tariffForPoint(j.origin.lat, j.origin.lng, ctry)
+      setTariffId(detected.id)
       // 도심 교통 보정 — 표시 시간·저속 시간요금 계산 모두 보정값 사용
       setData({ ...j, durationSec: correctDuration(j.durationSec) })
       trackToolUsed(slug)
       // 성공한 검색만 기록 (중복 제거 후 맨 앞에)
       saveHistory([
-        { city, o, d },
-        ...history.filter((h) => !(h.city === city && h.o === o && h.d === d)),
+        { city: detected.id, o, d },
+        ...history.filter((h) => !(h.city === detected.id && h.o === o && h.d === d)),
       ].slice(0, HISTORY_MAX))
     } catch {
       setErr(t('txf_err_server'))
@@ -113,7 +108,8 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
     'px-3.5 py-2 rounded-xl text-sm font-medium border-2 transition-colors ' +
     (on ? 'bg-brand-600 border-brand-600 text-white' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300')
 
-  const fare = data ? calcTaxiFare(data.distanceM, data.durationSec, tariff) : null
+  const tariff = tariffId ? tariffById(tariffId) : null
+  const fare = data && tariff ? calcTaxiFare(data.distanceM, data.durationSec, tariff) : null
   const km = data ? (data.distanceM / 1000).toFixed(1) : ''
   const min = data ? Math.max(1, Math.round(data.durationSec / 60)) : 0
 
@@ -121,18 +117,14 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
     <div className="max-w-xl mx-auto">
       {/* 입력 */}
       <div className="bg-white rounded-2xl border border-gray-200 p-4">
-        <div className="flex flex-wrap gap-1.5 mb-2.5">
+        {/* 도시는 출발지 좌표로 자동 감지 — 국가만 선택 (지오코딩 정확도용) */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-2.5">
           {(['KR', 'JP'] as TaxiCountry[]).map((c) => (
-            <button key={c} onClick={() => pickCountry(c)} className={chip(country === c)}>
+            <button key={c} onClick={() => setCountry(c)} className={chip(country === c)}>
               {c === 'KR' ? t('txf_kr') : t('txf_jp')}
             </button>
           ))}
-          <span className="w-px self-stretch bg-gray-200 mx-1" />
-          {tariffsForCountry(country).map((tf) => (
-            <button key={tf.id} onClick={() => setCityId(tf.id)} className={chip(cityId === tf.id)}>
-              {tf.label[lang]}
-            </button>
-          ))}
+          <span className="text-[11px] text-gray-400 ml-1">{t('txf_auto_city')}</span>
         </div>
         <div className="grid gap-2">
           {([['o', origin, setOrigin, 'txf_origin_ph'], ['d', dest, setDest, 'txf_dest_ph']] as const).map(([kind, val, setVal, ph]) => (
@@ -192,7 +184,7 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
       </div>
 
       {/* 결과 */}
-      {data && fare && (
+      {data && fare && tariff && (
         <div className="mt-3 bg-white rounded-2xl border border-gray-200 p-4">
           <p className="text-xs text-gray-400 mb-3 truncate">{data.origin.label} → {data.destination.label}</p>
           <div className="grid grid-cols-2 gap-2 mb-3">
@@ -206,7 +198,7 @@ export default function TaxiFareTool({ lang: langRaw, slug, MapComp }: {
             </div>
           </div>
           <div className="rounded-2xl border-2 border-brand-200 bg-brand-50/50 p-4 text-center">
-            <p className="text-xs text-gray-500">{t('txf_fare_day')}</p>
+            <p className="text-xs text-gray-500">{t('txf_fare_day')} · <span className="font-bold text-gray-600">{tariff.label[lang]}</span></p>
             <p className="text-3xl font-black text-brand-700 tabular-nums">{formatFare(fare.day, fare.currency, lang)}</p>
             <p className="mt-2 text-xs text-gray-500">
               {t('txf_fare_night')} ({tariff.nightHours}) ·{' '}

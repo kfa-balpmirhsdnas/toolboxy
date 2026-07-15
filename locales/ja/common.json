@@ -6283,6 +6283,7 @@
     "cnm_rel_insta": "インスタ改行ツール",
     "txf_recent": "最近の検索",
     "txf_recent_del": "履歴を削除",
+    "txf_auto_city": "都市は出発地から自動判定されます",
     "txf_title": "タクシー料金計算",
     "txf_subtitle": "出発地と目的地を入れるだけで距離・時間・料金の目安まで",
     "txf_route_title": "タクシー経路・料金地図",
