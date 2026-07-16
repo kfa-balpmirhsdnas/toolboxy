@@ -41,7 +41,7 @@ async function compose(text: string, size: number, title: string, pos: TitlePos)
   ctx.fillRect(0, 0, cv.width, cv.height)
   ctx.drawImage(img, 0, band, size, size)
   if (tt && pos === 'top') {
-    ctx.fillStyle = '#111827'
+    ctx.fillStyle = '#dc2626' // 타이틀은 빨간색
     const fs = fitFont(ctx, tt, size * 0.9, Math.round(band * 0.52), 12)
     ctx.font = `bold ${fs}px Pretendard, -apple-system, sans-serif`
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
@@ -59,7 +59,7 @@ async function compose(text: string, size: number, title: string, pos: TitlePos)
     ctx.roundRect(x, y, bw, bh, bh / 2)
     ctx.fill()
     ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = Math.max(1, size / 256); ctx.stroke()
-    ctx.fillStyle = '#111827'
+    ctx.fillStyle = '#dc2626' // 타이틀은 빨간색
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
     ctx.fillText(tt, size / 2, band + size / 2 + 1)
   }
