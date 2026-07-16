@@ -69,7 +69,7 @@ async function compose(text: string, size: number, title: string, pos: TitlePos)
 export default function QrGeneratorPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
   const [input, setInput] = useState('')
-  const [size, setSize] = useState(256)
+  const [size, setSize] = useState(1024)
   const [title, setTitle] = useState('')
   const [titlePos, setTitlePos] = useState<TitlePos>('none')
   const [generated, setGenerated] = useState('')
@@ -134,7 +134,7 @@ export default function QrGeneratorPage({ params }: { params: { lang: string } }
           <div className="flex items-center gap-2">
             <label className="text-sm text-gray-600 shrink-0">{t('qg_size')}</label>
             <select value={size} onChange={(e) => setSize(Number(e.target.value))} className="text-sm border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-400">
-              {[128, 256, 512].map(s => <option key={s} value={s}>{s}×{s}px</option>)}
+              {[128, 256, 512, 1024].map(s => <option key={s} value={s}>{s}×{s}px</option>)}
             </select>
           </div>
           <button onClick={generate} disabled={!input.trim()} className="bg-brand-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors disabled:opacity-40">{t('qg_generate')}</button>
@@ -146,7 +146,8 @@ export default function QrGeneratorPage({ params }: { params: { lang: string } }
               <p className="text-sm rounded-xl bg-rose-50 border border-rose-200 text-rose-600 px-4 py-3">{t('qg_error')}</p>
             ) : preview ? (
               /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={preview} alt="QR Code" width={size} className="rounded-xl border border-gray-200 shadow-sm max-w-full h-auto" />
+              /* 미리보기는 화면용으로 축소 표시 — 다운로드는 선택한 원본 해상도 */
+              <img src={preview} alt="QR Code" className="rounded-xl border border-gray-200 shadow-sm w-64 sm:w-80 max-w-full h-auto" />
             ) : null}
             <button onClick={download} disabled={!preview} className="flex items-center gap-2 bg-gray-900 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-40">
               {downloaded ? t('qg_downloaded') : t('qg_download')}
