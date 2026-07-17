@@ -741,10 +741,6 @@
     "fullwidth-halfwidth-converter": "Convert full-width (zenkaku) characters to half-width (hankaku) and back — letters, digits, symbols and spaces. Free online converter.",
     "hiragana-katakana-converter": "Convert hiragana to katakana and back instantly. Free online kana converter for Japanese learners.",
     "hangul-romaja-converter": "Convert Korean Hangul to romanization (Revised Romanization). Free online Hangul-to-romaja converter for names and places.",
-    "wifi-qr-generator": "Create a WiFi QR code so guests join your network by scanning — no typing the password. Free, no sign-up.",
-    "vcard-qr-generator": "Generate a vCard QR code for your contact details. Scan to save a contact instantly. Free online tool.",
-    "email-qr-generator": "Create a QR code that opens a pre-filled email. Free email QR generator, no installation.",
-    "phone-qr-generator": "Make a QR code that dials a number or starts a text message. Free phone & SMS QR generator.",
     "body-fat-calculator": "Estimate your body fat percentage with the US Navy method. Free body fat calculator, instant result.",
     "due-date-calculator": "Calculate your pregnancy due date from your last period. Free due date calculator with current week.",
     "target-heart-rate-calculator": "Find your target heart-rate zones for exercise by age (Karvonen). Free heart rate zone calculator.",
@@ -985,46 +981,6 @@
         {
           "q": "Are names always exact?",
           "a": "It converts each syllable directly. Pronunciation changes between syllables are not applied, so some names may differ from official spellings."
-        }
-      ]
-    },
-    "wifi-qr-generator": {
-      "intro": "Enter your network name and password to get a QR code guests can scan to connect.",
-      "faq": [
-        {
-          "q": "Is it free?",
-          "a": "Yes — no sign-up, no installation, completely free to use right away."
-        },
-        {
-          "q": "Is my password safe?",
-          "a": "Yes. The QR is built in your browser and never sent to a server."
-        }
-      ]
-    },
-    "vcard-qr-generator": {
-      "intro": "Fill in your contact details to generate a QR code that saves a contact when scanned.",
-      "faq": [
-        {
-          "q": "Is it free?",
-          "a": "Yes — no sign-up, no installation, completely free to use right away."
-        }
-      ]
-    },
-    "email-qr-generator": {
-      "intro": "Enter a recipient, subject and body to make a QR that opens a pre-filled email.",
-      "faq": [
-        {
-          "q": "Is it free?",
-          "a": "Yes — no sign-up, no installation, completely free to use right away."
-        }
-      ]
-    },
-    "phone-qr-generator": {
-      "intro": "Choose call or SMS, enter a number, and get a scannable QR code.",
-      "faq": [
-        {
-          "q": "Is it free?",
-          "a": "Yes — no sign-up, no installation, completely free to use right away."
         }
       ]
     },
@@ -1891,10 +1847,6 @@
     "target-heart-rate-calculator": "This tool finds your target heart-rate zones for exercise. Based on your age, it shows the ranges for fat-burning, cardio, and peak effort. It's a helpful guide for training effectively, and it runs in your browser.",
     "ovulation-calculator": "This tool estimates your fertile window and likely ovulation days from your cycle. It's useful for family planning or simply understanding your body better. The dates aren't stored and it runs in your browser.",
     "pace-calculator": "This tool works out your running pace, time, or distance from the other two. It helps runners plan training or hit a goal time for a race. Everything is calculated in your browser.",
-    "wifi-qr-generator": "This tool creates a QR code that connects people to your Wi-Fi with a single scan. No more reading out long passwords — guests just point their camera and join. The code is generated in your browser and never uploaded.",
-    "vcard-qr-generator": "This tool makes a QR code that shares your contact details instantly. When scanned, it adds your name, phone, and email straight to someone's phone. It's perfect for business cards, and the code is created in your browser.",
-    "email-qr-generator": "This tool creates a QR code that opens a new email or phone call when scanned. It's a smooth way to let customers reach you from a poster, flyer, or shop window. The code is generated in your browser.",
-    "phone-qr-generator": "This tool creates a QR code that opens a new email or phone call when scanned. It's a smooth way to let customers reach you from a poster, flyer, or shop window. The code is generated in your browser.",
     "barcode-generator": "This tool creates standard barcodes from your numbers or text. Use them for products, inventory, labels, or organizing your own things. The barcode is generated in your browser and ready to download.",
     "romaji-kana-converter": "This tool converts between Japanese kana and Roman letters (romaji). Type romaji to get hiragana or katakana, or convert kana back into romaji. It's great for learners and for typing Japanese, and it runs in your browser.",
     "fullwidth-halfwidth-converter": "This tool converts text between full-width and half-width characters. It's especially useful for Japanese and Korean input, tidying up data, or matching a required format. It runs instantly in your browser.",
@@ -3309,26 +3261,6 @@
       "Pick size, ink and paper color.",
       "Download as PNG."
     ],
-    "email-qr-generator": [
-      "Enter the recipient email.",
-      "Add an optional subject and body.",
-      "Scan or download the QR code."
-    ],
-    "phone-qr-generator": [
-      "Choose call or SMS.",
-      "Enter the phone number.",
-      "Scan or download the QR code."
-    ],
-    "wifi-qr-generator": [
-      "Enter the network name and password.",
-      "Choose the security type.",
-      "Scan to join the Wi-Fi."
-    ],
-    "vcard-qr-generator": [
-      "Fill in the contact details.",
-      "A vCard QR is generated.",
-      "Scan to save the contact."
-    ],
     "circle-crop": [
       "Upload an image.",
       "It's cropped to a circle automatically.",
@@ -4469,6 +4401,11 @@
     "qg_title_ph": "Title text (e.g. WiFi, Menu, Event)",
     "qg_center_note": "Center text bumps error correction to the highest level (H) so the code stays scannable. Shorter is safer.",
     "qg_error": "Couldn’t load the QR image. Please try again shortly.",
+    "qg_type_text": "URL / Text",
+    "qg_type_wifi": "WiFi",
+    "qg_type_email": "Email",
+    "qg_type_phone": "Phone / SMS",
+    "qg_type_vcard": "Contact (vCard)",
     "qg_label": "URL or Text",
     "qg_ph": "https://example.com or any text…",
     "qg_size": "Size",
@@ -7980,6 +7917,7 @@
     }
   },
   "toolTitles": {
+    "qr-generator": "QR Code Generator - URL, WiFi, vCard & Phone",
     "taxi-fare": "Taxi Fare Calculator - Seoul, Busan, Tokyo, Osaka",
     "card-news-maker": "Instagram Carousel Maker - Auto-Generate from Text",
     "paint": "Online Paint - Free Drawing Tool in Browser",

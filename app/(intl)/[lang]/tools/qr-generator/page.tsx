@@ -8,6 +8,8 @@ import { getToolBySlug } from '@/lib/tools/registry'
 const tool = getToolBySlug('qr-generator')!
 
 type TitlePos = 'none' | 'top' | 'center'
+// 프리셋 QR 도구 4종(wifi/email/phone/vcard) 통합 — 유형 탭으로 데이터 문자열만 다르게 조립
+type QrType = 'text' | 'wifi' | 'email' | 'phone' | 'vcard'
 
 // 중앙 글자 모드는 QR 일부가 가려지므로 오류 정정을 H(30%)로 올려 스캔 가능성을 지킨다.
 function qrUrl(text: string, size: number, eccH: boolean) {
@@ -66,9 +68,24 @@ async function compose(text: string, size: number, title: string, pos: TitlePos)
   return cv.toDataURL('image/png')
 }
 
+const inputCls = 'w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400'
+
 export default function QrGeneratorPage({ params }: { params: { lang: string } }) {
   const t = useTranslations('toolui')
+  const [qrType, setQrType] = useState<QrType>('text')
   const [input, setInput] = useState('')
+  // wifi
+  const [ssid, setSsid] = useState(''); const [wifiPw, setWifiPw] = useState('')
+  const [enc, setEnc] = useState<'WPA' | 'WEP' | 'nopass'>('WPA'); const [hidden, setHidden] = useState(false)
+  // email
+  const [to, setTo] = useState(''); const [subject, setSubject] = useState(''); const [body, setBody] = useState('')
+  // phone
+  const [phoneMode, setPhoneMode] = useState<'call' | 'sms'>('call')
+  const [number, setNumber] = useState(''); const [message, setMessage] = useState('')
+  // vcard
+  const [vName, setVName] = useState(''); const [vOrg, setVOrg] = useState('')
+  const [vPhone, setVPhone] = useState(''); const [vEmail, setVEmail] = useState(''); const [vUrl, setVUrl] = useState('')
+
   const [size, setSize] = useState(1024)
   const [title, setTitle] = useState('')
   const [titlePos, setTitlePos] = useState<TitlePos>('none')
@@ -77,7 +94,40 @@ export default function QrGeneratorPage({ params }: { params: { lang: string } }
   const [error, setError] = useState(false)
   const [downloaded, setDownloaded] = useState(false)
 
-  function generate() { if (!input.trim()) return; setGenerated(input.trim()); setDownloaded(false) }
+  // 유형별 QR 데이터 문자열 조립 (기존 프리셋 도구들과 동일 포맷)
+  function payload(): string {
+    const esc = (s: string) => s.replace(/([\\;,:"])/g, '\\$1')
+    switch (qrType) {
+      case 'wifi':
+        return ssid.trim()
+          ? `WIFI:T:${enc};S:${esc(ssid.trim())};${enc === 'nopass' ? '' : `P:${esc(wifiPw)};`}${hidden ? 'H:true;' : ''};`
+          : ''
+      case 'email': {
+        const qs = [subject && 'subject=' + encodeURIComponent(subject), body && 'body=' + encodeURIComponent(body)].filter(Boolean).join('&')
+        return to.trim() ? `mailto:${to.trim()}${qs ? '?' + qs : ''}` : ''
+      }
+      case 'phone': {
+        const clean = number.replace(/[^\d+]/g, '')
+        if (!clean) return ''
+        return phoneMode === 'call' ? `tel:${clean}` : `SMSTO:${clean}${message ? ':' + message : ''}`
+      }
+      case 'vcard':
+        return (vName.trim() || vPhone.trim())
+          ? ['BEGIN:VCARD', 'VERSION:3.0',
+             vName.trim() && `FN:${vName.trim()}`,
+             vOrg.trim() && `ORG:${vOrg.trim()}`,
+             vPhone.trim() && `TEL;TYPE=CELL:${vPhone.trim()}`,
+             vEmail.trim() && `EMAIL:${vEmail.trim()}`,
+             vUrl.trim() && `URL:${vUrl.trim()}`,
+             'END:VCARD'].filter(Boolean).join('\n')
+          : ''
+      default:
+        return input.trim()
+    }
+  }
+  const data = payload()
+
+  function generate() { if (!data) return; setGenerated(data); setDownloaded(false) }
 
   // 합성 미리보기 — 입력·타이틀·크기 변경에 반응
   useEffect(() => {
@@ -104,13 +154,69 @@ export default function QrGeneratorPage({ params }: { params: { lang: string } }
   return (
     <ToolLayout tool={tool} lang={params.lang}>
       <div className="space-y-5">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">{t('qg_label')}</label>
-          <textarea value={input} onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generate() } }}
-            placeholder={t('qg_ph')} rows={3}
-            className="w-full p-4 border border-gray-200 rounded-xl resize-none text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
+        {/* 유형 탭 — URL·텍스트 / WiFi / 이메일 / 전화 / 연락처 */}
+        <div className="flex flex-wrap gap-1.5">
+          {(['text', 'wifi', 'email', 'phone', 'vcard'] as QrType[]).map((tp) => (
+            <button key={tp} onClick={() => setQrType(tp)} className={chip(qrType === tp)}>{t('qg_type_' + tp)}</button>
+          ))}
         </div>
+
+        {qrType === 'text' && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('qg_label')}</label>
+            <textarea value={input} onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generate() } }}
+              placeholder={t('qg_ph')} rows={3}
+              className="w-full p-4 border border-gray-200 rounded-xl resize-none text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-400" />
+          </div>
+        )}
+        {qrType === 'wifi' && (
+          <div className="space-y-2.5">
+            <input value={ssid} onChange={(e) => setSsid(e.target.value)} placeholder={t('wqr_ssid')} className={inputCls} />
+            <div className="flex gap-2">
+              <select value={enc} onChange={(e) => setEnc(e.target.value as typeof enc)} className="text-sm border border-gray-200 rounded-xl px-2 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-400">
+                <option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">{t('wqr_none')}</option>
+              </select>
+              {enc !== 'nopass' && <input value={wifiPw} onChange={(e) => setWifiPw(e.target.value)} placeholder={t('wqr_password')} className={inputCls + ' flex-1'} />}
+            </div>
+            <label className="inline-flex items-center gap-1.5 text-sm text-gray-600">
+              <input type="checkbox" checked={hidden} onChange={(e) => setHidden(e.target.checked)} className="accent-brand-600" />{t('wqr_hidden')}
+            </label>
+            <p className="text-[11px] text-gray-400">{t('wqr_hint')}</p>
+          </div>
+        )}
+        {qrType === 'email' && (
+          <div className="space-y-2.5">
+            <input value={to} onChange={(e) => setTo(e.target.value)} placeholder={t('eqr_to')} className={inputCls} />
+            <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder={t('eqr_subject')} className={inputCls} />
+            <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder={t('eqr_body')} rows={2} className={inputCls + ' resize-none'} />
+            <p className="text-[11px] text-gray-400">{t('eqr_hint')}</p>
+          </div>
+        )}
+        {qrType === 'phone' && (
+          <div className="space-y-2.5">
+            <div className="flex gap-1.5">
+              {(['call', 'sms'] as const).map((m) => (
+                <button key={m} onClick={() => setPhoneMode(m)} className={chip(phoneMode === m)}>{t('pqr_' + m)}</button>
+              ))}
+            </div>
+            <input value={number} onChange={(e) => setNumber(e.target.value)} placeholder={t('pqr_number')} inputMode="tel" className={inputCls} />
+            {phoneMode === 'sms' && <input value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('pqr_message')} className={inputCls} />}
+            <p className="text-[11px] text-gray-400">{t('pqr_hint')}</p>
+          </div>
+        )}
+        {qrType === 'vcard' && (
+          <div className="space-y-2.5">
+            <div className="grid grid-cols-2 gap-2">
+              <input value={vName} onChange={(e) => setVName(e.target.value)} placeholder={t('vqr_name')} className={inputCls} />
+              <input value={vOrg} onChange={(e) => setVOrg(e.target.value)} placeholder={t('vqr_org')} className={inputCls} />
+              <input value={vPhone} onChange={(e) => setVPhone(e.target.value)} placeholder={t('vqr_phone')} inputMode="tel" className={inputCls} />
+              <input value={vEmail} onChange={(e) => setVEmail(e.target.value)} placeholder={t('vqr_email')} className={inputCls} />
+            </div>
+            <input value={vUrl} onChange={(e) => setVUrl(e.target.value)} placeholder={t('vqr_website')} className={inputCls} />
+            <p className="text-[11px] text-gray-400">{t('vqr_hint')}</p>
+          </div>
+        )}
 
         {/* 타이틀 옵션 — 상단 밴드 or 정중앙 큰 글자 */}
         <div className="rounded-xl border border-gray-200 p-3 space-y-2.5">
@@ -123,8 +229,7 @@ export default function QrGeneratorPage({ params }: { params: { lang: string } }
           {titlePos !== 'none' && (
             <>
               <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={30}
-                placeholder={t('qg_title_ph')}
-                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                placeholder={t('qg_title_ph')} className={inputCls} />
               {titlePos === 'center' && <p className="text-[11px] text-gray-400">{t('qg_center_note')}</p>}
             </>
           )}
@@ -137,7 +242,7 @@ export default function QrGeneratorPage({ params }: { params: { lang: string } }
               {[128, 256, 512, 1024].map(s => <option key={s} value={s}>{s}×{s}px</option>)}
             </select>
           </div>
-          <button onClick={generate} disabled={!input.trim()} className="bg-brand-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors disabled:opacity-40">{t('qg_generate')}</button>
+          <button onClick={generate} disabled={!data} className="bg-brand-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors disabled:opacity-40">{t('qg_generate')}</button>
         </div>
 
         {generated && (
@@ -145,8 +250,8 @@ export default function QrGeneratorPage({ params }: { params: { lang: string } }
             {error ? (
               <p className="text-sm rounded-xl bg-rose-50 border border-rose-200 text-rose-600 px-4 py-3">{t('qg_error')}</p>
             ) : preview ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
               /* 미리보기는 화면용으로 축소 표시 — 다운로드는 선택한 원본 해상도 */
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img src={preview} alt="QR Code" className="rounded-xl border border-gray-200 shadow-sm w-64 sm:w-80 max-w-full h-auto" />
             ) : null}
             <button onClick={download} disabled={!preview} className="flex items-center gap-2 bg-gray-900 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-40">

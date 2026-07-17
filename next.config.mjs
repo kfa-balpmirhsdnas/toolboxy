@@ -115,6 +115,11 @@ const nextConfig = {
       ['pixel-to-rem-converter', 'css-unit-converter'],
       ['compound-interest-calculator', 'interest-calculator'],
       ['checksum-generator', 'hash-generator'],
+      // qr preset generators merged into qr-generator (type tabs)
+      ['wifi-qr-generator', 'qr-generator'],
+      ['email-qr-generator', 'qr-generator'],
+      ['phone-qr-generator', 'qr-generator'],
+      ['vcard-qr-generator', 'qr-generator'],
     ]
     return DEDUPES.map(([from, to]) => ({
       source: `/:lang/tools/${from}`,
